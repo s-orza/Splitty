@@ -1,7 +1,9 @@
+Date:           20/02/2024 (13:45-15:15)
 
-Date:           20/02/2024 (15:45-17:15)
 Main focus:     Getting Set Up
+
 Chair:          Olav Peters
+
 Note taker:     David Pop
 
 
