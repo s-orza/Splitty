@@ -2,7 +2,7 @@ Date:           20/02/2024 (13:45-15:00)
 
 Main focus:     Getting Set Up
 
-Chair:          Olav Peters
+Chair (does not present stuff, guide):          Olav Peters 
 
 Note taker:     David Pop
 
@@ -22,21 +22,20 @@ To Read [all Brightspace]: (5min)
  - Tasks & Planning
  - Git Assignment
  - Scrum
+ - Study guide (link): https://studyguide.tudelft.nl/a101_displayCourse.do?course_id=64438
 
 To Do This Week: (15min)
- - Future chairs/Minute Takers
+ - Future chairs/Minute Takers (in CoC)
  - Split Tasks (Part of Tasks & Planning on Brighstspace)
      - GitLab Issues
      - 3-4hrs  
  - Setup Environment
- - Git Assignment (Brightspace)
- - Start Coding
+ - Git Assignment (Brightspace)*
+ - Start Coding*
 
 To Do Now: (10min)
  - Discuss a cake rule
  - Find Work session/2nd meeting
-
---- BREAK (5min) ---
 
 Looking ahead: (10min)
  - Git: W2 Friday (Feb 23rd)
