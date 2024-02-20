@@ -1,4 +1,4 @@
-Date:           20/02/2024 (13:45-15:15)
+Date:           20/02/2024 (13:45-15:00)
 
 Main focus:     Getting Set Up
 
@@ -14,7 +14,7 @@ Note taker:     David Pop
 # Approval of the agenda (2min)
 *Make sure everything that needs to be discussed is in the agenda or add it if something is missing.*
 
-# Points of action (50min)
+# Points of action (40min)
 *The items below are things you should look into after the first meeting. During the meeting you can divide (some of) the work between the team members, so that everybody has something to do afterwards.*
 To Read [all Brightspace]: (5min)
  - Resources and Tools
