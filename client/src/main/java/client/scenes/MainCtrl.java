@@ -24,6 +24,7 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
+    // add all Controller and Scene vars here
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
 
@@ -32,6 +33,8 @@ public class MainCtrl {
 
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add) {
+
+        // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -39,10 +42,12 @@ public class MainCtrl {
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
+        // set first page
         showOverview();
         primaryStage.show();
     }
 
+    // functions to set new stage
     public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
