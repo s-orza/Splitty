@@ -25,12 +25,38 @@ public class MainCtrl {
     private Stage primaryStage;
 
     // add all Controller and Scene vars here
+    // quoteOverview
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
 
+    // addQuote
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    // serverSelect
+    private DummyCtrl serverSelectCtrl;
+    private Scene serverSelect;
+    // mainPage
+    private DummyCtrl mainPageCtrl;
+    private Scene mainPage;
+    // adminPage
+    private DummyCtrl adminPageCtrl;
+    private Scene adminPage;
+    // createEvent
+    private DummyCtrl createEventCtrl;
+    private Scene createEvent;
+    // joinEvent
+    private DummyCtrl joinEventCtrl;
+    private Scene joinEvent;
+    // eventPage
+    private DummyCtrl eventPageCtrl;
+    private Scene eventPage;
+    // addExpenses
+    private DummyCtrl addExpensesCtrl;
+    private Scene addExpenses;
+    // addParticipant
+    private DummyCtrl addParticipantCtrl;
+    private Scene addParticipant;
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add) {
 
