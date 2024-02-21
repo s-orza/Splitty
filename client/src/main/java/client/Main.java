@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 
 import com.google.inject.Injector;
 
+import client.scenes.DummyCtrl;
 import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
@@ -44,8 +45,17 @@ public class Main extends Application {
         var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
 
+        var serverSelect = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var mainPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var adminPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var createEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var joinEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var eventPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var addExpense = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var addParticipant = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+
         // calls mainCtrl with the pages
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add);
+        mainCtrl.initialize(primaryStage, overview, add, serverSelect, mainPage, adminPage, createEvent, joinEvent, eventPage, addExpense, addParticipant);
     }
 }

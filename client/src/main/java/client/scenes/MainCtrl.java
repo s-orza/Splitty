@@ -51,17 +51,45 @@ public class MainCtrl {
     // eventPage
     private DummyCtrl eventPageCtrl;
     private Scene eventPage;
-    // addExpenses
-    private DummyCtrl addExpensesCtrl;
-    private Scene addExpenses;
+    // addExpense
+    private DummyCtrl addExpenseCtrl;
+    private Scene addExpense;
     // addParticipant
     private DummyCtrl addParticipantCtrl;
     private Scene addParticipant;
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+           Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<DummyCtrl, Parent> mainPage,
+           Pair<DummyCtrl, Parent> adminPage, Pair<DummyCtrl, Parent> createEvent,
+           Pair<DummyCtrl, Parent> joinEvent, Pair<DummyCtrl, Parent> eventPage,
+           Pair<DummyCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
 
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
+
+        this.serverSelectCtrl = serverSelect.getKey();
+        this.serverSelect = new Scene(serverSelect.getValue());
+
+        this.mainPageCtrl = mainPage.getKey();
+        this.mainPage = new Scene(mainPage.getValue());
+
+        this.adminPageCtrl = adminPage.getKey();
+        this.adminPage = new Scene(adminPage.getValue());
+
+        this.createEventCtrl = createEvent.getKey();
+        this.createEvent = new Scene(createEvent.getValue());
+
+        this.joinEventCtrl = joinEvent.getKey();
+        this.joinEvent = new Scene(joinEvent.getValue());
+
+        this.eventPageCtrl = eventPage.getKey();
+        this.eventPage = new Scene(eventPage.getValue());
+
+        this.addExpenseCtrl = addExpense.getKey();
+        this.addExpense = new Scene(addExpense.getValue());
+
+        this.addParticipantCtrl = addParticipant.getKey();
+        this.addParticipant = new Scene(addParticipant.getValue());
+
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 

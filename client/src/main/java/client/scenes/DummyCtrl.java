@@ -40,5 +40,4 @@ public class DummyCtrl {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
-
 }
