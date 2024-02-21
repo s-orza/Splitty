@@ -66,6 +66,12 @@ public class MainCtrl {
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
 
+        this.overviewCtrl = overview.getKey();
+        this.overview = new Scene(overview.getValue());
+
+        // our pages
+        this.addCtrl = add.getKey();
+        this.add = new Scene(add.getValue());
         this.serverSelectCtrl = serverSelect.getKey();
         this.serverSelect = new Scene(serverSelect.getValue());
 
@@ -90,12 +96,6 @@ public class MainCtrl {
         this.addParticipantCtrl = addParticipant.getKey();
         this.addParticipant = new Scene(addParticipant.getValue());
 
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
-
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
-
         // set first page
         showOverview();
         primaryStage.show();
@@ -112,5 +112,46 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
+
+    // Our pages
+    public void showServerSelect() {
+        primaryStage.setTitle("Server Select");
+        primaryStage.setScene(serverSelect);
+    }
+
+    public void showMainPage() {
+        primaryStage.setTitle("Main Page");
+        primaryStage.setScene(mainPage);
+    }
+
+    public void showAdminPage() {
+        primaryStage.setTitle("Admin Page");
+        primaryStage.setScene(adminPage);
+    }
+
+    public void showCreateEvent() {
+        primaryStage.setTitle("Create Event");
+        primaryStage.setScene(createEvent);
+    }
+
+    public void showJoinEvent() {
+        primaryStage.setTitle("Join Event");
+        primaryStage.setScene(joinEvent);
+    }
+
+    public void showEventPage() {
+        primaryStage.setTitle("Event Page");
+        primaryStage.setScene(eventPage);
+    }
+
+    public void showAddExpense() {
+        primaryStage.setTitle("Add Expense");
+        primaryStage.setScene(addExpense);
+    }
+
+    public void showAddParticipant() {
+        primaryStage.setTitle("Add Participant");
+        primaryStage.setScene(addParticipant);
     }
 }
