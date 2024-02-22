@@ -54,10 +54,13 @@ public class EventPageController{
 
     @FXML
     Button addExpense;
-    /**
-     * this was added just to fill the tables with some exemplary values
-     * the real connectivity to a database will be done later
-     */
+
+    @FXML
+    Button editEventName;
+
+    @FXML
+    Label eventName;
+
     /**
      * This property is just here to simulate data from database
      */
@@ -69,7 +72,10 @@ public class EventPageController{
             new ExpenseTest("Shahar", "Just a gift", "14-12-2023", 34.98),
             new ExpenseTest("Serban", "More more drinks", "15-12-2023", 200 )
             );
-    private ObservableList<ParticipantTest> partiipantsData =
+    /**
+     * again this will be removed and will stay just for having something in the tables
+     */
+    private ObservableList<ParticipantTest> participantsData =
             FXCollections.observableArrayList(
                     new ParticipantTest("Ivan"),
                     new ParticipantTest("David"),
@@ -84,19 +90,23 @@ public class EventPageController{
      */
     @FXML
     public void initialize() {
-        // Initialize your columns here
+
         //TODO
         // a method that fetches the data for the expenses from the database
         // and transforms it into an observable list.
+
         System.out.println("in init");
         renderExpenseColumns(expenseData);
-        renderParticipants(partiipantsData);
+        renderParticipants(participantsData);
 
-        // just initiallizes some properties needed for the elements
+        // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler());
         addExpense.setOnAction(e->addExpenseHandler());
         removeExpense.setOnAction(e->removeExpenseHandler());
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        editEventName.setOnAction(e->{
+            editEventNameHandler();
+        });
 
     }
 
@@ -121,16 +131,40 @@ public class EventPageController{
 
 
     private void removeExpenseHandler(){
-        
+        VBox layout = new VBox(10);
+        Label label = new Label("Are you sure you want to remove the selected expenses?");
+        Button cancelButton = new Button("Cancel");
 
-        ObservableList<ExpenseTest> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
+        Button removeButton = new Button("Remove");
 
-        // Make a copy of the selected items to avoid ConcurrentModificationException
-        List<ExpenseTest> itemsToRemove = new ArrayList<>(selectedItems);
+        // Set up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Remove Expenses");
 
-        // Assuming ExpenseTestModels is the ObservableList used for the table's items
-        expenseData.removeAll(itemsToRemove);
+        // This removes the entries from the file if pressed
+        removeButton.setOnAction(e -> {
+            popupStage.close();
+
+            ObservableList<ExpenseTest> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
+            List<ExpenseTest> itemsToRemove = new ArrayList<>(selectedItems);
+            expenseData.removeAll(itemsToRemove);
+        });
+
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, cancelButton, removeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
     }
+
 
 
     public void addParticipantHandler(){
@@ -150,6 +184,42 @@ public class EventPageController{
             System.out.println(e);
         }
 
+    }
+
+    private void editEventNameHandler(){
+        VBox layout = new VBox(10);
+        Label label = new Label("Are you sure you want to remove the selected expenses?");
+        TextField newName = new TextField();
+
+        Button changeButton = new Button("Change");
+        Button cancelButton = new Button("Cancel");
+
+        // Set up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Change Event Name");
+
+
+        changeButton.setOnAction(e -> {
+            popupStage.close();
+
+            eventName.setText(newName.getText());
+            //TODO
+            // We need to add database logic to change the name in the database as well.
+        });
+
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, newName, cancelButton, changeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
     }
 }
 
