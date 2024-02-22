@@ -10,8 +10,8 @@
     <children>
         <Button layoutX="356.0" layoutY="128.0" mnemonicParsing="false" onAction="#createEvent" text="Create" />
         <Button layoutX="356.0" layoutY="187.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="26.0" prefWidth="50.0" text="Join" />
-      <TextField layoutX="166.0" layoutY="128.0" />
-      <TextField layoutX="166.0" layoutY="187.0" />
+      <TextField id = "createInput" fx:id ="createInput" layoutX="166.0" layoutY="128.0" />
+      <TextField id = "joinInput" fx:id ="joinInput" layoutX="166.0" layoutY="187.0" />
       <Text layoutX="-35.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
       <Text layoutX="166.0" layoutY="112.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create New Event" wrappingWidth="149.60000000000014">
          <font>
@@ -23,5 +23,6 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Text>
+      <Button layoutX="534.0" layoutY="361.0" mnemonicParsing="false" onAction="#openAdmin" text="Admin" />
     </children>
 </AnchorPane>
