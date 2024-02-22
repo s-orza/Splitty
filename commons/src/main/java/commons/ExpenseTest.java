@@ -1,9 +1,10 @@
 package commons;
 ////////////////////////////////////
-//Yo guys i cannot somehow manage to make it work if
-// this class is in the commons folder. Either way I only need it
-// to put some values in the expense table, so after we do the database
-// it will be removed
+
+/**
+ * This is just a Dummy Test class, because i needed to populate the event page with some data
+ * Later it will be discarded and the proper expense class will be used
+ */
 ///////////////////////////////////
 
 

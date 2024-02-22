@@ -92,8 +92,8 @@ public class EventPageController{
     public void initialize() {
 
         //TODO
-        // a method that fetches the data for the expenses from the database
-        // and transforms it into an observable list.
+        // a method that fetches the data for the expenses and participants
+        // and saves it into participantsData, expenseData
 
         System.out.println("in init");
         renderExpenseColumns(expenseData);
@@ -129,6 +129,9 @@ public class EventPageController{
         }
     }
 
+    /**
+     * this method handles the functionality of removing visual entries in the table
+     */
 
     private void removeExpenseHandler(){
         VBox layout = new VBox(10);
@@ -149,6 +152,8 @@ public class EventPageController{
             ObservableList<ExpenseTest> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
             List<ExpenseTest> itemsToRemove = new ArrayList<>(selectedItems);
             expenseData.removeAll(itemsToRemove);
+
+            removeExpensesFromDatabase(itemsToRemove);
         });
 
         cancelButton.setOnAction(e -> {
@@ -165,16 +170,49 @@ public class EventPageController{
         popupStage.showAndWait();
     }
 
+    /**
+     * this method will remove the provided list of expenses from the database
+     * @param toRemove List of expenses to remove
+     */
+    private void removeExpensesFromDatabase(List<ExpenseTest> toRemove){
+        //todo
+        // this method will remove the expenses from the database
+    }
+
+    /**
+     * this method will change the name of the event in the databse
+     * @param newName String the new name of the event
+     */
+    private void changeNameInDatabase(String newName){
+        //todo
+        // this method will change the name of the event in database
+    }
 
 
+    /**
+     * method that will lead to a new stage, specifically for adding participants
+     */
     public void addParticipantHandler(){
         System.out.println("This will lead to another page to add participant");
+        //todo
+        // go to the add participant page
     }
 
+    /**
+     * method that will lead to a window, that is specifically for adding a new expense
+     */
     public void addExpenseHandler(){
         System.out.println("This will lead to another page to add expense");
+        //todo
+        // go to the add expense page
     }
 
+    /**
+     * this method adds the data about Participants into the Participants table
+     * Currently uses mock data from a dummy class, but in the future will get its model from
+     * a method that interacts with a database
+     * @param model ObservableList which includes the new data to be added in the table
+     */
     private void renderParticipants(ObservableList<ParticipantTest> model){
         try{
             participantsColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -186,9 +224,13 @@ public class EventPageController{
 
     }
 
+    /**
+     * handles the change of the event name, but only in visual perspective, and no
+     * database connectivity
+     */
     private void editEventNameHandler(){
         VBox layout = new VBox(10);
-        Label label = new Label("Are you sure you want to remove the selected expenses?");
+        Label label = new Label("What should be the new name of this event?");
         TextField newName = new TextField();
 
         Button changeButton = new Button("Change");
