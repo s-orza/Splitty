@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
+    public long participantID;
     public String name;
     public String email;
     public String iban;
@@ -20,6 +20,10 @@ public class Participant {
         this.email = email;
         this.iban = iban;
         this.bic = bic;
+    }
+
+    public Participant() {
+
     }
 
     public String getName() {
