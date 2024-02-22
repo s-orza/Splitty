@@ -27,6 +27,7 @@ public class MainCtrl {
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
 
+
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
@@ -42,6 +43,7 @@ public class MainCtrl {
         showOverview();
         primaryStage.show();
     }
+
 
     public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
