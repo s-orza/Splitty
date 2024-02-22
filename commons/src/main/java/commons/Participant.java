@@ -1,8 +1,16 @@
 package commons;
 
-import java.util.Objects;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+import java.util.Objects;
+@Entity
 public class Participant {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+
     public String name;
     public String email;
     public String iban;
