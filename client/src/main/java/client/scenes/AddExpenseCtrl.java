@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Expense;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +19,9 @@ public class AddExpenseCtrl {
     private Button cancelButton;
 
     @FXML
+    private TextField contentBox;
+
+    @FXML
     private CheckBox checkBoxAllPeople;
 
     @FXML
@@ -33,7 +37,10 @@ public class AddExpenseCtrl {
     private ComboBox<String> moneyTypeSelector;
 
     @FXML
-    private ComboBox<?> typeSelector;
+    private ComboBox<String> authorSelector;
+
+    @FXML
+    private ComboBox<String> typeSelector;
     @FXML
     private ListView<String> namesList;//names showed on screen from which we select
     private List<String> selectedNamesList=new ArrayList<>();
@@ -66,21 +73,44 @@ public class AddExpenseCtrl {
         }
     }
 
+    /**
+     * this function will be called when you press the add Button.
+     * @param event an event
+     */
     @FXML
     void addExpenseToTheEvent(MouseEvent event) {
         if(date.getValue()==null) {
             System.out.println("You need to select date!");
             return;
         }
+        if(moneyPaid.getText().isEmpty())
+        {
+            System.out.println("Write the amount of money");
+            return;
+        }
         int year=date.getValue().getYear();
-        System.out.println(year);
+        String author=authorSelector.getValue();
+        String content=contentBox.getText();
+        int money=Integer.parseInt(moneyPaid.getText());
+        //the expense
+        Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
+                date.getValue(),selectedNamesList,typeSelector.getValue());
+        System.out.println(expense);
     }
-
+    /**
+     * this function will be called when you press the cancel Button.
+     * @param event an event
+     */
     @FXML
     void cancelAddExpense(MouseEvent event) {
         System.out.println("Expense canceled");
     }
 
+    /**
+     * This is a basic handler that checks when you check the box for
+     * selecting all people
+     * @param event an event
+     */
     @FXML
     void handleCheckBoxAllPeople(ActionEvent event) {
         if(checkBoxAllPeople.isSelected()) {
@@ -93,12 +123,20 @@ public class AddExpenseCtrl {
             //show the list of people available
         }
     }
+    /**
+     * This is a basic handler that checks when you change the currency type
+     * @param event an event
+     */
     @FXML
     private void handleCurrencySelection(ActionEvent event) {
         String selectedMoneyType=moneyTypeSelector.getValue();
         System.out.println(selectedMoneyType);
     }
-
+    /**
+     * This is a basic handler that checks when you check the box for
+     * only selecting some of the people
+     * @param event an event
+     */
     @FXML
     void handleCheckBoxSomePeople(ActionEvent event) {
         if(checkBoxSomePeople.isSelected()) {
@@ -113,6 +151,11 @@ public class AddExpenseCtrl {
             //show the list of people available
         }
     }
+
+    /**
+     * This handles when you check a checkBox of a person in the view list for selecting
+     * @param checkBox the checkbox of a person who is selected/unselected
+     */
     void handleCheckBoxSelectName(CheckBox checkBox){
         String name=checkBox.getText();
         if(checkBox.isSelected()){

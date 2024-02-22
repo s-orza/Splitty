@@ -21,7 +21,7 @@
          <font>
             <Font size="17.0" />
          </font></Text>
-      <TextField layoutX="213.0" layoutY="108.0" prefHeight="25.0" prefWidth="223.0" />
+      <TextField fx:id="contentBox" layoutX="213.0" layoutY="108.0" prefHeight="25.0" prefWidth="223.0" />
       <Text layoutX="95.0" layoutY="128.0" strokeType="OUTSIDE" strokeWidth="0.0" text="For what?">
          <font>
             <Font size="17.0" />
@@ -51,8 +51,8 @@
       <Button fx:id="cancelButton" layoutX="450.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#cancelAddExpense" text="Cancel" />
       <DatePicker fx:id="date" layoutX="213.0" layoutY="174.0" />
       <CheckBox fx:id="checkBoxAllPeople" layoutX="204.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleCheckBoxAllPeople" text="Equally between everybody" />
-      <ComboBox editable="true" layoutX="213.0" layoutY="73.0" prefWidth="150.0" promptText="-Select person-" />
-      <ComboBox fx:id="moneyTypeSelector" editable="true" layoutX="363.0" layoutY="139.0" prefHeight="25.0" prefWidth="73.0" promptText="EUR" />
+      <ComboBox fx:id="authorSelector" editable="true" layoutX="213.0" layoutY="73.0" prefWidth="150.0" promptText="-Select person-" />
+      <ComboBox fx:id="moneyTypeSelector" layoutX="363.0" layoutY="139.0" prefHeight="25.0" prefWidth="73.0" promptText="EUR" />
       <TextField fx:id="moneyPaid" layoutX="213.0" layoutY="139.0" prefHeight="25.0" prefWidth="129.0" />
       <CheckBox fx:id="checkBoxSomePeople" layoutX="204.0" layoutY="275.0" mnemonicParsing="false" onAction="#handleCheckBoxSomePeople" text="Only between some people" />
       <ComboBox fx:id="typeSelector" editable="true" layoutX="213.0" layoutY="209.0" prefWidth="150.0" promptText="-Select type-" />
