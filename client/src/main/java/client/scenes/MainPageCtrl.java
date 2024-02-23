@@ -1,24 +1,38 @@
 package client.scenes;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
 
-public class MainPageCtrl {
+public class MainPageCtrl implements Initializable {
 
 @FXML
 private TextField createInput;
 @FXML
 private TextField joinInput;
+@FXML
+private ImageView flagImage;
+@FXML
+private ListView<String> recentList;
+
+private String selectedEv;
 private Stage stage;
 private Scene scene;
 private Parent root;
@@ -28,7 +42,7 @@ private Parent root;
     /*    Creating a new event
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
     root = loader.load();
-    EventCtrl eC = new EventCtrl();
+    EventCtrl eC = loader.getController();
     eC.passInput(createInput.getText());
     stage = (Stage)((Node) e.getSource()).getScene().getWindow();
     scene = new Scene(root);
@@ -43,7 +57,7 @@ private Parent root;
     /*    Joining an event
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
     root = loader.load();
-    EventCtrl eC = new EventCtrl();
+    EventCtrl eC = loader.getController();
     eC.passInput(joinInput.getText());
     stage = (Stage)((Node) e.getSource()).getScene().getWindow();
     scene = new Scene(root);
@@ -62,4 +76,20 @@ private Parent root;
 
   }
 
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    ArrayList<String> contents= new ArrayList<>();
+    contents.add("New years");
+    contents.add("Birthday");
+    contents.add("Christmas");
+    recentList.getItems().addAll(contents);
+    recentList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+      @Override
+      public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        selectedEv = recentList.getSelectionModel().getSelectedItem();
+        joinInput.setText(selectedEv);
+      }
+    });
+  }
 }
