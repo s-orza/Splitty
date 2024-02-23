@@ -23,7 +23,7 @@ import java.util.List;
 public class EventPageController{
 
     @FXML
-    public TableView participantsTable;
+    TableView participantsTable;
 
     @FXML
     TableColumn<ParticipantTest, String> participantsColumn;
