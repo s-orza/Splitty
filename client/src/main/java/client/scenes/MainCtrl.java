@@ -43,7 +43,7 @@ public class MainCtrl {
     private DummyCtrl adminPageCtrl;
     private Scene adminPage;
     // createEvent
-    private DummyCtrl createEventCtrl;
+    private CreateEventCtrl createEventCtrl;
     private Scene createEvent;
     // joinEvent
     private DummyCtrl joinEventCtrl;
@@ -59,7 +59,7 @@ public class MainCtrl {
     private Scene addParticipant;
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
            Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<DummyCtrl, Parent> mainPage,
-           Pair<DummyCtrl, Parent> adminPage, Pair<DummyCtrl, Parent> createEvent,
+           Pair<DummyCtrl, Parent> adminPage, Pair<CreateEventCtrl, Parent> createEvent,
            Pair<DummyCtrl, Parent> joinEvent, Pair<DummyCtrl, Parent> eventPage,
            Pair<DummyCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
 
