@@ -20,34 +20,42 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import client.scenes.MainPageCtrl;
 import com.google.inject.Injector;
 
+import client.scenes.DummyCtrl;
+import client.scenes.AddQuoteCtrl;
+import client.scenes.MainCtrl;
+import client.scenes.QuoteOverviewCtrl;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import javax.swing.*;
 
 public class Main extends Application {
 
+  private static final Injector INJECTOR = createInjector(new MyModule());
+  private static final MyFXML FXML = new MyFXML(INJECTOR);
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
-        launch(args);
-    }
+  public static void main(String[] args) throws URISyntaxException, IOException {
+    launch(); // creates app instance, calls init(), and then start(javafx.stage.Stage)
+  }
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/mainPage.fxml"));
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
+  @Override
+  public void start(Stage primaryStage) throws IOException {
+
+    // defines the pages (add new pages here, replace Controller with correct controller, and fxml with fxml file name)
+    var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
+    var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
+
+    var serverSelect = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var mainPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var adminPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var createEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var joinEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var eventPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var addExpense = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+    var addParticipant = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+
+    // calls mainCtrl with the pages
+    var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+    mainCtrl.initialize(primaryStage, overview, add, serverSelect, mainPage, adminPage, createEvent, joinEvent, eventPage, addExpense, addParticipant);
+  }
 }
