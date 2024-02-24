@@ -52,10 +52,6 @@ public class Event {
         expenses.add(expense);
     }
 
-    public Expense getLastExpense(){
-        return expenses.get(expenses.size() - 1);
-    }
-
     @Override
     public String toString() {
         return "Event{" +
