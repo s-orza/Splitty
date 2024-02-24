@@ -17,17 +17,9 @@ public class Event {
     private List<Person> participants;
     @OneToMany
     private List<Expense> expenses;
-    private class Expense{
-        private int amountPayed;
-        private String payerName, title;
-    }
 
-    public Event(){
-        eventID = new Random().nextLong();
-    }
-
-    public Event(long eventID) {
-        this.eventID = eventID;
+    public Event() {
+        this.eventID = new Random().nextLong();
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
     }
@@ -58,10 +50,6 @@ public class Event {
 
     public void addExpense(Expense expense) {
         expenses.add(expense);
-    }
-
-    public Expense getLastExpense(){
-        return expenses.get(expenses.size() - 1);
     }
 
     @Override
