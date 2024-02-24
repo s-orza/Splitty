@@ -1,25 +1,29 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 
 @Entity
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long eventID;
+    @OneToMany // Don't know how to set it up, will set it up later (Never?)
     private List<Person> participants;
+    @OneToMany // Same (give help)
     private List<Expense> expenses;
     private class Expense{
         private int amountPayed;
         private String payerName, title;
+    }
+
+    public Event(){
+        eventID = new Random().nextLong();
     }
 
     public Event(long eventID) {
