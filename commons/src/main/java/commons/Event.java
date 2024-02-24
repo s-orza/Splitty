@@ -13,9 +13,9 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long eventID;
-    @OneToMany // Don't know how to set it up, will set it up later (Never?)
+    @OneToMany // Don't know how to set up the connections, need a database anyway
     private List<Person> participants;
-    @OneToMany // Same (give help)
+    @OneToMany
     private List<Expense> expenses;
     private class Expense{
         private int amountPayed;
