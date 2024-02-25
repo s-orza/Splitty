@@ -20,12 +20,9 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.scenes.*;
 import com.google.inject.Injector;
 
-import client.scenes.DummyCtrl;
-import client.scenes.AddQuoteCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -48,7 +45,7 @@ public class Main extends Application {
         var serverSelect = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
         var mainPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
         var adminPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
-        var createEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var createEvent = FXML.load(CreateEventCtrl.class, "client", "scenes", "CreateEvent.fxml");
         var joinEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
         var eventPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
         var addExpense = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
