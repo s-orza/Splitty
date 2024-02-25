@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
 import commons.Expense;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,11 +8,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import com.google.inject.Inject;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AddExpenseCtrl {
+    private final ServerUtils server;
+    private final MainCtrl mainCtrl;
     @FXML
     private Button addButton;
 
@@ -46,7 +51,11 @@ public class AddExpenseCtrl {
     private List<String> selectedNamesList=new ArrayList<>();
     private ObservableList<String> names = FXCollections.observableArrayList(
             "Serban","David","Olav","Alex");
-
+    @Inject
+    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
+        this.server = server;
+        this.mainCtrl = mainCtrl;
+    }
     @FXML
     public void initialize() {
         selectedNamesList=new ArrayList<>();
