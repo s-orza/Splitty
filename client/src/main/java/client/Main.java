@@ -49,7 +49,7 @@ public class Main extends Application {
         var createEvent = FXML.load(CreateEventCtrl.class, "client", "scenes", "CreateEvent.fxml");
         var joinEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
         var eventPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
-        var addExpense = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes", "AddExpense.fxml");
         var addParticipant = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
 
 

@@ -52,7 +52,7 @@ public class MainCtrl {
     private DummyCtrl eventPageCtrl;
     private Scene eventPage;
     // addExpense
-    private DummyCtrl addExpenseCtrl;
+    private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     // addParticipant
     private DummyCtrl addParticipantCtrl;
@@ -61,7 +61,7 @@ public class MainCtrl {
            Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<DummyCtrl, Parent> mainPage,
            Pair<DummyCtrl, Parent> adminPage, Pair<CreateEventCtrl, Parent> createEvent,
            Pair<DummyCtrl, Parent> joinEvent, Pair<DummyCtrl, Parent> eventPage,
-           Pair<DummyCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
+           Pair<AddExpenseCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
 
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
