@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 
 @Entity
 public class Event {
@@ -14,12 +13,12 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long eventID;
     @OneToMany // Don't know how to set up the connections, need a database anyway
-    private List<Person> participants;
+    private List<String> participants;
     @OneToMany
     private List<Expense> expenses;
 
-    public Event() {
-        this.eventID = new Random().nextLong();
+    public Event(long eventID) {
+        this.eventID = eventID;
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
     }
@@ -32,15 +31,23 @@ public class Event {
         this.eventID = eventID;
     }
 
-    public List<Person> getParticipants() {
+    public List<String> getParticipants() {
         return participants;
     }
 
-    public void addParticipant(Person newParticipant){
+    public void addParticipant(String newParticipant){
         participants.add(newParticipant);
     }
 
-    public void addListOfParticipants(List<Person> participantsList) {
+    public void removeParticipant(String participantToRemove){
+        participants.remove(participantToRemove);
+    }
+
+    public void clearParticipantsList(){
+        participants = new ArrayList<>();
+    }
+
+    public void addListOfParticipants(List<String> participantsList) {
         participants.addAll(participantsList);
     }
 
@@ -50,6 +57,14 @@ public class Event {
 
     public void addExpense(Expense expense) {
         expenses.add(expense);
+    }
+
+    public void removeExpense(Expense expense){
+        expenses.remove(expense);
+    }
+
+    public void clearExpensesList(){
+        expenses = new ArrayList<>();
     }
 
     @Override
