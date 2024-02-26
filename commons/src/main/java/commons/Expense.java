@@ -1,10 +1,18 @@
 package commons;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Expense {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String author;
     private String content;
     private double money;
@@ -22,6 +30,10 @@ public class Expense {
         this.date = date;
         this.participants = participants;
         this.type = type;
+    }
+
+    public Expense() {
+
     }
 
     public String getAuthor() {
