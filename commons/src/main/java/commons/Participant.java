@@ -64,4 +64,24 @@ public class Participant {
                 "\nbic='" + bic +
                 "\n";
     }
+
+    public void setParticipantID(long participantID) {
+        this.participantID = participantID;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    public void setBic(String bic) {
+        this.bic = bic;
+    }
 }
