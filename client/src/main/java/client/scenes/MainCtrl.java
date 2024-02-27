@@ -49,7 +49,7 @@ public class MainCtrl {
     private DummyCtrl joinEventCtrl;
     private Scene joinEvent;
     // eventPage
-    private DummyCtrl eventPageCtrl;
+    private EventPageController eventPageCtrl;
     private Scene eventPage;
     // addExpense
     private AddExpenseCtrl addExpenseCtrl;
@@ -58,10 +58,10 @@ public class MainCtrl {
     private DummyCtrl addParticipantCtrl;
     private Scene addParticipant;
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-           Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<DummyCtrl, Parent> mainPage,
-           Pair<DummyCtrl, Parent> adminPage, Pair<CreateEventCtrl, Parent> createEvent,
-           Pair<DummyCtrl, Parent> joinEvent, Pair<DummyCtrl, Parent> eventPage,
-           Pair<AddExpenseCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
+                           Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<DummyCtrl, Parent> mainPage,
+                           Pair<DummyCtrl, Parent> adminPage, Pair<CreateEventCtrl, Parent> createEvent,
+                           Pair<DummyCtrl, Parent> joinEvent, Pair<EventPageController, Parent> eventPage,
+                           Pair<AddExpenseCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
 
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
@@ -97,7 +97,7 @@ public class MainCtrl {
         this.addParticipant = new Scene(addParticipant.getValue());
 
         // set first page
-        showOverview();
+        showEventPage();
         primaryStage.show();
     }
 
