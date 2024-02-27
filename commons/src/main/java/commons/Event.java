@@ -12,8 +12,11 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long eventID;
+    // Don't know how to set up the connections, need a database anyway
+
     @OneToMany // Don't know how to set up the connections, need a database anyway
     private List<Participant> participants;
+
     @OneToMany
     private List<Expense> expenses;
 
