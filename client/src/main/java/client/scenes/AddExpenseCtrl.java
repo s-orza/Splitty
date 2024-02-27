@@ -103,7 +103,7 @@ public class AddExpenseCtrl {
         int money=Integer.parseInt(moneyPaid.getText());
         //the expense
         Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
-                date.getValue(),selectedNamesList,typeSelector.getValue());
+                date.getValue(),new ArrayList<>(),typeSelector.getValue());
         System.out.println(expense);
     }
     /**
