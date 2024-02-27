@@ -1,9 +1,6 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,11 +15,12 @@ public class Expense {
     private double money;
     private String currency;
     private LocalDate date;
-    private List<String> participants;
+    @ManyToMany
+    private List<Participant> participants;
     private String type;
 
     public Expense(String author, String content, double money, String currency,
-                   LocalDate date, List<String> participants, String type) {
+                   LocalDate date, List<Participant> participants, String type) {
         this.author = author;
         this.content = content;
         this.money = money;
@@ -76,7 +74,7 @@ public class Expense {
         this.date = date;
     }
 
-    public void setParticipants(List<String> participants) {
+    public void setParticipants(List<Participant> participants) {
         this.participants = participants;
     }
 
@@ -84,7 +82,7 @@ public class Expense {
         this.type = type;
     }
 
-    public List<String> getParticipants() {
+    public List<Participant> getParticipants() {
         return participants;
     }
 
