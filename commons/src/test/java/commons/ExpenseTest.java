@@ -13,11 +13,10 @@ class ExpenseTest {
     Expense expense;
     @BeforeEach
     void setUp() {
-        List<String> participants=new ArrayList<>();
-        participants.add("Alex");
-        participants.add("Mirela");
-        participants.add("Ana");
-        participants.add("Eduard");
+        List<Participant> participants=new ArrayList<>();
+        participants.add(new Participant("Alex","a","b","c"));
+        participants.add(new Participant("Mirela","a","b","c"));
+        participants.add(new Participant("Gigi","a","b","c"));
         expense=new Expense("Alex","some water",23.5,"EUR",
                 LocalDate.of(2024,2,22),participants,"Drinks");
     }
@@ -54,11 +53,10 @@ class ExpenseTest {
 
     @Test
     void getParticipants() {
-        List<String> people=new ArrayList<>();
-        people.add("Alex");
-        people.add("Mirela");
-        people.add("Ana");
-        people.add("Eduard");
+        List<Participant> people=new ArrayList<>();
+        people.add(new Participant("Alex","a","b","c"));
+        people.add(new Participant("Mirela","a","b","c"));
+        people.add(new Participant("Gigi","a","b","c"));
         assertEquals(people,
                 expense.getParticipants());
     }
@@ -70,11 +68,10 @@ class ExpenseTest {
 
     @Test
     void testEquals() {
-        List<String> people=new ArrayList<>();
-        people.add("Alex");
-        people.add("Mirela");
-        people.add("Ana");
-        people.add("Eduard");
+        List<Participant> people=new ArrayList<>();
+        people.add(new Participant("Alex","a","b","c"));
+        people.add(new Participant("Mirela","a","b","c"));
+        people.add(new Participant("Gigi","a","b","c"));
         Expense expense2=new Expense("Alex","some water",23.5,"EUR",
                         LocalDate.of(2024,2,22),people,"Drinks");
         assertEquals(expense,expense2);
@@ -82,11 +79,10 @@ class ExpenseTest {
 
     @Test
     void testHashCode() {
-        List<String> people=new ArrayList<>();
-        people.add("Alex");
-        people.add("Mirela");
-        people.add("Ana");
-        people.add("Eduard");
+        List<Participant> people=new ArrayList<>();
+        people.add(new Participant("Alex","a","b","c"));
+        people.add(new Participant("Mirela","a","b","c"));
+        people.add(new Participant("Gigi","a","b","c"));
         Expense expense2=new Expense("Alex","some water",23.5,"EUR",
                 LocalDate.of(2024,2,22),people,"Drinks");
         assertEquals(expense.hashCode(),expense2.hashCode());
