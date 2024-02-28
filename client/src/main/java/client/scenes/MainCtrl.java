@@ -97,7 +97,7 @@ public class MainCtrl {
         this.addParticipant = new Scene(addParticipant.getValue());
 
         // set first page
-        showOverview();
+        showEventPage();
         primaryStage.show();
     }
 

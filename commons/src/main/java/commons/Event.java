@@ -12,8 +12,11 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long eventID;
+    // Don't know how to set up the connections, need a database anyway
+
     @OneToMany // Don't know how to set up the connections, need a database anyway
-    private List<String> participants;
+    private List<Participant> participants;
+
     @OneToMany
     private List<Expense> expenses;
 
@@ -31,11 +34,11 @@ public class Event {
         this.eventID = eventID;
     }
 
-    public List<String> getParticipants() {
+    public List<Participant> getParticipants() {
         return participants;
     }
 
-    public void addParticipant(String newParticipant){
+    public void addParticipant(Participant newParticipant){
         participants.add(newParticipant);
     }
 
@@ -47,7 +50,7 @@ public class Event {
         participants = new ArrayList<>();
     }
 
-    public void addListOfParticipants(List<String> participantsList) {
+    public void addListOfParticipants(List<Participant> participantsList) {
         participants.addAll(participantsList);
     }
 

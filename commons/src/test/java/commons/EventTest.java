@@ -10,16 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EventTest {
 
     Event event = new Event(123), event2 = new Event(123);
-    List<String> participants = new ArrayList<>();
+    List<Participant> participants = new ArrayList<>();
     List<Expense> expensesList = new ArrayList<>();
     @BeforeEach
     void setUp(){
-        participants.add("Somebody");
-        participants.add("That");
-        participants.add("I");
-        participants.add("Used");
-        participants.add("To");
-        participants.add("Know");
+        participants.add(new Participant("name", "email", "iban", "bic"));
+        participants.add(new Participant("name2", "email2", "iban2", "bic2"));
         Expense expense1 = new Expense("Gotye","Eating-out",15.99,"EUR",
                 LocalDate.of(2024,2,23),participants,"Papa Johns"),
                 expense2 = new Expense("Skillet","Groceries",99.99,"EUR",

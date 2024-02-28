@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@../../css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageController">
    <children>
       <TableView fx:id="expensesTable" layoutX="14.0" layoutY="186.0" prefHeight="298.0" prefWidth="554.0">
          <columns>
@@ -23,7 +24,7 @@
           <TableColumn fx:id="participantsColumn" prefWidth="119.99993896484375" text="Participants" />
         </columns>
       </TableView>
-      <Label layoutX="30.0" layoutY="26.0" text="Event Name" fx:id="eventName">
+      <Label fx:id="eventName" layoutX="30.0" layoutY="26.0" text="Event Name">
          <font>
             <Font size="38.0" />
          </font></Label>
@@ -33,7 +34,7 @@
          </font></Label>
       <Button fx:id="addExpense" layoutX="23.0" layoutY="151.0" mnemonicParsing="false" text="Add Expense" />
       <Button fx:id="addParticipant" layoutX="459.0" layoutY="151.0" mnemonicParsing="false" text="Add Participant" />
-      <Button fx:id="removeExpense" layoutX="132.0" layoutY="151.0" mnemonicParsing="false" text="Remove Expense" />
+      <Button fx:id="removeExpense" layoutX="132.0" layoutY="151.0" mnemonicParsing="false" text="Remove Expneses" />
       <Button fx:id="editEventName" layoutX="456.0" layoutY="110.0" mnemonicParsing="false" text="Edit Event Name" />
    </children>
 </AnchorPane>
