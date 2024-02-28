@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Expense;
+import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -174,12 +175,19 @@ public class AddExpenseCtrl {
         String author=authorSelector.getValue();
         String content=contentBox.getText();
         int money=Integer.parseInt(moneyPaid.getText());
+        String dateString=date.getValue().getDayOfMonth()+","+
+                date.getValue().getMonthValue()+","+
+                date.getValue().getYear();
         //the expense
+        Participant pa=new Participant("a","b","c","d");
+        List<Participant> list=new ArrayList<>();
+        list.add(pa);
         Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
-                date.getValue(),new ArrayList<>(),typeSelector.getValue());
+                dateString,list,typeSelector.getValue());
         System.out.println(expense);
-        server.addExpense(expense);
+        System.out.println(server.addExpense(expense));
         System.out.println(expense);
+        resetElements();
     }
     /**
      * this function will be called when you press the cancel Button.
@@ -206,6 +214,8 @@ public class AddExpenseCtrl {
             System.out.println("Everyone is selected!");
             //in case the user already selected the "some people" option
             checkBoxSomePeople.setSelected(false);
+            //hide the list because we don't need to select
+            namesList.setVisible(false);
         }
         else {
             System.out.println("everyone options is NOT selected!");

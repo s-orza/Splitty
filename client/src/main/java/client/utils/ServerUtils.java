@@ -25,6 +25,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import commons.Expense;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -69,12 +71,33 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.get(new GenericType<Expense>(){});
 	}
-	public  Expense addExpense(Expense expense)
+	public Expense addExpense(Expense expense)
 	{
-		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/expenses")
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON)
-				.post(Entity.entity(expense,APPLICATION_JSON),Expense.class);
+		Client client=ClientBuilder.newClient(new ClientConfig());
+		try {
+			Response response=client
+					.target(SERVER).path("api/expenses")
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.post(Entity.entity(expense, APPLICATION_JSON));
+			if (response.getStatus() == Response.Status.OK.getStatusCode())
+				return response.readEntity(Expense.class);
+			else {
+				System.out.println("failed,status: " + response.getStatus());
+				return null;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+				return null;
+		}
+		finally {
+			client.close();
+		}
+//		return ClientBuilder.newClient(new ClientConfig())
+//				.target(SERVER).path("api/expenses")
+//				.request(APPLICATION_JSON)
+//				.accept(APPLICATION_JSON)
+//				.post(Entity.entity(expense,APPLICATION_JSON),Expense.class);
 	}
 }
