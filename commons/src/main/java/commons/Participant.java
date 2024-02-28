@@ -13,6 +13,11 @@ public class Participant {
     public long participantID;
     public String name;
     public String email;
+
+    public long getParticipantID() {
+        return participantID;
+    }
+
     public String iban;
     public String bic;
     public Participant(String name, String email, String iban, String bic) {

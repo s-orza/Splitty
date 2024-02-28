@@ -6,7 +6,7 @@ import commons.ExpenseTest;
 import commons.ParticipantTest;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-//import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -246,6 +246,7 @@ public class EventPageController{
             popupStage.close();
 
             eventName.setText(newName.getText());
+
             //TODO
             // We need to add database logic to change the name in the database as well.
         });

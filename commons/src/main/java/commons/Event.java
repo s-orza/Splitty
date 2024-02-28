@@ -14,7 +14,12 @@ public class Event {
     private long eventID;
     // Don't know how to set up the connections, need a database anyway
 
-    @OneToMany // Don't know how to set up the connections, need a database anyway
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "ParticipantEventRepository",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
     private List<Participant> participants;
 
     @OneToMany
@@ -24,6 +29,10 @@ public class Event {
         this.eventID = eventID;
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
+    }
+
+    public Event() {
+
     }
 
     public long getEventID() {
