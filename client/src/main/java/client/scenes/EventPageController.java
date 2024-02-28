@@ -246,6 +246,7 @@ public class EventPageController{
             popupStage.close();
 
             eventName.setText(newName.getText());
+
             //TODO
             // We need to add database logic to change the name in the database as well.
         });
