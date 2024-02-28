@@ -18,6 +18,5 @@ package server.database;
 import commons.ParticipantEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import commons.Quote;
 
 public interface ParticipantEventRepository extends JpaRepository<ParticipantEvent, Long> {}
