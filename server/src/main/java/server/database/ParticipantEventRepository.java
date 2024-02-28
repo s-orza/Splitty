@@ -18,5 +18,5 @@ package server.database;
 import commons.ParticipantEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-
+// here there was an unused import
 public interface ParticipantEventRepository extends JpaRepository<ParticipantEvent, Long> {}
