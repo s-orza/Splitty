@@ -44,17 +44,18 @@ public class Main extends Application {
 
 
         var serverSelect = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
-        var mainPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
-        var adminPage = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
+        var mainPage = FXML.load(MainPageCtrl.class, "client", "scenes", "mainPage.fxml");
+        var adminPage = FXML.load(AdminPageCtrl.class, "client", "scenes", "adminPage.fxml");
+        var loginAdminPage = FXML.load(LoginAdminCtrl.class, "client", "scenes", "loginAdmin.fxml");
         var createEvent = FXML.load(CreateEventCtrl.class, "client", "scenes", "CreateEvent.fxml");
-        var joinEvent = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
         var eventPage = FXML.load(EventPageController.class, "client", "scenes", "EventPage.fxml");
         var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes", "AddExpense.fxml");
+        //add
         var addParticipant = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
 
 
     // calls mainCtrl with the pages
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initialize(primaryStage, overview, add, serverSelect, mainPage, adminPage, createEvent, joinEvent, eventPage, addExpense, addParticipant);
+    mainCtrl.initialize(primaryStage, overview, add, serverSelect, mainPage, adminPage, loginAdminPage, createEvent, eventPage, addExpense, addParticipant);
   }
 }
