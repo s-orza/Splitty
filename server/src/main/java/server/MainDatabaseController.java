@@ -50,6 +50,7 @@ public class MainDatabaseController {
 //        event.getParticipants().add(a);
 //        eventRepository.save(event);
 
+
         var event1 = new Event();
         var participant1 = new Participant("Ivan", "nove@gamil.com", "revo", "bici");
         participantRepository.save(participant1);

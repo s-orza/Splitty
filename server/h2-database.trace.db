@@ -403,3 +403,9 @@ select * from participant as p join participant_event as pe on p.participant_id 
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-02-28 17:34:36.377189+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICAPNT_EVENT" not found; SQL statement:
+select * from particapnt_event [42102-224]
+2024-02-28 18:25:07.651389+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPANTS" not found; SQL statement:
+select * from participants [42102-224]
