@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Participant;
+import commons.ParticipantEvent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
@@ -8,10 +9,9 @@ import server.database.ParticipantRepository;
 import java.util.ArrayList;
 import java.util.List;
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/participant")
+//TODO change path
 public class ParticipantController {
-
-
     private final ParticipantRepository repo;
 
     public ParticipantController(ParticipantRepository repo) {
@@ -23,18 +23,14 @@ public class ParticipantController {
         System.out.println(new ArrayList<>(repo.findAll()));
         return new ArrayList<>(repo.findAll());
     }
-    @PostMapping(path = { "", "/" })
-    public List<Participant> createEvent() {
-        System.out.println(new ArrayList<>(repo.findAll()));
-        return new ArrayList<>(repo.findAll());
+
+    @PostMapping(path = { "", "/{eventId}" })
+    public Participant createParticipant(@RequestBody Participant participant) {
+
+        repo.save(participant);
+
+        return participant;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Participant> getById(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(repo.findById(id).get());
 
-    }
 }

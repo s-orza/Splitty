@@ -12,6 +12,8 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long eventID;
+
+    String name;
     // Don't know how to set up the connections, need a database anyway
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -25,8 +27,8 @@ public class Event {
     @OneToMany
     private List<Expense> expenses;
 
-    public Event(long eventID) {
-        this.eventID = eventID;
+    public Event(String name) {
+        this.name = name;
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
     }

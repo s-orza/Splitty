@@ -2,7 +2,9 @@ package client.scenes;
 
 
 //import com.sun.javafx.application.ParametersImpl;
+import client.utils.ServerUtils;
 import commons.ExpenseTest;
+import commons.Participant;
 import commons.ParticipantTest;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,13 @@ public class EventPageController{
 
     @FXML
     TableView participantsTable;
+
+    ServerUtils server;
+
+    @Inject
+    public EventPageController(ServerUtils server) {
+        this.server = server;
+    }
 
     @FXML
     TableColumn<ParticipantTest, String> participantsColumn;
@@ -194,6 +204,7 @@ public class EventPageController{
      */
     public void addParticipantHandler(){
         System.out.println("This will lead to another page to add participant");
+        server.addParticipant(new Participant("AAAA", "AAA", "AAA", "AAAA"));
         //todo
         // go to the add participant page
     }
