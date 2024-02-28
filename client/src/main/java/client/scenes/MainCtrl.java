@@ -37,19 +37,19 @@ public class MainCtrl {
     private DummyCtrl serverSelectCtrl;
     private Scene serverSelect;
     // mainPage
-    private DummyCtrl mainPageCtrl;
+    private MainPageCtrl mainPageCtrl;
     private Scene mainPage;
     // adminPage
-    private DummyCtrl adminPageCtrl;
+    private AdminPageCtrl adminPageCtrl;
     private Scene adminPage;
+    // adminPage
+    private LoginAdminCtrl loginAdminPageCtrl;
+    private Scene loginAdmin;
     // createEvent
     private CreateEventCtrl createEventCtrl;
     private Scene createEvent;
-    // joinEvent
-    private DummyCtrl joinEventCtrl;
-    private Scene joinEvent;
     // eventPage
-    private DummyCtrl eventPageCtrl;
+    private EventPageController eventPageCtrl;
     private Scene eventPage;
     // addExpense
     private AddExpenseCtrl addExpenseCtrl;
@@ -58,9 +58,9 @@ public class MainCtrl {
     private DummyCtrl addParticipantCtrl;
     private Scene addParticipant;
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-           Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<DummyCtrl, Parent> mainPage,
-           Pair<DummyCtrl, Parent> adminPage, Pair<CreateEventCtrl, Parent> createEvent,
-           Pair<DummyCtrl, Parent> joinEvent, Pair<DummyCtrl, Parent> eventPage,
+           Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<MainPageCtrl, Parent> mainPage,
+           Pair<AdminPageCtrl, Parent> adminPage, Pair<LoginAdminCtrl, Parent> loginAdminPage,
+           Pair<CreateEventCtrl, Parent> createEvent, Pair<EventPageController, Parent> eventPage,
            Pair<AddExpenseCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
 
         // assign all vars to their respective Controllers/Scenes
@@ -68,10 +68,10 @@ public class MainCtrl {
 
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
-
-        // our pages
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
+
+        // our pages
         this.serverSelectCtrl = serverSelect.getKey();
         this.serverSelect = new Scene(serverSelect.getValue());
 
@@ -81,11 +81,11 @@ public class MainCtrl {
         this.adminPageCtrl = adminPage.getKey();
         this.adminPage = new Scene(adminPage.getValue());
 
+        this.loginAdminPageCtrl = loginAdminPage.getKey();
+        this.adminPage = new Scene(loginAdminPage.getValue());
+
         this.createEventCtrl = createEvent.getKey();
         this.createEvent = new Scene(createEvent.getValue());
-
-        this.joinEventCtrl = joinEvent.getKey();
-        this.joinEvent = new Scene(joinEvent.getValue());
 
         this.eventPageCtrl = eventPage.getKey();
         this.eventPage = new Scene(eventPage.getValue());
@@ -130,14 +130,14 @@ public class MainCtrl {
         primaryStage.setScene(adminPage);
     }
 
+    public void showLoginAdminPage() {
+        primaryStage.setTitle("Login Admin Page");
+        primaryStage.setScene(loginAdmin);
+    }
+
     public void showCreateEvent() {
         primaryStage.setTitle("Create Event");
         primaryStage.setScene(createEvent);
-    }
-
-    public void showJoinEvent() {
-        primaryStage.setTitle("Join Event");
-        primaryStage.setScene(joinEvent);
     }
 
     public void showEventPage() {
