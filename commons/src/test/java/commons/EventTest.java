@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EventTest {
 
-    Event event = new Event(123), event2 = new Event(123);
+    Event event = new Event(), event2 = new Event();
     List<Participant> participants = new ArrayList<>();
     List<Expense> expensesList = new ArrayList<>();
     @BeforeEach
