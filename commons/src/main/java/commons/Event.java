@@ -26,6 +26,10 @@ public class Event {
         this.expenses = new ArrayList<>();
     }
 
+    public Event() {
+
+    }
+
     public long getEventID() {
         return eventID;
     }
