@@ -105,6 +105,8 @@ public class AddExpenseCtrl {
         Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
                 date.getValue(),new ArrayList<>(),typeSelector.getValue());
         System.out.println(expense);
+        server.addExpense(expense);
+        System.out.println(expense);
     }
     /**
      * this function will be called when you press the cancel Button.
