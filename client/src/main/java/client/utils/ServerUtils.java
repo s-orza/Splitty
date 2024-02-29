@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import commons.Expense;
-import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -66,38 +65,33 @@ public class ServerUtils {
 	public Expense getExpenseById(long id)
 	{
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/expenses/"+id)
+				.target(SERVER+"api/expenses/?id="+id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get()
+				.readEntity(Expense.class);
+		//System.out.println(response.getStatus());
+		//System.out.println(response.readEntity(Expense.class));
+				//.get(new GenericType<Expense>(){});
+		//return response.readEntity(Expense.class);
+		//System.out.println(response);
+		//return null;
+	}
+
+	public boolean addExpense(Expense expense)
+	{
+		System.out.println("In server");
+		//return;
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/s")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
-				.get(new GenericType<Expense>(){});
-	}
-	public Expense addExpense(Expense expense)
-	{
-		Client client=ClientBuilder.newClient(new ClientConfig());
-		try {
-			Response response=client
-					.target(SERVER).path("api/expenses")
-					.request(APPLICATION_JSON)
-					.accept(APPLICATION_JSON)
-					.post(Entity.entity(expense, APPLICATION_JSON));
-			if (response.getStatus() == Response.Status.OK.getStatusCode())
-				return response.readEntity(Expense.class);
-			else {
-				System.out.println("failed,status: " + response.getStatus());
-				return null;
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-				return null;
-		}
-		finally {
-			client.close();
-		}
-//		return ClientBuilder.newClient(new ClientConfig())
-//				.target(SERVER).path("api/expenses")
-//				.request(APPLICATION_JSON)
-//				.accept(APPLICATION_JSON)
-//				.post(Entity.entity(expense,APPLICATION_JSON),Expense.class);
+				.post(Entity.entity(expense,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		//if(response.getStatus()<300)
+			return true;
+		//return false;
+				//.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+		//return null;*/
 	}
 }

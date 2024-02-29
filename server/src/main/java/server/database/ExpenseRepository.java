@@ -23,6 +23,14 @@ import java.util.List;
 
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+    @Query("SELECT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
+            "WHERE ev.eventId=:eventId AND ex.author = :author")
+    List<Expense> findEventByAuthor(long eventId,String author);
     @Query("SELECT e FROM Expense e WHERE e.author = :author")
     List<Expense> findByAuthor(String author);
+    @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
+            "JOIN ParticipantEvent pev ON pev.eventId=ev.eventId " +
+            "JOIN Participant  p ON p.participantID=pev.participantId " +
+            "WHERE ev.eventId=:eventId AND p.name=:name")
+    List<Expense> findEventsThatInvolvesName(long eventId,String name);
 }

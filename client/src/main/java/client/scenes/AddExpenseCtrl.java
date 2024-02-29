@@ -79,7 +79,10 @@ public class AddExpenseCtrl {
      */
     public void resetElements(){
         //reset the scene
+        //initialise the warning text
+        warningText.setText("");
         //prepare the possible authors
+        authorSelector.getItems().clear();
         authorSelector.getItems().addAll(names);
         authorSelector.setOnAction(this::handleSelectAuthor);
 
@@ -93,6 +96,7 @@ public class AddExpenseCtrl {
         moneyPaid.setText("");
 
         //for handling money type
+        moneyTypeSelector.getItems().clear();
         moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
         moneyTypeSelector.setValue("EUR");//setting EUR as the default value
         moneyTypeSelector.setOnAction(this::handleCurrencySelection);
@@ -110,7 +114,6 @@ public class AddExpenseCtrl {
 
 
         typeSelector.setValue("other");
-        System.out.println("it works");
     }
     private class CheckBoxListCell extends ListCell<String>{
         private CheckBox checkBox;
@@ -180,13 +183,14 @@ public class AddExpenseCtrl {
                 date.getValue().getYear();
         //the expense
         Participant pa=new Participant("a","b","c","d");
+        //I still need to adjust this list
         List<Participant> list=new ArrayList<>();
         list.add(pa);
         Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
-                dateString,list,typeSelector.getValue());
+                dateString,null,typeSelector.getValue());
         System.out.println(expense);
-        System.out.println(server.addExpense(expense));
-        System.out.println(expense);
+        server.addExpense(expense);
+        //System.out.println(server.getExpenseById(1));
         resetElements();
     }
     /**
@@ -196,6 +200,7 @@ public class AddExpenseCtrl {
     @FXML
     void cancelAddExpense(MouseEvent event) {
         System.out.println("Expense canceled");
+        System.out.println(server.getExpenseById(1552));//just for testing
     }
     void handleSelectAuthor(ActionEvent event)
     {
