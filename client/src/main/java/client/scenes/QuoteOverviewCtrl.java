@@ -30,7 +30,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class QuoteOverviewCtrl implements Initializable {
+public class QuoteOverviewCtrl implements Controller, Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -60,7 +60,7 @@ public class QuoteOverviewCtrl implements Initializable {
     }
 
     public void addQuote() {
-        mainCtrl.showAdd();
+        //mainCtrl.showAdd();
     }
 
     public void refresh() {

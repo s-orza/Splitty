@@ -1,9 +1,11 @@
 package client.scenes;
+import client.MyFXML;
+import client.MyModule;
+import com.google.inject.Injector;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -11,71 +13,58 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class MainPageCtrl implements Initializable {
+import static com.google.inject.Guice.createInjector;
 
-@FXML
-private TextField createInput;
-@FXML
-private TextField joinInput;
-@FXML
-private ImageView flagImage;
-@FXML
-private ListView<String> recentList;
+public class MainPageCtrl implements Controller, Initializable {
 
-private String selectedEv;
-private Stage stage;
-private Scene scene;
-private Parent root;
+  @FXML
+  private TextField createInput;
+  @FXML
+  private TextField joinInput;
+  @FXML
+  private ImageView flagImage;
+  @FXML
+  private ListView<String> recentList;
+
+  private String selectedEv;
+  //Imports used to swap scenes
+  private Stage stage;
+  private static final Injector INJECTOR = createInjector(new MyModule());
+  private static final MyFXML FXML = new MyFXML(INJECTOR);
+
+  private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
   public void createEvent(ActionEvent e) {
     System.out.println("Crete event window");
     System.out.println(createInput.getText());
-    /*    Creating a new event
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
-    root = loader.load();
-    EventCtrl eC = loader.getController();
-    eC.passInput(createInput.getText());
-    stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-    scene = new Scene(root);
-    stage.setScene(scene);
-    stage.show();
-     */
+    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+    mainCtrl.initialize(stage, CreateEventCtrl.getPair());
   }
+
   public void joinEvent(ActionEvent e) {
     System.out.println("Join event window");
     System.out.println(joinInput.getText());
-
-    /*    Joining an event
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
-    root = loader.load();
-    EventCtrl eC = loader.getController();
-    eC.passInput(joinInput.getText());
-    stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-    scene = new Scene(root);
-    stage.setScene(scene);
-    stage.show();
-     */
+    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+    mainCtrl.initialize(stage, EventPageCtrl.getPair());
   }
+
   public void openAdmin(ActionEvent e) throws IOException {
-
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/loginAdmin.fxml"));
-    root = loader.load();
-    stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-    scene = new Scene(root);
-    stage.setScene(scene);
-    stage.show();
-
+    System.out.println("opening admin");
+    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+    mainCtrl.initialize(stage, LoginAdminCtrl.getPair());
   }
 
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    ArrayList<String> contents= new ArrayList<>();
+    ArrayList<String> contents = new ArrayList<>();
     contents.add("New years");
     contents.add("Birthday");
     contents.add("Christmas");
@@ -87,5 +76,9 @@ private Parent root;
         joinInput.setText(selectedEv);
       }
     });
+  }
+
+  public static Pair<Controller, Parent> getPair() {
+    return FXML.load(Controller.class, "client", "scenes", "mainPage.fxml");
   }
 }

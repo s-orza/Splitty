@@ -1,26 +1,30 @@
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
+import com.google.inject.Injector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class AdminPageCtrl implements Initializable {
+import static com.google.inject.Guice.createInjector;
+
+public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
   private TableView<EventHelper> table;
@@ -37,14 +41,16 @@ public class AdminPageCtrl implements Initializable {
   private Label showEvent;
 
   private EventHelper selectedEvent;
+  //Imports used to swap scenes
+  private static final Injector INJECTOR = createInjector(new MyModule());
+  private static final MyFXML FXML = new MyFXML(INJECTOR);
+  private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+  private Stage stage;
   ObservableList<EventHelper> contents = FXCollections.observableArrayList(
           new EventHelper("NewYears", new Date(2023, 12, 31), new Date(2024, 01, 01)),
           new EventHelper("Christmas", new Date(2023, 12, 20), new Date(2023, 12, 25) )
   );
 
-  private Stage stage;
-  private Scene scene;
-  private Parent root;
   public void exportEvent(ActionEvent e) {
     System.out.println("export event to file");
   }
@@ -63,12 +69,8 @@ public class AdminPageCtrl implements Initializable {
   }
   public void close(ActionEvent e) throws IOException {
     System.out.println("close window");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainPage.fxml"));
-    root = loader.load();
-    stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-    scene = new Scene(root);
-    stage.setScene(scene);
-    stage.show();
+    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+    mainCtrl.initialize(stage, MainPageCtrl.getPair());
   }
 
   @Override
@@ -82,4 +84,8 @@ public class AdminPageCtrl implements Initializable {
       showEvent.setText(selectedEvent.getTitle());
     });
   }
+  public static Pair<Controller, Parent> getPair() {
+    return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");
+  }
 }
+

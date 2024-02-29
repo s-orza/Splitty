@@ -1,15 +1,23 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
-import com.google.inject.Inject;
+import client.MyFXML;
+import client.MyModule;
+import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.util.Pair;
 
-public class CreateEventCtrl {
-    private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+import static com.google.inject.Guice.createInjector;
+
+public class CreateEventCtrl implements Controller{
+    //Imports used to swap scenes
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
 
     //Gets the different FXML page components
     @FXML
@@ -19,16 +27,14 @@ public class CreateEventCtrl {
 
     private String eventName;
 
-    @Inject
-    public CreateEventCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.server = server;
-        this.mainCtrl = mainCtrl;
-    }
 
     //method to go to the eventPage once you create a new event with eventName as the title of the new event
     public void create(ActionEvent e){
 //        mainCtrl.showEventPage();
         eventName = textField.getText();
         System.out.printf(eventName);
+    }
+    public static Pair<Controller, Parent> getPair() {
+        return FXML.load(Controller.class, "client", "scenes", "CreateEvent.fxml");
     }
 }
