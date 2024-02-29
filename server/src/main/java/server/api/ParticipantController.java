@@ -1,8 +1,7 @@
 package server.api;
 
 import commons.Participant;
-import commons.ParticipantEvent;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
 
