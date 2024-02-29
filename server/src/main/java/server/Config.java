@@ -17,8 +17,6 @@ package server;
 
 import java.util.Random;
 
-import commons.Expense;
-import commons.ExpenseEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
