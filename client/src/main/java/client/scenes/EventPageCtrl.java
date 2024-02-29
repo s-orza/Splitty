@@ -220,7 +220,7 @@ public class EventPageCtrl implements Controller{
     public void addExpenseHandler(ActionEvent e){
         System.out.println("This will lead to another page to add expense");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AddExpenseCtrl.getPair());
+        mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
     }
 
     /**
@@ -284,6 +284,10 @@ public class EventPageCtrl implements Controller{
     public static Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
     }
+    public static String getTitle(){
+        return "Event Page";
+    }
+
 }
 
 

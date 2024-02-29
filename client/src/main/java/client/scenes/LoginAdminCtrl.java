@@ -30,15 +30,18 @@ public class LoginAdminCtrl implements Controller{
         String passcode = loginInput.getText();
         System.out.println(passcode);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AdminPageCtrl.getPair());
+        mainCtrl.initialize(stage, AdminPageCtrl.getPair(), AdminPageCtrl.getTitle());
     }
     public void close(ActionEvent e) throws IOException {
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, MainPageCtrl.getPair());
+        mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
     }
     public static Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "loginAdmin.fxml");
+    }
+    public static String getTitle() {
+        return "Login Page";
     }
 
 }

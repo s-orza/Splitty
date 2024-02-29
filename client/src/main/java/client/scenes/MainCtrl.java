@@ -25,19 +25,13 @@ public class MainCtrl {
     private Stage primaryStage;
     private Controller ctrl;
     private Scene scene;
-    public void initialize(Stage primaryStage, Pair<Controller, Parent> dummy) {
+    public void initialize(Stage primaryStage, Pair<Controller, Parent> dummy, String title) {
 
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
         this.ctrl =  dummy.getKey();
         this.scene = new Scene(dummy.getValue());
-        // set first page
-        showPage();
-    }
-
-    // functions to set new stage
-    public void showPage() {
-        primaryStage.setTitle("Page");
+        primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

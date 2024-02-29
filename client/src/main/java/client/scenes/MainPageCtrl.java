@@ -43,20 +43,20 @@ public class MainPageCtrl implements Controller, Initializable {
     System.out.println("Crete event window");
     System.out.println(createInput.getText());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, CreateEventCtrl.getPair());
+    mainCtrl.initialize(stage, CreateEventCtrl.getPair(), CreateEventCtrl.getTitle());
   }
 
   public void joinEvent(ActionEvent e) {
     System.out.println("Join event window");
     System.out.println(joinInput.getText());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, EventPageCtrl.getPair());
+    mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
   }
 
   public void openAdmin(ActionEvent e){
     System.out.println("opening admin");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, LoginAdminCtrl.getPair());
+    mainCtrl.initialize(stage, LoginAdminCtrl.getPair(), LoginAdminCtrl.getTitle());
   }
 
 
@@ -78,5 +78,8 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public static Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "mainPage.fxml");
+  }
+  public static String getTitle(){
+    return "Main Page";
   }
 }

@@ -5,9 +5,11 @@ import client.MyModule;
 import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import static com.google.inject.Guice.createInjector;
@@ -26,6 +28,7 @@ public class CreateEventCtrl implements Controller{
     private TextField textField;
 
     private String eventName;
+    private Stage stage;
 
 
     //method to go to the eventPage once you create a new event with eventName as the title of the new event
@@ -33,8 +36,13 @@ public class CreateEventCtrl implements Controller{
 //        mainCtrl.showEventPage();
         eventName = textField.getText();
         System.out.printf(eventName);
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
     }
     public static Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "CreateEvent.fxml");
+    }
+    public static String getTitle(){
+        return "Create Event";
     }
 }

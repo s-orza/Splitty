@@ -122,7 +122,7 @@ public class AddExpenseCtrl implements Controller{
     void cancelAddExpense(MouseEvent e) {
         System.out.println("Expense canceled");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair());
+        mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
     }
 
     /**
@@ -186,5 +186,8 @@ public class AddExpenseCtrl implements Controller{
     }
     public static Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "AddExpense.fxml");
+    }
+    public static String getTitle(){
+        return "Add Expense";
     }
 }

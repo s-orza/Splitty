@@ -18,6 +18,10 @@ public interface Controller {
   static Pair<Controller, Parent> getPair(){
     return FXML.load(Controller.class, "client", "scenes", "Dummy.fxml");
   }
+  static String getTitle(){
+    return "Dummy page";
+  }
+  ;
 
 
 }

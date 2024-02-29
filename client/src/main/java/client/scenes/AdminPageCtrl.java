@@ -70,7 +70,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void close(ActionEvent e) throws IOException {
     System.out.println("close window");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, MainPageCtrl.getPair());
+    mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
   }
 
   @Override
@@ -86,6 +86,9 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
   public static Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");
+  }
+  public static String getTitle(){
+    return "Admin Page";
   }
 }
 
