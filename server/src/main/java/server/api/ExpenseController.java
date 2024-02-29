@@ -93,6 +93,12 @@ public class ExpenseController {
     {
         return repoExp.findEventByAuthor(eventId,author);
     }
+    @GetMapping(path={"events/personInvolved"})
+    public List<Expense> getExpensePInvolvedInEvent(@RequestParam("eventId") long eventId,
+                                                   @RequestParam("author") String author)
+    {
+        return repoExp.findEventsThatInvolvesName(eventId,author);
+    }
 
 
     @GetMapping(path={"/all"})
