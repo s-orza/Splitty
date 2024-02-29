@@ -9,13 +9,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -55,7 +53,7 @@ public class MainPageCtrl implements Controller, Initializable {
     mainCtrl.initialize(stage, EventPageCtrl.getPair());
   }
 
-  public void openAdmin(ActionEvent e) throws IOException {
+  public void openAdmin(ActionEvent e){
     System.out.println("opening admin");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, LoginAdminCtrl.getPair());
