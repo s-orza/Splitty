@@ -21,7 +21,11 @@ public interface Controller {
   static String getTitle(){
     return "Dummy page";
   }
-  ;
-
-
+  /* swapping to a page on button press template
+  public void goToScene(ActionEvent e){
+        System.out.println("Go to page");
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, DummyCtrl.getPair(), DummyCtrl.getTitle());
+    }
+   */
 }

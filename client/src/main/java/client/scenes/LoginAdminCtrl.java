@@ -11,8 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.io.IOException;
-
 import static com.google.inject.Guice.createInjector;
 
 public class LoginAdminCtrl implements Controller{
@@ -25,14 +23,14 @@ public class LoginAdminCtrl implements Controller{
     private static final MyFXML FXML = new MyFXML(INJECTOR);
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
-    public void login(ActionEvent e) throws IOException {
+    public void login(ActionEvent e){
         System.out.println("login to admin page");
         String passcode = loginInput.getText();
         System.out.println(passcode);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, AdminPageCtrl.getPair(), AdminPageCtrl.getTitle());
     }
-    public void close(ActionEvent e) throws IOException {
+    public void close(ActionEvent e){
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());

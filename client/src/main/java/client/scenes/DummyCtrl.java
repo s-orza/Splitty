@@ -15,33 +15,28 @@
  */
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
+import com.google.inject.Injector;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
+import javafx.util.Pair;
 
-//import java.net.URL;
-//import java.util.ResourceBundle;
+import static com.google.inject.Guice.createInjector;
 
+public class DummyCtrl implements Controller{
 
-import com.google.inject.Inject;
-
-import client.utils.ServerUtils;
-
-// import commons.YourClass;
-//import javafx.beans.property.SimpleStringProperty;
-//import javafx.collections.FXCollections;
-//import javafx.collections.ObservableList;
-//import javafx.fxml.FXML;
-//import javafx.fxml.Initializable;
-
-
-public class DummyCtrl {
-
-    private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private Stage stage;
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     //add FXML elements with annotation
 
-    @Inject
-    public DummyCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.server = server;
-        this.mainCtrl = mainCtrl;
+    public static Pair<Controller, Parent> getPair() {
+        return FXML.load(Controller.class, "client", "scenes", "loginAdmin.fxml");
+    }
+    public static String getTitle() {
+        return "Login Page";
     }
 }

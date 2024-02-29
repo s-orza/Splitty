@@ -2,8 +2,6 @@ package client.scenes;
 import client.MyFXML;
 import client.MyModule;
 import com.google.inject.Injector;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -67,12 +65,9 @@ public class MainPageCtrl implements Controller, Initializable {
     contents.add("Birthday");
     contents.add("Christmas");
     recentList.getItems().addAll(contents);
-    recentList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-      @Override
-      public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        selectedEv = recentList.getSelectionModel().getSelectedItem();
-        joinInput.setText(selectedEv);
-      }
+    recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+      selectedEv = recentList.getSelectionModel().getSelectedItem();
+      joinInput.setText(selectedEv);
     });
   }
 
