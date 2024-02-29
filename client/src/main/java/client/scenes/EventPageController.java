@@ -3,6 +3,7 @@ package client.scenes;
 
 //import com.sun.javafx.application.ParametersImpl;
 import client.utils.ServerUtils;
+
 import commons.ExpenseTest;
 import commons.Participant;
 import commons.ParticipantTest;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class EventPageController{
 
@@ -203,8 +205,16 @@ public class EventPageController{
      * method that will lead to a new stage, specifically for adding participants
      */
     public void addParticipantHandler(){
-        System.out.println("This will lead to another page to add participant");
-        server.addParticipant(new Participant("AAAA", "AAA", "AAA", "AAAA"));
+        try{
+            System.out.println("This will lead to another page to add participant");
+            Participant participant = new Participant("A", "B", "C", "D");
+
+            System.out.println("about to execute participantEvent");
+            server.addParticipantEvent(participant, 43152);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
         //todo
         // go to the add participant page
     }

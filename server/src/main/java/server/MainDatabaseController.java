@@ -56,7 +56,7 @@ public class MainDatabaseController {
         participantRepository.save(participant1);
         eventRepository.save(event1);
 
-        var participantEvent1 = new ParticipantEvent(event1.getEventID(),
+        var participantEvent1 = new ParticipantEvent(event1.getEventId(),
                 participant1.getParticipantID());
 
         System.out.println(participant1.getParticipantID());

@@ -11,8 +11,10 @@ import java.util.Objects;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
     private long eventID;
 
+    @Column
     String name;
     // Don't know how to set up the connections, need a database anyway
 
@@ -37,9 +39,7 @@ public class Event {
 
     }
 
-    public long getEventID() {
-        return eventID;
-    }
+
 
     public void setEventID(long eventID) {
         this.eventID = eventID;
@@ -109,5 +109,11 @@ public class Event {
         result = 31 * result + (expenses != null ? expenses.hashCode() : 0);
         return result;
     }
+
+    public long getEventId() {
+        return eventID;
+    }
+
+
 }
 

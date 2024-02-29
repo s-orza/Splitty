@@ -409,3 +409,18 @@ select * from particapnt_event [42102-224]
 2024-02-28 18:25:07.651389+01:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPANTS" not found; SQL statement:
 select * from participants [42102-224]
+2024-02-29 14:59:12.230030+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIAPANT_EVENT" not found; SQL statement:
+select * from particiapant_event [42102-224]
+2024-02-29 15:10:45.385468+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIAPANT_EVENT" not found; SQL statement:
+select * from particiapant_event [42102-224]
+2024-02-29 15:11:29.813555+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from participant\000d\000a\000d\000a\000d\000a[*]select * from event\000d\000a\000d\000a\000d\000aselect * from participant_event"; SQL statement:
+select * from participant
+
+
+select * from event
+
+
+select * from participant_event [42000-224]

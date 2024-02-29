@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import commons.Event;
 import commons.Participant;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -68,5 +69,22 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+	}
+
+	/**
+	 * This will go and invoke the ParticipantEvent controller
+	 * It will create an entry to the participant page, but also an entry
+	 * in the participantEvent page connecting the participant and the event
+	 * @param participant the participant - instance
+	 * @param eventId the id of the event the participant is connected to
+	 */
+	public void addParticipantEvent(Participant participant, int eventId){
+		System.out.println("In server");
+		ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("/participantEvent/" + eventId) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+		System.out.println("Out server");
 	}
 }
