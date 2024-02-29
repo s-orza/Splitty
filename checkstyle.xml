@@ -6,8 +6,19 @@
 <module name = "Checker">
     <module name="TreeWalker">
         <module name="UnusedImports" />
+        <module name="ParameterNumber">
+            <property name="max" value="15"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
     </module>
-
-    <!-- TODO: decide in your team with other checkers to add! -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+    </module>
+    <module name="AbbreviationAsWordInName">
+        <property name="tokens" value="VARIABLE_DEF,CLASS_DEF"/>
+        <property name="ignoreStatic" value="false"/>
+        <property name="allowedAbbreviationLength" value="0"/>
+        <property name="allowedAbbreviations" value="FXML, XML"/>
+    </module>
 
 </module>
