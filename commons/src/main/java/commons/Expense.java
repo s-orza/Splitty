@@ -11,6 +11,7 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private long expenseId;
+    @Column
     private String author;
     @Column
     private String content;
