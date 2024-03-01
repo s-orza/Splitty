@@ -16,8 +16,15 @@
 package server.database;
 
 import commons.Event;
+import commons.Expense;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 
-
-public interface ExpenseEventRepository extends JpaRepository<Event, Long> {}
+public interface ExpenseEventRepository extends JpaRepository<Event, Long> {
+    @Query("SELECT ev FROM ExpenseEvent ev JOIN Expense ex ON ev.expenseId=ex.expenseId " +
+            "WHERE ev.eventId=:eventId AND ex.author = :author")
+    List<Expense> findEventByAuthor(long eventId,String author);
+}

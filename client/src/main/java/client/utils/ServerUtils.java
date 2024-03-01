@@ -24,8 +24,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+
 import commons.Participant;
 import commons.ParticipantEventDTO;
+
+import commons.Expense;
+import jakarta.ws.rs.core.Response;
+
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -62,6 +67,7 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
 	}
+
 
 	public void addParticipant(Participant participant){
 		ClientBuilder.newClient(new ClientConfig()) //
@@ -100,7 +106,7 @@ public class ServerUtils {
 	 * This method will add just an entry to the participant_event table
 	 * @param participantEventDTO an object that contains particpantId and eventId
 	 */
-	public void addParticipantEvent(ParticipantEventDTO participantEventDTO){
+	public void addParticipantEvent(ParticipantEventDTO participantEventDTO) {
 		System.out.println("In server");
 		ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("/api/participant/event/") //
@@ -108,5 +114,38 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(participantEventDTO, APPLICATION_JSON), Participant.class);
 		System.out.println("Out server");
+	}
+	public Expense getExpenseById(long id)
+	{
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/?id="+id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get()
+				.readEntity(Expense.class);
+		//System.out.println(response.getStatus());
+		//System.out.println(response.readEntity(Expense.class));
+				//.get(new GenericType<Expense>(){});
+		//return response.readEntity(Expense.class);
+		//System.out.println(response);
+		//return null;
+	}
+
+	public boolean addExpense(Expense expense)
+	{
+		System.out.println("In server");
+		//return;
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/s")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.post(Entity.entity(expense,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		//if(response.getStatus()<300)
+			return true;
+		//return false;
+				//.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+		//return null;*/
+
 	}
 }
