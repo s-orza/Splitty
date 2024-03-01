@@ -5,10 +5,10 @@ import commons.Participant;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/participant")
+@RequestMapping("/api/participant")
 //TODO change path
 public class ParticipantController {
     private final ParticipantRepository repo;
@@ -17,19 +17,14 @@ public class ParticipantController {
         this.repo = repo;
     }
 
-    @GetMapping(path = { "", "/" })
-    public List<Participant> getAll() {
-        System.out.println(new ArrayList<>(repo.findAll()));
-        return new ArrayList<>(repo.findAll());
+    @GetMapping(path = { "", "/{participantId}" })
+    public Optional<Participant> getParticipant(@PathVariable long participantId) {
+        return repo.findById(participantId);
     }
 
     @PostMapping(path = { "", "/{eventId}" })
     public Participant createParticipant(@RequestBody Participant participant) {
-
         repo.save(participant);
-
         return participant;
     }
-
-
 }

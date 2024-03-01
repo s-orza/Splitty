@@ -6,13 +6,15 @@ import commons.Participant;
 
 import commons.ParticipantEvent;
 //import org.springframework.http.ResponseEntity;
+import commons.ParticipantEventDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.database.ParticipantEventRepository;
 import server.database.ParticipantRepository;
 
 @RestController
-@RequestMapping("/participantEvent")
+@RequestMapping("/api/participant/event")
 //TODO change path
 public class ParticipantEventController {
     private final ParticipantEventRepository repo;
@@ -45,7 +47,8 @@ public class ParticipantEventController {
                 repo.save(new ParticipantEvent(event.get().getEventId(), participant.getParticipantID()));
                 System.out.println("Saved to database");
 //                return ResponseEntity.ok("Saved to database");
-            } else {
+            }
+            else {
                 System.out.println("Provided event not found");
 //                return ResponseEntity.ok("Provided event not found");
             }
@@ -54,9 +57,34 @@ public class ParticipantEventController {
 //        return ResponseEntity.ok("No event provided");
 
         // Return the saved participant and a 201 Created status
-
     }
 
+    /**
+     * This method will add only an entry to the participant_event table
+     * using an existing participant and an existing event. The participant and the event
+     * must exist for the method to work.
+     */
+    @PostMapping(path = { "", "/" })
+    public void createParticipantEvent(@RequestBody ParticipantEventDTO pedto) {
 
+        if (pedto != null) {
 
+            Optional<Event> eventFromDatabase = eventRepository.findById(pedto.getEventId());
+            Optional<Participant> participantFromDatabase = participantRepository.findById(pedto.getParticipantId());
+
+            if (eventFromDatabase.isPresent() && participantFromDatabase.isPresent()) {
+                repo.save(new ParticipantEvent(eventFromDatabase.get().getEventId(), participantFromDatabase.get().getParticipantID()));
+                System.out.println("Saved to database");
+//                return ResponseEntity.ok("Saved to database");
+            }
+            else {
+                System.out.println("Provided event not found");
+//                return ResponseEntity.ok("Provided event not found");
+            }
+        }
+        System.out.println("No event provided");
+//        return ResponseEntity.ok("No event provided");
+
+        // Return the saved participant and a 201 Created status
+    }
 }

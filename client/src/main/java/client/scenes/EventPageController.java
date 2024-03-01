@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 
 import commons.ExpenseTest;
 import commons.Participant;
+
 import commons.ParticipantTest;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -207,10 +208,11 @@ public class EventPageController{
     public void addParticipantHandler(){
         try{
             System.out.println("This will lead to another page to add participant");
-            Participant participant = new Participant("A", "B", "C", "D");
+            Participant a = server.getParticipant(67152);
+            System.out.println(a);
 
-            System.out.println("about to execute participantEvent");
-            server.addParticipantEvent(participant, 43152);
+//            System.out.println("about to execute participantEvent");
+//            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
         }catch(Exception e){
             System.out.println(e);
         }
