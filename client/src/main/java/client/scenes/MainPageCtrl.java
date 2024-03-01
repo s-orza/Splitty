@@ -46,11 +46,7 @@ private Parent root;
   }
 
   public void createEvent(ActionEvent e) {
-    Event newEvent = new Event(createInput.getText());
-    server.createEvent(newEvent);
-    System.out.println("Crete event window");
-    System.out.println(newEvent.toString());
-    System.out.println(createInput.getText());
+    mainCtrl.showCreateEvent();
     /*    Creating a new event
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
     root = loader.load();
