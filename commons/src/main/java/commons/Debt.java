@@ -100,7 +100,10 @@ public class Debt {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Debt debt = (Debt) o;
-        return getDebtID() == debt.getDebtID() && Double.compare(debt.getAmount(), getAmount()) == 0 && getDebtor().equals(debt.getDebtor()) && getCreditor().equals(debt.getCreditor());
+        return getDebtID() == debt.getDebtID() &&
+                Double.compare(debt.getAmount(),getAmount()) == 0 &&
+                getDebtor().equals(debt.getDebtor()) &&
+                getCreditor().equals(debt.getCreditor());
     }
 
     @Override
