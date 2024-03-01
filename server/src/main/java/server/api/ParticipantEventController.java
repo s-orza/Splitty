@@ -6,8 +6,9 @@ import commons.Participant;
 
 import commons.ParticipantEvent;
 //import org.springframework.http.ResponseEntity;
-import commons.ParticipantEventDTO;
 
+
+import commons.ParticipantEventDto;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.database.ParticipantEventRepository;
@@ -36,7 +37,8 @@ public class ParticipantEventController {
      * @param participant the participant instance itself
      */
     @PostMapping(path = { "", "/{eventId}" })
-    public void createParticipantEvent(@PathVariable(required = false) Long eventId, @RequestBody Participant participant) {
+    public void createParticipantEvent(@PathVariable(required = false) Long eventId,
+                                       @RequestBody Participant participant) {
         System.out.println("In ParticipantEvent controller");
         participantRepository.save(participant);
         if (eventId != null) {
@@ -65,7 +67,7 @@ public class ParticipantEventController {
      * must exist for the method to work.
      */
     @PostMapping(path = { "", "/" })
-    public void createParticipantEvent(@RequestBody ParticipantEventDTO pedto) {
+    public void createParticipantEvent(@RequestBody ParticipantEventDto pedto) {
 
         if (pedto != null) {
 
@@ -73,7 +75,8 @@ public class ParticipantEventController {
             Optional<Participant> participantFromDatabase = participantRepository.findById(pedto.getParticipantId());
 
             if (eventFromDatabase.isPresent() && participantFromDatabase.isPresent()) {
-                repo.save(new ParticipantEvent(eventFromDatabase.get().getEventId(), participantFromDatabase.get().getParticipantID()));
+                repo.save(new ParticipantEvent(eventFromDatabase.get().getEventId(),
+                        participantFromDatabase.get().getParticipantID()));
                 System.out.println("Saved to database");
 //                return ResponseEntity.ok("Saved to database");
             }

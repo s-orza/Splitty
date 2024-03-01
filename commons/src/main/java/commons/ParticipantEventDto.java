@@ -5,7 +5,7 @@ package commons;
  * This is a data transfer object. It is used to pass on both an event
  * and an event to the server to be modelled with in the database.
  */
-public class ParticipantEventDTO {
+public class ParticipantEventDto {
     private long participantId;
     private long eventId;
 
@@ -25,11 +25,11 @@ public class ParticipantEventDTO {
         this.eventId = event;
     }
 
-    public ParticipantEventDTO(long participantId, long eventId) {
+    public ParticipantEventDto(long participantId, long eventId) {
         this.participantId = participantId;
         this.eventId = eventId;
     }
 
-    public ParticipantEventDTO() {
+    public ParticipantEventDto() {
     }
 }

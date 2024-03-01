@@ -26,9 +26,10 @@ import java.util.List;
 
 
 import commons.Participant;
-import commons.ParticipantEventDTO;
+
 
 import commons.Expense;
+import commons.ParticipantEventDto;
 import jakarta.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -106,7 +107,7 @@ public class ServerUtils {
 	 * This method will add just an entry to the participant_event table
 	 * @param participantEventDTO an object that contains particpantId and eventId
 	 */
-	public void addParticipantEvent(ParticipantEventDTO participantEventDTO) {
+	public void addParticipantEvent(ParticipantEventDto participantEventDTO) {
 		System.out.println("In server");
 		ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("/api/participant/event/") //
