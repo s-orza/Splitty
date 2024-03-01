@@ -2,6 +2,7 @@ package commons;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,26 +10,17 @@ import java.util.Objects;
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
-    private long expenseId;
-    @Column
     private String author;
-    @Column
     private String content;
-    @Column
     private double money;
-    @Column
     private String currency;
-    @Column
-    private String date;
-    @Column
+    private LocalDate date;
     @ManyToMany
     private List<Participant> participants;
-    @Column
     private String type;
 
     public Expense(String author, String content, double money, String currency,
-                   String date, List<Participant> participants, String type) {
+                   LocalDate date, List<Participant> participants, String type) {
         this.author = author;
         this.content = content;
         this.money = money;
@@ -37,11 +29,6 @@ public class Expense {
         this.participants = participants;
         this.type = type;
     }
-
-    public long getExpenseId() {
-        return expenseId;
-    }
-
 
     public Expense() {
 
@@ -63,11 +50,8 @@ public class Expense {
         return currency;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
-    }
-    public void setExpenseId(long expenseId) {
-        this.expenseId = expenseId;
     }
 
     public void setAuthor(String author) {
@@ -86,7 +70,7 @@ public class Expense {
         this.currency = currency;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

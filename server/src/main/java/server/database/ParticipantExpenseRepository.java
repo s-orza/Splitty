@@ -15,9 +15,9 @@
  */
 package server.database;
 
-import commons.ParticipantExpense;
+import commons.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
 
-public interface ParticipantExpenseRepository extends JpaRepository<ParticipantExpense, Long> {}
+public interface ParticipantExpenseRepository extends JpaRepository<Event, Long> {}

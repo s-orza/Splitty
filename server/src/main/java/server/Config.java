@@ -17,6 +17,7 @@ package server;
 
 import java.util.Random;
 
+import commons.Expense;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,4 +29,8 @@ public class Config {
         return new Random();
     }
 
+    @Bean
+    public Expense exampleExpense() {
+        return new Expense();
+    }
 }
