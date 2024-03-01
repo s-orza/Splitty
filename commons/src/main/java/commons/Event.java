@@ -11,6 +11,7 @@ import java.util.Objects;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
     private long eventID;
     // Don't know how to set up the connections, need a database anyway
 
@@ -20,12 +21,17 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
-    private List<Participant> participants;
+    @Column
+    public List<Participant> participants;
 
+    @Column
     @OneToMany
-    private List<Expense> expenses;
+    public List<Expense> expenses;
 
-    private String name;
+
+
+    @Column
+    public String name;
     public Event(String name) {
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();

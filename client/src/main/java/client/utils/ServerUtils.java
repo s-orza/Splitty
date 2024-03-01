@@ -25,6 +25,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import commons.Event;
+import commons.Participant;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -75,5 +77,35 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
+	}
+
+	public void deleteEvent (long id) {
+		Response response = ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events" + id) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.delete();
+		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+			System.out.println("Quote removed successfully.");
+		} else {
+			System.out.println("Failed to remove quote. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
+
+	public List<Participant> getParticipants() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events/participant") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<List<Participant>>() {});
+	}
+
+	public Event getEvent(long id) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events/" + id) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<Event>() {});
 	}
 }
