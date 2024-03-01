@@ -55,7 +55,7 @@ public class MainCtrl {
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     // addParticipant
-    private DummyCtrl addParticipantCtrl;
+    private AddParticipantCtrl addParticipantCtrl;
     private Scene addParticipant;
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
            Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<MainPageCtrl, Parent> mainPage,

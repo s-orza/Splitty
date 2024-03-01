@@ -56,5 +56,9 @@ public class AddParticipantCtrl {
     }
 
     @FXML
-    void cancelEvent()
+    void cancelEvent(){
+        System.out.println("Participant adding process canceled");
+    }
+
+
 }
