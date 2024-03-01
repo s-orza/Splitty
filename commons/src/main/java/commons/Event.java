@@ -86,6 +86,18 @@ public class Event {
         expenses = new ArrayList<>();
     }
 
+    public void setParticipants(List<Participant> participants) {
+        this.participants = participants;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "Event{" +

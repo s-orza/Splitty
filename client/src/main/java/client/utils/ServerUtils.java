@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
@@ -38,6 +39,7 @@ public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
 
+
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
 		var is = url.openConnection().getInputStream();
@@ -47,7 +49,7 @@ public class ServerUtils {
 			System.out.println(line);
 		}
 	}
-
+	//connects to the database through the endpoint to give all events
 	public List<Event> getEvents() {
 		return ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/events")
@@ -71,14 +73,16 @@ public class ServerUtils {
 				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
 	}
 
-	public Event createEvent(Event event) {
-		return ClientBuilder.newClient(new ClientConfig()) //
+	//connects to the database through the endpoint to add event
+	public void createEvent(Event event) {
+		ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/events") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
 	}
 
+	//connects to the database through the endpoint to delete an event
 	public void deleteEvent (long id) {
 		Response response = ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/events" + id) //
@@ -93,6 +97,7 @@ public class ServerUtils {
 		response.close();
 	}
 
+	//connects to the database through the endpoint to get participants from specific event
 	public List<Participant> getParticipants() {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/events/participant") //
@@ -101,11 +106,35 @@ public class ServerUtils {
 				.get(new GenericType<List<Participant>>() {});
 	}
 
+	//connects to the database through the endpoint to get expenses from specific event
+	public List<Expense> getExpenses() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events/expenses") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<List<Expense>>() {});
+	}
+
+	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/events/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.get(new GenericType<Event>() {});
+	}
+
+	//connects to the database through the endpoint to change name of an event with an id
+	// needs a bit of tweaking
+	public void changeEventName(long id, String newName) {
+		Event event = new Event();
+		event.setName(newName);
+
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER)
+				.path("api/events/" + id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.put(Entity.entity(event, APPLICATION_JSON));
 	}
 }

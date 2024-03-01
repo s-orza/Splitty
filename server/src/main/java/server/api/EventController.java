@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,13 @@ public class EventController {
         this.repo = repo;
     }
 
+    //endpoint with all events in it
     @GetMapping(path = { "", "/" })
     public List<Event> getAll() {
         return repo.findAll();
     }
 
+    //endpoint with an event with a specific id in it
     @GetMapping("/{id}")
     public ResponseEntity<Event> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -32,6 +35,21 @@ public class EventController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    //endpoint for put method to change the name of an event
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateEventName(@PathVariable("id") long id, @RequestBody String newName) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Event event = repo.findById(id).get();
+        event.setName(newName);
+        repo.save(event);
+
+        return ResponseEntity.ok().build();
+    }
+
+    //endpoint with an event with specific id in it to be deleted
     @DeleteMapping("/{id}")
     public ResponseEntity<Event> removeEventByID (@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -41,18 +59,29 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    //endpoint to an event to
     @PostMapping(path = { "", "/" })
     public Event addEvent(@RequestBody Event event) {
         repo.save(event);
         return event;
     }
 
+    //endpoint to get a list of participants from an event
     @GetMapping("/{id}/participants")
     public ResponseEntity<List<Participant>> getByIdParticipant(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get().getParticipants());
+    }
+
+    //endpoint to get list of expenses from an event
+    @GetMapping("/{id}/expenses")
+    public ResponseEntity<List<Expense>> getByIdExpenses(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(repo.findById(id).get().getExpenses());
     }
 
 //    @PostMapping("/{id}")

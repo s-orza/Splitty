@@ -26,7 +26,8 @@ public class CreateEventCtrl {
         this.mainCtrl = mainCtrl;
     }
 
-    //method to go to the eventPage once you create a new event with eventName as the title of the new event
+    //method to go to the eventPage once you create a new event with eventName as the title of the new event.
+    // It also adds a new event to the data base
     public void create(ActionEvent e){
         Event newEvent = new Event(textField.getText());
         server.createEvent(newEvent);

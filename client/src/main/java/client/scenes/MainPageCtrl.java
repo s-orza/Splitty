@@ -1,6 +1,5 @@
 package client.scenes;
 import client.utils.ServerUtils;
-import commons.Event;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -44,7 +43,7 @@ private Parent root;
     this.server = server;
     this.mainCtrl = mainCtrl;
   }
-
+//When the create page button is clicked the next page is shown
   public void createEvent(ActionEvent e) {
     mainCtrl.showCreateEvent();
     /*    Creating a new event
