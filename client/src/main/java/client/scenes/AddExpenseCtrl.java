@@ -2,8 +2,10 @@ package client.scenes;
 
 import client.MyFXML;
 import client.MyModule;
+import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import commons.Expense;
+import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,6 +16,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import com.google.inject.Inject;
+import javafx.scene.text.Text;
 
 
 import java.util.ArrayList;
@@ -26,6 +30,7 @@ public class AddExpenseCtrl implements Controller{
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+    private final ServerUtils server;
     private Stage stage;
 
     @FXML
@@ -59,21 +64,69 @@ public class AddExpenseCtrl implements Controller{
     private ComboBox<String> typeSelector;
     @FXML
     private ListView<String> namesList;//names showed on screen from which we select
+    @FXML
+    private Text warningText;
     private List<String> selectedNamesList=new ArrayList<>();
     private ObservableList<String> names = FXCollections.observableArrayList(
             "Serban","David","Olav","Alex");
-
-
+    private List<String> expenseTypesAvailable=new ArrayList<>();
+    @Inject
+    public AddExpenseCtrl(ServerUtils server) {
+        this.server = server;
+    }
     @FXML
     public void initialize() {
-        selectedNamesList=new ArrayList<>();
+        //first we need to create a list with the names of the participants:
+        //->here to put code for creating the list:
+        //names=...
+        selectedNamesList = new ArrayList<>();
+        //initialise the expenseTypesAvailable
+        expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
+        //initialise the warning text
+        warningText.setText("");
+        resetElements();
+    }
+    /**
+     * This is a function that resets and prepare the scene.
+     * You should call this function everytime you open AddExpense page.
+     */
+    public void resetElements(){
+        //reset the scene
+        //initialise the warning text
+        warningText.setText("");
+        //prepare the possible authors
+        authorSelector.getItems().clear();
+        authorSelector.getItems().addAll(names);
+        authorSelector.setOnAction(this::handleSelectAuthor);
+
+        //content of the expense
+        contentBox.setText("");
+        moneyPaid.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("-?\\d*(\\.\\d*)?")) {
+                moneyPaid.setText(oldValue);
+            }
+        });
+        moneyPaid.setText("");
+
+        //for handling money type
+        moneyTypeSelector.getItems().clear();
+        moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
+        moneyTypeSelector.setValue("EUR");//setting EUR as the default value
+        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
+        ///date
+        date.setValue(null);
+        //reset the checkBoxes
+        checkBoxSomePeople.setSelected(false);
+        checkBoxAllPeople.setSelected(false);
         //create the list view with "names"
         namesList.setItems(names);
         namesList.setCellFactory(param -> new CheckBoxListCell());
-        //namesList.getChildren().add(checkBox);   //just an idea for another way of putting names in a list view
+        //at the beginning the list is hidden
+        namesList.setVisible(false);
 
-        //for handling money type
-        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
+
+
+        typeSelector.setValue("other");
     }
     private class CheckBoxListCell extends ListCell<String>{
         private CheckBox checkBox;
@@ -96,23 +149,62 @@ public class AddExpenseCtrl implements Controller{
      */
     @FXML
     void addExpenseToTheEvent(MouseEvent event) {
-        if(date.getValue()==null) {
-            System.out.println("You need to select date!");
-            return;
-        }
-        if(moneyPaid.getText().isEmpty())
+        //we need to verify if the expense is valid.
+        if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
         {
-            System.out.println("Write the amount of money");
+            System.out.println("The author cannot be empty.");
+            warningText.setText("The author cannot be empty.");
             return;
         }
+        if(contentBox.getText()==null || contentBox.getText().isEmpty())
+        {
+            System.out.println("What is the money for?");
+            warningText.setText("What is the money for?");
+            return;
+        }
+        if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
+        {
+            System.out.println(moneyPaid.getText());
+            warningText.setText("The amount of money must be specified.");
+            return;
+        }
+        if(date.getValue()==null) {
+            System.out.println("You need to select a date!");
+            warningText.setText("You need to select a date!");
+            return;
+        }
+        if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
+        {
+            System.out.println("Select how to split the expense.");
+            warningText.setText("Select how to split the expense.");
+            return;
+        }
+        if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
+        {
+            System.out.println("Select the participants.");
+            warningText.setText("Select the participants.");
+            return;
+        }
+        //the expense can be considered valid now
+        warningText.setText("");
         int year=date.getValue().getYear();
         String author=authorSelector.getValue();
         String content=contentBox.getText();
         int money=Integer.parseInt(moneyPaid.getText());
+        String dateString=date.getValue().getDayOfMonth()+","+
+                date.getValue().getMonthValue()+","+
+                date.getValue().getYear();
         //the expense
+        Participant pa=new Participant("a","b","c","d");
+        //I still need to adjust this list
+        List<Participant> list=new ArrayList<>();
+        list.add(pa);
         Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
-                date.getValue(),new ArrayList<>(),typeSelector.getValue());
+                dateString,null,typeSelector.getValue());
         System.out.println(expense);
+        server.addExpense(expense);
+        //System.out.println(server.getExpenseById(1));
+        resetElements();
     }
     /**
      * this function will be called when you press the cancel Button.
@@ -124,6 +216,11 @@ public class AddExpenseCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
     }
+    void handleSelectAuthor(ActionEvent event)
+    {
+        System.out.println(authorSelector.getValue());
+    }
+
 
     /**
      * This is a basic handler that checks when you check the box for
@@ -136,6 +233,8 @@ public class AddExpenseCtrl implements Controller{
             System.out.println("Everyone is selected!");
             //in case the user already selected the "some people" option
             checkBoxSomePeople.setSelected(false);
+            //hide the list because we don't need to select
+            namesList.setVisible(false);
         }
         else {
             System.out.println("everyone options is NOT selected!");
