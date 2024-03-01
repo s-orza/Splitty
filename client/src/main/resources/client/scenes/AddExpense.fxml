@@ -57,10 +57,5 @@
       <CheckBox fx:id="checkBoxSomePeople" layoutX="204.0" layoutY="275.0" mnemonicParsing="false" onAction="#handleCheckBoxSomePeople" text="Only between some people" />
       <ComboBox fx:id="typeSelector" editable="true" layoutX="213.0" layoutY="209.0" prefWidth="150.0" promptText="-Select type-" />
       <ListView fx:id="namesList" layoutX="210.0" layoutY="298.0" prefHeight="87.0" prefWidth="155.0" />
-      <Text fx:id="warningText" fill="RED" layoutX="450.0" layoutY="285.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The amount of money must be specified." textAlignment="CENTER" wrappingWidth="116.80337524414062">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
    </children>
 </AnchorPane>
