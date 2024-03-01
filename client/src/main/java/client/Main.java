@@ -56,6 +56,7 @@ public class Main extends Application {
 
     // calls mainCtrl with the pages
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initialize(primaryStage, overview, add, serverSelect, mainPage, adminPage, loginAdminPage, createEvent, eventPage, addExpense, addParticipant);
+    mainCtrl.initialize(primaryStage, overview, add,serverSelect, mainPage, adminPage,
+                        loginAdminPage, createEvent, eventPage, addExpense, addParticipant);
   }
 }
