@@ -14,11 +14,13 @@ public class Debt {
     private long debtID;
 
     private double amount;
+    private String currency;
     private Participant debtor;
     private Participant creditor;
 
-    public Debt(double amount, Participant debtor, Participant creditor){
+    public Debt(double amount, String currency, Participant debtor, Participant creditor){
         this.amount = amount;
+        this.currency = currency;
         this.debtor = debtor;
         this.creditor = creditor;
     }
@@ -57,6 +59,24 @@ public class Debt {
      **/
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    /**
+     * The getter method for the currency attribute
+     *
+     * @return currency of this object
+     **/
+    public String getCurrency() {
+        return currency;
+    }
+
+    /**
+     * The setter method for the currency attribute
+     *
+     * @param currency The value to set currency to
+     **/
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     /**
@@ -101,13 +121,14 @@ public class Debt {
         if (o == null || getClass() != o.getClass()) return false;
         Debt debt = (Debt) o;
         return getDebtID() == debt.getDebtID() &&
-                Double.compare(debt.getAmount(),getAmount()) == 0 &&
+                Double.compare(debt.getAmount(), getAmount()) == 0 &&
+                getCurrency().equals(debt.getCurrency()) &&
                 getDebtor().equals(debt.getDebtor()) &&
                 getCreditor().equals(debt.getCreditor());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getDebtID(), getAmount(), getDebtor(), getCreditor());
+        return Objects.hash(getDebtID(), getAmount(), getCurrency(), getDebtor(), getCreditor());
     }
 }
