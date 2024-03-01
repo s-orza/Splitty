@@ -26,7 +26,6 @@ public class MainCtrl {
     private Controller ctrl;
     private Scene scene;
     public void initialize(Stage primaryStage, Pair<Controller, Parent> dummy, String title) {
-
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
         this.ctrl =  dummy.getKey();

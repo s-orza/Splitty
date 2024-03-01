@@ -36,7 +36,7 @@ public class Main extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage) throws IOException {
+  public void start(Stage primaryStage){
     // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
     mainCtrl.initialize(primaryStage, MainPageCtrl.getPair(), "Main Page");
