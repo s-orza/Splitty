@@ -27,7 +27,7 @@ public class CreateEventCtrl {
 
     //method to go to the eventPage once you create a new event with eventName as the title of the new event
     public void create(ActionEvent e){
-//        mainCtrl.showEventPage();
+        mainCtrl.showEventPage();
         eventName = textField.getText();
         System.out.printf(eventName);
     }

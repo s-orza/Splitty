@@ -25,10 +25,11 @@ public class Event {
     @OneToMany
     private List<Expense> expenses;
 
-    public Event(long eventID) {
-        this.eventID = eventID;
+    private String name;
+    public Event(String name) {
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
+        this.name = name;
     }
 
     public Event() {
@@ -84,7 +85,7 @@ public class Event {
         return "Event{" +
                 "event_id=" + eventID +
                 ", participants=" + participants +
-                ", expenses=" + expenses +
+                ", expenses=" + expenses + name +
                 '}';
     }
 

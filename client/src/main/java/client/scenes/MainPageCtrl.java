@@ -1,4 +1,6 @@
 package client.scenes;
+import client.utils.ServerUtils;
+import commons.Event;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -12,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,12 +31,25 @@ private ImageView flagImage;
 @FXML
 private ListView<String> recentList;
 
+private final ServerUtils server;
+private final MainCtrl mainCtrl;
+
 private String selectedEv;
 private Stage stage;
 private Scene scene;
 private Parent root;
+
+@Inject
+  public MainPageCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    this.server = server;
+    this.mainCtrl = mainCtrl;
+  }
+
   public void createEvent(ActionEvent e) {
+    Event newEvent = new Event(createInput.getText());
+    server.createEvent(newEvent);
     System.out.println("Crete event window");
+    System.out.println(newEvent.toString());
     System.out.println(createInput.getText());
     /*    Creating a new event
     FXMLLoader loader = new FXMLLoader(getClass().getResource("/event.fxml"));
