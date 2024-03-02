@@ -15,14 +15,23 @@ public class Debt {
 
     private double amount;
     private String currency;
-    private Participant debtor;
-    private Participant creditor;
+    @Id
+    private long debtor;
+    @Id
+    private long creditor;
 
     public Debt(double amount, String currency, Participant debtor, Participant creditor){
         this.amount = amount;
         this.currency = currency;
-        this.debtor = debtor;
-        this.creditor = creditor;
+        this.debtor = debtor.getParticipantID();
+        this.creditor = creditor.getParticipantID();
+    }
+
+    public Debt(double amount, String currency, long debtorID, long creditorID){
+        this.amount = amount;
+        this.currency = currency;
+        this.debtor = debtorID;
+        this.creditor = creditorID;
     }
 
     /**
@@ -84,7 +93,7 @@ public class Debt {
      *
      * @return debtor of this object
      **/
-    public Participant getDebtor() {
+    public long getDebtor() {
         return debtor;
     }
 
@@ -94,7 +103,15 @@ public class Debt {
      * @param debtor The value to set debtor to
      **/
     public void setDebtor(Participant debtor) {
-        this.debtor = debtor;
+        this.debtor = debtor.getParticipantID();
+    }
+    /**
+     * The setter method for the debtor attribute
+     *
+     * @param debtorID The value to set debtor to
+     **/
+    public void setDebtor(long debtorID) {
+        this.debtor = debtorID;
     }
 
     /**
@@ -102,7 +119,7 @@ public class Debt {
      *
      * @return creditor of this object
      **/
-    public Participant getCreditor() {
+    public long getCreditor() {
         return creditor;
     }
 
@@ -112,7 +129,16 @@ public class Debt {
      * @param creditor The value to set creditor to
      **/
     public void setCreditor(Participant creditor) {
-        this.creditor = creditor;
+        this.creditor = creditor.getParticipantID();
+    }
+
+    /**
+     * The setter method for the creditor attribute
+     *
+     * @param creditorID The value to set creditor to
+     **/
+    public void setCreditor(long creditorID) {
+        this.creditor = creditorID;
     }
 
     @Override
@@ -133,9 +159,9 @@ public class Debt {
         Debt debt = (Debt) o;
         return getDebtID() == debt.getDebtID() &&
                 Double.compare(debt.getAmount(), getAmount()) == 0 &&
-                getCurrency().equals(debt.getCurrency()) &&
-                getDebtor().equals(debt.getDebtor()) &&
-                getCreditor().equals(debt.getCreditor());
+                getDebtor() == debt.getDebtor() &&
+                getCreditor() == debt.getCreditor() &&
+                Objects.equals(getCurrency(), debt.getCurrency());
     }
 
     @Override

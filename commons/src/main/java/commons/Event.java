@@ -26,7 +26,7 @@ public class Event {
     private List<Expense> expenses;
 
     @OneToOne
-    private DebtManager debtManager;
+    private long debtManagerID;
     public Event(long eventID) {
         this.eventID = eventID;
         this.participants = new ArrayList<>();
@@ -78,7 +78,6 @@ public class Event {
     }
 
     public void clearExpensesList(){
-        debtManager.clearAllDebts();
         expenses = new ArrayList<>();
     }
 

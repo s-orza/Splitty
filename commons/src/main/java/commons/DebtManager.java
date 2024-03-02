@@ -42,9 +42,11 @@ public class DebtManager {
      * @return the debt that was modified or created
      */
     public Debt addDebt(double amount, String currency, Participant debtor, Participant creditor){
+        long d = debtor.getParticipantID();
+        long c = creditor.getParticipantID();
         // if a debt already exists, modify it
         for (Debt debt: debts) {
-            if(debt.getDebtor()==debtor && debt.getCreditor()==creditor){
+            if(debt.getDebtor()==d && debt.getCreditor()==c){
                 // if diff currency, return null (add currency conversion later)
                 if(!Objects.equals(currency, debt.getCurrency())){return null;}
 
@@ -52,7 +54,7 @@ public class DebtManager {
                 debt.setAmount(debt.getAmount() + amount);
                 return debt;
             }
-            else if(debt.getDebtor()==creditor && debt.getCreditor()==debtor){
+            else if(debt.getDebtor()==c && debt.getCreditor()==d){
                 // if diff currency, return null (add currency conversion later)
                 if(!Objects.equals(currency, debt.getCurrency())){return null;}
 
@@ -63,7 +65,7 @@ public class DebtManager {
                 if(debt.getAmount() == 0){return (settleDebt(debt));}
                 //if cred & debt switch
                 if(debt.getAmount() < 0){
-                    Participant oldDebtor = debt.getDebtor();
+                    long oldDebtor = debt.getDebtor();
                     debt.setDebtor(debt.getCreditor());
                     debt.setCreditor(oldDebtor);
                     debt.setAmount(Math.abs(debt.getAmount()));
@@ -71,10 +73,55 @@ public class DebtManager {
                 return debt;
             }
         }
-        Debt d = new Debt(amount, currency, debtor, creditor);
-        debts.add(d);
-        return d;
+        Debt res = new Debt(amount, currency, debtor, creditor);
+        debts.add(res);
+        return res;
     }
+
+    /**
+     * adds a new debt if it does not exist yet.
+     * If a debt exists between the creditor and debtor, it modifies this debt accordingly
+     * @param amount the amount of the debt
+     * @param currency the currency of the debt
+     * @param debtorID the ID of the debtor who owes
+     * @param creditorID the ID of the creditor who is owed
+     * @return the debt that was modified or created
+     */
+    public Debt addDebt(double amount, String currency, long debtorID, long creditorID){
+        // if a debt already exists, modify it
+        for (Debt debt: debts) {
+            if(debt.getDebtor()==debtorID && debt.getCreditor()==creditorID){
+                // if diff currency, return null (add currency conversion later)
+                if(!Objects.equals(currency, debt.getCurrency())){return null;}
+
+                //add debts
+                debt.setAmount(debt.getAmount() + amount);
+                return debt;
+            }
+            else if(debt.getDebtor()==creditorID && debt.getCreditor()==debtorID){
+                // if diff currency, return null (add currency conversion later)
+                if(!Objects.equals(currency, debt.getCurrency())){return null;}
+
+                //subtract debts
+                debt.setAmount(debt.getAmount() - amount);
+
+                //if cancel out
+                if(debt.getAmount() == 0){return (settleDebt(debt));}
+                //if cred & debt switch
+                if(debt.getAmount() < 0){
+                    long oldDebtor = debt.getDebtor();
+                    debt.setDebtor(debt.getCreditor());
+                    debt.setCreditor(oldDebtor);
+                    debt.setAmount(Math.abs(debt.getAmount()));
+                }
+                return debt;
+            }
+        }
+        Debt res = new Debt(amount, currency, debtorID, creditorID);
+        debts.add(res);
+        return res;
+    }
+
 
     /**
      * adds a new debt if it does not exist yet.
@@ -104,7 +151,7 @@ public class DebtManager {
                 if(debt.getAmount() == 0){return (settleDebt(debt));}
                 //if cred & debt switch
                 if(debt.getAmount() < 0){
-                    Participant oldDebtor = debt.getDebtor();
+                    long oldDebtor = debt.getDebtor();
                     debt.setDebtor(debt.getCreditor());
                     debt.setCreditor(oldDebtor);
                     debt.setAmount(Math.abs(debt.getAmount()));
@@ -137,16 +184,50 @@ public class DebtManager {
         setDebts(new ArrayList<Debt>());
         return result;
     }
+
     /**
      * returns a list of all the debts a participant has
      * @param debtor the participant who owes
      * @return Arraylist of debts a participant owes
      */
     public ArrayList<Debt> getDebts(Participant debtor){
+        long d = debtor.getParticipantID();
+        ArrayList<Debt> result = new ArrayList<>();
+        for (Debt debt: debts) {
+            if(debt.getDebtor()==d){
+                result.add(debt);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * returns a list of all the debts a participant has
+     * @param debtor the participant who owes
+     * @return Arraylist of debts a participant owes
+     */
+    public ArrayList<Debt> getDebts(long debtor){
         ArrayList<Debt> result = new ArrayList<>();
         for (Debt debt: debts) {
             if(debt.getDebtor()==debtor){
                 result.add(debt);
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * returns a list of all the credits a participant is owed
+     * @param creditor the participant who is owed
+     * @return ArrayList of credits a participant is owed
+     */
+    public ArrayList<Debt> getCredits(Participant creditor){
+        long c = creditor.getParticipantID();
+        ArrayList<Debt> result = new ArrayList<>();
+        for (Debt credit: debts) {
+            if(credit.getCreditor()==c){
+                result.add(credit);
             }
         }
         return result;
@@ -157,7 +238,7 @@ public class DebtManager {
      * @param creditor the participant who is owed
      * @return ArrayList of credits a participant is owed
      */
-    public ArrayList<Debt> getCredits(Participant creditor){
+    public ArrayList<Debt> getCredits(long creditor){
         ArrayList<Debt> result = new ArrayList<>();
         for (Debt credit: debts) {
             if(credit.getCreditor()==creditor){
@@ -169,13 +250,29 @@ public class DebtManager {
 
     /**
      * returns a list of all the credits and debts a participant is involved in
-     * @param p the participant
+     * @param participant the participant
      * @return ArrayList of debts the participant is involved in
      */
-    public ArrayList<Debt> getDebtsAndCredits(Participant p){
+    public ArrayList<Debt> getDebtsAndCredits(Participant participant){
+        long p = participant.getParticipantID();
         ArrayList<Debt> result = new ArrayList<>();
         for (Debt debt: debts) {
             if(debt.getCreditor()==p || debt.getDebtor()==p){
+                result.add(debt);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * returns a list of all the credits and debts a participant is involved in
+     * @param participantID the participant's ID
+     * @return ArrayList of debts the participant is involved in
+     */
+    public ArrayList<Debt> getDebtsAndCredits(long participantID){
+        ArrayList<Debt> result = new ArrayList<>();
+        for (Debt debt: debts) {
+            if(debt.getCreditor()==participantID || debt.getDebtor()==participantID){
                 result.add(debt);
             }
         }
