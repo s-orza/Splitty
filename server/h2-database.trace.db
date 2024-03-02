@@ -403,3 +403,37 @@ select * from participant as p join participant_event as pe on p.participant_id 
 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
+2024-02-28 17:34:36.377189+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICAPNT_EVENT" not found; SQL statement:
+select * from particapnt_event [42102-224]
+2024-02-28 18:25:07.651389+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPANTS" not found; SQL statement:
+select * from participants [42102-224]
+2024-02-29 14:59:12.230030+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIAPANT_EVENT" not found; SQL statement:
+select * from particiapant_event [42102-224]
+2024-02-29 15:10:45.385468+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIAPANT_EVENT" not found; SQL statement:
+select * from particiapant_event [42102-224]
+2024-02-29 15:11:29.813555+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from participant\000d\000a\000d\000a\000d\000a[*]select * from event\000d\000a\000d\000a\000d\000aselect * from participant_event"; SQL statement:
+select * from participant
+
+
+select * from event
+
+
+select * from participant_event [42000-224]
+2024-03-01 16:45:56.079785+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete [*]* from participant_event"; expected "identifier"; SQL statement:
+delete * from participant_event [42001-224]
+2024-03-01 16:47:03.003178+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from participant\000d\000a\000d\000a[*]select * from event\000d\000a\000d\000aselect * from participant_event"; SQL statement:
+select * from participant
+
+select * from event
+
+select * from participant_event [42000-224]
+2024-03-01 17:11:31.530853+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * [*]participant_event"; SQL statement:
+select * participant_event [42000-224]

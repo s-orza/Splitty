@@ -1,9 +1,6 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 @Entity
@@ -11,14 +8,18 @@ public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long participantID;
+    @Column
     public String name;
+    @Column
     public String email;
 
     public long getParticipantID() {
         return participantID;
     }
 
+    @Column
     public String iban;
+    @Column
     public String bic;
     public Participant(String name, String email, String iban, String bic) {
         this.name = name;
