@@ -1,41 +1,45 @@
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
+import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
-import java.io.IOException;
+import static com.google.inject.Guice.createInjector;
 
-public class LoginAdminCtrl {
+public class LoginAdminCtrl implements Controller{
 
     @FXML
     private TextField loginInput;
+    //Imports used to swap scenes
     private Stage stage;
-    private Scene scene;
-    private Parent root;
-    public void login(ActionEvent e) throws IOException {
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
+    public void login(ActionEvent e){
         System.out.println("login to admin page");
         String passcode = loginInput.getText();
         System.out.println(passcode);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/adminPage.fxml"));
-        root = loader.load();
-        stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, AdminPageCtrl.getPair(), AdminPageCtrl.getTitle());
     }
-    public void close(ActionEvent e) throws IOException {
+    public void close(ActionEvent e){
         System.out.println("close window");
-        Parent root = FXMLLoader.load(getClass().getResource("/mainPage.fxml"));
-        stage = (Stage)((Node) e.getSource()).getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
+    }
+    public static Pair<Controller, Parent> getPair() {
+        return FXML.load(Controller.class, "client", "scenes", "loginAdmin.fxml");
+    }
+    public static String getTitle() {
+        return "Login Page";
     }
 
 }
