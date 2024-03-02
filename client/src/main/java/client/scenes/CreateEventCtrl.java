@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Event;
 import client.MyFXML;
 import client.MyModule;
 import com.google.inject.Injector;
@@ -31,18 +32,26 @@ public class CreateEventCtrl implements Controller{
     private Stage stage;
 
 
-    //method to go to the eventPage once you create a new event with eventName as the title of the new event
+    //method to go to the eventPage once you create a new event with eventName as the title of the new event.
+    // It also adds a new event to the data base
     public void create(ActionEvent e){
-//        mainCtrl.showEventPage();
+        Event newEvent = new Event(textField.getText());
+//        ServerUtils.createEvent(newEvent);
+        System.out.println("Crete event window");
+        System.out.println(newEvent.toString());
+        System.out.println(textField.getText());
+
         eventName = textField.getText();
         System.out.printf(eventName);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
     }
+
     public static Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "CreateEvent.fxml");
     }
     public static String getTitle(){
         return "Create Event";
     }
+
 }

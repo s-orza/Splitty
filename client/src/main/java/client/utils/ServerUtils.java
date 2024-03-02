@@ -23,17 +23,12 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
-
-import commons.Participant;
-
-
+import commons.Event;
 import commons.Expense;
-import commons.ParticipantEventDto;
+import commons.Participant;
 import jakarta.ws.rs.core.Response;
-
+import commons.ParticipantEventDto;
 import org.glassfish.jersey.client.ClientConfig;
-
 import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -42,6 +37,7 @@ import jakarta.ws.rs.core.GenericType;
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
+
 
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
@@ -52,7 +48,14 @@ public class ServerUtils {
 			System.out.println(line);
 		}
 	}
-
+	//connects to the database through the endpoint to give all events
+	public List<Event> getEvents() {
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/events")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.get(new GenericType<List<Event>>() {});
+	}
 	public List<Quote> getQuotes() {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/quotes") //
@@ -69,6 +72,70 @@ public class ServerUtils {
 				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
 	}
 
+	//connects to the database through the endpoint to add event
+	public static void createEvent(Event event) {
+		ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
+	}
+
+	//connects to the database through the endpoint to delete an event
+	public void deleteEvent (long id) {
+		Response response = ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events" + id) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.delete();
+		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+			System.out.println("Quote removed successfully.");
+		} else {
+			System.out.println("Failed to remove quote. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
+
+	//connects to the database through the endpoint to get participants from specific event
+	public List<Participant> getParticipants() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events/participant") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<List<Participant>>() {});
+	}
+
+	//connects to the database through the endpoint to get expenses from specific event
+	public List<Expense> getExpenses() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events/expenses") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<List<Expense>>() {});
+	}
+
+	//connects to the database through the endpoint to get an event with an id
+	public Event getEvent(long id) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events/" + id) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<Event>() {});
+	}
+
+	//connects to the database through the endpoint to change name of an event with an id
+	// needs a bit of tweaking
+	public void changeEventName(long id, String newName) {
+		Event event = new Event();
+		event.setName(newName);
+
+		ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER)
+				.path("api/events/" + id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.put(Entity.entity(event, APPLICATION_JSON));
+	}
 
 	public void addParticipant(Participant participant){
 		ClientBuilder.newClient(new ClientConfig()) //

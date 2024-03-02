@@ -24,15 +24,17 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
-    private List<Participant> participants;
+    @Column
+    public List<Participant> participants;
 
+    @Column
     @OneToMany
-    private List<Expense> expenses;
+    public List<Expense> expenses;
 
     public Event(String name) {
-        this.name = name;
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
+        this.name = name;
     }
 
     public Event() {
@@ -81,12 +83,24 @@ public class Event {
         expenses = new ArrayList<>();
     }
 
+    public void setParticipants(List<Participant> participants) {
+        this.participants = participants;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
                 "event_id=" + eventID +
                 ", participants=" + participants +
-                ", expenses=" + expenses +
+                ", expenses=" + expenses + name +
                 '}';
     }
 
