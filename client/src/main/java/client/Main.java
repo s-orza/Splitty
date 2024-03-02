@@ -51,7 +51,7 @@ public class Main extends Application {
         var eventPage = FXML.load(EventPageController.class, "client", "scenes", "EventPage.fxml");
         var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes", "AddExpense.fxml");
         //add
-        var addParticipant = FXML.load(AddParticipantCtrl.class, "client", "scenes", "Dummy.fxml");
+        var addParticipant = FXML.load(AddParticipantCtrl.class, "client", "scenes", "AddParticipant.fxml");
 
 
     // calls mainCtrl with the pages
