@@ -2,28 +2,54 @@ package client.scenes;
 
 
 //import com.sun.javafx.application.ParametersImpl;
+
+import client.utils.ServerUtils;
+
+
+import client.MyFXML;
+import client.MyModule;
+import com.google.inject.Injector;
+
 import commons.ExpenseTest;
+import commons.Participant;
+
 import commons.ParticipantTest;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.event.ActionEvent;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventPageController{
+import static com.google.inject.Guice.createInjector;
+
+
+public class EventPageCtrl implements Controller{
+
 
     @FXML
     TableView participantsTable;
+
+    ServerUtils server;
+
+    @Inject
+    public EventPageCtrl(ServerUtils server) {
+        this.server = server;
+    }
 
     @FXML
     TableColumn<ParticipantTest, String> participantsColumn;
@@ -60,6 +86,13 @@ public class EventPageController{
 
     @FXML
     Label eventName;
+    //Imports used to swap scenes
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
+    private Stage stage;
 
     /**
      * This property is just here to simulate data from database
@@ -101,13 +134,80 @@ public class EventPageController{
 
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler());
-        addExpense.setOnAction(e->addExpenseHandler());
+        addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         editEventName.setOnAction(e->{
             editEventNameHandler();
         });
 
+    }
+
+    /**
+     * handles the change of the event name, but only in visual perspective, and no
+     * database connectivity
+     */
+    private void editEventNameHandler() {
+        VBox layout = new VBox(10);
+        Label label = new Label("What should be the new name of this event?");
+        TextField newName = new TextField();
+
+        Button changeButton = new Button("Change");
+        Button cancelButton = new Button("Cancel");
+
+        // Set up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Change Event Name");
+
+
+        changeButton.setOnAction(e -> {
+            popupStage.close();
+
+            eventName.setText(newName.getText());
+
+            //TODO
+            // We need to add database logic to change the name in the database as well.
+        });
+
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, newName, cancelButton, changeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
+
+    private void addExpenseHandler(ActionEvent e) {
+        System.out.println("This will lead to another page to add expense");
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
+    }
+
+
+
+
+
+    /**
+     * this method adds the data about Participants into the Participants table
+     * Currently uses mock data from a dummy class, but in the future will get its model from
+     * a method that interacts with a database
+     * @param participantsData ObservableList which includes the new data to be added in the table
+     */
+    private void renderParticipants(ObservableList<ParticipantTest> participantsData) {
+        try{
+            participantsColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+            participantsTable.setItems(participantsData);
+        }catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     /**
@@ -192,78 +292,33 @@ public class EventPageController{
     /**
      * method that will lead to a new stage, specifically for adding participants
      */
-    public void addParticipantHandler(){
-        System.out.println("This will lead to another page to add participant");
+    public void addParticipantHandler() {
+        try {
+            System.out.println("This will lead to another page to add participant");
+            Participant a = server.getParticipant(67152);
+            System.out.println(a);
+
+//            System.out.println("about to execute participantEvent");
+//            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
         //todo
         // go to the add participant page
     }
 
-    /**
-     * method that will lead to a window, that is specifically for adding a new expense
-     */
-    public void addExpenseHandler(){
-        System.out.println("This will lead to another page to add expense");
-        //todo
-        // go to the add expense page
+
+
+    //getter for swapping scenes
+    public static Pair<Controller, Parent> getPair() {
+        return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
+    }
+    public static String getTitle(){
+        return "Event Page";
     }
 
-    /**
-     * this method adds the data about Participants into the Participants table
-     * Currently uses mock data from a dummy class, but in the future will get its model from
-     * a method that interacts with a database
-     * @param model ObservableList which includes the new data to be added in the table
-     */
-    private void renderParticipants(ObservableList<ParticipantTest> model){
-        try{
-            participantsColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-            participantsTable.setItems(model);
-        }catch(Exception e){
-            System.out.println(e);
-        }
-
-    }
-
-    /**
-     * handles the change of the event name, but only in visual perspective, and no
-     * database connectivity
-     */
-    private void editEventNameHandler(){
-        VBox layout = new VBox(10);
-        Label label = new Label("What should be the new name of this event?");
-        TextField newName = new TextField();
-
-        Button changeButton = new Button("Change");
-        Button cancelButton = new Button("Cancel");
-
-        // Set up the stage
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Change Event Name");
-
-
-        changeButton.setOnAction(e -> {
-            popupStage.close();
-
-            eventName.setText(newName.getText());
-
-            //TODO
-            // We need to add database logic to change the name in the database as well.
-        });
-
-        cancelButton.setOnAction(e -> {
-            popupStage.close();
-        });
-
-        // Set up the layout
-        layout.getChildren().addAll(label, newName, cancelButton, changeButton);
-        layout.setAlignment(Pos.CENTER);
-
-        // Set the scene and show the stage
-        Scene scene = new Scene(layout, 370, 150);
-        popupStage.setScene(scene);
-        popupStage.showAndWait();
-    }
 }
+
 
 

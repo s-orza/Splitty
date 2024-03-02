@@ -1,14 +1,21 @@
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
 import client.utils.ServerUtils;
+import com.google.inject.Injector;
 import commons.Expense;
 import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import javafx.util.Pair;
 import com.google.inject.Inject;
 import javafx.scene.text.Text;
 
@@ -16,9 +23,16 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddExpenseCtrl {
+import static com.google.inject.Guice.createInjector;
+
+public class AddExpenseCtrl implements Controller{
+    //Imports used to swap scenes
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
     private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private Stage stage;
+
     @FXML
     private Button addButton;
 
@@ -57,9 +71,8 @@ public class AddExpenseCtrl {
             "Serban","David","Olav","Alex");
     private List<String> expenseTypesAvailable=new ArrayList<>();
     @Inject
-    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public AddExpenseCtrl(ServerUtils server) {
         this.server = server;
-        this.mainCtrl = mainCtrl;
     }
     @FXML
     public void initialize() {
@@ -195,12 +208,13 @@ public class AddExpenseCtrl {
     }
     /**
      * this function will be called when you press the cancel Button.
-     * @param event an event
+     * @param e an event
      */
     @FXML
-    void cancelAddExpense(MouseEvent event) {
+    void cancelAddExpense(MouseEvent e) {
         System.out.println("Expense canceled");
-        System.out.println(server.getExpenseById(1552));//just for testing
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
     }
     void handleSelectAuthor(ActionEvent event)
     {
@@ -268,5 +282,11 @@ public class AddExpenseCtrl {
         else
             selectedNamesList.remove(name);
         System.out.println(selectedNamesList);
+    }
+    public static Pair<Controller, Parent> getPair() {
+        return FXML.load(Controller.class, "client", "scenes", "AddExpense.fxml");
+    }
+    public static String getTitle(){
+        return "Add Expense";
     }
 }
