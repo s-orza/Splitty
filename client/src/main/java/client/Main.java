@@ -36,27 +36,9 @@ public class Main extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage) throws IOException {
-
-    // defines the pages (add new pages here, replace Controller with correct controller, and fxml with fxml file name)
-    var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
-    var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
-
-
-        var serverSelect = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
-        var mainPage = FXML.load(MainPageCtrl.class, "client", "scenes", "mainPage.fxml");
-        var adminPage = FXML.load(AdminPageCtrl.class, "client", "scenes", "adminPage.fxml");
-        var loginAdminPage = FXML.load(LoginAdminCtrl.class, "client", "scenes", "loginAdmin.fxml");
-        var createEvent = FXML.load(CreateEventCtrl.class, "client", "scenes", "CreateEvent.fxml");
-        var eventPage = FXML.load(EventPageController.class, "client", "scenes", "EventPage.fxml");
-        var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes", "AddExpense.fxml");
-        //add
-        var addParticipant = FXML.load(DummyCtrl.class, "client", "scenes", "Dummy.fxml");
-
-
-    // calls mainCtrl with the pages
+  public void start(Stage primaryStage){
+    // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
     var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-    mainCtrl.initialize(primaryStage, overview, add,serverSelect, mainPage, adminPage,
-                        loginAdminPage, createEvent, eventPage, addExpense, addParticipant);
+    mainCtrl.initialize(primaryStage, MainPageCtrl.getPair(), "Main Page");
   }
 }
