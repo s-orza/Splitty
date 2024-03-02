@@ -3,6 +3,7 @@ package commons;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -13,6 +14,7 @@ public class DebtManager {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long debtManagerID;
 
+    @OneToMany
     private ArrayList<Debt> debts;
 
     /**
@@ -28,15 +30,6 @@ public class DebtManager {
      */
     public DebtManager(ArrayList<Debt> debts) {
         this.debts = debts;
-    }
-
-    /**
-     * The getter method for the debtManagerID attribute
-     *
-     * @return debtManagerID of this object
-     **/
-    public long getDebtManagerID() {
-        return debtManagerID;
     }
 
     /**
@@ -85,6 +78,15 @@ public class DebtManager {
     }
 
     /**
+     * Resets all the debts by removing them
+     * @return the list of previous debts that was removed
+     */
+    public ArrayList<Debt> clearAllDebts(){
+        ArrayList<Debt> result = getDebts();
+        setDebts(new ArrayList<Debt>());
+        return result;
+    }
+    /**
      * returns a list of all the debts a participant has
      * @param debtor the participant who owes
      * @return Arraylist of debts a participant owes
@@ -127,6 +129,15 @@ public class DebtManager {
             }
         }
         return result;
+    }
+
+    /**
+     * The getter method for the debtManagerID attribute
+     *
+     * @return debtManagerID of this object
+     **/
+    public long getDebtManagerID() {
+        return debtManagerID;
     }
 
     /**
