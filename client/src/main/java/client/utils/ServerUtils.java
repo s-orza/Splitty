@@ -64,23 +64,18 @@ public class ServerUtils {
 	}
 	public Expense getExpenseById(long id)
 	{
-		return ClientBuilder.newClient(new ClientConfig())
+		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER+"api/expenses/?id="+id)
 				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get()
-				.readEntity(Expense.class);
-		//System.out.println(response.getStatus());
-		//System.out.println(response.readEntity(Expense.class));
-				//.get(new GenericType<Expense>(){});
-		//return response.readEntity(Expense.class);
-		//System.out.println(response);
-		//return null;
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()<300)
+			return response.readEntity(Expense.class);
+		return null;
 	}
 
 	public boolean addExpense(Expense expense)
 	{
 		System.out.println("In server");
-		//return;
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER+"api/expenses/s")
 				.request(APPLICATION_JSON)
@@ -88,10 +83,8 @@ public class ServerUtils {
 				.post(Entity.entity(expense,APPLICATION_JSON));
 		System.out.println(response.readEntity(String.class));
 		System.out.println(response);
-		//if(response.getStatus()<300)
+		if(response.getStatus()<300)
 			return true;
-		//return false;
-				//.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
-		//return null;*/
+		return false;
 	}
 }

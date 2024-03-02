@@ -9,6 +9,7 @@ import server.database.ExpenseEventRepository;
 import server.database.ExpenseRepository;
 import server.database.ParticipantExpenseRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,7 @@ public class ExpenseController {
         this.repoExpEv = repoExpEv;
         this.repoPaExp = repoPaExp;
     }
+    //here to put the POST APIs
     @PostMapping(path = { "/s"})
     public ResponseEntity<Expense> addExpense(@RequestBody Expense expense)
     {
@@ -36,14 +38,14 @@ public class ExpenseController {
         expense.setParticipants(null);
         Expense saved=repoExp.save(expense);
         System.out.println("saved");
-        if(!participants.isEmpty()) {
+        if(participants!=null && !participants.isEmpty()) {
             //now we need to create connections between the expense and the participants
             for (Participant p : participants) {
                 ParticipantExpense pe = new ParticipantExpense(saved.getExpenseId(), p.getParticipantID());
                 repoPaExp.save(pe);
             }
         }
-        return ResponseEntity.ok(expense);
+        return ResponseEntity.ok(saved);
     }
     @PostMapping(path = { "/ss"})
     public Expense addExpensee(@RequestBody Expense expense)
@@ -68,7 +70,7 @@ public class ExpenseController {
         }
         return saved;
     }
-
+    //here to put the GET APIs
     /**
      *
      * @param id the id of an expense
@@ -83,27 +85,73 @@ public class ExpenseController {
         return ResponseEntity.ok(repoExp.findById(id).get());
     }
     @GetMapping(path={"/name"})
-    public List<Expense> getExpenseByAuthorName(@RequestParam("name") String name)
+    public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("name") String name)
     {
-        return repoExp.findByAuthor(name);
+        List<Expense> ans=repoExp.findByAuthor(name);
+        return ResponseEntity.ok(ans);
     }
-    @GetMapping(path={"events"})
-    public List<Expense> getExpenseByAuthorInEvent(@RequestParam("eventId") long eventId,
+    @GetMapping(path={"/events"})
+    public ResponseEntity<List<Expense>> getExpenseByAuthorInEvent(@RequestParam("eventId") long eventId,
                                                    @RequestParam("author") String author)
     {
-        return repoExp.findEventByAuthor(eventId,author);
+        if(eventId<0)
+            return ResponseEntity.badRequest().build();
+        List<Expense> ans=repoExp.findEventByAuthor(eventId,author);
+        return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"events/personInvolved"})
-    public List<Expense> getExpensePInvolvedInEvent(@RequestParam("eventId") long eventId,
+    public ResponseEntity<List<Expense>> getExpensePInvolvedInEvent(@RequestParam("eventId") long eventId,
                                                    @RequestParam("author") String author)
     {
-        return repoExp.findEventsThatInvolvesName(eventId,author);
+        if(eventId<0)
+            return ResponseEntity.badRequest().build();
+        List<Expense> ans=repoExp.findEventsThatInvolvesName(eventId,author);
+        return ResponseEntity.ok(ans);
     }
 
-
-    @GetMapping(path={"/all"})
-    public List<Expense> getAll()
+    @GetMapping(path={"/allFromEvent"})
+    public ResponseEntity<List<Expense>> getAllFromEvent(@RequestParam("eventId") long eventId)
     {
-        return repoExp.findAll();
+        if(eventId<0)
+            return ResponseEntity.badRequest().build();
+        List<Expense> ans=repoExp.findAllExpOfAnEvent(eventId);
+        return ResponseEntity.ok(ans);
+    }
+    @GetMapping(path={"/all"})
+    public ResponseEntity<List<Expense>> getAll()
+    {
+        List<Expense> ans=repoExp.findAllExp();
+        return ResponseEntity.ok(ans);
+    }
+    //here to put the PUT APIs (update)
+
+    //here to put the DELETE APIs
+    @DeleteMapping(path={"/"})
+    public ResponseEntity<Integer> deleteExpById(@RequestParam("eventId")long eventId,
+                                                 @RequestParam("expenseId") long expenseId)
+    {
+        if(eventId<0 || expenseId<0)
+            return ResponseEntity.badRequest().build();
+
+        if(!repoExp.existsById(expenseId))
+            return ResponseEntity.notFound().build();
+        //repoExp.deleteById(expenseId);
+        //first we need to delete the connection with the event
+        Integer a=repoExp.deleteExpenseEventCon(eventId,expenseId);
+        if(a==0)
+        {
+            System.out.println("The connection between the event and the expense was not deleted");
+            //444-no response
+            return ResponseEntity.status(444).build();
+        }
+        //then we delete the expense
+        Integer b=repoExp.deleteWithId(expenseId);
+        if(b==0)
+        {
+            System.out.println("Something was not deleted, be careful");
+            //417 expectation failed
+            return ResponseEntity.status(417).build();
+        }
+        return ResponseEntity.ok().build();
     }
 }
