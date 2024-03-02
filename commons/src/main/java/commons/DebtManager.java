@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.lang.Math;
 
 public class DebtManager {
 
@@ -58,11 +59,62 @@ public class DebtManager {
 
                 //subtract debts
                 debt.setAmount(debt.getAmount() - amount);
+
+                //if cancel out
+                if(debt.getAmount() == 0){return (settleDebt(debt));}
+                //if cred & debt switch
+                if(debt.getAmount() < 0){
+                    Participant oldDebtor = debt.getDebtor();
+                    debt.setDebtor(debt.getCreditor());
+                    debt.setCreditor(oldDebtor);
+                    debt.setAmount(Math.abs(debt.getAmount()));
+                }
                 return debt;
             }
         }
+        Debt d = new Debt(amount, currency, debtor, creditor);
+        debts.add(d);
+        return d;
+    }
 
-        return new Debt(amount, currency, debtor, creditor);
+    /**
+     * adds a new debt if it does not exist yet.
+     * If a debt exists between the creditor and debtor, it modifies this debt accordingly
+     * @param d the debt to be added
+     * @return the debt that was modified or added
+     */
+    public Debt addDebt(Debt d){
+        // if a debt already exists, modify it
+        for (Debt debt: debts) {
+            if(debt.getDebtor()==d.getDebtor() && debt.getCreditor()==d.getCreditor()){
+                // if diff currency, return null (add currency conversion later)
+                if(!Objects.equals(d.getCurrency(), debt.getCurrency())){return null;}
+
+                //add debts
+                debt.setAmount(debt.getAmount() + d.getAmount());
+                return debt;
+            }
+            else if(debt.getDebtor()==d.getCreditor() && debt.getCreditor()==d.getDebtor()){
+                // if diff currency, return null (add currency conversion later)
+                if(!Objects.equals(d.getCurrency(), debt.getCurrency())){return null;}
+
+                //subtract debts
+                debt.setAmount(debt.getAmount() - d.getAmount());
+
+                //if cancel out
+                if(debt.getAmount() == 0){return (settleDebt(debt));}
+                //if cred & debt switch
+                if(debt.getAmount() < 0){
+                    Participant oldDebtor = debt.getDebtor();
+                    debt.setDebtor(debt.getCreditor());
+                    debt.setCreditor(oldDebtor);
+                    debt.setAmount(Math.abs(debt.getAmount()));
+                }
+                return debt;
+            }
+        }
+        debts.add(d);
+        return d;
     }
 
     /**
