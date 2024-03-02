@@ -62,6 +62,8 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
 	}
+	//EXPENSE functions
+	//GET functions
 	public Expense getExpenseById(long id)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
@@ -72,7 +74,27 @@ public class ServerUtils {
 			return response.readEntity(Expense.class);
 		return null;
 	}
-
+	public List<Expense> getAllExpensesOfEvent(long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/allFromEvent?eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()<300)
+			return response.readEntity(List.class);
+		return null;
+	}
+	public List<Expense> getAllExpensesFromDatabase()
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/all")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()<300)
+			return response.readEntity(List.class);
+		return null;
+	}
+	//POST functions
 	public boolean addExpense(Expense expense)
 	{
 		System.out.println("In server");
@@ -86,5 +108,42 @@ public class ServerUtils {
 		if(response.getStatus()<300)
 			return true;
 		return false;
+	}
+	//PUT functions (update)
+	public Expense updateExpense(long expenseId,Expense expense)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/?expenseId="+expenseId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).put(Entity.entity(expense,APPLICATION_JSON));
+		System.out.println(response);
+		if(response.getStatus()!=200)
+			return null;
+		return response.readEntity(Expense.class);
+
+	}
+	//DELETE functions
+	public boolean deleteExpenseFromEvent(long eventId, long expenseId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/?eventId="+eventId+"&expenseId="+expenseId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+		//200->successful
+		//444->event-expense connection not found
+		//417->expense not found
+		if(response.getStatus()==200)
+			return true;
+		return false;
+	}
+	public Integer deleteAllExpensesFromEvent(long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/allFromEvent?eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+		if(response.getStatus()==200)
+			return response.readEntity(Integer.class);
+		return -1;
 	}
 }

@@ -9,7 +9,6 @@ import server.database.ExpenseEventRepository;
 import server.database.ExpenseRepository;
 import server.database.ParticipantExpenseRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -73,16 +72,18 @@ public class ExpenseController {
     //here to put the GET APIs
     /**
      *
-     * @param id the id of an expense
+     * @param expenseId the id of an expense
      * @return it returns the expense with that id
      */
     @GetMapping(path={"/"})
-    public ResponseEntity<Expense> getExpenseById(@RequestParam("id") long id)
+    public ResponseEntity<Expense> getExpenseById(@RequestParam("id") long expenseId)
     {
-        if(id<0 || !repoExp.existsById(id))
+        if(expenseId<0)
             return ResponseEntity.badRequest().build();
-        System.out.println(id);
-        return ResponseEntity.ok(repoExp.findById(id).get());
+        if(!repoExp.existsById(expenseId))
+            return ResponseEntity.notFound().build();
+        System.out.println(expenseId);
+        return ResponseEntity.ok(repoExp.findById(expenseId).get());
     }
     @GetMapping(path={"/name"})
     public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("name") String name)
@@ -124,10 +125,34 @@ public class ExpenseController {
         return ResponseEntity.ok(ans);
     }
     //here to put the PUT APIs (update)
-
+    @PutMapping(path={"/"})
+    public ResponseEntity<Expense> updateExpense(@RequestParam("expenseId") long expenseId,
+                                                 @RequestBody Expense expense)
+    {
+        if(expenseId<0)
+            return ResponseEntity.badRequest().build();
+        if(!repoExp.existsById(expenseId))
+            return ResponseEntity.notFound().build();
+        Integer a=repoExp.updateExpenseWithId(expenseId,expense.getAuthor(),expense.getContent(),
+                expense.getMoney(),expense.getCurrency(),expense.getDate(),expense.getType());
+        //if a>0 means we updated something
+        System.out.println(a);
+        Expense newExpense=repoExp.findById(expenseId).get();
+        return ResponseEntity.ok(newExpense);
+    }
     //here to put the DELETE APIs
+
+    /**
+     * This function deletes an expense from an event, and it's
+     * expense-event connection with the event. If the expense-event
+     * connection is missing, then the expense won't be removed
+     * The only exception is when the eventId is 0, but this is just for testing!
+     * @param eventId id of the event
+     * @param expenseId id of the expense
+     * @return true if everything is alright
+     */
     @DeleteMapping(path={"/"})
-    public ResponseEntity<Integer> deleteExpById(@RequestParam("eventId")long eventId,
+    public ResponseEntity<Boolean> deleteExpById(@RequestParam("eventId")long eventId,
                                                  @RequestParam("expenseId") long expenseId)
     {
         if(eventId<0 || expenseId<0)
@@ -135,14 +160,16 @@ public class ExpenseController {
 
         if(!repoExp.existsById(expenseId))
             return ResponseEntity.notFound().build();
-        //repoExp.deleteById(expenseId);
         //first we need to delete the connection with the event
         Integer a=repoExp.deleteExpenseEventCon(eventId,expenseId);
         if(a==0)
         {
             System.out.println("The connection between the event and the expense was not deleted");
             //444-no response
-            return ResponseEntity.status(444).build();
+            //we use eventId=0 to be able to delete an expense that has no eventId
+            //to use only for testing
+            if(eventId!=0)
+                return ResponseEntity.status(444).build();
         }
         //then we delete the expense
         Integer b=repoExp.deleteWithId(expenseId);
@@ -152,6 +179,28 @@ public class ExpenseController {
             //417 expectation failed
             return ResponseEntity.status(417).build();
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(true);
+    }
+
+    /**
+     * This function deletes all expenses from an event and all the
+     * expense-event connections.
+     * @param eventId id of the event
+     * @return the number of expenses deleted
+     */
+    @DeleteMapping(path={"/allFromEvent"})
+    public ResponseEntity<Integer> deleteAllExpensesFromEvent(@RequestParam("eventId")long eventId)
+    {
+        if(eventId<0)
+            return ResponseEntity.badRequest().build();
+        List<Expense> expenses=repoExp.findAllExpOfAnEvent(eventId);
+        //delete all Expense-Event connections
+        repoExp.deleteAllExpensesEventCon(eventId);
+        //delete all expenses related to the event
+        if(expenses!=null) {
+            for(Expense e:expenses)
+                repoExp.deleteWithId(e.getExpenseId());
+        }
+        return ResponseEntity.ok(expenses.size());
     }
 }

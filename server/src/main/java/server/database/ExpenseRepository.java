@@ -44,8 +44,22 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Modifying
     @Query("DELETE FROM Expense ex WHERE ex.expenseId=:expenseId")
     Integer deleteWithId(long expenseId);
+
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Expense ex SET ex.author=:authorId, ex.content=:content, ex.money=:money, " +
+            "ex.currency=:currency, ex.date=:date, ex.type=:type WHERE ex.expenseId=:expenseId")
+    Integer updateExpenseWithId(long expenseId, String authorId, String content, double money,
+                                           String currency, String date, String type);
+
+
     @Transactional
     @Modifying
     @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId AND ev.expenseId=:expenseId")
     Integer deleteExpenseEventCon(long eventId,long expenseId);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId")
+    void deleteAllExpensesEventCon(long eventId);
 }
