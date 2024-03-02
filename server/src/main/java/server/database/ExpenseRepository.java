@@ -16,7 +16,9 @@
 package server.database;
 
 import commons.Expense;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -33,4 +35,31 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "JOIN Participant  p ON p.participantID=pev.participantId " +
             "WHERE ev.eventId=:eventId AND p.name=:name")
     List<Expense> findEventsThatInvolvesName(long eventId,String name);
+    @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
+            "WHERE ev.eventId=:eventId")
+    List<Expense> findAllExpOfAnEvent(long eventId);
+    @Query("SELECT DISTINCT ex FROM Expense ex")
+    List<Expense> findAllExp();
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM Expense ex WHERE ex.expenseId=:expenseId")
+    Integer deleteWithId(long expenseId);
+
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Expense ex SET ex.author=:authorId, ex.content=:content, ex.money=:money, " +
+            "ex.currency=:currency, ex.date=:date, ex.type=:type WHERE ex.expenseId=:expenseId")
+    Integer updateExpenseWithId(long expenseId, String authorId, String content, double money,
+                                           String currency, String date, String type);
+
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId AND ev.expenseId=:expenseId")
+    Integer deleteExpenseEventCon(long eventId,long expenseId);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId")
+    void deleteAllExpensesEventCon(long eventId);
 }
