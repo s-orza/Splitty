@@ -61,7 +61,7 @@ public class MainCtrl {
            Pair<AddQuoteCtrl, Parent> add, Pair<DummyCtrl, Parent> serverSelect, Pair<MainPageCtrl, Parent> mainPage,
            Pair<AdminPageCtrl, Parent> adminPage, Pair<LoginAdminCtrl, Parent> loginAdminPage,
            Pair<CreateEventCtrl, Parent> createEvent, Pair<EventPageController, Parent> eventPage,
-           Pair<AddExpenseCtrl, Parent> addExpense, Pair<DummyCtrl, Parent> addParticipant) {
+           Pair<AddExpenseCtrl, Parent> addExpense, Pair<AddParticipantCtrl, Parent> addParticipant) {
 
         // assign all vars to their respective Controllers/Scenes
         this.primaryStage = primaryStage;
