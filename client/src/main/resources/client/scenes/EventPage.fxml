@@ -7,14 +7,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.EventPageCtrl">
    <children>
       <TableView fx:id="expensesTable" layoutX="14.0" layoutY="186.0" prefHeight="298.0" prefWidth="554.0">
          <columns>
             <TableColumn fx:id="authorColumn" prefWidth="75.0" text="Author" />
             <TableColumn fx:id="dateColumn" prefWidth="64.79998779296875" text="Date" />
-            <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="118.40000915527344" text="Amount" />
+            <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="118.40000915527344"
+                         text="Amount" />
             <TableColumn fx:id="descriptionColumn" prefWidth="236.00006103515625" text="Description" />
             <TableColumn fx:id="idColumn" prefWidth="48.800048828125" text="ID" />
          </columns>
@@ -34,7 +37,7 @@
          </font></Label>
       <Button fx:id="addExpense" layoutX="23.0" layoutY="151.0" mnemonicParsing="false" text="Add Expense" />
       <Button fx:id="addParticipant" layoutX="459.0" layoutY="151.0" mnemonicParsing="false" text="Add Participant" />
-      <Button fx:id="removeExpense" layoutX="132.0" layoutY="151.0" mnemonicParsing="false" text="Remove Expneses" />
+      <Button fx:id="removeExpense" layoutX="132.0" layoutY="151.0" mnemonicParsing="false" text="Remove Expenses" />
       <Button fx:id="editEventName" layoutX="456.0" layoutY="110.0" mnemonicParsing="false" text="Edit Event Name" />
    </children>
 </AnchorPane>
