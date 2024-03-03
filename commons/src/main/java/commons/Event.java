@@ -81,8 +81,8 @@ public class Event {
         //TODO
         // Pull from the database a list of all events and compare this ID with all other IDS
         // If similar to any, generate a new random number
+        setUpEventList();
         while (eventList.contains(eventID)){
-            setUpEventList();
             eventID = new Random().nextLong();
         }
     }
