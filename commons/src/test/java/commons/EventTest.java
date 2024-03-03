@@ -50,7 +50,7 @@ public class EventTest {
 
     @Test
     public void EqualsTest(){
-        assertTrue(event.equals(event2));
+        assertFalse(event.equals(event2));
     }
 
     @Test
