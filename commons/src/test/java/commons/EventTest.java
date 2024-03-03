@@ -30,6 +30,10 @@ public class EventTest {
     }
 
     @Test
+    public void uniqueIDTest(){
+            assertNotEquals(event.getEventId(), event2.getEventId());
+    }
+    @Test
     public void eventConstructorTest(){
         assertNotNull(event);
     }
