@@ -48,6 +48,7 @@ public class EventTest {
         assertEquals(event.getExpenses(), expensesList);
     }
 
+    // Test if different as eventID is different
     @Test
     public void EqualsTest(){
         assertFalse(event.equals(event2));
@@ -55,7 +56,7 @@ public class EventTest {
 
     @Test
     public void hashCodeTest(){
-        assertEquals(event.hashCode(), event2.hashCode());
+        assertNotEquals(event.hashCode(), event2.hashCode());
     }
 
 }
