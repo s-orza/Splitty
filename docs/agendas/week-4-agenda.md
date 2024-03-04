@@ -13,8 +13,7 @@
 - Checking if everybody reached the weekly knokout criteria - Is anyone having troubles with the weekly knockout criteria? (1 min)
 - Announcements by the TA (3-5 min)
 - Recap on what we did last week. What everyone has been working on.(updates to the app and code of conduct) And if we have finished everything we wanted last week. (6 min)
-- Presentation of the current app to TA (8 min)
-- Talking about milestones (1 min)
+- Presentation of the current app to TA (7 min)
 
 - Any questions for the TA? (3-5 min)
 - - Asking what should we do in a similar situation with the one with "reverting the revert of a MR"
@@ -24,8 +23,12 @@
 
 - If everyone knows about the document on Brighspace (Assignments/Teamwork Assignments/Providing Feedback) (30 sec)
 - What AID model is (4 min)
-- Talking about giving feedback and the 3 main factors: Action, Impact, Desire and what they mean (6 min)
+- Talking about giving feedback and the 3 main factors: Action, Impact, Desire and what they mean (5-6 min)
 - How code review was until now (the current status) and if everybody feels it is constructive (2 min)
+<h3>Task & Planning </h3>
+
+- Talking about issues and how we created them until now and what should we improve. (3 min)
+- Talking about milestones (1 min)
 <h3> Next Meeting </h3>
 
 - When do you want to have the next meeting? (Probably after this one) (1 min)
