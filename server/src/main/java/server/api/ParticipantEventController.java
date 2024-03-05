@@ -106,4 +106,15 @@ public class ParticipantEventController {
         }
         return ResponseEntity.of(Optional.of(participants));
     }
+
+    /**
+     * This method gets the id of the event as the path variable
+     * and also the participant id as a parameter.
+     * @param participantId the
+     */
+    @DeleteMapping(path = {"/{eventId}/{participantId}" })
+    public void deleteParticipantEvent(@PathVariable long eventId,
+                                       @PathVariable long participantId) {
+        repo.deleteParticipantEvent(eventId, participantId);
+    }
 }

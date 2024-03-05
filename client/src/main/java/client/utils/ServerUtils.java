@@ -168,6 +168,18 @@ public class ServerUtils {
 		return null;
 	}
 
+	public boolean deleteParticipantEvent(long eventId, long participantId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/participant/event/" + eventId + "/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+
+		if(response.getStatus() < 300)
+			return true;
+		return false;
+	}
+
 
 	/**
 	 * This will go and invoke the ParticipantEvent controller

@@ -286,10 +286,7 @@ public class EventPageCtrl implements Controller{
      */
     public void addParticipantHandler() {
         try {
-            var la = server.getParticipantsOfEvent(52752);
-            for(Participant a : la){
-                System.out.println(a);
-            }
+//            server.deleteParticipantEvent(52752,92757);
 //            System.out.println("about to execute participantEvent");
 //            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
         } catch (Exception e) {

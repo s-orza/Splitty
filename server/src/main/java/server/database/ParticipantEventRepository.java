@@ -16,7 +16,9 @@
 package server.database;
 
 import commons.ParticipantEvent;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -27,4 +29,10 @@ public interface ParticipantEventRepository extends JpaRepository<ParticipantEve
     @Query("SELECT pe.participantId FROM ParticipantEvent pe WHERE pe.eventId = :eventId")
     List<Long> findParticipantIdsByEventId(@Param("eventId") Long eventId);
 
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ParticipantEvent pe WHERE pe.eventId=:eventId " +
+            "AND pe.participantId=:participantId")
+    Integer deleteParticipantEvent(long eventId, long participantId);
 }
