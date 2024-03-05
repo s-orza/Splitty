@@ -53,6 +53,7 @@ Sublabels are pretty important and useful for organisation.
 Issue templates are a thing apparently, that is useful in creating issues.
 Time tracking is important as well. We can do estimated and real time spent.
 It is a better idea to work at the same time on front and back end. That's full stack.
+We have to work in week 5 as well, because it will be added to week 6 knockout criteria. 
 
 --------------------------RECAP ON LAST WEEK-------------------------- 
 
@@ -68,6 +69,8 @@ the front end connectivity. We know we are her favourite group!
 ----------------------------Things to check---------------------------
 
 Raw SQL may not be really allowed. But we have to check. 
+
+
 
 
 
