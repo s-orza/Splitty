@@ -168,6 +168,7 @@ public class ServerUtils {
 		return null;
 	}
 
+
 	public List<Event> getEventsOfParticipant(long participantId){
 		System.out.println("in servero");
 		Response response = ClientBuilder.newClient(new ClientConfig())

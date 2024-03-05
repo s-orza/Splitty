@@ -112,8 +112,11 @@ public class ParticipantEventController {
 
         System.out.println("in api methode");
         List<Long> eventIds = repo.findEventIdsByParticipantId(participantId);
+        System.out.println("indicies foundyy");
         List<Event> events = new ArrayList<>();
+
         for(long id : eventIds){
+            System.out.println("in for loop");
             Event toAdd = eventRepository.findById(id).get();
             events.add(toAdd);
         }
@@ -130,4 +133,5 @@ public class ParticipantEventController {
                                        @PathVariable long participantId) {
         repo.deleteParticipantEvent(eventId, participantId);
     }
+
 }

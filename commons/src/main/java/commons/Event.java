@@ -62,7 +62,7 @@ public class Event {
     }
 
 
-    @Column
+//    @Column
     @OneToMany
     // for the next PUBLIC method, consider this temporary 'database' representation of events
     private List<Event> eventList = new ArrayList<>();

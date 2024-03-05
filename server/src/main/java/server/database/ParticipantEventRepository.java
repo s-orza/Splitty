@@ -29,6 +29,7 @@ public interface ParticipantEventRepository extends JpaRepository<ParticipantEve
     @Query("SELECT pe.participantId FROM ParticipantEvent pe WHERE pe.eventId = :eventId")
     List<Long> findParticipantIdsByEventId(@Param("eventId") Long eventId);
 
+
     @Query("SELECT pe.eventId FROM ParticipantEvent pe WHERE pe.participantId = :participantId")
     List<Long> findEventIdsByParticipantId(@Param("participantId") Long participantId);
 
@@ -38,4 +39,5 @@ public interface ParticipantEventRepository extends JpaRepository<ParticipantEve
     @Query("DELETE FROM ParticipantEvent pe WHERE pe.eventId=:eventId " +
             "AND pe.participantId=:participantId")
     Integer deleteParticipantEvent(long eventId, long participantId);
+
 }
