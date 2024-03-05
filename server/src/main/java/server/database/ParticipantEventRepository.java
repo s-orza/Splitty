@@ -29,6 +29,9 @@ public interface ParticipantEventRepository extends JpaRepository<ParticipantEve
     @Query("SELECT pe.participantId FROM ParticipantEvent pe WHERE pe.eventId = :eventId")
     List<Long> findParticipantIdsByEventId(@Param("eventId") Long eventId);
 
+    @Query("SELECT pe.eventId FROM ParticipantEvent pe WHERE pe.participantId = :participantId")
+    List<Long> findEventIdsByParticipantId(@Param("participantId") Long participantId);
+
 
     @Transactional
     @Modifying

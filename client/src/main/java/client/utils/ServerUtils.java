@@ -156,7 +156,7 @@ public class ServerUtils {
 	public List<Participant> getParticipantsOfEvent(long eventId){
 		System.out.println("in servero");
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("/api/participant/event/" + eventId)
+				.target(SERVER).path("/api/participant/event/getParticipants/" + eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		System.out.println("out servero");
@@ -168,8 +168,22 @@ public class ServerUtils {
 		return null;
 	}
 
-	public boolean deleteParticipantEvent(long eventId, long participantId)
-	{
+	public List<Event> getEventsOfParticipant(long participantId){
+		System.out.println("in servero");
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("/api/participant/event/getEvents/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println("out servero");
+		if(response.getStatus() < 300) {
+			GenericType<List<Event>> genericType = new GenericType<List<Event>>() {};
+			return response.readEntity(genericType);  // Use a specific type reference here
+		}
+
+		return null;
+	}
+
+	public boolean deleteParticipantEvent(long eventId, long participantId) {
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER).path("api/participant/event/" + eventId + "/" + participantId)
 				.request(APPLICATION_JSON)

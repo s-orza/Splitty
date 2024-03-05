@@ -94,7 +94,7 @@ public class ParticipantEventController {
         // Return the saved participant and a 201 Created status
     }
 
-    @GetMapping(path = {"/{eventId}" })
+    @GetMapping(path = {"/getParticipants/{eventId}" })
     public ResponseEntity<List<Participant>> getParticipantsOfEvent(@PathVariable long eventId) {
         System.out.println(eventId);
         System.out.println("in api methode");
@@ -105,6 +105,19 @@ public class ParticipantEventController {
             participants.add(toAdd);
         }
         return ResponseEntity.of(Optional.of(participants));
+    }
+
+    @GetMapping(path = {"/getEvents/{participantId}" })
+    public ResponseEntity<List<Event>> getEventsOfParticipant(@PathVariable long participantId) {
+
+        System.out.println("in api methode");
+        List<Long> eventIds = repo.findEventIdsByParticipantId(participantId);
+        List<Event> events = new ArrayList<>();
+        for(long id : eventIds){
+            Event toAdd = eventRepository.findById(id).get();
+            events.add(toAdd);
+        }
+        return ResponseEntity.of(Optional.of(events));
     }
 
     /**
