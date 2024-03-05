@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Expense;
+import commons.ExpenseEvent;
 import commons.Participant;
 import commons.ParticipantExpense;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +35,45 @@ public class ExpenseController {
         //expense.setParticipants(participantList);
     }
     //here to put the POST APIs
+
+    /**
+     * A function to add an expense to an event and to create Expense-Event connection
+     * @param eventId the id of the event
+     * @param expense the expense
+     * @return the expense which was added
+     */
+    @PostMapping(path = { "/saved"})
+    public ResponseEntity<Expense> addExpenseToEvent(@RequestParam("eventId") long eventId,
+                                                     @RequestBody Expense expense)
+    {
+        if (expense==null) {
+            System.out.println("is null");
+            return ResponseEntity.badRequest().build();
+        }
+        List<Participant> participants = expense.getParticipants();
+        //for storing it in the database
+        expense.setParticipants(null);
+        Expense saved=repoExp.save(expense);
+        System.out.println("expense saved");
+        //save participant-expense stuff
+        //PARTICIPANTS NEED TO HAVE IDs
+        if(participants!=null && !participants.isEmpty()) {
+            //now we need to create connections between the expense and the participants
+            for (Participant p : participants) {
+                ParticipantExpense pe = new ParticipantExpense(saved.getExpenseId(), p.getParticipantID());
+                repoPaExp.save(pe);
+            }
+        }
+        //create ExpenseEvent connection
+        repoExpEv.save(new ExpenseEvent(saved.getExpenseId(),eventId));
+        System.out.println("expenseEvent saved");
+        return ResponseEntity.ok(saved);
+    }
     @PostMapping(path = { "/s"})
     public ResponseEntity<Expense> addExpense(@RequestBody Expense expense)
     {
-        if (expense == null) {
-            System.out.println("is null");
+        if (expense==null) {
+            System.out.println("expense is null");
             return ResponseEntity.badRequest().build();
         }
         List<Participant> participants=expense.getParticipants();
@@ -54,29 +89,6 @@ public class ExpenseController {
             }
         }
         return ResponseEntity.ok(saved);
-    }
-    @PostMapping(path = { "/ss"})
-    public Expense addExpensee(@RequestBody Expense expense)
-    {
-        if (expense == null) {
-            System.out.println("is null");
-            return null;
-        }
-        if(expense.getExpenseId()<0 || repoExp.existsById(expense.getExpenseId()))
-            return null;
-        List<Participant> participants=expense.getParticipants();
-        //in order to be able to store it in the database
-        expense.setParticipants(null);
-        Expense saved=repoExp.save(expense);
-        System.out.println("saved");
-        if(!participants.isEmpty()) {
-            //now we need to create connections between the expense and the participants
-            for (Participant p : participants) {
-                ParticipantExpense pe = new ParticipantExpense(saved.getExpenseId(), p.getParticipantID());
-                repoPaExp.save(pe);
-            }
-        }
-        return saved;
     }
     //here to put the GET APIs
     /**

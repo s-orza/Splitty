@@ -202,7 +202,9 @@ public class AddExpenseCtrl implements Controller{
         Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
                 dateString,null,typeSelector.getValue());
         System.out.println(expense);
-        server.addExpense(expense);
+        //the id is the id of the current event, we need to change
+        long id=2;//??;
+        server.addExpenseToEvent(id,expense);
         //System.out.println(server.getExpenseById(1));
         resetElements();
     }

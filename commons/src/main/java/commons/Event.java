@@ -63,6 +63,8 @@ public class Event {
 
 
     // for the next PUBLIC method, consider this temporary 'database' representation of events
+    @Column
+    @OneToMany
     private List<Event> eventList = new ArrayList<>();
     private void setUpEventList(){
         eventList.add(new Event());
