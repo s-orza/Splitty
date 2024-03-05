@@ -61,7 +61,7 @@ Everybody is satisfied with the amount of amazing work we did last week.
 In intellij we can see the entity relationship of the database, but we 
 need a plugin for that.
 
---------------------------------Miss Elena---------------------------------
+------------------------------Miss Elena------------------------------
 
 Miss Elena is really happy with our amazing work on the database, api and 
 the front end connectivity. We know we are her favourite group!
@@ -69,36 +69,6 @@ the front end connectivity. We know we are her favourite group!
 ----------------------------Things to check---------------------------
 
 Raw SQL may not be really allowed. But we have to check. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
