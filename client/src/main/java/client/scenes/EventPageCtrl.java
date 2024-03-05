@@ -1,10 +1,6 @@
 package client.scenes;
 
-
-//import com.sun.javafx.application.ParametersImpl;
-
 import client.utils.ServerUtils;
-
 
 import client.MyFXML;
 import client.MyModule;
@@ -37,9 +33,7 @@ import java.util.List;
 
 import static com.google.inject.Guice.createInjector;
 
-
 public class EventPageCtrl implements Controller{
-
 
     @FXML
     TableView participantsTable;
