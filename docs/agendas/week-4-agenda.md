@@ -41,10 +41,12 @@
 <h3> Notes </h3>
 
 -----------------------------Tasks to do------------------------------
+
 Buddycheck should be done until Friday and it is anonymous. Everybody 
 reviews everybode else. Critizism should be constructive!
 
 ------------------------Planning and Organizing-----------------------
+
 We have to create a branch from the issue directly. (Created from the 
 big blue button). We have to use milestones from this point forward. 
 Sublabels are pretty important and useful for organisation. 
@@ -53,15 +55,18 @@ Time tracking is important as well. We can do estimated and real time spent.
 It is a better idea to work at the same time on front and back end. That's full stack.
 
 --------------------------RECAP ON LAST WEEK-------------------------- 
+
 Everybody is satisfied with the amount of amazing work we did last week. 
 In intellij we can see the entity relationship of the database, but we 
 need a plugin for that.
 
 --------------------------------Elena---------------------------------
+
 Elena is really happy with our amazing work on the database, api and 
 the front end connectivity. We know we are her favourite group!
 
 ----------------------------Things to check---------------------------
+
 Raw SQL may not be really allowed. But we have to check. 
 
 
