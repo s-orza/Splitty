@@ -1,4 +1,5 @@
 package client.scenes;
+
 import client.MyFXML;
 import client.MyModule;
 import com.google.inject.Injector;
@@ -39,7 +40,6 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void createEvent(ActionEvent e) {
     System.out.println("Crete event window");
-    System.out.println(createInput.getText());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, CreateEventCtrl.getPair(), CreateEventCtrl.getTitle());
   }

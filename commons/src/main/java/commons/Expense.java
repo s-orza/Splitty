@@ -124,12 +124,12 @@ public class Expense {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Expense expense = (Expense) o;
-        return Double.compare(getMoney(), expense.getMoney()) == 0 &&
-                Objects.equals(getAuthor(), expense.getAuthor()) && Objects.equals(getContent(),
-                expense.getContent()) && Objects.equals(getCurrency(), expense.getCurrency())
-                && Objects.equals(getDate(), expense.getDate()) &&
-                Objects.equals(getParticipants(), expense.getParticipants()) &&
-                Objects.equals(getType(), expense.getType());
+        return getExpenseId() == expense.getExpenseId() && Double.compare(getMoney(),
+                expense.getMoney()) == 0 && Objects.equals(getAuthor(), expense.getAuthor())
+                && Objects.equals(getContent(), expense.getContent()) &&
+                Objects.equals(getCurrency(), expense.getCurrency()) && Objects.equals(getDate()
+                , expense.getDate()) && Objects.equals(getParticipants(), expense.getParticipants())
+                && Objects.equals(getType(), expense.getType());
     }
 
     @Override

@@ -17,7 +17,12 @@ package server.database;
 
 import commons.ParticipantExpense;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 
-
-public interface ParticipantExpenseRepository extends JpaRepository<ParticipantExpense, Long> {}
+public interface ParticipantExpenseRepository extends JpaRepository<ParticipantExpense, Long> {
+    @Query("SELECT pe.participantId FROM ParticipantExpense pe WHERE pe.expenseId=:expenseId")
+    List<Long> getAllParticipantsIdFromExpense(long expenseId);
+}
