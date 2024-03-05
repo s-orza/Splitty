@@ -22,7 +22,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private long eventID;
+    long eventID;
 
     @Column
     String name;
@@ -37,7 +37,7 @@ public class Event {
     @Column
     public List<Participant> participants;
 
-    @Column
+//    @Column
     @OneToMany
     public List<Expense> expenses;
 
@@ -48,7 +48,7 @@ public class Event {
     public Event(String name) {
         // Possible to try and generate a random ID that contains letters & numbers (possible venture)
         eventID = new Random().nextLong();
-        checkUniqueness(eventID);
+//        checkUniqueness(eventID);
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.name = name;
@@ -62,6 +62,8 @@ public class Event {
     }
 
 
+    @Column
+    @OneToMany
     // for the next PUBLIC method, consider this temporary 'database' representation of events
     private List<Event> eventList = new ArrayList<>();
     private void setUpEventList(){
@@ -77,15 +79,15 @@ public class Event {
      * or not
      * @param eventID ID to be tested for uniqueness
      */
-    private void checkUniqueness(Long eventID){
-        //TODO
-        // Pull from the database a list of all events and compare this ID with all other IDS
-        // If similar to any, generate a new random number
-        setUpEventList();
-        while (eventList.contains(eventID)){
-            eventID = new Random().nextLong();
-        }
-    }
+//    private void checkUniqueness(Long eventID){
+//        //TODO
+//        // Pull from the database a list of all events and compare this ID with all other IDS
+//        // If similar to any, generate a new random number
+//        setUpEventList();
+//        while (eventList.contains(eventID)){
+//            eventID = new Random().nextLong();
+//        }
+//    }
 
 
     public void setEventID(long eventID) {

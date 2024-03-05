@@ -6,10 +6,8 @@ import client.MyFXML;
 import client.MyModule;
 import com.google.inject.Injector;
 
-import commons.ExpenseTest;
-import commons.Participant;
+import commons.*;
 
-import commons.ParticipantTest;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -122,7 +120,7 @@ public class EventPageCtrl implements Controller{
         // a method that fetches the data for the expenses and participants
         // and saves it into participantsData, expenseData
 
-        System.out.println("in init");
+        System.out.println("Event Page initialize method");
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
 
@@ -288,10 +286,10 @@ public class EventPageCtrl implements Controller{
      */
     public void addParticipantHandler() {
         try {
-            System.out.println("This will lead to another page to add participant");
-            Participant a = server.getParticipant(67152);
-            System.out.println(a);
-
+            var la = server.getParticipantsOfEvent(52752);
+            for(Participant a : la){
+                System.out.println(a);
+            }
 //            System.out.println("about to execute participantEvent");
 //            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
         } catch (Exception e) {

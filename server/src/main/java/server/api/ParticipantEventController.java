@@ -1,14 +1,16 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import commons.Event;
 import commons.Participant;
-
+import java.util.List;
 import commons.ParticipantEvent;
 //import org.springframework.http.ResponseEntity;
 
 
 import commons.ParticipantEventDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.database.ParticipantEventRepository;
@@ -36,7 +38,7 @@ public class ParticipantEventController {
      * @param eventId the id of the event that the participant is in
      * @param participant the participant instance itself
      */
-    @PostMapping(path = { "", "/{eventId}" })
+    @PostMapping(path = {  "/{eventId}" })
     public void createParticipantEvent(@PathVariable(required = false) Long eventId,
                                        @RequestBody Participant participant) {
         System.out.println("In ParticipantEvent controller");
@@ -68,7 +70,8 @@ public class ParticipantEventController {
      */
     @PostMapping(path = { "", "/" })
     public void createParticipantEvent(@RequestBody ParticipantEventDto pedto) {
-
+        System.out.println("in participant_event controller");
+        System.out.println(pedto.getEventId() +" "+ pedto.getParticipantId());
         if (pedto != null) {
 
             Optional<Event> eventFromDatabase = eventRepository.findById(pedto.getEventId());
@@ -89,5 +92,18 @@ public class ParticipantEventController {
 //        return ResponseEntity.ok("No event provided");
 
         // Return the saved participant and a 201 Created status
+    }
+
+    @GetMapping(path = {"/{eventId}" })
+    public ResponseEntity<List<Participant>> getParticipantsOfEvent(@PathVariable long eventId) {
+        System.out.println(eventId);
+        System.out.println("in api methode");
+        List<Long> participantIds = repo.findParticipantIdsByEventId(eventId);
+        List<Participant> participants = new ArrayList<>();
+        for(long id : participantIds){
+            Participant toAdd = participantRepository.findById(id).get();
+            participants.add(toAdd);
+        }
+        return ResponseEntity.of(Optional.of(participants));
     }
 }

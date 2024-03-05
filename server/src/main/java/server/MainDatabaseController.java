@@ -50,18 +50,18 @@ public class MainDatabaseController {
 //        event.getParticipants().add(a);
 //        eventRepository.save(event);
 
-
+//
         var event1 = new Event("zebra");
         var participant1 = new Participant("Ivan", "nove@gamil.com", "revo", "bici");
         participantRepository.save(participant1);
         eventRepository.save(event1);
-
-        var participantEvent1 = new ParticipantEvent(event1.getEventId(),
-                participant1.getParticipantID());
-
-        System.out.println(participant1.getParticipantID());
-
-        participantEventRepository.save(participantEvent1);
+//
+//        var participantEvent1 = new ParticipantEvent(event1.getEventId(),
+//                participant1.getParticipantID());
+//
+//        System.out.println(participant1.getParticipantID());
+//
+//        participantEventRepository.save(participantEvent1);
 
         return "in show expense";
     }
