@@ -37,3 +37,27 @@
 
 - Question round: Does anyone have anything to add before the meeting closes? (1 min)
 - Closure (1 min)
+
+<h3> Notes </h3>
+
+Buddycheck should be done until Friday and it is anonymous. Everybody reviews everybode else
+
+We have to create a branch from the issue directly. (Created from the big blue button).
+
+We have to use milestones from this point forward. Sublabels are pretty important and useful for organisation. 
+
+Issue templates are a thing apparently, that is useful in creating issues.
+
+Time tracking is important as well. We can do estimated and real time spent. 
+
+RECAP ON LAST WEEK: 
+Everybody is satisfied with the amount of amazing work we did last week. 
+In intellij we can see the entity relationship of the database.
+
+
+
+
+
+
+
+
