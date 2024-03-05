@@ -23,13 +23,10 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
+
+import commons.*;
 import jakarta.ws.rs.core.Response;
-import commons.ParticipantEventDto;
 import org.glassfish.jersey.client.ClientConfig;
-import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -259,6 +256,32 @@ public class ServerUtils {
 		return null;
 	}
 	//POST functions
+
+	/**
+	 * To use if you want to connect to an event
+	 * @param eventId the id of the event
+	 * @param expense the expense
+	 * @return true if it was successful
+	 */
+	public boolean addExpenseToEvent(long eventId, Expense expense)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/saved?eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.post(Entity.entity(expense,APPLICATION_JSON));
+		System.out.println(response);
+		if(response.getStatus()==200)
+			return true;
+		return false;
+	}
+
+	/**
+	 * To use if you don't care about storing ExpenseEvent connection
+	 * Not good for database, but good for testing
+	 * @param expense the expense
+	 * @return true if it was successful
+	 */
 	public boolean addExpense(Expense expense)
 	{
 		System.out.println("In server");

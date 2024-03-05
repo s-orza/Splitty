@@ -37,3 +37,38 @@
 
 - Question round: Does anyone have anything to add before the meeting closes? (1 min)
 - Closure (1 min)
+
+<h3> Notes </h3>
+
+-----------------------------Tasks to do------------------------------
+
+Buddycheck should be done until Friday and it is anonymous. Everybody 
+reviews everybode else. Critizism should be constructive!
+
+------------------------Planning and Organizing-----------------------
+
+We have to create a branch from the issue directly. (Created from the 
+big blue button). We have to use milestones from this point forward. 
+Sublabels are pretty important and useful for organisation. 
+Issue templates are a thing apparently, that is useful in creating issues.
+Time tracking is important as well. We can do estimated and real time spent.
+It is a better idea to work at the same time on front and back end. That's full stack.
+We have to work in week 5 as well, because it will be added to week 6 knockout criteria. 
+
+--------------------------RECAP ON LAST WEEK-------------------------- 
+
+Everybody is satisfied with the amount of amazing work we did last week. 
+In intellij we can see the entity relationship of the database, but we 
+need a plugin for that.
+
+------------------------------Miss Elena------------------------------
+
+Miss Elena is really happy with our amazing work on the database, api and 
+the front end connectivity. We know we are her favourite group!
+
+----------------------------Things to check---------------------------
+
+Raw SQL may not be really allowed. But we have to check. 
+
+
+
