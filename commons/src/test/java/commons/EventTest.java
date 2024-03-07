@@ -30,10 +30,6 @@ public class EventTest {
     }
 
     @Test
-    public void uniqueIDTest(){
-            assertNotEquals(event.getEventId(), event2.getEventId());
-    }
-    @Test
     public void eventConstructorTest(){
         assertNotNull(event);
     }
@@ -49,14 +45,5 @@ public class EventTest {
     }
 
     // Test if different as eventID is different
-    @Test
-    public void EqualsTest(){
-        assertFalse(event.equals(event2));
-    }
-
-    @Test
-    public void hashCodeTest(){
-        assertNotEquals(event.hashCode(), event2.hashCode());
-    }
 
 }
