@@ -108,10 +108,10 @@ public class ExpenseController {
         putParticipants(expense);
         return ResponseEntity.ok(expense);
     }
-    @GetMapping(path={"/name"})
-    public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("name") String name)
+    @GetMapping(path={"/author"})
+    public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("authorId") long authorId)
     {
-        List<Expense> ans=repoExp.findByAuthor(name);
+        List<Expense> ans=repoExp.findByAuthor(authorId);
         for(Expense e:ans)
             putParticipants(e);
         return ResponseEntity.ok(ans);
@@ -166,7 +166,7 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         if(!repoExp.existsById(expenseId))
             return ResponseEntity.notFound().build();
-        Integer a=repoExp.updateExpenseWithId(expenseId,expense.getAuthor(),expense.getContent(),
+        Integer a=repoExp.updateExpenseWithId(expenseId,expense.getAuthor().getParticipantID(),expense.getContent(),
                 expense.getMoney(),expense.getCurrency(),expense.getDate(),expense.getType());
         //if a>0 means we updated something
         System.out.println(a);

@@ -11,8 +11,9 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private long expenseId;
-    @Column
-    private String author;
+    @JoinColumn
+    @ManyToOne
+    private Participant author;
     @Column
     private String content;
     @Column
@@ -27,7 +28,7 @@ public class Expense {
     @Column
     private String type;
 
-    public Expense(String author, String content, double money, String currency,
+    public Expense(Participant author, String content, double money, String currency,
                    String date, List<Participant> participants, String type) {
         this.author = author;
         this.content = content;
@@ -47,7 +48,7 @@ public class Expense {
 
     }
 
-    public String getAuthor() {
+    public Participant getAuthor() {
         return author;
     }
 
@@ -70,7 +71,7 @@ public class Expense {
         this.expenseId = expenseId;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Participant author) {
         this.author = author;
     }
 
@@ -126,15 +127,15 @@ public class Expense {
         Expense expense = (Expense) o;
         return getExpenseId() == expense.getExpenseId() && Double.compare(getMoney(),
                 expense.getMoney()) == 0 && Objects.equals(getAuthor(), expense.getAuthor())
-                && Objects.equals(getContent(), expense.getContent()) &&
-                Objects.equals(getCurrency(), expense.getCurrency()) && Objects.equals(getDate()
-                , expense.getDate()) && Objects.equals(getParticipants(), expense.getParticipants())
-                && Objects.equals(getType(), expense.getType());
+                && Objects.equals(getContent(), expense.getContent()) && Objects.equals(getCurrency(),
+                expense.getCurrency()) && Objects.equals(getDate(), expense.getDate()) &&
+                Objects.equals(getParticipants(), expense.getParticipants()) && Objects.equals(getType(),
+                expense.getType());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAuthor(), getContent(), getMoney(), getCurrency(), getDate(),
+        return Objects.hash(getExpenseId(), getAuthor(), getContent(), getMoney(), getCurrency(), getDate(),
                 getParticipants(), getType());
     }
 }

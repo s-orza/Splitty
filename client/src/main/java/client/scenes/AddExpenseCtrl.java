@@ -199,7 +199,7 @@ public class AddExpenseCtrl implements Controller{
         //I still need to adjust this list
         List<Participant> list=new ArrayList<>();
         list.add(pa);
-        Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
+        Expense expense=new Expense(pa,content,money,moneyTypeSelector.getValue(),
                 dateString,null,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
