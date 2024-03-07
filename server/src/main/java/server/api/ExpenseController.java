@@ -1,14 +1,12 @@
 package server.api;
 
-import commons.Expense;
-import commons.ExpenseEvent;
-import commons.Participant;
-import commons.ParticipantExpense;
+import commons.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ExpenseEventRepository;
 import server.database.ExpenseRepository;
 import server.database.ParticipantExpenseRepository;
+import server.database.TagRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +18,13 @@ public class ExpenseController {
     private final ExpenseRepository repoExp;
     private final ExpenseEventRepository repoExpEv;
     private final ParticipantExpenseRepository repoPaExp;
+    private final TagRepository repoTag;
     public ExpenseController(ExpenseRepository repoExp, ExpenseEventRepository repoExpEv,
-                             ParticipantExpenseRepository repoPaExp) {
+                             ParticipantExpenseRepository repoPaExp, TagRepository repoTag) {
         this.repoExp = repoExp;
         this.repoExpEv = repoExpEv;
         this.repoPaExp = repoPaExp;
+        this.repoTag = repoTag;
     }
     public void putParticipants(Expense expense)
     {
@@ -88,6 +88,21 @@ public class ExpenseController {
                 repoPaExp.save(pe);
             }
         }
+        return ResponseEntity.ok(saved);
+    }
+    @PostMapping(path = { "/tags"})
+    public ResponseEntity<Tag> addTag(@RequestBody Tag tag) {
+        if (tag==null) {
+            System.out.println("tag is null");
+            return ResponseEntity.badRequest().build();
+        }
+        if(repoTag.existsById(tag.getName()))
+        {
+            System.out.println("Already in the database");
+            return ResponseEntity.badRequest().build();
+        }
+        repoTag.save(tag);
+        Tag saved=repoTag.findById(tag.getName()).get();
         return ResponseEntity.ok(saved);
     }
     //here to put the GET APIs
@@ -156,6 +171,16 @@ public class ExpenseController {
         for(Expense e:ans)
             putParticipants(e);
         return ResponseEntity.ok(ans);
+    }
+    @GetMapping(path={"/tags"})
+    public ResponseEntity<Tag> getTag(@RequestParam("tag") String tagName)
+    {
+        if(repoTag.existsById(tagName))
+        {
+            Tag tag=repoTag.findById(tagName).get();
+            return ResponseEntity.ok(tag);
+        }
+        return ResponseEntity.notFound().build();
     }
     //here to put the PUT APIs (update)
     @PutMapping(path={"/"})
@@ -236,5 +261,16 @@ public class ExpenseController {
                 repoExp.deleteWithId(e.getExpenseId());
         }
         return ResponseEntity.ok(expenses.size());
+    }
+    @DeleteMapping (path={"/tags"})
+    public ResponseEntity<Tag> deleteTag(@RequestParam("tag") String tagName)
+    {
+        if(repoTag.existsById(tagName))
+        {
+            Tag tag=repoTag.findById(tagName).get();
+            repoTag.deleteById(tagName);
+            return ResponseEntity.ok(tag);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
