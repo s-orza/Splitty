@@ -1,18 +1,27 @@
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
 import client.utils.ServerUtils;
+import com.google.inject.Injector;
 import commons.Participant;
 import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import javafx.util.Pair;
 
-public class AddParticipantCtrl {
+import static com.google.inject.Guice.createInjector;
+
+public class AddParticipantCtrl implements Controller{
     private ServerUtils server;
-    private MainCtrl mainCtrl;
     @FXML
     private Button addButton;
     @FXML
@@ -26,10 +35,14 @@ public class AddParticipantCtrl {
     @FXML
     private TextField bic;
 
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
+
     @Inject
-    public AddParticipantCtrl(ServerUtils server, MainCtrl mainCtrl){
+    public AddParticipantCtrl(ServerUtils server){
         this.server = server;
-        this.mainCtrl = mainCtrl;
     }
 
     /**
@@ -86,11 +99,22 @@ public class AddParticipantCtrl {
             System.out.println("Participant is already in the list");
         }
     }
+    public void close(ActionEvent e){
+        System.out.println("close window");
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+    }
 
     @FXML
     void cancelEvent(){
         System.out.println("Participant adding process canceled");
     }
 
-
+    static Pair<Controller, Parent> getPair(){
+        return FXML.load(Controller.class, "client", "scenes", "AddParticipant.fxml");
+    }
+    static String getTitle(){
+        return "Add Participant";
+    }
 }
+

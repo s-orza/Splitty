@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
 import commons.Event;
 import client.MyFXML;
 import client.MyModule;
@@ -13,6 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import javax.inject.Inject;
+
 import static com.google.inject.Guice.createInjector;
 
 public class CreateEventCtrl implements Controller{
@@ -20,7 +23,6 @@ public class CreateEventCtrl implements Controller{
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
 
     //Gets the different FXML page components
     @FXML
@@ -30,19 +32,21 @@ public class CreateEventCtrl implements Controller{
 
     private String eventName;
     private Stage stage;
-
+    ServerUtils server;
+    @Inject
+    public CreateEventCtrl(ServerUtils server) {
+        this.server = server;
+    }
 
     //method to go to the eventPage once you create a new event with eventName as the title of the new event.
     // It also adds a new event to the data base
     public void create(ActionEvent e){
         Event newEvent = new Event(textField.getText());
-//        ServerUtils.createEvent(newEvent);
+        //ServerUtils.createEvent(newEvent);
         System.out.println("Crete event window");
-        System.out.println(newEvent.toString());
         System.out.println(textField.getText());
-
-        eventName = textField.getText();
-        System.out.printf(eventName);
+        System.out.println(server.getEvents());
+        server.createEvent(newEvent);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
     }

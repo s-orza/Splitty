@@ -30,6 +30,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 public class ServerUtils {
 
@@ -70,7 +71,7 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to add event
-	public static void createEvent(Event event) {
+	public void createEvent(Event event) {
 		ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/events") //
 				.request(APPLICATION_JSON) //
@@ -79,16 +80,16 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to delete an event
-	public void deleteEvent (long id) {
+	public void deleteEvent (long id) throws Exception {
 		Response response = ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events" + id) //
+				.target(SERVER).path("api/events/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
 		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
 			System.out.println("Quote removed successfully.");
 		} else {
-			System.out.println("Failed to remove quote. Status code: " + response.getStatus());
+			throw new Exception("Failed to remove quote. Status code: "+ response.getStatus());
 		}
 		response.close();
 	}
@@ -96,7 +97,7 @@ public class ServerUtils {
 	//connects to the database through the endpoint to get participants from specific event
 	public List<Participant> getParticipants() {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/participant") //
+				.target(SERVER).path("api/events/participants") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.get(new GenericType<List<Participant>>() {});

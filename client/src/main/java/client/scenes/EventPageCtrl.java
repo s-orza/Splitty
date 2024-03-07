@@ -10,10 +10,8 @@ import client.MyFXML;
 import client.MyModule;
 import com.google.inject.Injector;
 
-import commons.ExpenseTest;
-import commons.Participant;
+import commons.*;
 
-import commons.ParticipantTest;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -45,6 +43,7 @@ public class EventPageCtrl implements Controller{
     TableView participantsTable;
 
     ServerUtils server;
+    Event currentEvent;
 
     @Inject
     public EventPageCtrl(ServerUtils server) {
@@ -133,7 +132,7 @@ public class EventPageCtrl implements Controller{
         renderParticipants(participantsData);
 
         // just initializes some properties needed for the elements
-        addParticipant.setOnAction(e->addParticipantHandler());
+        addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -143,6 +142,9 @@ public class EventPageCtrl implements Controller{
 
     }
 
+    public void connectEvent(Event event){
+        currentEvent = event;
+    }
     /**
      * handles the change of the event name, but only in visual perspective, and no
      * database connectivity
@@ -189,10 +191,6 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
     }
-
-
-
-
 
     /**
      * this method adds the data about Participants into the Participants table
@@ -278,6 +276,11 @@ public class EventPageCtrl implements Controller{
         //todo
         // this method will remove the expenses from the database
     }
+    public void close(ActionEvent e){
+        System.out.println("close window");
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
+    }
 
     /**
      * this method will change the name of the event in the databse
@@ -292,7 +295,7 @@ public class EventPageCtrl implements Controller{
     /**
      * method that will lead to a new stage, specifically for adding participants
      */
-    public void addParticipantHandler() {
+    public void addParticipantHandler(ActionEvent event) {
         try {
             System.out.println("This will lead to another page to add participant");
             Participant a = server.getParticipant(67152);
@@ -304,11 +307,9 @@ public class EventPageCtrl implements Controller{
             System.out.println(e);
         }
 
-        //todo
-        // go to the add participant page
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, AddParticipantCtrl.getPair(), AddParticipantCtrl.getTitle());
     }
-
-
 
     //getter for swapping scenes
     public static Pair<Controller, Parent> getPair() {
