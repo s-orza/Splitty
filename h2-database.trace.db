@@ -1,3 +1,0 @@
-2024-02-28 19:36:30.644535+01:00 jdbc[13]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "EVENTS" not found; SQL statement:
-Select * From Events [42102-224]
