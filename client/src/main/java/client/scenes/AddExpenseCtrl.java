@@ -203,7 +203,8 @@ public class AddExpenseCtrl implements Controller{
                 dateString,null,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
-        long id=2;//??;
+        long id= 1;
+                //EventPageCtrl.getCurrentEvent().getEventId();
         server.addExpenseToEvent(id,expense);
         //System.out.println(server.getExpenseById(1));
         resetElements();
@@ -218,6 +219,7 @@ public class AddExpenseCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
     }
+
     void handleSelectAuthor(ActionEvent event)
     {
         System.out.println(authorSelector.getValue());
