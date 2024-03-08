@@ -16,13 +16,14 @@ class ExpenseTest {
         participants.add(new Participant("Alex","a","b","c"));
         participants.add(new Participant("Mirela","a","b","c"));
         participants.add(new Participant("Gigi","a","b","c"));
-        expense=new Expense("Alex","some water",23.5,"EUR",
+        expense=new Expense(new Participant("Alex","a","b","c"),
+                "some water",23.5,"EUR",
                 "22,2,2024",participants,"Drinks");
     }
 
     @Test
     void getAuthor() {
-        assertEquals("Alex", expense.getAuthor());
+        assertEquals(new Participant("Alex","a","b","c"), expense.getAuthor());
     }
 
     @Test
@@ -67,7 +68,8 @@ class ExpenseTest {
         people.add(new Participant("Alex","a","b","c"));
         people.add(new Participant("Mirela","a","b","c"));
         people.add(new Participant("Gigi","a","b","c"));
-        Expense expense2=new Expense("Alex","some water",23.5,"EUR",
+        Expense expense2=new Expense(new Participant("Alex","a","b","c"),
+                "some water",23.5,"EUR",
                         "22,2,2024",people,"Drinks");
         assertEquals(expense,expense2);
     }
@@ -78,7 +80,8 @@ class ExpenseTest {
         people.add(new Participant("Alex","a","b","c"));
         people.add(new Participant("Mirela","a","b","c"));
         people.add(new Participant("Gigi","a","b","c"));
-        Expense expense2=new Expense("Alex","some water",23.5,"EUR",
+        Expense expense2=new Expense(new Participant("Alex","a","b","c"),
+                "some water",23.5,"EUR",
                 "22,2,2024",people,"Drinks");
         assertEquals(expense.hashCode(),expense2.hashCode());
     }

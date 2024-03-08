@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import commons.Expense;
 import commons.Participant;
+import commons.Tag;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +36,10 @@ public class AddExpenseCtrl implements Controller{
 
     @FXML
     private Button addButton;
+    @FXML
+    private Button addTypeButton;
+    @FXML
+    private TextField newTypeTextField;
 
     @FXML
     private Button cancelButton;
@@ -50,6 +55,8 @@ public class AddExpenseCtrl implements Controller{
 
     @FXML
     private DatePicker date;
+    @FXML
+    private ColorPicker colorPicker;
 
     @FXML
     private TextField moneyPaid;
@@ -70,6 +77,7 @@ public class AddExpenseCtrl implements Controller{
     private ObservableList<String> names = FXCollections.observableArrayList(
             "Serban","David","Olav","Alex");
     private List<String> expenseTypesAvailable=new ArrayList<>();
+    private List<String> tagsAvailable;
     @Inject
     public AddExpenseCtrl(ServerUtils server) {
         this.server = server;
@@ -81,9 +89,18 @@ public class AddExpenseCtrl implements Controller{
         //names=...
         selectedNamesList = new ArrayList<>();
         //initialise the expenseTypesAvailable
+        expenseTypesAvailable.clear();
         expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
         //initialise the warning text
         warningText.setText("");
+
+        //initialise the tags
+        tagsAvailable=new ArrayList<>();
+        // tagsAvailable= ->import from database all the tags<-
+            tagsAvailable.add("other");
+
+
+        //reset and load
         resetElements();
     }
     /**
@@ -96,11 +113,14 @@ public class AddExpenseCtrl implements Controller{
         warningText.setText("");
         //prepare the possible authors
         authorSelector.getItems().clear();
+        authorSelector.setPromptText("-Select person");
+        authorSelector.setValue(null);
         authorSelector.getItems().addAll(names);
         authorSelector.setOnAction(this::handleSelectAuthor);
 
         //content of the expense
         contentBox.setText("");
+        moneyPaid.clear();
         moneyPaid.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("-?\\d*(\\.\\d*)?")) {
                 moneyPaid.setText(oldValue);
@@ -125,8 +145,10 @@ public class AddExpenseCtrl implements Controller{
         namesList.setVisible(false);
 
 
-
-        typeSelector.setValue("other");
+        typeSelector.getItems().clear();
+        typeSelector.setPromptText("-Select type-");
+        typeSelector.setValue(null);
+        typeSelector.getItems().addAll(tagsAvailable);
     }
     private class CheckBoxListCell extends ListCell<String>{
         private CheckBox checkBox;
@@ -173,6 +195,12 @@ public class AddExpenseCtrl implements Controller{
             warningText.setText("You need to select a date!");
             return;
         }
+        if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
+        {
+            System.out.println("You need to enter the type");
+            warningText.setText("Enter the type please.");
+            return;
+        }
         if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
         {
             System.out.println("Select how to split the expense.");
@@ -196,10 +224,11 @@ public class AddExpenseCtrl implements Controller{
                 date.getValue().getYear();
         //the expense
         Participant pa=new Participant("a","b","c","d");
+        pa.setParticipantID(3152);
         //I still need to adjust this list
         List<Participant> list=new ArrayList<>();
         list.add(pa);
-        Expense expense=new Expense(author,content,money,moneyTypeSelector.getValue(),
+        Expense expense=new Expense(pa,content,money,moneyTypeSelector.getValue(),
                 dateString,null,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
@@ -218,7 +247,33 @@ public class AddExpenseCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
     }
+    @FXML
+    void createTag(MouseEvent event) {
+        String tagName=newTypeTextField.getText();
+        if(tagName==null || tagName.isEmpty())
+        {
+            System.out.println("Write something in the tag");
+            return;
+        }
+        tagName=tagName.trim();
+        if(server.checkIfTagExists(tagName))
+        {
+            System.out.println("Already in the database!");
+            return;
+        }
+        String color=colorPicker.getValue().toString();
+        server.addTag(new Tag(tagName,"#"+color.substring(2,8)));
+        System.out.println("tag added");
+        tagsAvailable.add(tagName);
 
+        //reset tags from the screen
+        typeSelector.getItems().clear();
+        typeSelector.getItems().addAll(tagsAvailable);
+        typeSelector.setPromptText("-Select type-");
+        typeSelector.setValue(null);
+
+        newTypeTextField.setText("");
+    }
     void handleSelectAuthor(ActionEvent event)
     {
         System.out.println(authorSelector.getValue());

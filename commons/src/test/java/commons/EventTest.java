@@ -13,11 +13,13 @@ public class EventTest {
     List<Expense> expensesList = new ArrayList<>();
     @BeforeEach
     void setUp(){
+        Participant Gotye=new Participant("Gotye","","","");
+        Participant Skillet=new Participant("Skillet","","","");
         participants.add(new Participant("name", "email", "iban", "bic"));
         participants.add(new Participant("name2", "email2", "iban2", "bic2"));
-        Expense expense1 = new Expense("Gotye","Eating-out",15.99,"EUR",
+        Expense expense1 = new Expense(Gotye,"Eating-out",15.99,"EUR",
                 "2024,2,23",participants,"Papa Johns"),
-                expense2 = new Expense("Skillet","Groceries",99.99,"EUR",
+                expense2 = new Expense(Skillet,"Groceries",99.99,"EUR",
                         "2024,2,23", participants,"from AH - expensive");
         expensesList.add(expense1);
         expensesList.add(expense2);

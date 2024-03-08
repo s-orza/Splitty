@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import commons.*;
@@ -212,6 +213,21 @@ public class ServerUtils {
 			return response.readEntity(List.class);
 		return null;
 	}
+	public List<Tag> getAllTags()
+	{
+		//to be done in the next MR
+		return new ArrayList<>();
+	}
+	public boolean checkIfTagExists(String tagName)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()==200)
+			return true;
+		return false;
+	}
 	//POST functions
 
 	/**
@@ -250,6 +266,20 @@ public class ServerUtils {
 		System.out.println(response.readEntity(String.class));
 		System.out.println(response);
 		if(response.getStatus()<300)
+			return true;
+		return false;
+	}
+	public boolean addTag(Tag tag)
+	{
+		System.out.println(tag);
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tag="+tag.getName().replace(" ","%20"))
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.post(Entity.entity(tag,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		if(response.getStatus()==200)
 			return true;
 		return false;
 	}
