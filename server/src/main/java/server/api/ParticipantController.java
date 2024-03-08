@@ -1,18 +1,23 @@
 package server.api;
 
-import commons.Event;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import commons.Participant;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
 
-import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/participant")
 //TODO change path
 public class ParticipantController {
+    @Autowired
     private final ParticipantRepository repository;
 
     public ParticipantController(ParticipantRepository repository) {
@@ -28,9 +33,26 @@ public class ParticipantController {
     }
 
     @PostMapping(path = { "", "/{eventId}" })
-    public Participant createParticipant(@RequestBody Participant participant) {
-        if (repository.findBy(participant)){
+    public ResponseEntity<Participant> createParticipant(@RequestBody Participant participant) {
+        Optional<Participant> existingParticipant = repository.findById(participant.getParticipantID());
 
+        if (existingParticipant.isPresent()) {
+            // Participant already exists, handle accordingly
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } else {
+            // Participant does not exist, save to repository
+            Participant savedParticipant = repository.save(participant);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedParticipant);
         }
     }
+
+    public ResponseEntity<List<Participant>> getParticipantsByIds(List<Long> ids){
+        List<Participant> participantList = new ArrayList<>();
+        for (Long id: ids){
+            participantList.add(getById(id).getBody());
+        }
+
+        return ResponseEntity.ok(participantList);
+    }
+
 }

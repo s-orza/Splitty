@@ -7,13 +7,13 @@ import java.util.Objects;
 public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long participantID;
+    public Long participantID;
     @Column
     public String name;
     @Column
     public String email;
 
-    public long getParticipantID() {
+    public Long getParticipantID() {
         return participantID;
     }
 
