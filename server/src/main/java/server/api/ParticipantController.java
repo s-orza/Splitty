@@ -1,30 +1,36 @@
 package server.api;
 
+import commons.Event;
 import commons.Participant;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
 
-import java.util.Optional;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/participant")
 //TODO change path
 public class ParticipantController {
-    private final ParticipantRepository repo;
+    private final ParticipantRepository repository;
 
-    public ParticipantController(ParticipantRepository repo) {
-        this.repo = repo;
+    public ParticipantController(ParticipantRepository repository) {
+        this.repository = repository;
     }
 
-    @GetMapping(path = { "", "/{participantId}" })
-    public Optional<Participant> getParticipant(@PathVariable long participantId) {
-        return repo.findById(participantId);
+    @GetMapping("/{id}")
+    public ResponseEntity<Participant> getById(@PathVariable("id") long id) {
+        if (id < 0 || !repository.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(repository.findById(id).get());
     }
 
     @PostMapping(path = { "", "/{eventId}" })
     public Participant createParticipant(@RequestBody Participant participant) {
-        repo.save(participant);
-        return participant;
+        if (repository.findBy(participant)){
+
+        }
     }
 }
