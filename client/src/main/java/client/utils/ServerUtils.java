@@ -132,7 +132,7 @@ public class ServerUtils {
 				.path("api/events/" + id)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
-				.put(Entity.entity(event, APPLICATION_JSON));
+				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
 
 	public void addParticipant(Participant participant){

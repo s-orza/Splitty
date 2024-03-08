@@ -44,7 +44,7 @@ public class EventController {
 
         Event event = repo.findById(id).get();
         event.setName(newName);
-        repo.save(event);
+//        repo.save(event);
 
         return ResponseEntity.ok().build();
     }

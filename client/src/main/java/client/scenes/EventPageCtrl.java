@@ -191,7 +191,7 @@ public class EventPageCtrl implements Controller{
         changeButton.setOnAction(e -> {
             popupStage.close();
             eventName.setText(newName.getText());
-
+            server.changeEventName(currentEvent.getEventId(), newName.getText());
             //TODO
             // We need to add database logic to change the name in the database as well.
         });
