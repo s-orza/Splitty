@@ -82,6 +82,10 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   public void editEvent(ActionEvent e){
     System.out.println("edit selected event");
+    EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+    eventPageCtrl.connectEvent(server.getEvent(selectedEvent.getId()));
+    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+    mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
   }
 
   public void deleteEvent(ActionEvent e){

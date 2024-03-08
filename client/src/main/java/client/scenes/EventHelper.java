@@ -58,7 +58,7 @@ public class EventHelper {
 
   @Override
   public String toString() {
-    return title + " creationDate " + creationDate +
-            ", lastActivity=" + lastActivity;
+    return id + " - " + title;
   }
+
 }

@@ -43,7 +43,7 @@ public class EventPageCtrl implements Controller{
     TableView participantsTable;
 
     ServerUtils server;
-    Event currentEvent;
+    static Event currentEvent;
 
     @Inject
     public EventPageCtrl(ServerUtils server) {
@@ -51,10 +51,10 @@ public class EventPageCtrl implements Controller{
     }
 
     @FXML
-    TableColumn<ParticipantTest, String> participantsColumn;
+    TableColumn<Participant, String> participantsColumn;
 
     @FXML
-    TableView<ExpenseTest> expensesTable;
+    TableView<Expense> expensesTable;
 
     @FXML
     TableColumn<ExpenseTest, String> authorColumn;
@@ -96,26 +96,28 @@ public class EventPageCtrl implements Controller{
     /**
      * This property is just here to simulate data from database
      */
-    private ObservableList<ExpenseTest> expenseData = FXCollections.observableArrayList(
+    private ObservableList<Expense> expenseData;
+            /*
             new ExpenseTest("Ivan", "Drinks", "12-12-2023", 7.9),
             new ExpenseTest("Olav", "More Drinks", "23-10-2023", 45),
             new ExpenseTest("David", "Tickets for Event", "13-12-2023", 764),
             new ExpenseTest("Oliwer", "Bribe for policemen", "31-12-2023", 7.1 ),
             new ExpenseTest("Shahar", "Just a gift", "14-12-2023", 34.98),
             new ExpenseTest("Serban", "More more drinks", "15-12-2023", 200 )
-            );
+
+             */
     /**
      * again this will be removed and will stay just for having something in the tables
      */
-    private ObservableList<ParticipantTest> participantsData =
-            FXCollections.observableArrayList(
+    private ObservableList<Participant> participantsData;
+                    /*
                     new ParticipantTest("Ivan"),
                     new ParticipantTest("David"),
                     new ParticipantTest("Serban"),
                     new ParticipantTest("Shahar"),
                     new ParticipantTest("Olav"),
                     new ParticipantTest("Oliwer")
-            );
+                     */
 
     /**
      * just the initialize method
@@ -128,9 +130,12 @@ public class EventPageCtrl implements Controller{
         // and saves it into participantsData, expenseData
 
         System.out.println("in init");
+        expenseData = FXCollections.observableArrayList(
+                currentEvent.getExpenses());
+        participantsData = FXCollections.observableArrayList(currentEvent.getParticipants());
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
-
+        System.out.println(currentEvent);
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
@@ -144,6 +149,16 @@ public class EventPageCtrl implements Controller{
 
     public void connectEvent(Event event){
         currentEvent = event;
+        System.out.println("Connecting to " + currentEvent);
+    }
+
+    public long findEventId(String name) throws Exception {
+        for (Event e : server.getEvents()){
+            if(e.getName().equals(name)){
+                return e.getEventId();
+            }
+        }
+        throw new Exception("No event with given name exists!");
     }
     /**
      * handles the change of the event name, but only in visual perspective, and no
@@ -198,10 +213,9 @@ public class EventPageCtrl implements Controller{
      * a method that interacts with a database
      * @param participantsData ObservableList which includes the new data to be added in the table
      */
-    private void renderParticipants(ObservableList<ParticipantTest> participantsData) {
+    private void renderParticipants(ObservableList<Participant> participantsData) {
         try{
             participantsColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
             participantsTable.setItems(participantsData);
         }catch(Exception e){
             System.out.println(e);
@@ -213,7 +227,7 @@ public class EventPageCtrl implements Controller{
      * @param model this is the observable list that should be created with
      *              the data from the database
      */
-    private void renderExpenseColumns(ObservableList<ExpenseTest> model){
+    private void renderExpenseColumns(ObservableList<Expense> model){
         try{
             authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("Description"));
@@ -247,8 +261,8 @@ public class EventPageCtrl implements Controller{
         removeButton.setOnAction(e -> {
             popupStage.close();
 
-            ObservableList<ExpenseTest> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
-            List<ExpenseTest> itemsToRemove = new ArrayList<>(selectedItems);
+            ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
+            List<Expense> itemsToRemove = new ArrayList<>(selectedItems);
             expenseData.removeAll(itemsToRemove);
 
             removeExpensesFromDatabase(itemsToRemove);
@@ -272,7 +286,7 @@ public class EventPageCtrl implements Controller{
      * this method will remove the provided list of expenses from the database
      * @param toRemove List of expenses to remove
      */
-    private void removeExpensesFromDatabase(List<ExpenseTest> toRemove){
+    private void removeExpensesFromDatabase(List<Expense> toRemove){
         //todo
         // this method will remove the expenses from the database
     }
@@ -309,6 +323,9 @@ public class EventPageCtrl implements Controller{
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, AddParticipantCtrl.getPair(), AddParticipantCtrl.getTitle());
+    }
+    public static Event getCurrentEvent(){
+        return currentEvent;
     }
 
     //getter for swapping scenes
