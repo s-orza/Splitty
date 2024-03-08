@@ -84,7 +84,11 @@ public class EventPageCtrl implements Controller{
     Button editEventName;
 
     @FXML
+    Label eventCode;
+
+    @FXML
     Label eventName;
+
     //Imports used to swap scenes
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
@@ -144,7 +148,13 @@ public class EventPageCtrl implements Controller{
         editEventName.setOnAction(e->{
             editEventNameHandler();
         });
+        initializePage();
 
+    }
+
+    private void initializePage() {
+        eventName.setText(currentEvent.getName());
+        eventCode.setText("Event Code: " + currentEvent.getEventId());
     }
 
     public void connectEvent(Event event){
@@ -180,7 +190,6 @@ public class EventPageCtrl implements Controller{
 
         changeButton.setOnAction(e -> {
             popupStage.close();
-
             eventName.setText(newName.getText());
 
             //TODO
