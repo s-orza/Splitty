@@ -12,17 +12,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Entity
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
-    private long eventID;
+    private long eventId;
 
     @Column
     String name;
@@ -40,18 +36,21 @@ public class Event {
     @Column
     @OneToMany
     public List<Expense> expenses;
+    @Column
+    private Date creationDate;
+    @Column
+    private Date activityDate;
 
     /**
      * Constructor for an Event object
      * @param name Event's name
      */
     public Event(String name) {
-        // Possible to try and generate a random ID that contains letters & numbers (possible venture)
-        eventID = new Random().nextLong();
-        checkUniqueness(eventID);
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.name = name;
+        this.creationDate = new Date(System.currentTimeMillis());
+        this.activityDate = creationDate;
     }
 
     /**
@@ -61,7 +60,6 @@ public class Event {
 
     }
 
-
     // for the next PUBLIC method, consider this temporary 'database' representation of events
     @Column
     @OneToMany
@@ -70,9 +68,9 @@ public class Event {
         eventList.add(new Event());
         eventList.add(new Event());
         eventList.add(new Event());
-        eventList.get(0).setEventID(1);
-        eventList.get(1).setEventID(2);
-        eventList.get(2).setEventID(3);
+        eventList.get(0).setEventId(1);
+        eventList.get(1).setEventId(2);
+        eventList.get(2).setEventId(3);
     }
     /**
      * Checks whether the ID of the event has already been used and whether to generate a new one
@@ -89,13 +87,12 @@ public class Event {
         }
     }
 
-
-    public void setEventID(long eventID) {
-        this.eventID = eventID;
+    public void setEventId(long eventID) {
+        this.eventId = eventID;
     }
 
     public long getEventId() {
-        return eventID;
+        return eventId;
     }
 
     public List<Participant> getParticipants() {
@@ -145,13 +142,23 @@ public class Event {
     public void setName(String name) {
         this.name = name;
     }
+    public String getName(){
+        return name;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
     @Override
     public String toString() {
         return "Event{" +
-                "event_id=" + eventID +
-                ", participants=" + participants +
-                ", expenses=" + expenses + name +
+                "event_id= " + eventId +
+                ", participants= " + participants +
+                ", expenses= " + expenses +
+                ", name= " + name +
+                ", creatinDate= " + creationDate +
+                ", activityDate= " +activityDate +
                 '}';
     }
 
@@ -162,19 +169,26 @@ public class Event {
 
         Event event = (Event) o;
 
-        if (eventID != event.eventID) return false;
+        if (eventId != event.eventId) return false;
         if (!Objects.equals(participants, event.participants)) return false;
         return Objects.equals(expenses, event.expenses);
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (eventID ^ (eventID >>> 32));
+        int result = (int) (eventId ^ (eventId >>> 32));
         result = 31 * result + (participants != null ? participants.hashCode() : 0);
         result = 31 * result + (expenses != null ? expenses.hashCode() : 0);
         return result;
     }
 
+    public Date getActivityDate() {
+        return activityDate;
+    }
+
+    public void activity(){
+        this.activityDate = new Date(System.currentTimeMillis());
+    }
 
 }
 

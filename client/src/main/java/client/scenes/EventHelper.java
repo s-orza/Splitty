@@ -4,14 +4,20 @@ import java.util.Date;
 import java.util.Objects;
 
 public class EventHelper {
+  long id;
   String title;
   Date creationDate;
   Date lastActivity;
 
-  public EventHelper(String title, Date creationDate, Date lastActivity) {
+  public EventHelper(long id, String title, Date creationDate, Date lastActivity) {
+    this.id = id;
     this.title = title;
     this.creationDate = creationDate;
     this.lastActivity = lastActivity;
+  }
+
+  public long getId() {
+    return id;
   }
 
   public String getTitle() {
@@ -44,18 +50,10 @@ public class EventHelper {
     if (o == null || getClass() != o.getClass()) return false;
 
     EventHelper that = (EventHelper) o;
-
+    if (!Objects.equals(id, that.id)) return false;
     if (!Objects.equals(title, that.title)) return false;
     if (!Objects.equals(creationDate, that.creationDate)) return false;
     return Objects.equals(lastActivity, that.lastActivity);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = title != null ? title.hashCode() : 0;
-    result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
-    result = 31 * result + (lastActivity != null ? lastActivity.hashCode() : 0);
-    return result;
   }
 
   @Override

@@ -2,6 +2,8 @@ package client.scenes;
 
 import client.MyFXML;
 import client.MyModule;
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,6 +39,11 @@ public class MainPageCtrl implements Controller, Initializable {
   private static final MyFXML FXML = new MyFXML(INJECTOR);
 
   private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+  private ServerUtils server;
+  @Inject
+  public MainPageCtrl(ServerUtils server){
+    this.server = server;
+  }
 
   public void createEvent(ActionEvent e) {
     System.out.println("Crete event window");
@@ -47,6 +54,8 @@ public class MainPageCtrl implements Controller, Initializable {
   public void joinEvent(ActionEvent e) {
     System.out.println("Join event window");
     System.out.println(joinInput.getText());
+    //EventPageCtrl eventCtrl = new EventPageCtrl(server);
+    //eventCtrl.connectEvent(server.getEvent(Long.parseLong(joinInput.getText())));
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
   }
@@ -64,6 +73,7 @@ public class MainPageCtrl implements Controller, Initializable {
     contents.add("New years");
     contents.add("Birthday");
     contents.add("Christmas");
+    System.out.println(server.getEvents());
     recentList.getItems().addAll(contents);
     recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEv = recentList.getSelectionModel().getSelectedItem();
