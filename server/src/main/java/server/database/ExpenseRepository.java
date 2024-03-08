@@ -28,8 +28,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId AND ex.author = :author")
     List<Expense> findEventByAuthor(long eventId,String author);
-    @Query("SELECT e FROM Expense e WHERE e.author = :author")
-    List<Expense> findByAuthor(String author);
+    @Query("SELECT e FROM Expense e WHERE e.author.participantID =:authorId")
+    List<Expense> findByAuthor(long authorId);
     @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "JOIN ParticipantEvent pev ON pev.eventId=ev.eventId " +
             "JOIN Participant  p ON p.participantID=pev.participantId " +
@@ -50,7 +50,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Modifying
     @Query("UPDATE Expense ex SET ex.author=:authorId, ex.content=:content, ex.money=:money, " +
             "ex.currency=:currency, ex.date=:date, ex.type=:type WHERE ex.expenseId=:expenseId")
-    Integer updateExpenseWithId(long expenseId, String authorId, String content, double money,
+    Integer updateExpenseWithId(long expenseId, long authorId, String content, double money,
                                            String currency, String date, String type);
 
 
