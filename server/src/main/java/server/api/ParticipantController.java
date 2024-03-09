@@ -2,6 +2,7 @@ package server.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import commons.Participant;
 
@@ -50,13 +51,15 @@ public class ParticipantController {
     /**
      * Post request to add a participant to an event
      * @param participant the participant to be added to the
-     * @return
+     * @return OK - 200 if participant was created
      */
     @PostMapping(path = { "", "/{eventId}" })
     public ResponseEntity<List<Participant>> createParticipant(@RequestBody Participant participant) {
         List<Participant> participantList = repo.findAll();
         if (!participantList.contains(participant)){
             repo.saveAndFlush(participant);
+            //TODO
+            // Create a return statement with a created responseEntity
         }
 
         return ResponseEntity.ok(repo.findAll());
@@ -81,4 +84,96 @@ public class ParticipantController {
         return ResponseEntity.ok(participantList);
     }
 
+    /**
+     * Put request to update a participants name through their id
+     * @param id the ID of the participant's name to update
+     * @param newName the new name of the participant
+     * @return OK - 200 if participant was found and name successfully replaced and BAD REQUEST - 400 otherwise
+     */
+    @PutMapping("/{id}/name")
+    public ResponseEntity<Participant> updateParticipantName(@PathVariable Long id, @RequestBody String newName) {
+        Optional<Participant> participant = repo.findById(id);
+        return participant.map(p -> {
+            p.setName(newName);
+            return ResponseEntity.ok(repo.save(p));
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Put request to update participants email after finding them by id
+     * @param id the UID of the participant
+     * @param newEmail the new email address of the participant
+     * @return OK - 200 if participant was found and email updated successfully and BAD REQUEST - 400 otherwise
+     */
+    @PutMapping("/{id}/email")
+    public ResponseEntity<Participant> updateParticipantEmail(@PathVariable Long id, @RequestBody String newEmail) {
+        Optional<Participant> participant = repo.findById(id);
+        return participant.map(p -> {
+            p.setEmail(newEmail);
+            return ResponseEntity.ok(repo.save(p));
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Put request to update the participant BIC after finding them by id
+     * @param id the UID to find the participant by
+     * @param newBic the bic to replace the old one
+     * @return OK - 200 if participant was found and bic replaced and BAD REQUEST - 400 otherwise
+     */
+    @PutMapping("/{id}/bic")
+    public ResponseEntity<Participant> updateParticipantBic(@PathVariable Long id, @RequestBody String newBic) {
+        Optional<Participant> participant = repo.findById(id);
+        return participant.map(p -> {
+            p.setBic(newBic);
+            return ResponseEntity.ok(repo.save(p));
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Put request to update the participant IBAN after finding them by id
+     * @param id the UID to find the participant by
+     * @param newIban the iban replace the old one
+     * @return OK - 200 if participant was found and bic replaced and BAD REQUEST - 400 otherwise
+     */
+    @PutMapping("/{id}/iban")
+    public ResponseEntity<Participant> updateParticipantIban(@PathVariable Long id, @RequestBody String newIban) {
+        Optional<Participant> participant = repo.findById(id);
+        return participant.map(p -> {
+            p.setIban(newIban);
+            return ResponseEntity.ok(repo.save(p));
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Delete request to get rid of a participant by their id
+     * @param id the UID of the participant to be deleted
+     * @return OK - 200 if participant was found and deleted and NOT FOUND - 404 otherwise
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteParticipantById(@PathVariable Long id) {
+        Optional<Participant> participant = repo.findById(id);
+        if (participant.isPresent()) {
+            repo.delete(participant.get());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Delete request to eliminate of a participant by their name
+     * (CAREFUL - WAS NOT TESTED IF MULTIPLE PEOPLE ARE SELECTED. USE CAUTIOUSLY)
+     * @param name the name of the participant to be deleted
+     * @return OK - 200 if participant was found and deleted and NOT FOUND - 404 otherwise
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteParticipantByName(@PathVariable String name) {
+        List<Participant> participants = repo.findByName(name);
+        if (!participants.isEmpty()) {
+            repo.deleteAll(participants);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

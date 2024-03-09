@@ -28,6 +28,10 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     @Query("SELECT p FROM Participant p WHERE p.id = :id")
     Optional<Participant> findById(@Param("id") Long id);
 
+    // Fetch one or more participants by name
+    @Query("SELECT p FROM Participant p WHERE p.name = :name")
+    List<Participant> findByName(@Param("name") String name);
+
     // Fetch all participants
     @Query("SELECT p FROM Participant p")
     List<Participant> findAllParticipants();
