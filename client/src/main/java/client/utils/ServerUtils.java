@@ -95,22 +95,16 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to get participants from specific event
-	public List<Participant> getParticipants() {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/participants") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.get(new GenericType<List<Participant>>() {});
+	public List<Participant> getParticipants(long id) {
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/events/participants/"+id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()<300)
+			return response.readEntity(List.class);
+		return null;
 	}
 
-	//connects to the database through the endpoint to get expenses from specific event
-	public List<Expense> getExpenses() {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/expenses") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.get(new GenericType<List<Expense>>() {});
-	}
 
 	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {

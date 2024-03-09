@@ -16,7 +16,7 @@
             <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="92.00006103515625" text="Amount" />
             <TableColumn fx:id="currencyColumn" prefWidth="76.0" text="Currency" />
             <TableColumn fx:id="dateColumn" prefWidth="64.79998779296875" text="Date" />
-            <TableColumn fx:id="participantsColumn2" minWidth="0.0" prefWidth="78.4000244140625" text="Participant" />
+            <TableColumn fx:id="participantColumn2" minWidth="0.0" prefWidth="78.4000244140625" text="Participant" />
             <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
          </columns>
       </TableView>

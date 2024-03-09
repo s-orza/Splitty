@@ -39,9 +39,6 @@ import static com.google.inject.Guice.createInjector;
 public class EventPageCtrl implements Controller{
 
 
-    @FXML
-    static TableView participantsTable;
-
     ServerUtils server;
     static Event currentEvent;
 
@@ -51,31 +48,34 @@ public class EventPageCtrl implements Controller{
     }
 
     @FXML
-    static TableColumn<Participant, String> participantsColumn;
+    TableView<Participant> participantsTable;
+
+    @FXML
+    TableColumn<Participant, String> participantsColumn;
 
     @FXML
     TableView<Expense> expensesTable;
 
     @FXML
-    TableColumn<ExpenseTest, String> authorColumn;
+    TableColumn<Expense, String> authorColumn;
 
     @FXML
-    TableColumn<ExpenseTest, String> descriptionColumn;
+    TableColumn<Expense, String> descriptionColumn;
 
     @FXML
-    TableColumn<ExpenseTest, Double> amountColumn;
+    TableColumn<Expense, Double> amountColumn;
 
     @FXML
-    TableColumn<ExpenseTest, String> currencyColumn;
+    TableColumn<Expense, String> currencyColumn;
 
     @FXML
-    TableColumn<ExpenseTest, String> dateColumn;
+    TableColumn<Expense, String> dateColumn;
 
     @FXML
-    TableColumn<ExpenseTest, List<Participant>> participantsColumn2;
+    TableColumn<Expense, List<Participant>> participantColumn2;
 
     @FXML
-    TableColumn<ExpenseTest, String> typeColumn;
+    TableColumn<Expense, String> typeColumn;
 
     @FXML
     Button addParticipant;
@@ -136,17 +136,17 @@ public class EventPageCtrl implements Controller{
     public void initialize() {
 
         //TODO
-        // a method that fetches the data for the expenses and participants
-        // and saves it into participantsData, expenseData
+        // a method that fetches the data for the participants
+        // and saves it into participantsData
 
         System.out.println("in init");
 
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(currentEvent.getEventId()));
 
-//        participantsData = FXCollections.observableArrayList(currentEvent.getParticipants());
-//        participantsData = FXCollections.observableArrayList(new Participant("Ivan", "email","iban", "bic"));
+        participantsData = FXCollections.observableArrayList(new Participant("ivan", "", "", ""));
         renderExpenseColumns(expenseData);
-//        renderParticipants(participantsData);
+        renderParticipants(participantsData);
+
         System.out.println(currentEvent);
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
@@ -157,7 +157,6 @@ public class EventPageCtrl implements Controller{
             editEventNameHandler();
         });
         initializePage();
-
     }
 
     //set event page title and event code
@@ -251,7 +250,7 @@ public class EventPageCtrl implements Controller{
             amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
             currencyColumn.setCellValueFactory(new PropertyValueFactory<>("currency"));
             dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            participantsColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
+            participantColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
             typeColumn.setCellValueFactory(new PropertyValueFactory<>("Type"));
 
             expensesTable.setItems(model);

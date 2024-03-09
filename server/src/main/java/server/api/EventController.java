@@ -67,7 +67,7 @@ public class EventController {
     }
 
     //endpoint to get a list of participants from an event
-    @GetMapping("/{id}/participants")
+    @GetMapping("/participants/{id}")
     public ResponseEntity<List<Participant>> getByIdParticipant(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
@@ -75,14 +75,6 @@ public class EventController {
         return ResponseEntity.ok(repo.findById(id).get().getParticipants());
     }
 
-    //endpoint to get list of expenses from an event
-    @GetMapping("/{id}/expenses")
-    public ResponseEntity<List<Expense>> getByIdExpenses(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(repo.findById(id).get().getExpenses());
-    }
 
 //    @PostMapping("/{id}")
 //    public ResponseEntity<Event> modifyEventById(@PathVariable("id") long id) {
