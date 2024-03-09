@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Event;
-import commons.Quote;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -225,7 +224,9 @@ public class TestEventRepository implements EventRepository {
     }
 
     @Override
-    public <S extends Event, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Event, R> R findBy(Example<S> example,
+                                         Function<FluentQuery.FetchableFluentQuery<S>,
+                                                 R> queryFunction) {
         // TODO Auto-generated method stub
         return null;
     }

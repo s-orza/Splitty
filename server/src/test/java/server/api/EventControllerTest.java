@@ -5,7 +5,6 @@ import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
-import server.database.EventRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +78,7 @@ class EventControllerTest {
         participants.add(new Participant());
         expectedEvent.addListOfParticipants(participants);
         sut.addEvent(expectedEvent);
-        assertEquals(ResponseEntity.ok(expectedEvent.getParticipants()),sut.getByIdParticipant(expectedEvent.getEventId()));
+        assertEquals(ResponseEntity.ok(expectedEvent.getParticipants()),
+                sut.getByIdParticipant(expectedEvent.getEventId()));
     }
 }
