@@ -40,7 +40,7 @@ public class EventPageCtrl implements Controller{
 
 
     @FXML
-    TableView participantsTable;
+    static TableView participantsTable;
 
     ServerUtils server;
     static Event currentEvent;
@@ -51,7 +51,7 @@ public class EventPageCtrl implements Controller{
     }
 
     @FXML
-    TableColumn<Participant, String> participantsColumn;
+    static TableColumn<Participant, String> participantsColumn;
 
     @FXML
     TableView<Expense> expensesTable;
@@ -63,13 +63,19 @@ public class EventPageCtrl implements Controller{
     TableColumn<ExpenseTest, String> descriptionColumn;
 
     @FXML
-    TableColumn<ExpenseTest, String> dateColumn;
-
-    @FXML
     TableColumn<ExpenseTest, Double> amountColumn;
 
     @FXML
-    TableColumn<ExpenseTest, Integer> idColumn;
+    TableColumn<ExpenseTest, String> currencyColumn;
+
+    @FXML
+    TableColumn<ExpenseTest, String> dateColumn;
+
+    @FXML
+    TableColumn<ExpenseTest, List<Participant>> participantsColumn2;
+
+    @FXML
+    TableColumn<ExpenseTest, String> typeColumn;
 
     @FXML
     Button addParticipant;
@@ -134,11 +140,13 @@ public class EventPageCtrl implements Controller{
         // and saves it into participantsData, expenseData
 
         System.out.println("in init");
-        expenseData = FXCollections.observableArrayList(
-                currentEvent.getExpenses());
-        participantsData = FXCollections.observableArrayList(currentEvent.getParticipants());
+
+        expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(currentEvent.getEventId()));
+
+//        participantsData = FXCollections.observableArrayList(currentEvent.getParticipants());
+//        participantsData = FXCollections.observableArrayList(new Participant("Ivan", "email","iban", "bic"));
         renderExpenseColumns(expenseData);
-        renderParticipants(participantsData);
+//        renderParticipants(participantsData);
         System.out.println(currentEvent);
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
@@ -152,6 +160,7 @@ public class EventPageCtrl implements Controller{
 
     }
 
+    //set event page title and event code
     private void initializePage() {
         eventName.setText(currentEvent.getName());
         eventCode.setText("Event Code: " + currentEvent.getEventId());
@@ -192,8 +201,6 @@ public class EventPageCtrl implements Controller{
             popupStage.close();
             eventName.setText(newName.getText());
             server.changeEventName(currentEvent.getEventId(), newName.getText());
-            //TODO
-            // We need to add database logic to change the name in the database as well.
         });
 
         cancelButton.setOnAction(e -> {
@@ -214,6 +221,7 @@ public class EventPageCtrl implements Controller{
         System.out.println("This will lead to another page to add expense");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
+
     }
 
     /**
@@ -239,10 +247,12 @@ public class EventPageCtrl implements Controller{
     private void renderExpenseColumns(ObservableList<Expense> model){
         try{
             authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
-            descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("Description"));
-            amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-            dateColumn.setCellValueFactory(new PropertyValueFactory<>("Date"));
-            idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+            descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("content"));
+            amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
+            currencyColumn.setCellValueFactory(new PropertyValueFactory<>("currency"));
+            dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+            participantsColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
+            typeColumn.setCellValueFactory(new PropertyValueFactory<>("Type"));
 
             expensesTable.setItems(model);
         }catch(Exception e){
@@ -296,7 +306,9 @@ public class EventPageCtrl implements Controller{
      * @param toRemove List of expenses to remove
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
-        //todo
+        for (Expense x: toRemove) {
+            server.deleteExpenseFromEvent(currentEvent.getEventId(), x.getExpenseId());
+        }
         // this method will remove the expenses from the database
     }
     public void close(ActionEvent e){

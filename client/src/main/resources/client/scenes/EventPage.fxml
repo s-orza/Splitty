@@ -12,10 +12,12 @@
       <TableView fx:id="expensesTable" layoutX="14.0" layoutY="186.0" prefHeight="298.0" prefWidth="554.0">
          <columns>
             <TableColumn fx:id="authorColumn" prefWidth="75.0" text="Author" />
+            <TableColumn fx:id="descriptionColumn" prefWidth="88.79997253417969" text="Description" />
+            <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="92.00006103515625" text="Amount" />
+            <TableColumn fx:id="currencyColumn" prefWidth="76.0" text="Currency" />
             <TableColumn fx:id="dateColumn" prefWidth="64.79998779296875" text="Date" />
-            <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="118.40000915527344" text="Amount" />
-            <TableColumn fx:id="descriptionColumn" prefWidth="236.00006103515625" text="Description" />
-            <TableColumn fx:id="idColumn" prefWidth="48.800048828125" text="ID" />
+            <TableColumn fx:id="participantsColumn2" minWidth="0.0" prefWidth="78.4000244140625" text="Participant" />
+            <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
          </columns>
       </TableView>
       <TableView fx:id="participantsTable" layoutX="584.0" layoutY="14.0" prefHeight="386.0" prefWidth="131.0">
