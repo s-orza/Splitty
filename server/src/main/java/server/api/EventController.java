@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Event;
-import commons.Expense;
 import commons.Participant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
 import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("api/events")
 public class EventController {
@@ -32,7 +33,12 @@ public class EventController {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.findById(id).get());
+        Optional<Event> eventOptional = repo.findById(id);
+        if (eventOptional.isPresent()) {
+            return ResponseEntity.ok(eventOptional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //endpoint for put method to change the name of an event
