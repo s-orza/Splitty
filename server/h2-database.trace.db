@@ -698,3 +698,10 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/04dav/D
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 59 more
+2024-03-09 14:12:34.974852+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT *\000d\000a[*]10FROM Event"; SQL statement:
+SELECT *
+10FROM Event [42000-224]
+2024-03-09 14:13:42.999963+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM INFORMATION_SCHEMA.VIEWS INFORMATION_SCHEMA[*].VIEWS INFORMATION_SCHEMA.VIEWS"; SQL statement:
+SELECT * FROM INFORMATION_SCHEMA.VIEWS INFORMATION_SCHEMA.VIEWS INFORMATION_SCHEMA.VIEWS [42000-224]
