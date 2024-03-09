@@ -2,12 +2,9 @@ package server.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import commons.Participant;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
@@ -17,39 +14,44 @@ import server.database.ParticipantRepository;
 @RequestMapping("/api/participant")
 //TODO change path
 public class ParticipantController {
-    @Autowired
-    private final ParticipantRepository repository;
+    private final ParticipantRepository repo;
 
-    public ParticipantController(ParticipantRepository repository) {
-        this.repository = repository;
+    public ParticipantController(ParticipantRepository repo) {
+        this.repo = repo;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Participant> getById(@PathVariable("id") long id) {
-        if (id < 0 || !repository.existsById(id)) {
+    public ResponseEntity<Participant> getParticipantById(@PathVariable("id") Long id) {
+        if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repository.findById(id).get());
+        return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Participant>> getAllParticipants() {
+        List<Participant> participants = repo.findAll();
+        return ResponseEntity.ok(participants);
     }
 
     @PostMapping(path = { "", "/{eventId}" })
-    public ResponseEntity<Participant> createParticipant(@RequestBody Participant participant) {
-        Optional<Participant> existingParticipant = repository.findById(participant.getParticipantID());
-
-        if (existingParticipant.isPresent()) {
-            // Participant already exists, handle accordingly
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } else {
-            // Participant does not exist, save to repository
-            Participant savedParticipant = repository.save(participant);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedParticipant);
+    public ResponseEntity<List<Participant>> createParticipant(@RequestBody Participant participant) {
+        List<Participant> participantList = repo.findAll();
+        if (!participantList.contains(participant)){
+            participantList.add(participant);
         }
+
+        return ResponseEntity.ok(repo.findAll());
     }
 
+    @GetMapping("/{eventId}/list")
     public ResponseEntity<List<Participant>> getParticipantsByIds(List<Long> ids){
         List<Participant> participantList = new ArrayList<>();
         for (Long id: ids){
-            participantList.add(getById(id).getBody());
+            if (repo.existsById(id)){
+                participantList.add(getParticipantById(id).getBody());
+            }
+            else return ResponseEntity.badRequest().build();
         }
 
         return ResponseEntity.ok(participantList);

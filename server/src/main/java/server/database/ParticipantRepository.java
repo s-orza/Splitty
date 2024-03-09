@@ -21,6 +21,4 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
-    @Query("SELECT * FROM Participant WHERE participantId=:participantId")
-    List<Participant> findById();
 }

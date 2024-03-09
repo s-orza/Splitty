@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 
 import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("api/events")
 public class EventController {
@@ -29,10 +31,17 @@ public class EventController {
     //endpoint with an event with a specific id in it
     @GetMapping("/{id}")
     public ResponseEntity<Event> getById(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
+        if (id < 0) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.findById(id).get());
+
+        Optional<Event> event = repo.findById(id);
+        if (event.isPresent()) {
+            return ResponseEntity.ok(event.get());
+        } else {
+            // Return a custom response or throw a custom exception
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //endpoint for put method to change the name of an event
