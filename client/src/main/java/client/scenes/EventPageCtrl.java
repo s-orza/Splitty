@@ -39,9 +39,6 @@ import static com.google.inject.Guice.createInjector;
 public class EventPageCtrl implements Controller{
 
 
-    @FXML
-    TableView participantsTable;
-
     ServerUtils server;
     static Event currentEvent;
 
@@ -51,25 +48,34 @@ public class EventPageCtrl implements Controller{
     }
 
     @FXML
+    TableView<Participant> participantsTable;
+
+    @FXML
     TableColumn<Participant, String> participantsColumn;
 
     @FXML
     TableView<Expense> expensesTable;
 
     @FXML
-    TableColumn<ExpenseTest, String> authorColumn;
+    TableColumn<Expense, String> authorColumn;
 
     @FXML
-    TableColumn<ExpenseTest, String> descriptionColumn;
+    TableColumn<Expense, String> descriptionColumn;
 
     @FXML
-    TableColumn<ExpenseTest, String> dateColumn;
+    TableColumn<Expense, Double> amountColumn;
 
     @FXML
-    TableColumn<ExpenseTest, Double> amountColumn;
+    TableColumn<Expense, String> currencyColumn;
 
     @FXML
-    TableColumn<ExpenseTest, Integer> idColumn;
+    TableColumn<Expense, String> dateColumn;
+
+    @FXML
+    TableColumn<Expense, List<Participant>> participantColumn2;
+
+    @FXML
+    TableColumn<Expense, String> typeColumn;
 
     @FXML
     Button addParticipant;
@@ -84,7 +90,11 @@ public class EventPageCtrl implements Controller{
     Button editEventName;
 
     @FXML
+    Label eventCode;
+
+    @FXML
     Label eventName;
+
     //Imports used to swap scenes
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
@@ -126,15 +136,17 @@ public class EventPageCtrl implements Controller{
     public void initialize() {
 
         //TODO
-        // a method that fetches the data for the expenses and participants
-        // and saves it into participantsData, expenseData
+        // a method that fetches the data for the participants
+        // and saves it into participantsData
 
         System.out.println("in init");
-        expenseData = FXCollections.observableArrayList(
-                currentEvent.getExpenses());
-        participantsData = FXCollections.observableArrayList(currentEvent.getParticipants());
+
+        expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(currentEvent.getEventId()));
+
+        participantsData = FXCollections.observableArrayList(new Participant("ivan", "", "", ""));
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
+
         System.out.println(currentEvent);
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
@@ -144,7 +156,13 @@ public class EventPageCtrl implements Controller{
         editEventName.setOnAction(e->{
             editEventNameHandler();
         });
+        initializePage();
+    }
 
+    //set event page title and event code
+    private void initializePage() {
+        eventName.setText(currentEvent.getName());
+        eventCode.setText("Event Code: " + currentEvent.getEventId());
     }
 
     public void connectEvent(Event event){
@@ -180,11 +198,8 @@ public class EventPageCtrl implements Controller{
 
         changeButton.setOnAction(e -> {
             popupStage.close();
-
             eventName.setText(newName.getText());
-
-            //TODO
-            // We need to add database logic to change the name in the database as well.
+            server.changeEventName(currentEvent.getEventId(), newName.getText());
         });
 
         cancelButton.setOnAction(e -> {
@@ -205,6 +220,7 @@ public class EventPageCtrl implements Controller{
         System.out.println("This will lead to another page to add expense");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
+
     }
 
     /**
@@ -230,10 +246,12 @@ public class EventPageCtrl implements Controller{
     private void renderExpenseColumns(ObservableList<Expense> model){
         try{
             authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
-            descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("Description"));
-            amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
-            dateColumn.setCellValueFactory(new PropertyValueFactory<>("Date"));
-            idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+            descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("content"));
+            amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
+            currencyColumn.setCellValueFactory(new PropertyValueFactory<>("currency"));
+            dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+            participantColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
+            typeColumn.setCellValueFactory(new PropertyValueFactory<>("Type"));
 
             expensesTable.setItems(model);
         }catch(Exception e){
@@ -287,7 +305,9 @@ public class EventPageCtrl implements Controller{
      * @param toRemove List of expenses to remove
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
-        //todo
+        for (Expense x: toRemove) {
+            server.deleteExpenseFromEvent(currentEvent.getEventId(), x.getExpenseId());
+        }
         // this method will remove the expenses from the database
     }
     public void close(ActionEvent e){
