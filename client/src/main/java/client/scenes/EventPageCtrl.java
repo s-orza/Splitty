@@ -310,7 +310,7 @@ public class EventPageCtrl implements Controller{
     public void addParticipantHandler(ActionEvent event) {
         try {
 
-//            server.deleteParticipantEvent(52752,92757);
+            server.deleteParticipantEvent(52752,92757);
 //            server.getParticipantsOfEvent(52752);
 //            System.out.println(server.getEventsOfParticipant(92755));
 
