@@ -57,7 +57,7 @@ public class MainPageCtrl implements Controller, Initializable {
     System.out.println(joinInput.getText());
     EventPageCtrl eventCtrl = new EventPageCtrl(server);
     try {
-      eventCtrl.connectEvent(server.getEvent(eventCtrl.findEventId(joinInput.getText())));
+      eventCtrl.connectEvent(server.getEvent(Long.parseLong(joinInput.getText())));
     }catch (Exception e){
       System.out.println(e);
       return;
@@ -84,7 +84,14 @@ public class MainPageCtrl implements Controller, Initializable {
     recentList.getItems().addAll(contents);
     recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEv = recentList.getSelectionModel().getSelectedItem();
-      joinInput.setText(selectedEv.getTitle());
+
+      EventPageCtrl eventCtrl = new EventPageCtrl(server);
+      try {
+        String input = String.valueOf(eventCtrl.findEventId(selectedEv.getTitle()));
+        joinInput.setText(input);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
     });
   }
 

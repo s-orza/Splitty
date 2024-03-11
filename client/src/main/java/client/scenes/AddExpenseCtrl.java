@@ -236,6 +236,11 @@ public class AddExpenseCtrl implements Controller{
         server.addExpenseToEvent(id,expense);
         //System.out.println(server.getExpenseById(1));
         resetElements();
+
+        //go back to event page
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+
     }
     /**
      * this function will be called when you press the cancel Button.

@@ -63,12 +63,7 @@ public class Participant {
 
     @Override
     public String toString() {
-        return "Participant: \n" +
-                "name='" + name +
-                "\nemail='" + email +
-                "\niban='" + iban +
-                "\nbic='" + bic +
-                "\n";
+        return  name;
     }
 
     public void setParticipantID(long participantID) {
