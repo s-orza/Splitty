@@ -7,19 +7,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.EventPageCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
    <children>
       <TableView fx:id="expensesTable" layoutX="14.0" layoutY="186.0" prefHeight="298.0" prefWidth="554.0">
          <columns>
             <TableColumn fx:id="authorColumn" prefWidth="75.0" text="Author" />
+            <TableColumn fx:id="descriptionColumn" prefWidth="88.79997253417969" text="Description" />
+            <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="92.00006103515625" text="Amount" />
+            <TableColumn fx:id="currencyColumn" prefWidth="76.0" text="Currency" />
             <TableColumn fx:id="dateColumn" prefWidth="64.79998779296875" text="Date" />
-            <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="118.40000915527344"
-                         text="Amount" />
-            <TableColumn fx:id="descriptionColumn" prefWidth="236.00006103515625" text="Description" />
-            <TableColumn fx:id="idColumn" prefWidth="48.800048828125" text="ID" />
+            <TableColumn fx:id="participantColumn2" minWidth="0.0" prefWidth="78.4000244140625" text="Participant" />
+            <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
          </columns>
       </TableView>
       <TableView fx:id="participantsTable" layoutX="584.0" layoutY="14.0" prefHeight="386.0" prefWidth="131.0">
@@ -27,11 +25,11 @@
           <TableColumn fx:id="participantsColumn" prefWidth="119.99993896484375" text="Participants" />
         </columns>
       </TableView>
-      <Label fx:id="eventName" layoutX="30.0" layoutY="26.0" text="Event Name">
+      <Label fx:id="eventName" layoutX="23.0" layoutY="53.0" text="Event Name">
          <font>
             <Font size="38.0" />
          </font></Label>
-      <Label layoutX="22.0" layoutY="82.0" text="Event Code: XXXXXX">
+      <Label fx:id="eventCode" layoutX="22.0" layoutY="109.0" text="Event Code: XXXXXX">
          <font>
             <Font size="19.0" />
          </font></Label>
@@ -39,5 +37,6 @@
       <Button fx:id="addParticipant" layoutX="459.0" layoutY="151.0" mnemonicParsing="false" text="Add Participant" />
       <Button fx:id="removeExpense" layoutX="132.0" layoutY="151.0" mnemonicParsing="false" text="Remove Expenses" />
       <Button fx:id="editEventName" layoutX="456.0" layoutY="110.0" mnemonicParsing="false" text="Edit Event Name" />
+      <Button layoutX="23.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
    </children>
 </AnchorPane>

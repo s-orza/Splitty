@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import commons.*;
@@ -70,7 +71,7 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to add event
-	public static void createEvent(Event event) {
+	public void createEvent(Event event) {
 		ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/events") //
 				.request(APPLICATION_JSON) //
@@ -79,37 +80,31 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to delete an event
-	public void deleteEvent (long id) {
+	public void deleteEvent (long id) throws Exception {
 		Response response = ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events" + id) //
+				.target(SERVER).path("api/events/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
 		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
 			System.out.println("Quote removed successfully.");
 		} else {
-			System.out.println("Failed to remove quote. Status code: " + response.getStatus());
+			throw new Exception("Failed to remove quote. Status code: "+ response.getStatus());
 		}
 		response.close();
 	}
 
 	//connects to the database through the endpoint to get participants from specific event
-	public List<Participant> getParticipants() {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/participant") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.get(new GenericType<List<Participant>>() {});
+	public List<Participant> getParticipants(long id) {
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/events/participants/"+id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()<300)
+			return response.readEntity(List.class);
+		return null;
 	}
 
-	//connects to the database through the endpoint to get expenses from specific event
-	public List<Expense> getExpenses() {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/expenses") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.get(new GenericType<List<Expense>>() {});
-	}
 
 	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {
@@ -131,7 +126,7 @@ public class ServerUtils {
 				.path("api/events/" + id)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
-				.put(Entity.entity(event, APPLICATION_JSON));
+				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
 
 	public void addParticipant(Participant participant){
@@ -212,6 +207,21 @@ public class ServerUtils {
 			return response.readEntity(List.class);
 		return null;
 	}
+	public List<Tag> getAllTags()
+	{
+		//to be done in the next MR
+		return new ArrayList<>();
+	}
+	public boolean checkIfTagExists(String tagName)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()==200)
+			return true;
+		return false;
+	}
 	//POST functions
 
 	/**
@@ -250,6 +260,20 @@ public class ServerUtils {
 		System.out.println(response.readEntity(String.class));
 		System.out.println(response);
 		if(response.getStatus()<300)
+			return true;
+		return false;
+	}
+	public boolean addTag(Tag tag)
+	{
+		System.out.println(tag);
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tag="+tag.getName().replace(" ","%20"))
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.post(Entity.entity(tag,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		if(response.getStatus()==200)
 			return true;
 		return false;
 	}

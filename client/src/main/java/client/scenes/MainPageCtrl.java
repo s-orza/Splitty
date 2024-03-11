@@ -2,7 +2,10 @@ package client.scenes;
 
 import client.MyFXML;
 import client.MyModule;
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import commons.Event;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,15 +31,20 @@ public class MainPageCtrl implements Controller, Initializable {
   @FXML
   private ImageView flagImage;
   @FXML
-  private ListView<String> recentList;
+  private ListView<EventHelper> recentList;
 
-  private String selectedEv;
+  private EventHelper selectedEv;
   //Imports used to swap scenes
   private Stage stage;
   private static final Injector INJECTOR = createInjector(new MyModule());
   private static final MyFXML FXML = new MyFXML(INJECTOR);
 
   private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+  private ServerUtils server;
+  @Inject
+  public MainPageCtrl(ServerUtils server){
+    this.server = server;
+  }
 
   public void createEvent(ActionEvent e) {
     System.out.println("Crete event window");
@@ -44,10 +52,17 @@ public class MainPageCtrl implements Controller, Initializable {
     mainCtrl.initialize(stage, CreateEventCtrl.getPair(), CreateEventCtrl.getTitle());
   }
 
-  public void joinEvent(ActionEvent e) {
+  public void joinEvent(ActionEvent event) {
     System.out.println("Join event window");
     System.out.println(joinInput.getText());
-    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+    EventPageCtrl eventCtrl = new EventPageCtrl(server);
+    try {
+      eventCtrl.connectEvent(server.getEvent(Long.parseLong(joinInput.getText())));
+    }catch (Exception e){
+      System.out.println(e);
+      return;
+    }
+    stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
   }
 
@@ -60,14 +75,23 @@ public class MainPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    ArrayList<String> contents = new ArrayList<>();
-    contents.add("New years");
-    contents.add("Birthday");
-    contents.add("Christmas");
+    ArrayList<EventHelper> contents = new ArrayList<>();
+    for(Event e : server.getEvents()){
+      contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
+    }
+    contents.sort(new EventActivitySort());
+    System.out.println(server.getEvents());
     recentList.getItems().addAll(contents);
     recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEv = recentList.getSelectionModel().getSelectedItem();
-      joinInput.setText(selectedEv);
+
+      EventPageCtrl eventCtrl = new EventPageCtrl(server);
+      try {
+        String input = String.valueOf(eventCtrl.findEventId(selectedEv.getTitle()));
+        joinInput.setText(input);
+      } catch (Exception e) {
+        System.out.println(e);
+      }
     });
   }
 

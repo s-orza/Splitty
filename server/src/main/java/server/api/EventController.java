@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Event;
-import commons.Expense;
 import commons.Participant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +33,10 @@ public class EventController {
         if (id < 0) {
             return ResponseEntity.badRequest().build();
         }
-
-        Optional<Event> event = repo.findById(id);
-        if (event.isPresent()) {
-            return ResponseEntity.ok(event.get());
+        Optional<Event> eventOptional = repo.findById(id);
+        if (eventOptional.isPresent()) {
+            return ResponseEntity.ok(eventOptional.get());
         } else {
-            // Return a custom response or throw a custom exception
             return ResponseEntity.notFound().build();
         }
     }
@@ -53,7 +50,7 @@ public class EventController {
 
         Event event = repo.findById(id).get();
         event.setName(newName);
-        repo.save(event);
+//        repo.save(event);
 
         return ResponseEntity.ok().build();
     }
@@ -76,7 +73,7 @@ public class EventController {
     }
 
     //endpoint to get a list of participants from an event
-    @GetMapping("/{id}/participants")
+    @GetMapping("/participants/{id}")
     public ResponseEntity<List<Participant>> getByIdParticipant(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
@@ -84,14 +81,6 @@ public class EventController {
         return ResponseEntity.ok(repo.findById(id).get().getParticipants());
     }
 
-    //endpoint to get list of expenses from an event
-    @GetMapping("/{id}/expenses")
-    public ResponseEntity<List<Expense>> getByIdExpenses(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(repo.findById(id).get().getExpenses());
-    }
 
 //    @PostMapping("/{id}")
 //    public ResponseEntity<Event> modifyEventById(@PathVariable("id") long id) {
