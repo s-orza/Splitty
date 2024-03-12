@@ -7,6 +7,7 @@ import java.util.Objects;
 public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
     public long participantID;
     @Column
     public String name;

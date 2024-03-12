@@ -30,7 +30,7 @@ public class EventController {
     //endpoint with an event with a specific id in it
     @GetMapping("/{id}")
     public ResponseEntity<Event> getById(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
+        if (id < 0) {
             return ResponseEntity.badRequest().build();
         }
         Optional<Event> eventOptional = repo.findById(id);

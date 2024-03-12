@@ -17,7 +17,22 @@ package server.database;
 
 import commons.Participant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+import java.util.Optional;
 
+public interface ParticipantRepository extends JpaRepository<Participant, Long> {
+    // Fetch one participant by ID
+    @Query("SELECT p FROM Participant p WHERE p.id = :id")
+    Optional<Participant> findById(@Param("id") Long id);
 
-public interface ParticipantRepository extends JpaRepository<Participant, Long> {}
+    // Fetch one or more participants by name
+    @Query("SELECT p FROM Participant p WHERE p.name = :name")
+    List<Participant> findByName(@Param("name") String name);
+
+    // Fetch all participants
+    @Query("SELECT p FROM Participant p")
+    List<Participant> findAllParticipants();
+}
