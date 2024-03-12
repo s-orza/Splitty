@@ -131,7 +131,7 @@ public class ServerUtils {
 
 	public void addParticipant(Participant participant){
 		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/participant") //
+				.target(SERVER).path("/api/participant") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
@@ -145,6 +145,49 @@ public class ServerUtils {
 				.get(Participant.class);
 	}
 
+	public List<Participant> getParticipantsOfEvent(long eventId){
+		System.out.println("in servero");
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("/api/participant/event/getParticipants/" + eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println("out servero");
+		if(response.getStatus() < 300) {
+			GenericType<List<Participant>> genericType = new GenericType<List<Participant>>() {};
+			return response.readEntity(genericType);  // Use a specific type reference here
+		}
+
+		return null;
+	}
+
+
+	public List<Event> getEventsOfParticipant(long participantId){
+		System.out.println("in servero");
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("/api/participant/event/getEvents/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println("out servero");
+		if(response.getStatus() < 300) {
+			GenericType<List<Event>> genericType = new GenericType<List<Event>>() {};
+			return response.readEntity(genericType);  // Use a specific type reference here
+		}
+
+		return null;
+	}
+
+	public boolean deleteParticipantEvent(long eventId, long participantId) {
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/participant/event/" + eventId + "/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+
+		if(response.getStatus() < 300)
+			return true;
+		return false;
+	}
+
+
 	/**
 	 * This will go and invoke the ParticipantEvent controller
 	 * It will create an entry to the participant page, but also an entry
@@ -155,7 +198,7 @@ public class ServerUtils {
 	public void addParticipantEvent(Participant participant, int eventId){
 		System.out.println("In server");
 		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/participantEvent/" + eventId) //
+				.target(SERVER).path("/api/participant/event/" + eventId) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
@@ -164,15 +207,15 @@ public class ServerUtils {
 
 	/**
 	 * This method will add just an entry to the participant_event table
-	 * @param participantEventDTO an object that contains particpantId and eventId
+	 * @param participantEventDto an object that contains particpantId and eventId
 	 */
-	public void addParticipantEvent(ParticipantEventDto participantEventDTO) {
+	public void addParticipantEvent(ParticipantEventDto participantEventDto) {
 		System.out.println("In server");
 		ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("/api/participant/event/") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participantEventDTO, APPLICATION_JSON), Participant.class);
+				.post(Entity.entity(participantEventDto, APPLICATION_JSON), ParticipantEventDto.class);
 		System.out.println("Out server");
 	}
 	//EXPENSE functions

@@ -30,9 +30,9 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
         this.ctrl =  dummy.getKey();
         this.scene = new Scene(dummy.getValue());
+
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
 }

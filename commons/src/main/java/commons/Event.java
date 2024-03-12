@@ -18,7 +18,9 @@ import java.util.*;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long eventId;
+
+    @Column
+    long eventID;
 
     @Column
     String name;
@@ -33,7 +35,7 @@ public class Event {
     @Column
     public List<Participant> participants;
 
-    @Column
+//    @Column
     @OneToMany
     public List<Expense> expenses;
     @Column
@@ -46,6 +48,12 @@ public class Event {
      * @param name Event's name
      */
     public Event(String name) {
+
+        // Possible to try and generate a random ID that contains letters & numbers (possible venture)
+        eventID = new Random().nextLong();
+//        checkUniqueness(eventID);
+
+
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.name = name;
@@ -59,6 +67,11 @@ public class Event {
     public Event() {
 
     }
+
+
+
+//    @Column
+
 
     // for the next PUBLIC method, consider this temporary 'database' representation of events
     @Column
@@ -77,22 +90,22 @@ public class Event {
      * or not
      * @param eventID ID to be tested for uniqueness
      */
-    private void checkUniqueness(Long eventID){
-        //TODO
-        // Pull from the database a list of all events and compare this ID with all other IDS
-        // If similar to any, generate a new random number
-        setUpEventList();
-        while (eventList.contains(eventID)){
-            eventID = new Random().nextLong();
-        }
-    }
+//    private void checkUniqueness(Long eventID){
+//        //TODO
+//        // Pull from the database a list of all events and compare this ID with all other IDS
+//        // If similar to any, generate a new random number
+//        setUpEventList();
+//        while (eventList.contains(eventID)){
+//            eventID = new Random().nextLong();
+//        }
+//    }
 
     public void setEventId(long eventID) {
-        this.eventId = eventID;
+        this.eventID = eventID;
     }
 
     public long getEventId() {
-        return eventId;
+        return eventID;
     }
 
     public List<Participant> getParticipants() {
@@ -153,7 +166,7 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-                "event_id= " + eventId +
+                "event_id= " + eventID +
                 ", participants= " + participants +
                 ", expenses= " + expenses +
                 ", name= " + name +
@@ -169,14 +182,14 @@ public class Event {
 
         Event event = (Event) o;
 
-        if (eventId != event.eventId) return false;
+        if (eventID != event.eventID) return false;
         if (!Objects.equals(participants, event.participants)) return false;
         return Objects.equals(expenses, event.expenses);
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (eventId ^ (eventId >>> 32));
+        int result = (int) (eventID ^ (eventID >>> 32));
         result = 31 * result + (participants != null ? participants.hashCode() : 0);
         result = 31 * result + (expenses != null ? expenses.hashCode() : 0);
         return result;

@@ -1,10 +1,6 @@
 package client.scenes;
 
-
-//import com.sun.javafx.application.ParametersImpl;
-
 import client.utils.ServerUtils;
-
 
 import client.MyFXML;
 import client.MyModule;
@@ -35,10 +31,7 @@ import java.util.List;
 
 import static com.google.inject.Guice.createInjector;
 
-
 public class EventPageCtrl implements Controller{
-
-
     ServerUtils server;
     static Event currentEvent;
 
@@ -139,11 +132,16 @@ public class EventPageCtrl implements Controller{
         // a method that fetches the data for the participants
         // and saves it into participantsData
 
+
+        System.out.println("Event Page initialize method");
+
         System.out.println("in init");
+
 
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(currentEvent.getEventId()));
 
         participantsData = FXCollections.observableArrayList(new Participant("ivan", "", "", ""));
+
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
 
@@ -331,9 +329,19 @@ public class EventPageCtrl implements Controller{
      */
     public void addParticipantHandler(ActionEvent event) {
         try {
-            System.out.println("This will lead to another page to add participant");
-            Participant a = server.getParticipant(67152);
-            System.out.println(a);
+
+            server.deleteParticipantEvent(52752,92757);
+//            server.getParticipantsOfEvent(52752);
+//            System.out.println(server.getEventsOfParticipant(92755));
+
+//            var la = server.getEventsOfParticipant(92755);
+//            for(Event a : la){
+//                System.out.println(a);
+//            }
+            var la = server.getParticipantsOfEvent(52753);
+            for(Participant a : la){
+                System.out.println(a);
+            }
 
 //            System.out.println("about to execute participantEvent");
 //            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
