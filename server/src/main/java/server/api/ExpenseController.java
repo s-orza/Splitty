@@ -182,6 +182,12 @@ public class ExpenseController {
         }
         return ResponseEntity.notFound().build();
     }
+    @GetMapping(path={"/allTags"})
+    public ResponseEntity<List<Tag>> getAllTag()
+    {
+        List<Tag> tags= repoTag.getAllTags();
+        return ResponseEntity.ok(tags);
+    }
     //here to put the PUT APIs (update)
     @PutMapping(path={"/"})
     public ResponseEntity<Expense> updateExpense(@RequestParam("expenseId") long expenseId,

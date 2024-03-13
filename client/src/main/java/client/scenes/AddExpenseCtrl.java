@@ -95,9 +95,9 @@ public class AddExpenseCtrl implements Controller{
         warningText.setText("");
 
         //initialise the tags
-        tagsAvailable=new ArrayList<>();
+        tagsAvailable=server.getAllTags().stream().map(x->x.getName()).toList();
         // tagsAvailable= ->import from database all the tags<-
-            tagsAvailable.add("other");
+          //  tagsAvailable.add("other");
 
 
         //reset and load

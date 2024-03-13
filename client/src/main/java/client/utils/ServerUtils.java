@@ -253,6 +253,12 @@ public class ServerUtils {
 	public List<Tag> getAllTags()
 	{
 		//to be done in the next MR
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/allTags")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()==200)
+			return response.readEntity(List.class);
 		return new ArrayList<>();
 	}
 	public boolean checkIfTagExists(String tagName)
