@@ -166,7 +166,7 @@ public class ParticipantController {
      * @param name the name of the participant to be deleted
      * @return OK - 200 if participant was found and deleted and NOT FOUND - 404 otherwise
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/")
     public ResponseEntity<?> deleteParticipantByName(@PathVariable String name) {
         List<Participant> participants = repo.findByName(name);
         if (!participants.isEmpty()) {
