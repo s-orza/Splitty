@@ -80,6 +80,7 @@ public class AddExpenseCtrl implements Controller{
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
+    private Expense expenseToBeModified=null;
     @Inject
     public AddExpenseCtrl(ServerUtils server) {
         this.server = server;
@@ -176,6 +177,8 @@ public class AddExpenseCtrl implements Controller{
         typeSelector.setValue(null);
 
         typeSelector.getItems().addAll(tagsAvailable);
+        //this only makes sense for the edit part of an expense
+        expenseToBeModified=null;
     }
     private class Pair2{
         public String element;
@@ -207,18 +210,29 @@ public class AddExpenseCtrl implements Controller{
     }
 
     /**
-     * This function is to reload an expense from database, to be improved later.
+     * This function is to reload/get an expense from even in order to be modified.
      * @param expense the expense which will be modified
      */
     public void reloadExpense(Expense expense)
     {
+        expenseToBeModified=expense;
         loadFromDatabase();
         resetElements();
         //reload author
-
+        authorSelector.setValue(expense.getAuthor().getName());
+        //reload content
+        contentBox.setText(expense.getContent());
         //reload money
         moneyPaid.setText(expense.getMoney()+"");
+        //reload money type
+        moneyTypeSelector.setValue(expense.getType());
         //reload date
+            //magic formula needs to be found
+        //reload type
+        typeSelector.setValue(expense.getType());
+        //reload participants stuff
+        //not yet available as we need participants, to be done in future
+
     }
 
     /**
@@ -311,14 +325,28 @@ public class AddExpenseCtrl implements Controller{
         else
             list.add(pa);
         Expense expense=new Expense(pa,content,money,moneyTypeSelector.getValue(),
-                dateString,null,typeSelector.getValue());
+                dateString,list,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
         long id= EventPageCtrl.getCurrentEvent().getEventId();
-        server.addExpenseToEvent(id,expense);
+        //if we just add an expense, this will be null
+        if(expenseToBeModified==null)
+            server.addExpenseToEvent(id,expense);
+        else
+        {
+            //modify the expense and save it to tha database
+            expenseToBeModified.setAuthor(expense.getAuthor());
+            expenseToBeModified.setContent(expense.getContent());
+            expenseToBeModified.setMoney(expense.getMoney());
+            expenseToBeModified.setCurrency(expense.getCurrency());
+            expenseToBeModified.setDate(expense.getDate());
+            expenseToBeModified.setParticipants(expense.getParticipants());
+            expenseToBeModified.setType(expense.getType());
+            //save it
+            server.updateExpense(expenseToBeModified.getExpenseId(),expenseToBeModified);
+        }
         //System.out.println(server.getExpenseById(1));
         resetElements();
-
         //go back to event page
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
