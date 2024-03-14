@@ -236,8 +236,9 @@ public class ServerUtils {
 				.target(SERVER+"api/expenses/allFromEvent?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
+		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
 		if(response.getStatus()<300)
-			return response.readEntity(List.class);
+			return response.readEntity(listType);
 		return null;
 	}
 	public List<Expense> getAllExpensesFromDatabase()
@@ -246,8 +247,9 @@ public class ServerUtils {
 				.target(SERVER+"api/expenses/all")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
+		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
 		if(response.getStatus()<300)
-			return response.readEntity(List.class);
+			return response.readEntity(listType);
 		return null;
 	}
 	public List<Tag> getAllTags()
@@ -257,9 +259,11 @@ public class ServerUtils {
 				.target(SERVER+"api/expenses/allTags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
+		List<Tag> tags=new ArrayList<>();
+		GenericType<List<Tag>> listType = new GenericType<List<Tag>>() {};
 		if(response.getStatus()==200)
-			return response.readEntity(List.class);
-		return new ArrayList<>();
+			tags=response.readEntity(listType);
+		return tags;
 	}
 	public boolean checkIfTagExists(String tagName)
 	{
