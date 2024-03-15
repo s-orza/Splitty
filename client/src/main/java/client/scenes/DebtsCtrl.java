@@ -9,11 +9,37 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+
 import javax.inject.Inject;
 
 import static com.google.inject.Guice.createInjector;
 
 public class DebtsCtrl implements Controller{
+
+
+    @FXML
+    private TableColumn<?, ?> amountCol;
+
+    @FXML
+    private Button cancelButton;
+
+    @FXML
+    private TableColumn<?, ?> creditorCol;
+
+    @FXML
+    private TableView<?> debtTable;
+
+    @FXML
+    private TableColumn<?, ?> debtorCol;
+
+    @FXML
+    void close(ActionEvent event) {
+
+    }
 
     //Imports used to swap scenes
     private static final Injector INJECTOR = createInjector(new MyModule());
