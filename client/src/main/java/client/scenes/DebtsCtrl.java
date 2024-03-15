@@ -1,33 +1,15 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
-
 import client.MyFXML;
 import client.MyModule;
+import client.utils.ServerUtils;
 import com.google.inject.Injector;
-
-import commons.*;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.event.ActionEvent;
-
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.inject.Guice.createInjector;
 
