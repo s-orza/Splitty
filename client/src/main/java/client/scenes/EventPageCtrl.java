@@ -83,6 +83,9 @@ public class EventPageCtrl implements Controller{
     Button editEventName;
 
     @FXML
+    Button viewDebts;
+
+    @FXML
     Label eventCode;
 
     @FXML
@@ -154,6 +157,7 @@ public class EventPageCtrl implements Controller{
         editEventName.setOnAction(e->{
             editEventNameHandler();
         });
+        viewDebts.setOnAction(e->viewDebtsHandler(e));
         initializePage();
     }
 
@@ -352,6 +356,17 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, AddParticipantCtrl.getPair(), AddParticipantCtrl.getTitle());
     }
+
+
+    /**
+     * Method to switch to debts page
+     */
+    public void viewDebtsHandler(ActionEvent event) {
+        System.out.println("switching to debts");
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, DebtsCtrl.getPair(), DebtsCtrl.getTitle());
+    }
+
     public static Event getCurrentEvent(){
         return currentEvent;
     }
