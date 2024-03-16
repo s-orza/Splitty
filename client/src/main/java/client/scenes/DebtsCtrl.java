@@ -4,31 +4,26 @@ import client.MyFXML;
 import client.MyModule;
 import client.utils.ServerUtils;
 import com.google.inject.Injector;
-
-import commons.*;
+import commons.Debt;
+import commons.DebtManager;
+import commons.Participant;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-
 import javax.inject.Inject;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -89,8 +84,12 @@ public class DebtsCtrl implements Controller, Initializable {
     }
 
     private void renderCols(){
-//        debtorCol.setCellValueFactory(d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
-//        creditorCol.setCellValueFactory(d -> new SimpleStringProperty(server.getParticipant( d.getValue().getCreditor() ).getName()));
+//        debtorCol.setCellValueFactory(
+//        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
+//
+//        creditorCol.setCellValueFactory(
+//        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getCreditor() ).getName()));
+//
 //        amountCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
 //        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
 
@@ -104,7 +103,8 @@ public class DebtsCtrl implements Controller, Initializable {
     private void renderSettleCol(){
 
         //make a cellFactory for the buttons in Settle Column
-        Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>> cellFactory = new Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>>() {
+        Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>> cellFactory =
+                new Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>>() {
             @Override
             public TableCell<Debt, Void> call(final TableColumn<Debt, Void> param) {
                 final TableCell<Debt, Void> cell = new TableCell<Debt, Void>() {
