@@ -70,38 +70,60 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     private ComboBox<String> typeSelector;
     @FXML
-    private ListView<String> namesList;//names showed on screen from which we select
+    private ListView<Pair2> namesList;//names showed on screen from which we select
     @FXML
     private Text warningText;
-    private List<String> selectedNamesList=new ArrayList<>();
-    private ObservableList<String> names = FXCollections.observableArrayList(
-            "Serban","David","Olav","Alex");
+    private List<Integer> selectedNamesList=new ArrayList<>();
+    private ObservableList<Pair2> names = FXCollections.observableArrayList(
+            new Pair2("Serban",0), new Pair2("David",1),
+            new Pair2("Olav",2), new Pair2("Alex",3));
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
+    private List<Participant> participantsObjectList;
+    private Expense expenseToBeModified=null;
     @Inject
     public AddExpenseCtrl(ServerUtils server) {
         this.server = server;
     }
     @FXML
     public void initialize() {
-        //first we need to create a list with the names of the participants:
-        //->here to put code for creating the list:
-        //names=...
+        //load resources
+        loadFromDatabase();
+        //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
+
+        //reset
+        resetElements();
+    }
+    public void loadFromDatabase()
+    {
+        //first we need to create a list with the names of the participants:
+        //->here to put code for creating the list
+        //server.getAllParticipatns(eventId) or somrthing like that
+        participantsObjectList=new ArrayList<>();
+        //this "if" will be removed when we can access the participant list
+        if(1==2)
+        {
+            int k=0;
+            for(Participant person:participantsObjectList)
+            {
+                names.add(new Pair2(person.getName(),k));
+                k++;
+            }
+        }
         //initialise the expenseTypesAvailable
         expenseTypesAvailable.clear();
         expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
-        //initialise the warning text
-        warningText.setText("");
-
         //initialise the tags
         tagsAvailable=new ArrayList<>();
-        // tagsAvailable= ->import from database all the tags<-
-            tagsAvailable.add("other");
-
-
-        //reset and load
-        resetElements();
+        if(server.checkIfTagExists("other")==false)
+        {
+            server.addTag(new Tag("other","#e0e0e0"));
+        }
+        List<Tag> temp=server.getAllTags();
+        System.out.println(temp);
+        for(Tag t:temp)
+            tagsAvailable.add(t.getName());
     }
     /**
      * This is a function that resets and prepare the scene.
@@ -109,13 +131,14 @@ public class AddExpenseCtrl implements Controller{
      */
     public void resetElements(){
         //reset the scene
+        selectedNamesList = new ArrayList<>();
         //initialise the warning text
         warningText.setText("");
         //prepare the possible authors
         authorSelector.getItems().clear();
         authorSelector.setPromptText("-Select person");
         authorSelector.setValue(null);
-        authorSelector.getItems().addAll(names);
+        authorSelector.getItems().addAll(names.stream().map(x->x.element).toList());
         authorSelector.setOnAction(this::handleSelectAuthor);
 
         //content of the expense
@@ -138,31 +161,78 @@ public class AddExpenseCtrl implements Controller{
         //reset the checkBoxes
         checkBoxSomePeople.setSelected(false);
         checkBoxAllPeople.setSelected(false);
-        //create the list view with "names"
+        //create the list view with indexes+ "names"
         namesList.setItems(names);
         namesList.setCellFactory(param -> new CheckBoxListCell());
+
         //at the beginning the list is hidden
         namesList.setVisible(false);
-
+        //without these 2 lines, the list will be buggy and you won t be able to select participants
+        //in this way, you cannot select the element,only the checkbox
+        namesList.setSelectionModel(null);
+        namesList.setFocusTraversable(false);
 
         typeSelector.getItems().clear();
         typeSelector.setPromptText("-Select type-");
         typeSelector.setValue(null);
+
         typeSelector.getItems().addAll(tagsAvailable);
+        //this only makes sense for the edit part of an expense
+        expenseToBeModified=null;
     }
-    private class CheckBoxListCell extends ListCell<String>{
+    private class Pair2{
+        public String element;
+        public int index;
+
+        public Pair2(String element, int index) {
+            this.element = element;
+            this.index = index;
+        }
+
+
+    }
+    private class CheckBoxListCell extends ListCell<Pair2>{
         private CheckBox checkBox;
+        public CheckBoxListCell() {
+        }
         @Override
-        protected void updateItem(String item, boolean empty) {
+        protected void updateItem(Pair2 item, boolean empty) {
             super.updateItem(item,empty);
             if (empty || item == null) {
                 setGraphic(null);
             } else {
-                checkBox=new CheckBox(item);//we create a checkbox with that name
-                checkBox.setOnAction(event -> handleCheckBoxSelectName(checkBox));
+                checkBox=new CheckBox(item.element);//we create a checkbox with that name
+                checkBox.setOnAction(event -> handleCheckBoxSelectName(checkBox, item.index));
                 setGraphic(checkBox);
+               // checkBox.setFocusTraversable(true);
             }
         }
+    }
+
+    /**
+     * This function is to reload/get an expense from even in order to be modified.
+     * @param expense the expense which will be modified
+     */
+    public void reloadExpense(Expense expense)
+    {
+        expenseToBeModified=expense;
+        loadFromDatabase();
+        resetElements();
+        //reload author
+        authorSelector.setValue(expense.getAuthor().getName());
+        //reload content
+        contentBox.setText(expense.getContent());
+        //reload money
+        moneyPaid.setText(expense.getMoney()+"");
+        //reload money type
+        moneyTypeSelector.setValue(expense.getType());
+        //reload date
+            //magic formula needs to be found
+        //reload type
+        typeSelector.setValue(expense.getType());
+        //reload participants stuff
+        //not yet available as we need participants, to be done in future
+
     }
 
     /**
@@ -188,6 +258,11 @@ public class AddExpenseCtrl implements Controller{
         {
             System.out.println(moneyPaid.getText());
             warningText.setText("The amount of money must be specified.");
+            return;
+        }
+        if(moneyPaid.getText().contains("-") || moneyPaid.getText().equals("0"))
+        {
+            warningText.setText("The amount of money must be positive.");
             return;
         }
         if(date.getValue()==null) {
@@ -216,27 +291,62 @@ public class AddExpenseCtrl implements Controller{
         //the expense can be considered valid now
         warningText.setText("");
         int year=date.getValue().getYear();
-        String author=authorSelector.getValue();
         String content=contentBox.getText();
-        int money=Integer.parseInt(moneyPaid.getText());
+        double money=Double.parseDouble(moneyPaid.getText());
         String dateString=date.getValue().getDayOfMonth()+","+
                 date.getValue().getMonthValue()+","+
                 date.getValue().getYear();
         //the expense
         Participant pa=new Participant("a","b","c","d");
         pa.setParticipantID(3152);
+        //this will be the final author
+        if(1==2) {
+            Participant authorP = participantsObjectList.get(authorSelector.getSelectionModel().getSelectedIndex());
+        }
         //I still need to adjust this list
         List<Participant> list=new ArrayList<>();
-        list.add(pa);
+        //if we selected all participants
+        if(checkBoxAllPeople.isSelected())
+        {
+            if(1==2)
+            for(Participant p:participantsObjectList)
+                list.add(p);
+        }
+        else
+            //then, if some participants are selected
+        //REMOVE THIS IF WHEN WE HAVE REAL PARTICIPANTS
+        if(1==2)
+        {
+            for(Integer p:selectedNamesList)
+            {
+                list.add(participantsObjectList.get(p));
+            }
+        }
+        else
+            list.add(pa);
         Expense expense=new Expense(pa,content,money,moneyTypeSelector.getValue(),
-                dateString,null,typeSelector.getValue());
+                dateString,list,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
         long id= EventPageCtrl.getCurrentEvent().getEventId();
-        server.addExpenseToEvent(id,expense);
+        //if we just add an expense, this will be null
+        if(expenseToBeModified==null)
+            server.addExpenseToEvent(id,expense);
+        else
+        {
+            //modify the expense and save it to tha database
+            expenseToBeModified.setAuthor(expense.getAuthor());
+            expenseToBeModified.setContent(expense.getContent());
+            expenseToBeModified.setMoney(expense.getMoney());
+            expenseToBeModified.setCurrency(expense.getCurrency());
+            expenseToBeModified.setDate(expense.getDate());
+            expenseToBeModified.setParticipants(expense.getParticipants());
+            expenseToBeModified.setType(expense.getType());
+            //save it
+            server.updateExpense(expenseToBeModified.getExpenseId(),expenseToBeModified);
+        }
         //System.out.println(server.getExpenseById(1));
         resetElements();
-
         //go back to event page
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
@@ -248,6 +358,7 @@ public class AddExpenseCtrl implements Controller{
      */
     @FXML
     void cancelAddExpense(MouseEvent e) {
+        resetElements();
         System.out.println("Expense canceled");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
@@ -282,6 +393,8 @@ public class AddExpenseCtrl implements Controller{
     void handleSelectAuthor(ActionEvent event)
     {
         System.out.println(authorSelector.getValue());
+        //the position->good to get the author object
+        System.out.println(authorSelector.getSelectionModel().getSelectedIndex());
     }
 
 
@@ -332,18 +445,18 @@ public class AddExpenseCtrl implements Controller{
             //show the list of people available
         }
     }
-
     /**
      * This handles when you check a checkBox of a person in the view list for selecting
      * @param checkBox the checkbox of a person who is selected/unselected
      */
-    void handleCheckBoxSelectName(CheckBox checkBox){
+    void handleCheckBoxSelectName(CheckBox checkBox,Integer index){
         String name=checkBox.getText();
+        System.out.println(index+", "+name);
         if(checkBox.isSelected()){
-            selectedNamesList.add(name);
+            selectedNamesList.add(index);
         }
         else
-            selectedNamesList.remove(name);
+            selectedNamesList.remove(index);
         System.out.println(selectedNamesList);
     }
     public static Pair<Controller, Parent> getPair() {

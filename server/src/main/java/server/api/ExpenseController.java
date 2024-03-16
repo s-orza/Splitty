@@ -19,20 +19,32 @@ public class ExpenseController {
     private final ExpenseEventRepository repoExpEv;
     private final ParticipantExpenseRepository repoPaExp;
     private final TagRepository repoTag;
+    private final ParticipantController paCon;
     public ExpenseController(ExpenseRepository repoExp, ExpenseEventRepository repoExpEv,
-                             ParticipantExpenseRepository repoPaExp, TagRepository repoTag) {
+                             ParticipantExpenseRepository repoPaExp, TagRepository repoTag,
+                             ParticipantController paCon) {
         this.repoExp = repoExp;
         this.repoExpEv = repoExpEv;
         this.repoPaExp = repoPaExp;
         this.repoTag = repoTag;
+        this.paCon = paCon;
     }
     public void putParticipants(Expense expense)
     {
         List<Participant> participantList;
         //this line we need to update in future when we would have the APIs for participants
-        //List<Long> particpantsIds=repoPaExp.getAllParticipantsIdFromExpense(expense.getExpenseId());
+        List<Long> particpantsIds=repoPaExp.getAllParticipantsIdFromExpense(expense.getExpenseId());
         participantList=new ArrayList<>();
-        //expense.setParticipants(participantList);
+        try {
+            participantList.addAll(paCon.getParticipantsByIds(particpantsIds).getBody());
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("something bad bad happend");
+        }
+
+        expense.setParticipants(participantList);
     }
     //here to put the POST APIs
 
@@ -181,6 +193,12 @@ public class ExpenseController {
             return ResponseEntity.ok(tag);
         }
         return ResponseEntity.notFound().build();
+    }
+    @GetMapping(path={"/allTags"})
+    public ResponseEntity<List<Tag>> getAllTag()
+    {
+        List<Tag> tags= repoTag.getAllTags();
+        return ResponseEntity.ok(tags);
     }
     //here to put the PUT APIs (update)
     @PutMapping(path={"/"})
