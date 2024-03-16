@@ -6,11 +6,15 @@ import client.utils.ServerUtils;
 import com.google.inject.Injector;
 
 import commons.*;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -42,6 +46,9 @@ public class DebtsCtrl implements Controller, Initializable {
     private TableColumn<Debt, String> amountCol;
 
     @FXML
+    private TableColumn<Debt, String> settleCol;
+
+    @FXML
     private Button cancelButton;
 
     //Imports used to swap scenes
@@ -52,12 +59,11 @@ public class DebtsCtrl implements Controller, Initializable {
 
     private Stage stage;
     private ServerUtils server;
-    static DebtManager currentDebtManager;
+    private String test;
+    private static DebtManager currentDebtManager;
 
-    // currently constructor injection doesn't work, anywhere
-    // including in EventPageCtrl
     @Inject
-    public DebtsCtrl(ServerUtils server, long id) {
+    public DebtsCtrl(ServerUtils server) {
         this.server = server;
     }
 
@@ -67,15 +73,55 @@ public class DebtsCtrl implements Controller, Initializable {
 
         refresh();
 
+
         // initialize close button
         cancelButton.setOnAction(this::cancelHandler);
 
-        // set cell factories for columns, receive: (debt)
-        debtorCol.setCellValueFactory(d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
-        creditorCol.setCellValueFactory(d -> new SimpleStringProperty(server.getParticipant( d.getValue().getCreditor() ).getName()));
-        creditorCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
+        dummyTest();
 
         System.out.println("DebtsCtrl finished initializing");
+    }
+
+    private void dummyTest(){
+
+        // set cell factories for columns, receive: (debt)
+//        debtorCol.setCellValueFactory(d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
+//        creditorCol.setCellValueFactory(d -> new SimpleStringProperty(server.getParticipant( d.getValue().getCreditor() ).getName()));
+//        amountCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
+//        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
+
+        debtorCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Long.toString(d.getValue().getDebtor())));
+        creditorCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Long.toString(d.getValue().getCreditor())));
+        amountCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Double.toString( d.getValue().getAmount() )));
+        settleCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Double.toString( d.getValue().getAmount() )));
+
+        // add participants
+        Participant anna = new Participant("Anna", "e", "1", "2");
+        Participant elsa = new Participant("Elsa", "e", "1", "2");
+        Participant olaf = new Participant("olaf", "e", "1", "2");
+
+        anna.setParticipantID(1);
+        elsa.setParticipantID(2);
+        elsa.setParticipantID(3);
+
+        // server.addParticipant is not working
+//        server.addParticipant(anna);
+//        server.addParticipant(elsa);
+//        server.addParticipant(olaf);
+
+        // add debts
+        Debt d1 = new Debt(10.00, "EUR", anna, elsa);
+        Debt d2 = new Debt(69.00, "EUR", anna, olaf);
+        Debt d3 = new Debt(5.00, "EUR", olaf, elsa);
+
+        //put into observable array
+        ObservableList<Debt> list = FXCollections.observableArrayList(d1,d2,d3);
+        debtTable.setItems(list);
+    }
+
+    public void connectDebtManager(DebtManager dm){
+        currentDebtManager = dm;
+        System.out.println("Connecting to " + currentDebtManager);
     }
 
     private void cancelHandler(ActionEvent e){
