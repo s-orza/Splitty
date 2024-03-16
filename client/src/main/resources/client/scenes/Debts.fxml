@@ -17,11 +17,12 @@
             <TableColumn fx:id="amountCol" prefWidth="121.60003662109375" text="Amount" />
         </columns>
       </TableView>
-      <Button layoutX="33.0" layoutY="24.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+      <Button fx:id="cancelButton" layoutX="33.0" layoutY="24.0" mnemonicParsing="false" text="Cancel" />
       <Label layoutX="261.0" layoutY="37.0" text="Debts">
          <font>
             <Font size="30.0" />
          </font>
       </Label>
+      <Button layoutX="274.0" layoutY="368.0" mnemonicParsing="false" onAction="#refresh" text="refresh" />
    </children>
 </AnchorPane>
