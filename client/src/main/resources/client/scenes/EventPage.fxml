@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
    <children>
       <TableView fx:id="expensesTable" layoutX="14.0" layoutY="186.0" prefHeight="298.0" prefWidth="554.0">
          <columns>
@@ -39,5 +39,6 @@
       <Button fx:id="editEventName" layoutX="456.0" layoutY="110.0" mnemonicParsing="false" text="Edit Event Name" />
       <Button layoutX="23.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
       <Button fx:id="viewDebts" layoutX="612.0" layoutY="412.0" mnemonicParsing="false" text="View Debts" />
+      <Button fx:id="viewStatistics" layoutX="604.0" layoutY="471.0" mnemonicParsing="false" text="Button" />
    </children>
 </AnchorPane>
