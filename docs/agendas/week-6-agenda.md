@@ -44,3 +44,49 @@ Ending:
 - Closure (1 min)
 --------
 - Planned meeting duration (1 hour) actual duration? Where/why did you mis -estimate? (? min)
+
+Notes 
+-----------------------------Announcements from Miss Elena------------------------------
+ - From now on add sprint review, planning and retrospective
+ - Friday W9 = code freeze
+ - HCI assignment to do (this week!)
+ - App follows *most* of Heuristic requirements (this week!)
+ - IMPLEMENT TESTS!
+    - for API (using mock in manual/moquito)
+    - Show that we have testable code (dependancy injection)
+ - Use service annotations for dependancy injection
+ - READ FEEDBACK!
+ - W7 rubric on product pitch (feature feedback)
+ - Read BuddyCheck
+-----------------------------RECAP------------------------------
+ - Ivan: Backend Functions
+ - Olav: Frontend debts Page and functions
+ - Serban: fixed a lot of issues, checkboxes -> ID, Tags
+ - David: Particpants (class, API, Repo) and Add Expense 
+ - Oliwier: Main page and Admin page
+ - Shahar: Connected Event to API, Tests
+-----------------------------Negatives from feedback------------------------------
+ - Planning
+    - Time tracking (before)
+    - How much time was spent (after)
+    - make issues smaller (2 per week)
+    - more descriptive issues (and Titles for issues and MRs)
+    - definition of done
+ - Code Contributions and Code Reviews
+    - MORE CHECKSTYLE RULES
+    - comments need to be more useful (give changes to implement, and implement them!)
+    - 3 reviewers for BIG and CONTREVERSIAL
+    - Follow checkstyle pipeline tutorial
+------------------------To be implemented-----------------------
+ - Long polling + Websockets (Shahar + Serban)
+ - implement statistics (Serban)
+ - backend Debt splitting (Olav)
+ - Fixes
+    - fix Participants methods (David)
+    - fix Event Code (Oliwier)
+ - Multi-Language (basic REQ) (Ivan)
+ - sending email invites (Olav)
+ - Admin JSON  (WildCard)
+ - MORE CHECKSTYLE RULES (All)
+ - Use service annotations for dependancy injection (Oliwier)
+ - HCI (David)
