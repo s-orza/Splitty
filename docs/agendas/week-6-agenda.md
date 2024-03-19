@@ -46,6 +46,7 @@ Ending:
 - Planned meeting duration (1 hour) actual duration? Where/why did you mis -estimate? (? min)
 
 Notes 
+
 -----------------------------Announcements from Miss Elena------------------------------
  - From now on add sprint review, planning and retrospective
  - Friday W9 = code freeze
@@ -58,6 +59,7 @@ Notes
  - READ FEEDBACK!
  - W7 rubric on product pitch (feature feedback)
  - Read BuddyCheck
+
 -----------------------------RECAP------------------------------
  - Ivan: Backend Functions
  - Olav: Frontend debts Page and functions
@@ -65,6 +67,7 @@ Notes
  - David: Particpants (class, API, Repo) and Add Expense 
  - Oliwier: Main page and Admin page
  - Shahar: Connected Event to API, Tests
+
 -----------------------------Negatives from feedback------------------------------
  - Planning
     - Time tracking (before)
@@ -77,6 +80,7 @@ Notes
     - comments need to be more useful (give changes to implement, and implement them!)
     - 3 reviewers for BIG and CONTREVERSIAL
     - Follow checkstyle pipeline tutorial
+
 ------------------------To be implemented-----------------------
  - Long polling + Websockets (Shahar + Serban)
  - implement statistics (Serban)
