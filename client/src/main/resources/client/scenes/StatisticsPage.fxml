@@ -16,7 +16,7 @@
             </font>
         </Text>
         <Text fx:id="totalSpentText" layoutX="405.0" layoutY="354.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " />
-        <ListView layoutX="406.0" layoutY="83.0" prefHeight="118.0" prefWidth="161.0" />
+        <ListView fx:id="tagsListView" layoutX="406.0" layoutY="83.0" prefHeight="118.0" prefWidth="178.0" />
         <Text layoutX="406.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
          <font>
             <Font size="14.0" />
@@ -24,7 +24,7 @@
 
       <PieChart fx:id="pieChart" layoutX="14.0" layoutY="52.0" legendVisible="false" prefHeight="298.0" prefWidth="344.0" title="Costs:" />
      
-      <ListView fx:id="legendListView" layoutX="406.0" layoutY="221.0" prefHeight="107.0" prefWidth="126.0" />
+      <ListView fx:id="legendListView" layoutX="406.0" layoutY="221.0" prefHeight="107.0" prefWidth="178.0" />
       <Text layoutX="406.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
          <font>
             <Font size="14.0" />
