@@ -32,8 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static com.google.inject.Guice.createInjector;
-
 public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
@@ -51,10 +49,6 @@ public class AdminPageCtrl implements Controller, Initializable {
   private Label showEvent;
 
   private EventHelper selectedEvent;
-  //Imports used to swap scenes
-  private static final Injector INJECTOR = createInjector(new MyModule());
-  private static final MyFXML FXML = new MyFXML(INJECTOR);
-  private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
   private Stage stage;
   ServerUtils server;
   ObservableList<EventHelper> contents;
@@ -85,7 +79,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
     eventPageCtrl.connectEvent(server.getEvent(selectedEvent.getId()));
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+    mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
   public void deleteEvent(ActionEvent e){
@@ -136,7 +130,8 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void close(ActionEvent e) throws IOException {
     System.out.println("close window");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
+    MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
+    mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
   }
 
   @Override
@@ -156,10 +151,10 @@ public class AdminPageCtrl implements Controller, Initializable {
       }
     });
   }
-  public static Pair<Controller, Parent> getPair() {
+  public Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");
   }
-  public static String getTitle(){
+  public String getTitle(){
     return "Admin Page";
   }
 }

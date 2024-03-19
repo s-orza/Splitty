@@ -20,8 +20,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import static com.google.inject.Guice.createInjector;
-
 public class MainPageCtrl implements Controller, Initializable {
 
   @FXML
@@ -36,10 +34,6 @@ public class MainPageCtrl implements Controller, Initializable {
   private EventHelper selectedEv;
   //Imports used to swap scenes
   private Stage stage;
-  private static final Injector INJECTOR = createInjector(new MyModule());
-  private static final MyFXML FXML = new MyFXML(INJECTOR);
-
-  private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
   private ServerUtils server;
   @Inject
   public MainPageCtrl(ServerUtils server){
@@ -49,7 +43,8 @@ public class MainPageCtrl implements Controller, Initializable {
   public void createEvent(ActionEvent e) {
     System.out.println("Crete event window");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, CreateEventCtrl.getPair(), CreateEventCtrl.getTitle());
+    CreateEventCtrl createEventCtrl = new CreateEventCtrl(server);
+    mainCtrl.initialize(stage, createEventCtrl.getPair(), createEventCtrl.getTitle());
   }
 
   public void joinEvent(ActionEvent event) {
@@ -63,13 +58,15 @@ public class MainPageCtrl implements Controller, Initializable {
       return;
     }
     stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+    EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+    mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
   public void openAdmin(ActionEvent e){
     System.out.println("opening admin");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, LoginAdminCtrl.getPair(), LoginAdminCtrl.getTitle());
+    LoginAdminCtrl loginAdminCtrl = new LoginAdminCtrl(server);
+    mainCtrl.initialize(stage, loginAdminCtrl.getPair(), loginAdminCtrl.getTitle());
   }
 
 
@@ -95,10 +92,10 @@ public class MainPageCtrl implements Controller, Initializable {
     });
   }
 
-  public static Pair<Controller, Parent> getPair() {
+  public Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "mainPage.fxml");
   }
-  public static String getTitle(){
+  public String getTitle(){
     return "Main Page";
   }
 }

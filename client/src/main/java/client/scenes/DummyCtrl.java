@@ -22,21 +22,15 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import static com.google.inject.Guice.createInjector;
-
 public class DummyCtrl implements Controller{
 
     private Stage stage;
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
     //add FXML elements with annotation
 
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "loginAdmin.fxml");
     }
-    public static String getTitle() {
+    public String getTitle() {
         return "Login Page";
     }
 }

@@ -18,8 +18,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import static com.google.inject.Guice.createInjector;
-
 public class AddParticipantCtrl implements Controller{
     private ServerUtils server;
     @FXML
@@ -34,11 +32,6 @@ public class AddParticipantCtrl implements Controller{
     private TextField iban;
     @FXML
     private TextField bic;
-
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
 
     @Inject
     public AddParticipantCtrl(ServerUtils server){
@@ -102,7 +95,8 @@ public class AddParticipantCtrl implements Controller{
     public void close(ActionEvent e){
         System.out.println("close window");
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
 
     @FXML
@@ -110,10 +104,10 @@ public class AddParticipantCtrl implements Controller{
         System.out.println("Participant adding process canceled");
     }
 
-    static Pair<Controller, Parent> getPair(){
+    public Pair<Controller, Parent> getPair(){
         return FXML.load(Controller.class, "client", "scenes", "AddParticipant.fxml");
     }
-    static String getTitle(){
+    public String getTitle(){
         return "Add Participant";
     }
 }
