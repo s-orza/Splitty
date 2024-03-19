@@ -16,13 +16,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 
-import static com.google.inject.Guice.createInjector;
-
 public class CreateEventCtrl implements Controller{
-    //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     //Gets the different FXML page components
     @FXML
@@ -42,6 +36,7 @@ public class CreateEventCtrl implements Controller{
     // It also adds a new event to the data base
     public void create(ActionEvent e){
         Event newEvent = new Event(textField.getText());
+        System.out.println(newEvent.getEventId());
         System.out.println("Crete event window");
         System.out.println(textField.getText());
         System.out.println(server.getEvents());
@@ -49,13 +44,13 @@ public class CreateEventCtrl implements Controller{
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         eventPageCtrl.connectEvent(newEvent);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
 
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "CreateEvent.fxml");
     }
-    public static String getTitle(){
+    public String getTitle(){
         return "Create Event";
     }
 

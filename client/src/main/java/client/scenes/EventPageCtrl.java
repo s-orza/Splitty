@@ -29,8 +29,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.inject.Guice.createInjector;
-
 public class EventPageCtrl implements Controller{
     ServerUtils server;
     static Event currentEvent;
@@ -90,12 +88,6 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     Label eventName;
-
-    //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     private Stage stage;
 
@@ -221,7 +213,8 @@ public class EventPageCtrl implements Controller{
     private void addExpenseHandler(ActionEvent e) {
         System.out.println("This will lead to another page to add expense");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
+        AddExpenseCtrl addExpenseCtrl = new AddExpenseCtrl(server);
+        mainCtrl.initialize(stage, addExpenseCtrl.getPair(), addExpenseCtrl.getTitle());
 
     }
 
@@ -315,7 +308,8 @@ public class EventPageCtrl implements Controller{
     public void close(ActionEvent e){
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
+        MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
+        mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
     }
 
     /**
@@ -354,7 +348,8 @@ public class EventPageCtrl implements Controller{
         }
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AddParticipantCtrl.getPair(), AddParticipantCtrl.getTitle());
+        AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), addParticipantCtrl.getTitle());
     }
 
 
@@ -364,18 +359,19 @@ public class EventPageCtrl implements Controller{
     public void viewDebtsHandler(ActionEvent event) {
         System.out.println("switching to debts");
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, DebtsCtrl.getPair(), DebtsCtrl.getTitle());
+        DebtsCtrl debtsCtrl = new DebtsCtrl(server);
+        mainCtrl.initialize(stage, debtsCtrl.getPair(), debtsCtrl.getTitle());
     }
 
-    public static Event getCurrentEvent(){
+    public Event getCurrentEvent(){
         return currentEvent;
     }
 
     //getter for swapping scenes
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
     }
-    public static String getTitle(){
+    public String getTitle(){
         return "Event Page";
     }
 
