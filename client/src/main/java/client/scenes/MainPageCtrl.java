@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.google.inject.Guice.createInjector;
-import static javafx.animation.Interpolator.*;
+
 
 public class MainPageCtrl implements Controller, Initializable {
 
@@ -66,7 +66,11 @@ public class MainPageCtrl implements Controller, Initializable {
   private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
   private ServerUtils server;
 
-  private Locale currentLocale = new Locale("en", "US"); // Default to English
+  private static Locale currentLocale = new Locale("en", "US");
+
+  public static Locale getCurrentLocale() {
+    return currentLocale;
+  }
 
   private int counter = 0;
   private TranslateTransition  smoothShake;
@@ -125,8 +129,13 @@ public class MainPageCtrl implements Controller, Initializable {
       }
     });
 
-    putFlag("enFlag.png");
+    if(currentLocale.getLanguage().equals("en"))putFlag("enFlag.png");
+    if(currentLocale.getLanguage().equals("nl"))putFlag("nlFlag.png");
+    if(currentLocale.getLanguage().equals("de"))putFlag("deFlag.png");
+    if(currentLocale.getLanguage().equals("es"))putFlag("esFlag.png");
+    toggleLanguage();
     prepareAnimation();
+
 
     flagButton.setOnMouseClicked(event -> {
       changeFlag();

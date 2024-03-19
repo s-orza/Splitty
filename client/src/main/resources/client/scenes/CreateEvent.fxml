@@ -8,17 +8,17 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: FBECEB;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.CreateEventCtrl">
     <children>
-        <Label layoutX="207.0" layoutY="36.0" style="-fx-border-color: 53D3D1;" text="Create Event" textFill="#feb249">
+        <Label fx:id="createEventLabel" layoutX="207.0" layoutY="36.0" style="-fx-border-color: 53D3D1;" text="Create Event" textFill="#feb249">
             <font>
                 <Font size="38.0" />
             </font>
         </Label>
-        <Label layoutX="81.0" layoutY="111.0" style="-fx-border-color: 53D3D1;" text="Title:" textFill="#002447">
+        <Label fx:id="titleLabel" layoutX="81.0" layoutY="111.0" style="-fx-border-color: 53D3D1;" text="Title:" textFill="#002447">
             <font>
                 <Font size="25.0" />
             </font>
         </Label>
-        <Label layoutX="76.0" layoutY="189.0" style="-fx-border-color: 53D3D1;" text="Join Code:" textFill="#002447">
+        <Label fx:id="joinCodeLabel" layoutX="76.0" layoutY="189.0" style="-fx-border-color: 53D3D1;" text="Join Code:" textFill="#002447">
             <font>
                 <Font size="25.0" />
             </font>
