@@ -92,15 +92,18 @@ public class StatisticsCtrl implements Controller, Initializable {
         for(Expense e:expensesList)
         {
             System.out.println(e.getType()+"  "+e.getMoney());
-            if(tagsWithValues.containsKey(e.getType()))
+            String type=e.getType();
+            if(type==null || type.equals(""))
+                type="other";
+            if(tagsWithValues.containsKey(type))
             {
-                double k=tagsWithValues.get(e.getType());
+                double k=tagsWithValues.get(type);
                 //in case the currency is not in EUR, we would change it here.
                 k=k+e.getMoney();
-                tagsWithValues.put(e.getType(),k);
+                tagsWithValues.put(type,k);
             }
             else
-                tagsWithValues.put(e.getType(),e.getMoney());
+                tagsWithValues.put(type,e.getMoney());
         }
         return tagsWithValues;
     }
@@ -120,26 +123,33 @@ public class StatisticsCtrl implements Controller, Initializable {
         long eventId=7952;
         if(EventPageCtrl.getCurrentEvent()!=null)
             eventId=EventPageCtrl.getCurrentEvent().getEventId();
-        //a map with the name and the color of a tag
+        //a map with the name (including percentages) and the color of a tag
         Map<String, String> tagColors = new HashMap<>();
+
+        //it maps a name (ex "food 23%") to the name for the legend (ex: "food 200 EUR")
+        Map<String, String> namesForLegend = new HashMap<>();
 
         for(String tag: tagsWithValues.keySet()){
             double amount=tagsWithValues.get(tag);
             double percentage=(amount/totalAmount)*100;
             //the tag name + %
             String name=tag+ " ("+String.format("%.2f", percentage)+"%)";
+            //name for the legend.
+            String legendName=tag+"  "+amount+" EUR";
+
             PieChart.Data data=new PieChart.Data(name,amount);
             pieChartData.add(data);
             //preparing tagColors to use for personalized colors
-            if(!tagColors.containsKey(name))
-            {
-                Tag t=server.getTagByIdOfEvent(tag,eventId);
-                if(t!=null)
-                    tagColors.put(name,t.getColor());
-                else
-                    tagColors.put(name,"#aaaaaa");
-                //This is a gray
-            }
+
+            Tag t=server.getTagByIdOfEvent(tag,eventId);
+            if(t!=null)
+                tagColors.put(name,t.getColor());
+            else
+                tagColors.put(name,"#aaaaaa");
+            //This is a gray color.
+
+            namesForLegend.put(name,legendName);
+
         }
         pieChart.setData(pieChartData);
         //add colors to the pie chart
@@ -150,8 +160,8 @@ public class StatisticsCtrl implements Controller, Initializable {
 
         System.out.println(tagColors);
 
-        //create the legend
-        legendListView.setCellFactory(param -> new LegendListCell(tagColors));
+        // create the legend
+        legendListView.setCellFactory(param -> new LegendListCell(tagColors,namesForLegend));
 
         // put data in the legend
         legendListView.getItems().clear();
@@ -160,7 +170,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void createTagsUsedInThisEventList(Set<String> tags)
     {
         tagsListView.getItems().clear();
-        tagsListView.getItems().addAll(tags);
+        tagsListView.getItems().addAll(tags.stream().sorted().toList());
         tagsListView.setCellFactory(param -> new TagsListViewCell());
         //we need these for making the front end beautiful
         tagsListView.setSelectionModel(null);
@@ -186,9 +196,12 @@ public class StatisticsCtrl implements Controller, Initializable {
      */
     private class LegendListCell extends ListCell<String> {
         private final Map<String, String> tagColors;
+        private final Map<String, String> namesForLegend;
 
-        public LegendListCell(Map<String, String> tagColors) {
+        public LegendListCell(Map<String, String> tagColors,
+                              Map<String, String> namesForLegend) {
             this.tagColors = tagColors;
+            this.namesForLegend=namesForLegend;
         }
 
         @Override
@@ -202,12 +215,12 @@ public class StatisticsCtrl implements Controller, Initializable {
                 Circle circle = new Circle(6);
                 circle.setFill(Color.web(tagColors.get(item)));
                 //for setting the size of the text (by default it is 12)
-                Label label=new Label(item);
+                Label label=new Label(namesForLegend.get(item));
                 label.setFont(new Font(13));
                 //we need to align the circle and the text
                 HBox hbox=new HBox(circle, label);
                 hbox.setAlignment(Pos.CENTER_LEFT);
-                hbox.setSpacing(2);
+                hbox.setSpacing(3);
                 setGraphic(hbox);
             }
         }
