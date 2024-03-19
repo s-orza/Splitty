@@ -89,7 +89,7 @@ Notes
     - fix Participants methods (David)
     - fix Event Code (Oliwier)
  - Multi-Language (basic REQ) (Ivan)
- - sending email invites (Olav)
+ - sending email invites (Delay)
  - Admin JSON  (WildCard)
  - MORE CHECKSTYLE RULES (All)
  - Use service annotations for dependancy injection (Oliwier)
