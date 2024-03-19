@@ -21,6 +21,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -43,6 +44,18 @@ public class MainPageCtrl implements Controller, Initializable {
   private ListView<EventHelper> recentList;
   @FXML
   private Button flagButton;
+  @FXML
+  private Text createNewEventLabel;
+  @FXML
+  private Text joinEventLabel;
+  @FXML
+  private Button joinButton;
+  @FXML
+  private Button createButton;
+  @FXML
+  private Text recentEventsLabel;
+  @FXML
+  private Button adminButton;
 
   private EventHelper selectedEv;
   //Imports used to swap scenes
@@ -116,36 +129,52 @@ public class MainPageCtrl implements Controller, Initializable {
     prepareAnimation();
 
     flagButton.setOnMouseClicked(event -> {
-
-        try {
-            Thread.sleep(150);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        changeFlag();
+      changeFlag();
+      toggleLanguage();
     });
   }
   public void changeFlag(){
     seqTransition.play();
     if(currentLocale.getLanguage().equals("nl")){
-      System.out.println("in en handle");
-      currentLocale = new Locale("en", "US");
+      currentLocale = new Locale("es", "ES");
+      // pause for a bit so that the flag shrinks and then changes it
       PauseTransition pause = new PauseTransition(Duration.millis(150));
-      pause.setOnFinished(e -> putFlag("enFlag.png")); // This executes changeFlag after the pause
+      // This executes changeFlag after the pause
+      pause.setOnFinished(e -> putFlag("esFlag.png"));
       pause.play();
-
+    }
+    else if(currentLocale.getLanguage().equals("en")){
+      currentLocale = new Locale("nl", "nl");
+      // pause for a bit so that the flag shrinks and then changes it
+      PauseTransition pause = new PauseTransition(Duration.millis(150));
+      // This executes changeFlag after the pause
+      pause.setOnFinished(e -> putFlag("nlFlag.png"));
+      pause.play();
+    }
+    else if(currentLocale.getLanguage().equals("es")){
+      currentLocale = new Locale("de", "DE");
+      // pause for a bit so that the flag shrinks and then changes it
+      PauseTransition pause = new PauseTransition(Duration.millis(150));
+      // This executes changeFlag after the pause
+      pause.setOnFinished(e -> putFlag("deFlag.png"));
+      pause.play();
     }
     else{
-      System.out.println("in nl handle");
-      currentLocale = new Locale("nl", "NL");
+      currentLocale = new Locale("en", "US");
       PauseTransition pause = new PauseTransition(Duration.millis(150));
-      pause.setOnFinished(e -> putFlag("nlFlag.png")); // This executes changeFlag after the pause
+      pause.setOnFinished(e -> putFlag("enFlag.png"));
       pause.play();
-
     }
   }
   public void toggleLanguage(){
       System.out.println("image pressed " + counter++);
+      ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+      createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
+      joinEventLabel.setText(resourceBundle.getString("joinEventText"));
+      joinButton.setText(resourceBundle.getString("joinText"));
+      adminButton.setText(resourceBundle.getString("adminText"));
+      recentEventsLabel.setText(resourceBundle.getString("recentEventsText"));
+      createButton.setText(resourceBundle.getString("createText"));
   }
 
   public void putFlag(String path){
