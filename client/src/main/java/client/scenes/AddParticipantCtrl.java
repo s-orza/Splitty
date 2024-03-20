@@ -19,6 +19,8 @@ import javafx.scene.text.Text;
 
 import static com.google.inject.Guice.createInjector;
 
+import java.util.Arrays;
+
 public class AddParticipantCtrl implements Controller{
     private ServerUtils server;
     @FXML
@@ -80,7 +82,10 @@ public class AddParticipantCtrl implements Controller{
         }
         Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         try {
-            server.addParticipant(newParticipant);
+            //TODO
+            // make the eventID be specific to each event
+            server.addParticipantEvent(newParticipant, 1);
+            close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
         }
