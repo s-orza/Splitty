@@ -9,6 +9,8 @@ import commons.Event;
 
 
 import javafx.animation.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 
 
@@ -56,6 +58,8 @@ public class MainPageCtrl implements Controller, Initializable {
   private Text recentEventsLabel;
   @FXML
   private Button adminButton;
+  @FXML
+  private ComboBox comboBox;
 
   private EventHelper selectedEv;
   //Imports used to swap scenes
@@ -129,22 +133,54 @@ public class MainPageCtrl implements Controller, Initializable {
       }
     });
 
-    if(currentLocale.getLanguage().equals("en"))putFlag("enFlag.png");
-    if(currentLocale.getLanguage().equals("nl"))putFlag("nlFlag.png");
-    if(currentLocale.getLanguage().equals("de"))putFlag("deFlag.png");
-    if(currentLocale.getLanguage().equals("es"))putFlag("esFlag.png");
+
+
+
+    if(currentLocale.getLanguage().equals("en")){
+      putFlag("enFlag.png");
+      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      comboBox.setItems(comboBoxItems);
+      comboBox.setPromptText("English");
+    }
+    if(currentLocale.getLanguage().equals("nl")){
+      putFlag("nlFlag.png");
+      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      comboBox.setItems(comboBoxItems);
+      comboBox.setPromptText("Dutch");
+    }
+    if(currentLocale.getLanguage().equals("de")){
+      putFlag("deFlag.png");
+      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      comboBox.setItems(comboBoxItems);
+      comboBox.setPromptText("German");
+    }
+    if(currentLocale.getLanguage().equals("es")){
+      putFlag("esFlag.png");
+      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      comboBox.setItems(comboBoxItems);
+      comboBox.setPromptText("Spanish");
+    }
     toggleLanguage();
     prepareAnimation();
 
-
-    flagButton.setOnMouseClicked(event -> {
-      changeFlag();
+    comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+      System.out.println("Selected item: " + newValue);
+      if(newValue.equals("English")) changeFlag("en");
+      if(newValue.equals("Dutch")) changeFlag("nl");
+      if(newValue.equals("Spanish")) changeFlag("es");
+      if(newValue.equals("German")) changeFlag("de");
       toggleLanguage();
     });
+
+    flagButton.setOnMouseClicked(event -> {
+//      changeFlag();
+//      toggleLanguage();
+      comboBox.show();
+    });
   }
-  public void changeFlag(){
+  public void changeFlag(String toChange){
     seqTransition.play();
-    if(currentLocale.getLanguage().equals("nl")){
+    if(toChange.equals("es")){
       currentLocale = new Locale("es", "ES");
       // pause for a bit so that the flag shrinks and then changes it
       PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -152,7 +188,7 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.setOnFinished(e -> putFlag("esFlag.png"));
       pause.play();
     }
-    else if(currentLocale.getLanguage().equals("en")){
+    else if(toChange.equals("nl")){
       currentLocale = new Locale("nl", "nl");
       // pause for a bit so that the flag shrinks and then changes it
       PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -160,7 +196,7 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.setOnFinished(e -> putFlag("nlFlag.png"));
       pause.play();
     }
-    else if(currentLocale.getLanguage().equals("es")){
+    else if(toChange.equals("de")){
       currentLocale = new Locale("de", "DE");
       // pause for a bit so that the flag shrinks and then changes it
       PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -208,8 +244,6 @@ public class MainPageCtrl implements Controller, Initializable {
     ScaleTransition restore = new ScaleTransition(Duration.millis(150), flagButton);
     restore.setToY(1); // Restore to original size on the Y axis
     restore.setInterpolator(Interpolator.EASE_BOTH);
-
-
 
     seqTransition = new SequentialTransition(shrink, restore);
 

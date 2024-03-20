@@ -8,6 +8,7 @@ import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -18,9 +19,11 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 
+
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
 
 import static com.google.inject.Guice.createInjector;
 
@@ -50,16 +53,6 @@ public class CreateEventCtrl implements Controller, Initializable {
     public CreateEventCtrl(ServerUtils server) {
         this.server = server;
     }
-
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources){
-        System.out.println("we should be seeing this");
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
-        joinCodeLabel.setText(resourceBundle.getString("joinEventText"));
-        titleLabel.setText(resourceBundle.getString("createNewEventText"));
-        createEventLabel.setText(resourceBundle.getString("createNewEventLabel"));
-    }
     //method to go to the eventPage once you create a new event with eventName as the title of the new event.
     // It also adds a new event to the data base
     public void create(ActionEvent e){
@@ -81,4 +74,16 @@ public class CreateEventCtrl implements Controller, Initializable {
         return "Create Event";
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("we should be seeing this");
+        try{
+            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+            joinCodeLabel.setText(resourceBundle.getString("joinCodeText"));
+            titleLabel.setText(resourceBundle.getString("titleText"));
+            createEventLabel.setText(resourceBundle.getString("createNewEventText"));
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
 }
