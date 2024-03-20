@@ -31,7 +31,6 @@ import java.util.List;
 
 public class EventPageCtrl implements Controller{
     ServerUtils server;
-    static Event currentEvent;
 
     @Inject
     public EventPageCtrl(ServerUtils server) {
@@ -132,15 +131,17 @@ public class EventPageCtrl implements Controller{
 
         System.out.println("in init");
 
-
-        expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(currentEvent.getEventId()));
-
+        try {
+            expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
         participantsData = FXCollections.observableArrayList(new Participant("ivan", "", "", ""));
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
-
-        System.out.println(currentEvent);
+       // System.out.println(server.getEvent(server.getCurrentId()));
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
@@ -155,13 +156,9 @@ public class EventPageCtrl implements Controller{
 
     //set event page title and event code
     private void initializePage() {
-        eventName.setText(currentEvent.getName());
-        eventCode.setText("Event Code: " + currentEvent.getEventId());
-    }
-
-    public void connectEvent(Event event){
-        currentEvent = event;
-        System.out.println("Connecting to " + currentEvent);
+        System.out.println(server.getCurrentId());
+        eventName.setText(server.getEvent(server.getCurrentId()).getName());
+        eventCode.setText("Event Code: " + server.getCurrentId());
     }
 
     public long findEventId(String name) throws Exception {
@@ -193,7 +190,7 @@ public class EventPageCtrl implements Controller{
         changeButton.setOnAction(e -> {
             popupStage.close();
             eventName.setText(newName.getText());
-            server.changeEventName(currentEvent.getEventId(), newName.getText());
+            server.changeEventName(server.getCurrentId(), newName.getText());
         });
 
         cancelButton.setOnAction(e -> {
@@ -301,7 +298,7 @@ public class EventPageCtrl implements Controller{
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
         for (Expense x: toRemove) {
-            server.deleteExpenseFromEvent(currentEvent.getEventId(), x.getExpenseId());
+            server.deleteExpenseFromEvent(server.getCurrentId(), x.getExpenseId());
         }
         // this method will remove the expenses from the database
     }
@@ -361,10 +358,6 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         DebtsCtrl debtsCtrl = new DebtsCtrl(server);
         mainCtrl.initialize(stage, debtsCtrl.getPair(), debtsCtrl.getTitle());
-    }
-
-    public Event getCurrentEvent(){
-        return currentEvent;
     }
 
     //getter for swapping scenes

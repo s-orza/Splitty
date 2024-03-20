@@ -324,7 +324,8 @@ public class AddExpenseCtrl implements Controller{
         System.out.println(expense);
         //the id is the id of the current event, we need to change
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
-        long id= eventPageCtrl.getCurrentEvent().getEventId();
+        System.out.println("Adding to event id" + server.getCurrentId());
+        long id= server.getCurrentId();
         //if we just add an expense, this will be null
         if(expenseToBeModified==null)
             server.addExpenseToEvent(id,expense);

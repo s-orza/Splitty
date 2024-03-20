@@ -50,9 +50,8 @@ public class MainPageCtrl implements Controller, Initializable {
   public void joinEvent(ActionEvent event) {
     System.out.println("Join event window");
     System.out.println(joinInput.getText());
-    EventPageCtrl eventCtrl = new EventPageCtrl(server);
     try {
-      eventCtrl.connectEvent(server.getEvent(Long.parseLong(joinInput.getText())));
+      server.connect(Long.parseLong(joinInput.getText()));
     }catch (Exception e){
       System.out.println(e);
       return;

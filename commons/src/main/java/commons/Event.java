@@ -18,8 +18,9 @@ import java.util.*;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     @Column
-    private long eventID;
+    long eventID;
 
     @Column
     String name;
@@ -47,6 +48,11 @@ public class Event {
      * @param name Event's name
      */
     public Event(String name) {
+
+        // Possible to try and generate a random ID that contains letters & numbers (possible venture)
+//        checkUniqueness(eventID);
+
+
         this.participants = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.name = name;

@@ -60,7 +60,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void fillList(){
     List<EventHelper> list = new ArrayList<EventHelper>();
     for(Event e : server.getEvents()){
-      System.out.println(e.getActivityDate());
+      System.out.println("activity date: " + e.getActivityDate());
       list.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
     }
     contents =  FXCollections.observableArrayList(
@@ -77,7 +77,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void editEvent(ActionEvent e){
     System.out.println("edit selected event");
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
-    eventPageCtrl.connectEvent(server.getEvent(selectedEvent.getId()));
+    server.connect(selectedEvent.getId());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
@@ -87,7 +87,7 @@ public class AdminPageCtrl implements Controller, Initializable {
       System.out.println("No event selected!");
       return;
     }
-    System.out.println("delete selected event");
+    System.out.println("delete selected event with id :");
     System.out.println(selectedEvent.getId());
 
     VBox layout = new VBox(10);

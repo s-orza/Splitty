@@ -36,13 +36,21 @@ public class CreateEventCtrl implements Controller{
     // It also adds a new event to the data base
     public void create(ActionEvent e){
         Event newEvent = new Event(textField.getText());
-        System.out.println(newEvent.getEventId());
+        for(Event event : server.getEvents()) {
+            if (event.getName().equals(newEvent.getName())) {
+                System.out.println("Event already exists!");
+                return;
+            }
+        }
+        server.createEvent(newEvent);
+        newEvent = server.getEvents().getLast();
+        System.out.println(newEvent.getEventId() + "id");
         System.out.println("Crete event window");
         System.out.println(textField.getText());
-        System.out.println(server.getEvents());
-        server.createEvent(newEvent);
+        System.out.println(server.getEvent(newEvent.getEventId()));
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
-        eventPageCtrl.connectEvent(newEvent);
+        server.connect(newEvent.getEventId());
+        System.out.println(server.getCurrentId() + "ID cur");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
