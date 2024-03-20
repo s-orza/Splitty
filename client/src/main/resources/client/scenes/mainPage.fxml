@@ -12,7 +12,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-border-color: 000000;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
     <children>
-        <Button alignment="CENTER_RIGHT" layoutX="300.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
+        <Button alignment="CENTER_RIGHT" layoutX="483.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
         <Button layoutX="483.0" layoutY="127.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="26.0" prefWidth="50.0" style="-fx-alignment: 53D3D1; -fx-border-color: #53D3D1; -fx-background-color: blue;" text="Join" textAlignment="CENTER" />
       <TextField id="joinInput" fx:id="joinInput" layoutX="300.0" layoutY="128.0" />
       <Text layoutX="-35.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
@@ -43,5 +43,6 @@
             <Font name="Broadway" size="48.0" />
          </font>
       </Label>
+      <TextField id="joinInput" fx:id="createInput" layoutX="300.0" layoutY="187.0" />
     </children>
 </AnchorPane>

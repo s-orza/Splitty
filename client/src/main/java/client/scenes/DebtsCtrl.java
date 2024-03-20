@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Debt;
 import commons.DebtManager;
 import commons.Participant;
