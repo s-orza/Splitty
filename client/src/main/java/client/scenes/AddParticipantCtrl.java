@@ -6,17 +6,16 @@ import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import commons.Participant;
 import com.google.inject.Inject;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import javafx.scene.text.Text;
 
 import static com.google.inject.Guice.createInjector;
 
@@ -34,7 +33,8 @@ public class AddParticipantCtrl implements Controller{
     private TextField iban;
     @FXML
     private TextField bic;
-
+    @FXML
+    private Text warningText;
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
@@ -44,20 +44,6 @@ public class AddParticipantCtrl implements Controller{
     public AddParticipantCtrl(ServerUtils server){
         this.server = server;
     }
-
-    /**
-     * The following piece of code is to simulate a database interaction by adding
-     * a participant to an expense with a list of participants
-     */
-
-    private ObservableList<Participant> participantList = FXCollections.observableArrayList(
-            new Participant("David", "example1@email1.com", "IBAN1", "BIC1"),
-            new Participant("Rick", "neverGonna@email2.com", "IBAN2", "BIC2"),
-            new Participant("Astley", "GiveYouUp@email3.com", "IBAN3", "BIC3"),
-            new Participant("Rando", "example2@email3.com", "IBAN4", "BIC4"),
-            new Participant("Shahar", "example3@email2.com", "IBAN5", "BIC5"),
-            new Participant("Alex", "example4@email3.com", "IBAN6", "BIC6")
-    );
 
     @FXML
     public void initialize(){
@@ -71,44 +57,42 @@ public class AddParticipantCtrl implements Controller{
      * Will return a participant if all the fields have been filled
      */
     @FXML
-    void addParticipantToEvent(MouseEvent event){
-        if (name.getText().isEmpty()){
-            System.out.println("Name field is empty");
+    void addParticipantToEvent(ActionEvent event) {
+        if (name.getText().isEmpty()) {
+            System.out.println("Name field is empty warning displayed");
+            warningText.setText("Name field is empty");
             return;
         }
-        if (email.getText().isEmpty()){
-            System.out.println("Email field is empty");
+        if (email.getText().isEmpty()) {
+            System.out.println("Email field is empty warning displayed");
+            warningText.setText("Email field is empty");
             return;
         }
-        if (iban.getText().isEmpty()){
-            System.out.println("IBAN field is empty");
+        if (iban.getText().isEmpty()) {
+            System.out.println("IBAN field is empty warning displayed");
+            warningText.setText("IBAN field is empty");
             return;
         }
-        if (bic.getText().isEmpty()){
-            System.out.println("BIC field is empty");
+        if (bic.getText().isEmpty()) {
+            System.out.println("BIC field is empty warning displayed");
+            warningText.setText("BIC field is empty");
             return;
         }
-        Participant participant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
-        if (!participantList.contains(participant)) {
-            participantList.add(participant);
-            System.out.println("Participant " + participantList.getLast() + " was added");
-        }
-        else {
-            //TODO
-            // implement a method that displays this message in a pop-up window
-            System.out.println("Participant is already in the list");
+        Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
+        try {
+            server.addParticipant(newParticipant);
+        } catch (WebApplicationException e) {
+            System.out.println("Error inserting participant into the database: " + e.getMessage());
         }
     }
+
+    @FXML
     public void close(ActionEvent e){
         System.out.println("close window");
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
     }
 
-    @FXML
-    void cancelEvent(){
-        System.out.println("Participant adding process canceled");
-    }
 
     static Pair<Controller, Parent> getPair(){
         return FXML.load(Controller.class, "client", "scenes", "AddParticipant.fxml");
