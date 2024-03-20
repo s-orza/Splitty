@@ -265,6 +265,16 @@ public class ServerUtils {
 			tags=response.readEntity(listType);
 		return tags;
 	}
+	public Tag getTagByIdOfEvent(String tagName,long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()==200)
+			return response.readEntity(Tag.class);
+		return null;
+	}
 	public boolean checkIfTagExists(String tagName)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
