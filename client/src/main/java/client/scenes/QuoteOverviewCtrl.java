@@ -27,8 +27,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.util.Pair;
 
 public class QuoteOverviewCtrl implements Controller, Initializable {
 
@@ -67,5 +69,15 @@ public class QuoteOverviewCtrl implements Controller, Initializable {
         var quotes = server.getQuotes();
         data = FXCollections.observableList(quotes);
         table.setItems(data);
+    }
+
+    @Override
+    public Pair<Controller, Parent> getPair() {
+        return FXML.load(Controller.class, "client", "scenes", "QuoteOverview.fxml");
+    }
+
+    @Override
+    public String getTitle() {
+        return "Quotes";
     }
 }

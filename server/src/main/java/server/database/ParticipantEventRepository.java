@@ -25,6 +25,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 // here there was an unused import
+
 public interface ParticipantEventRepository extends JpaRepository<ParticipantEvent, Long> {
     @Query("SELECT pe.participantId FROM ParticipantEvent pe WHERE pe.eventId = :eventId")
     List<Long> findParticipantIdsByEventId(@Param("eventId") Long eventId);

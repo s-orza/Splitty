@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Expense;
 import commons.Tag;
 import javafx.collections.FXCollections;
@@ -29,14 +26,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.*;
 
-import static com.google.inject.Guice.createInjector;
-
 public class StatisticsCtrl implements Controller, Initializable {
-
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     private Stage stage;
     private ServerUtils server;
@@ -68,8 +58,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         totalAmount=0;
         //get all Expenses
         long eventId=7952;
-        if(EventPageCtrl.getCurrentEvent()!=null)
-            eventId=EventPageCtrl.getCurrentEvent().getEventId();
+        eventId = server.getCurrentId();
         expenses=server.getAllExpensesOfEvent(eventId);
         //get tags with values (each tag with the amount of money it contains.)
         Map<String, Double> tagsWithValues=getTagsWithValuesFromExpenses(expenses);
@@ -121,8 +110,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         totalAmount=0;
         totalAmount=expenses.stream().mapToDouble(x->x.getMoney()).sum();
         long eventId=7952;
-        if(EventPageCtrl.getCurrentEvent()!=null)
-            eventId=EventPageCtrl.getCurrentEvent().getEventId();
+        eventId = server.getCurrentId();
         //a map with the name (including percentages) and the color of a tag
         Map<String, String> tagColors = new HashMap<>();
 
@@ -184,8 +172,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     {
         //update the name of the event
         long eventId=7952;
-        if(EventPageCtrl.getCurrentEvent()!=null)
-            eventId=EventPageCtrl.getCurrentEvent().getEventId();
+        eventId = server.getCurrentId();
         titleId.setText("Statistics for event "+eventId);
         //in case we don't have the total amount in EUR, we need to change it to EUR
         totalSpentText.setText("Total sum spent: "+totalAmount+ " EUR");
@@ -284,13 +271,14 @@ public class StatisticsCtrl implements Controller, Initializable {
     public void exitPage(ActionEvent e){
         System.out.println("closed StatsCtrl");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
 
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "StatisticsPage.fxml");
     }
-    public static String getTitle(){
+    public String getTitle(){
         return "Stats Page";
     }
 }

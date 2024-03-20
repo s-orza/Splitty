@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Debt;
 import commons.DebtManager;
 import commons.Participant;
@@ -27,8 +24,6 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.google.inject.Guice.createInjector;
-
 public class DebtsCtrl implements Controller, Initializable {
 
 
@@ -49,12 +44,6 @@ public class DebtsCtrl implements Controller, Initializable {
 
     @FXML
     private Button cancelButton;
-
-    //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     private Stage stage;
     private ServerUtils server;
@@ -175,7 +164,6 @@ public class DebtsCtrl implements Controller, Initializable {
         ObservableList<Debt> list = FXCollections.observableArrayList(d1,d2,d3);
         debtTable.setItems(list);
     }
-
     public void connectDebtManager(DebtManager dm){
         currentDebtManager = dm;
         System.out.println("Connecting to " + currentDebtManager);
@@ -184,7 +172,8 @@ public class DebtsCtrl implements Controller, Initializable {
     private void cancelHandler(ActionEvent e){
         System.out.println("closed DebtsCtrl");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
 
     public void refresh() {
@@ -197,10 +186,10 @@ public class DebtsCtrl implements Controller, Initializable {
 
     }
 
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "Debts.fxml");
     }
-    public static String getTitle(){
+    public String getTitle(){
         return "Debts Page";
     }
 }
