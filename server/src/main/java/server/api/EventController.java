@@ -50,7 +50,7 @@ public class EventController {
 
         Event event = repo.findById(id).get();
         event.setName(newName);
-//        repo.save(event);
+        repo.save(event);
 
         return ResponseEntity.ok().build();
     }
@@ -80,17 +80,6 @@ public class EventController {
         }
         return ResponseEntity.ok(repo.findById(id).get().getParticipants());
     }
-
-
-//    @PostMapping("/{id}")
-//    public ResponseEntity<Event> modifyEventById(@PathVariable("id") long id) {
-//        if (id < 0 || !repo.existsById(id)) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//        return ResponseEntity.ok(repo.findById(id).get();
-//    }
-
-
 
 
 }

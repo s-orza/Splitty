@@ -2,9 +2,6 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Event;
-import client.MyFXML;
-import client.MyModule;
-import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;

@@ -3,12 +3,8 @@ package server.api;
 import commons.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.database.ExpenseEventRepository;
-import server.database.ExpenseRepository;
-import server.database.ParticipantExpenseRepository;
-import server.database.TagRepository;
-
-import java.util.ArrayList;
+import server.database.*;
+import server.service.ExpenseService;
 import java.util.List;
 
 @RestController
@@ -19,32 +15,17 @@ public class ExpenseController {
     private final ExpenseEventRepository repoExpEv;
     private final ParticipantExpenseRepository repoPaExp;
     private final TagRepository repoTag;
-    private final ParticipantController paCon;
+    private final ParticipantRepository repoPa;
+    private final ExpenseService service;
     public ExpenseController(ExpenseRepository repoExp, ExpenseEventRepository repoExpEv,
                              ParticipantExpenseRepository repoPaExp, TagRepository repoTag,
-                             ParticipantController paCon) {
+                             ParticipantRepository repoPa, ExpenseService service) {
         this.repoExp = repoExp;
         this.repoExpEv = repoExpEv;
         this.repoPaExp = repoPaExp;
         this.repoTag = repoTag;
-        this.paCon = paCon;
-    }
-    public void putParticipants(Expense expense)
-    {
-        List<Participant> participantList;
-        //this line we need to update in future when we would have the APIs for participants
-        List<Long> particpantsIds=repoPaExp.getAllParticipantsIdFromExpense(expense.getExpenseId());
-        participantList=new ArrayList<>();
-        try {
-            participantList.addAll(paCon.getParticipantsByIds(particpantsIds).getBody());
-
-        }
-        catch (Exception e)
-        {
-            System.out.println("something bad bad happend");
-        }
-
-        expense.setParticipants(participantList);
+        this.repoPa = repoPa;
+        this.service = service;
     }
     //here to put the POST APIs
 
@@ -117,30 +98,13 @@ public class ExpenseController {
         Tag saved=repoTag.findById(tag.getName()).get();
         return ResponseEntity.ok(saved);
     }
-    //here to put the GET APIs
-    /**
-     *
-     * @param expenseId the id of an expense
-     * @return it returns the expense with that id
-     */
-    @GetMapping(path={"/"})
-    public ResponseEntity<Expense> getExpenseById(@RequestParam("id") long expenseId)
-    {
-        if(expenseId<0)
-            return ResponseEntity.badRequest().build();
-        if(!repoExp.existsById(expenseId))
-            return ResponseEntity.notFound().build();
-        System.out.println(expenseId);
-        Expense expense=repoExp.findById(expenseId).get();
-        putParticipants(expense);
-        return ResponseEntity.ok(expense);
-    }
+
     @GetMapping(path={"/author"})
     public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("authorId") long authorId)
     {
         List<Expense> ans=repoExp.findByAuthor(authorId);
         for(Expense e:ans)
-            putParticipants(e);
+            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/events"})
@@ -151,7 +115,7 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         List<Expense> ans=repoExp.findEventByAuthor(eventId,author);
         for(Expense e:ans)
-            putParticipants(e);
+            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"events/personInvolved"})
@@ -162,7 +126,7 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         List<Expense> ans=repoExp.findEventsThatInvolvesName(eventId,author);
         for(Expense e:ans)
-            putParticipants(e);
+            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
 
@@ -173,7 +137,7 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         List<Expense> ans=repoExp.findAllExpOfAnEvent(eventId);
         for(Expense e:ans)
-            putParticipants(e);
+            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/all"})
@@ -181,7 +145,7 @@ public class ExpenseController {
     {
         List<Expense> ans=repoExp.findAllExp();
         for(Expense e:ans)
-            putParticipants(e);
+            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/tags"})
@@ -214,7 +178,7 @@ public class ExpenseController {
         //if a>0 means we updated something
         System.out.println(a);
         Expense newExpense=repoExp.findById(expenseId).get();
-        putParticipants(newExpense);
+        service.putParticipants(newExpense);
         return ResponseEntity.ok(newExpense);
     }
     //here to put the DELETE APIs

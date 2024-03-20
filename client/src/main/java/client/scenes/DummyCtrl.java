@@ -15,9 +15,6 @@
  */
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
-import com.google.inject.Injector;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
