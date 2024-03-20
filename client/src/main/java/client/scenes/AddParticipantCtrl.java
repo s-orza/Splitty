@@ -19,8 +19,6 @@ import javafx.scene.text.Text;
 
 import static com.google.inject.Guice.createInjector;
 
-import java.util.Arrays;
-
 public class AddParticipantCtrl implements Controller{
     private ServerUtils server;
     @FXML
