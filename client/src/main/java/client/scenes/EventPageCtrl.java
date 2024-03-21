@@ -1,12 +1,9 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-
 import commons.*;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -14,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -77,6 +73,9 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     Button viewDebts;
+
+    @FXML
+    Button viewStatistics;
 
     @FXML
     Label eventCode;
@@ -147,6 +146,7 @@ public class EventPageCtrl implements Controller{
             editEventNameHandler();
         });
         viewDebts.setOnAction(e->viewDebtsHandler(e));
+        viewStatistics.setOnAction(e->viewStatisticsHandler(e));
         initializePage();
     }
 
@@ -354,6 +354,12 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         DebtsCtrl debtsCtrl = new DebtsCtrl(server);
         mainCtrl.initialize(stage, debtsCtrl.getPair(), debtsCtrl.getTitle());
+    }
+    public void viewStatisticsHandler(ActionEvent event) {
+        System.out.println("switching to Statistics");
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        StatisticsCtrl statisticsCtrl = new StatisticsCtrl(server);
+        mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
     }
 
     //getter for swapping scenes
