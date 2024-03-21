@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import commons.Expense;
 import commons.Participant;
 import commons.Tag;
+import commons.TagId;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -91,7 +92,7 @@ public class AddExpenseCtrl implements Controller{
     {
         //first we need to create a list with the names of the participants:
         //->here to put code for creating the list
-        //server.getAllParticipatns(eventId) or somrthing like that
+        //server.getAllParticipatns(eventId) or something like that
         participantsObjectList=new ArrayList<>();
         //this "if" will be removed when we can access the participant list
         if(1==2)
@@ -108,14 +109,24 @@ public class AddExpenseCtrl implements Controller{
         expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
         //initialise the tags
         tagsAvailable=new ArrayList<>();
-        if(server.checkIfTagExists("other")==false)
-        {
-            server.addTag(new Tag("other","#e0e0e0"));
-        }
-        List<Tag> temp=server.getAllTags();
+        long eventId= server.getCurrentId();
+        //adding the 4 tags that always need to be
+        if(!server.checkIfTagExists("other", eventId))
+            server.addTag(new Tag(new TagId("other",eventId),"#e0e0e0"));
+
+        if(!server.checkIfTagExists("food", eventId))
+            server.addTag(new Tag(new TagId("food",eventId),"#00ff00"));
+
+        if(!server.checkIfTagExists("entrance fees", eventId))
+            server.addTag(new Tag(new TagId("entrance fees",eventId),"#0000ff"));
+
+        if(!server.checkIfTagExists("travel", eventId))
+            server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
+
+        List<Tag> temp=server.getAllTagsFromEvent(eventId);
         System.out.println(temp);
         for(Tag t:temp)
-            tagsAvailable.add(t.getName());
+            tagsAvailable.add(t.getId().getName());
     }
     /**
      * This is a function that resets and prepare the scene.
@@ -159,7 +170,7 @@ public class AddExpenseCtrl implements Controller{
 
         //at the beginning the list is hidden
         namesList.setVisible(false);
-        //without these 2 lines, the list will be buggy and you won t be able to select participants
+        //without these 2 lines, the list will be buggy, and you won t be able to select participants
         //in this way, you cannot select the element,only the checkbox
         namesList.setSelectionModel(null);
         namesList.setFocusTraversable(false);
@@ -341,7 +352,7 @@ public class AddExpenseCtrl implements Controller{
         }
         //System.out.println(server.getExpenseById(1));
         resetElements();
-        //go back to event page
+        //go back to the event page
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
 
@@ -367,13 +378,13 @@ public class AddExpenseCtrl implements Controller{
             return;
         }
         tagName=tagName.trim();
-        if(server.checkIfTagExists(tagName))
+        if(server.checkIfTagExists(tagName,server.getCurrentId()))
         {
             System.out.println("Already in the database!");
             return;
         }
         String color=colorPicker.getValue().toString();
-        server.addTag(new Tag(tagName,"#"+color.substring(2,8)));
+        server.addTag(new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
         System.out.println("tag added");
         tagsAvailable.add(tagName);
 

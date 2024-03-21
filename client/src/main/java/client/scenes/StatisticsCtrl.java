@@ -66,7 +66,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         createPieChart(tagsWithValues);
         updateTextsOnTheScreen();
         //create the list of tags used in this event
-        createTagsUsedInThisEventList(tagsWithValues.keySet());
+        createTagsUsedInThisEventList(server.getAllTagsFromEvent(server.getCurrentId()));
     }
 
     /**
@@ -109,8 +109,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         //calculate the total amount of money
         totalAmount=0;
         totalAmount=expenses.stream().mapToDouble(x->x.getMoney()).sum();
-        long eventId=7952;
-        eventId = server.getCurrentId();
+        long eventId=server.getCurrentId();
         //a map with the name (including percentages) and the color of a tag
         Map<String, String> tagColors = new HashMap<>();
 
@@ -155,10 +154,10 @@ public class StatisticsCtrl implements Controller, Initializable {
         legendListView.getItems().clear();
         legendListView.getItems().addAll(tagColors.keySet());
     }
-    private void createTagsUsedInThisEventList(Set<String> tags)
+    private void createTagsUsedInThisEventList(List<Tag> tags)
     {
         tagsListView.getItems().clear();
-        tagsListView.getItems().addAll(tags.stream().sorted().toList());
+        tagsListView.getItems().addAll(tags.stream().map(x->x.getId().getName()).sorted().toList());
         tagsListView.setCellFactory(param -> new TagsListViewCell());
         //we need these for making the front end beautiful
         tagsListView.setSelectionModel(null);

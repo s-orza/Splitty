@@ -27,6 +27,7 @@ import java.util.List;
 
 import commons.*;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -265,11 +266,10 @@ public class ServerUtils {
 			return response.readEntity(listType);
 		return null;
 	}
-	public List<Tag> getAllTags()
+	public List<Tag> getAllTagsFromEvent(long eventId)
 	{
-		//to be done in the next MR
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/allTags")
+				.target(SERVER+"api/expenses/allTags?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		List<Tag> tags=new ArrayList<>();
@@ -281,20 +281,20 @@ public class ServerUtils {
 	public Tag getTagByIdOfEvent(String tagName,long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20")+"&eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()==200)
-			return response.readEntity(Tag.class);
+		{
+			Tag tag=response.readEntity(Tag.class);
+			System.out.println(tag);
+			return tag;
+		}
 		return null;
 	}
-	public boolean checkIfTagExists(String tagName)
+	public boolean checkIfTagExists(String tagName,long eventId)
 	{
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get();
-		if(response.getStatus()==200)
+		if(getTagByIdOfEvent(tagName,eventId)!=null)
 			return true;
 		return false;
 	}
@@ -343,7 +343,7 @@ public class ServerUtils {
 	{
 		System.out.println(tag);
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tag.getName().replace(" ","%20"))
+				.target(SERVER+"api/expenses/tags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(tag,APPLICATION_JSON));

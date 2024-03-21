@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ExpenseEventRepository;
@@ -104,17 +105,24 @@ public class ExpenseController {
     }
     @PostMapping(path = { "/tags"})
     public ResponseEntity<Tag> addTag(@RequestBody Tag tag) {
+        System.out.println(tag);
+        //tag=new Tag("other",7952,"#e0e0e0");
         if (tag==null) {
             System.out.println("tag is null");
             return ResponseEntity.badRequest().build();
         }
-        if(repoTag.existsById(tag.getName()))
+        if(tag.getId()==null)
+        {
+            System.out.println("tag id is null");
+            return ResponseEntity.notFound().build();
+        }
+        if(repoTag.existsById(new TagId(tag.getId().getName(),tag.getId().getEventId())))
         {
             System.out.println("Already in the database");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
-        repoTag.save(tag);
-        Tag saved=repoTag.findById(tag.getName()).get();
+
+        Tag saved=repoTag.save(tag);
         return ResponseEntity.ok(saved);
     }
     //here to put the GET APIs
@@ -185,19 +193,21 @@ public class ExpenseController {
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/tags"})
-    public ResponseEntity<Tag> getTag(@RequestParam("tag") String tagName)
+    public ResponseEntity<Tag> getTag(@RequestParam("tag") String tagName,@RequestParam("eventId") long eventId)
     {
-        if(repoTag.existsById(tagName))
+        if(repoTag.existsById(new TagId(tagName,eventId)))
         {
-            Tag tag=repoTag.findById(tagName).get();
+            Tag tag=repoTag.getTagByIdFromEvent(tagName,eventId);
             return ResponseEntity.ok(tag);
+
         }
-        return ResponseEntity.notFound().build();
+        else
+         return ResponseEntity.notFound().build();
     }
     @GetMapping(path={"/allTags"})
-    public ResponseEntity<List<Tag>> getAllTag()
+    public ResponseEntity<List<Tag>> getAllTagsFromEvent(@RequestParam("eventId") long eventId)
     {
-        List<Tag> tags= repoTag.getAllTags();
+        List<Tag> tags= repoTag.getAllTagsFromEvent(eventId);
         return ResponseEntity.ok(tags);
     }
     //here to put the PUT APIs (update)
@@ -281,12 +291,14 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses.size());
     }
     @DeleteMapping (path={"/tags"})
-    public ResponseEntity<Tag> deleteTag(@RequestParam("tag") String tagName)
+    public ResponseEntity<Tag> deleteTag(@RequestParam("tag") String tagName,
+                                         @RequestParam("eventId")long eventId)
     {
-        if(repoTag.existsById(tagName))
+        TagId tagId=new TagId(tagName,eventId);
+        if(repoTag.existsById(tagId))
         {
-            Tag tag=repoTag.findById(tagName).get();
-            repoTag.deleteById(tagName);
+            Tag tag=repoTag.findById(tagId).get();
+            repoTag.deleteById(tagId);
             return ResponseEntity.ok(tag);
         }
         return ResponseEntity.notFound().build();
