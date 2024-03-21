@@ -5,10 +5,14 @@ import commons.Participant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("api/events")
@@ -26,6 +30,23 @@ public class EventController {
     public List<Event> getAll() {
         return repo.findAll();
     }
+
+    private Map<Object, Consumer<Event>> listeners = new HashMap<>();
+
+    @GetMapping("/updates" )
+    public DeferredResult<ResponseEntity<Event>> getUpdatesEvents() {
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<Event>>(5000L, noContent);
+        var key = new Object();
+        listeners.put(key, e -> {
+            res.setResult(ResponseEntity.ok(e));
+        });
+        res.onCompletion(() -> {
+            listeners.remove(key);
+        });
+        return res;
+    }
+
 
     //endpoint with an event with a specific id in it
     @GetMapping("/{id}")
@@ -68,8 +89,10 @@ public class EventController {
     //endpoint to an event to
     @PostMapping(path = { "", "/" })
     public Event addEvent(@RequestBody Event event) {
+        listeners.forEach((k, l) -> l.accept(event));
         repo.save(event);
         return event;
+
     }
 
     //endpoint to get a list of participants from an event

@@ -62,6 +62,17 @@ public class AdminPageCtrl implements Controller, Initializable {
     }
     contents =  FXCollections.observableArrayList(
             list);
+    server.registerForUpdatesEvents(server.getCurrentId(), e -> {
+      boolean alreadyExists = false;
+      for (EventHelper event: contents) {
+        if (event.getTitle().equals(e.getName())){
+          alreadyExists = true;
+        };
+      }
+      if (!alreadyExists){
+        contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
+      }
+    });
   }
 
   public void exportEvent(ActionEvent e) {
@@ -147,6 +158,9 @@ public class AdminPageCtrl implements Controller, Initializable {
         showEvent.setText("");
       }
     });
+  }
+  public void stop () {
+    server.stop2();
   }
   public Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");

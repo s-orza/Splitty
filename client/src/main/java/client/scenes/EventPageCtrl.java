@@ -305,6 +305,10 @@ public class EventPageCtrl implements Controller{
         mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
     }
 
+    public void stop () {
+        server.stop2();
+    }
+
     /**
      * this method will change the name of the event in the databse
      * @param newName String the new name of the event
