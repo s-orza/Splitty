@@ -5,18 +5,36 @@ import client.MyModule;
 import com.google.inject.Injector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import static client.scenes.MainPageCtrl.currentLocale;
 import static com.google.inject.Guice.createInjector;
 
-public class LoginAdminCtrl implements Controller{
+public class LoginAdminCtrl implements Controller, Initializable {
 
     @FXML
     private TextField loginInput;
+
+    @FXML
+    private Button cancelButton;
+
+    @FXML
+    private Button loginButton;
+
+    @FXML
+    private Text passwordText;
     //Imports used to swap scenes
     private Stage stage;
     private static final Injector INJECTOR = createInjector(new MyModule());
@@ -42,4 +60,11 @@ public class LoginAdminCtrl implements Controller{
         return "Login Page";
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+        loginButton.setText(resourceBundle.getString("loginText"));
+        cancelButton.setText(resourceBundle.getString("cancelText"));
+        passwordText.setText(resourceBundle.getString("passwordText"));
+    }
 }

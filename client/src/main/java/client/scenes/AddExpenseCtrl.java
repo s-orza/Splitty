@@ -23,7 +23,9 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
+import static client.scenes.MainPageCtrl.currentLocale;
 import static com.google.inject.Guice.createInjector;
 
 public class AddExpenseCtrl implements Controller{
@@ -33,6 +35,30 @@ public class AddExpenseCtrl implements Controller{
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
     private final ServerUtils server;
     private Stage stage;
+
+    @FXML
+    private Text addEditExpenseText;
+
+    @FXML
+    private Text whoPaidText;
+
+    @FXML
+    private Text forWhatText;
+
+    @FXML
+    private Text howMuchText;
+
+    @FXML
+    private Text whenText;
+
+    @FXML
+    private Text expenseTypeText;
+
+    @FXML
+    private Text howToSplitText;
+
+    @FXML
+    private Text cantText;
 
     @FXML
     private Button addButton;
@@ -81,6 +107,8 @@ public class AddExpenseCtrl implements Controller{
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
     private Expense expenseToBeModified=null;
+
+    ResourceBundle resourceBundle;
     @Inject
     public AddExpenseCtrl(ServerUtils server) {
         this.server = server;
@@ -89,12 +117,38 @@ public class AddExpenseCtrl implements Controller{
     public void initialize() {
         //load resources
         loadFromDatabase();
+        toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
         //reset
         resetElements();
     }
+
+    private void toggleLanguage() {
+        try{
+            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+            addEditExpenseText.setText(resourceBundle.getString("addEditExpenseText"));
+            whoPaidText.setText(resourceBundle.getString("whoPaidText"));
+            forWhatText.setText(resourceBundle.getString("forWhatText"));
+            howMuchText.setText(resourceBundle.getString("howMuchText"));
+            whenText.setText(resourceBundle.getString("whenText"));
+            expenseTypeText.setText(resourceBundle.getString("expenseTypeText"));
+            howToSplitText.setText(resourceBundle.getString("howToSplitText"));
+            checkBoxAllPeople.setText(resourceBundle.getString("ebeText"));
+            checkBoxSomePeople.setText(resourceBundle.getString("obspText"));
+            cancelButton.setText(resourceBundle.getString("cancelText"));
+            addButton.setText(resourceBundle.getString("addText"));
+            cantText.setText(resourceBundle.getString("cantText"));
+            whoPaidText.setText(resourceBundle.getString("whoPaidText"));
+            whoPaidText.setText(resourceBundle.getString("whoPaidText"));
+            authorSelector.setPromptText(resourceBundle.getString("selectPersonText"));
+            typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
     public void loadFromDatabase()
     {
         //first we need to create a list with the names of the participants:
@@ -136,7 +190,7 @@ public class AddExpenseCtrl implements Controller{
         warningText.setText("");
         //prepare the possible authors
         authorSelector.getItems().clear();
-        authorSelector.setPromptText("-Select person");
+
         authorSelector.setValue(null);
         authorSelector.getItems().addAll(names.stream().map(x->x.element).toList());
         authorSelector.setOnAction(this::handleSelectAuthor);
@@ -173,7 +227,7 @@ public class AddExpenseCtrl implements Controller{
         namesList.setFocusTraversable(false);
 
         typeSelector.getItems().clear();
-        typeSelector.setPromptText("-Select type-");
+
         typeSelector.setValue(null);
 
         typeSelector.getItems().addAll(tagsAvailable);
@@ -242,50 +296,51 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     void addExpenseToTheEvent(MouseEvent event) {
         //we need to verify if the expense is valid.
+
         if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
         {
             System.out.println("The author cannot be empty.");
-            warningText.setText("The author cannot be empty.");
+            warningText.setText(resourceBundle.getString("authorWarning"));
             return;
         }
         if(contentBox.getText()==null || contentBox.getText().isEmpty())
         {
             System.out.println("What is the money for?");
-            warningText.setText("What is the money for?");
+            warningText.setText(resourceBundle.getString("forWhatWarning"));
             return;
         }
         if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
         {
             System.out.println(moneyPaid.getText());
-            warningText.setText("The amount of money must be specified.");
+            warningText.setText(resourceBundle.getString("amountWarning"));
             return;
         }
         if(moneyPaid.getText().contains("-") || moneyPaid.getText().equals("0"))
         {
-            warningText.setText("The amount of money must be positive.");
+            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
             return;
         }
         if(date.getValue()==null) {
             System.out.println("You need to select a date!");
-            warningText.setText("You need to select a date!");
+            warningText.setText(resourceBundle.getString("dateWarning"));
             return;
         }
         if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
         {
             System.out.println("You need to enter the type");
-            warningText.setText("Enter the type please.");
+            warningText.setText(resourceBundle.getString("typeWarning"));
             return;
         }
         if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
         {
             System.out.println("Select how to split the expense.");
-            warningText.setText("Select how to split the expense.");
+            warningText.setText(resourceBundle.getString("splitWarning"));
             return;
         }
         if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
         {
             System.out.println("Select the participants.");
-            warningText.setText("Select the participants.");
+            warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
             return;
         }
         //the expense can be considered valid now
@@ -385,7 +440,7 @@ public class AddExpenseCtrl implements Controller{
         //reset tags from the screen
         typeSelector.getItems().clear();
         typeSelector.getItems().addAll(tagsAvailable);
-        typeSelector.setPromptText("-Select type-");
+        typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
         typeSelector.setValue(null);
 
         newTypeTextField.setText("");

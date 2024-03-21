@@ -70,7 +70,7 @@ public class MainPageCtrl implements Controller, Initializable {
   private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
   private ServerUtils server;
 
-  private static Locale currentLocale = new Locale("en", "US");
+  protected static Locale currentLocale = new Locale("en", "US");
 
   public static Locale getCurrentLocale() {
     return currentLocale;
@@ -106,9 +106,13 @@ public class MainPageCtrl implements Controller, Initializable {
   }
 
   public void openAdmin(ActionEvent e){
-    System.out.println("opening admin");
-    stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-    mainCtrl.initialize(stage, LoginAdminCtrl.getPair(), LoginAdminCtrl.getTitle());
+    try{
+      System.out.println("opening admin");
+      stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+      mainCtrl.initialize(stage, LoginAdminCtrl.getPair(), LoginAdminCtrl.getTitle());
+    }catch (Exception ex){
+      System.out.println(ex);
+    }
   }
 
 
@@ -189,7 +193,7 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.play();
     }
     else if(toChange.equals("nl")){
-      currentLocale = new Locale("nl", "nl");
+      currentLocale = new Locale("nl", "NL");
       // pause for a bit so that the flag shrinks and then changes it
       PauseTransition pause = new PauseTransition(Duration.millis(150));
       // This executes changeFlag after the pause
@@ -222,7 +226,7 @@ public class MainPageCtrl implements Controller, Initializable {
       createButton.setText(resourceBundle.getString("createText"));
   }
 
-  public void putFlag(String path){
+  private void putFlag(String path){
     Image image = new Image(path);
     BackgroundSize backgroundSize =
             new BackgroundSize(100, 100, true, true, true, false);
