@@ -1,6 +1,11 @@
 package client.scenes;
 
+import static com.google.inject.Guice.createInjector;
+
+import client.MyFXML;
+import client.MyModule;
 import client.utils.ServerUtils;
+import com.google.inject.Injector;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -33,8 +38,7 @@ public class AddParticipantCtrl implements Controller{
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
-
+    
     @Inject
     public AddParticipantCtrl(ServerUtils server){
         this.server = server;
