@@ -2,7 +2,6 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Debt;
-import commons.DebtManager;
 import commons.Event;
 import commons.Participant;
 import javafx.beans.property.ReadOnlyStringWrapper;
