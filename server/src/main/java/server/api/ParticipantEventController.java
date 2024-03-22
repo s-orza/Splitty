@@ -6,9 +6,6 @@ import commons.Event;
 import commons.Participant;
 import java.util.List;
 import commons.ParticipantEvent;
-//import org.springframework.http.ResponseEntity;
-
-
 import commons.ParticipantEventDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

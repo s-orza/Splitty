@@ -50,7 +50,6 @@ public class Event {
     public Event(String name) {
 
         // Possible to try and generate a random ID that contains letters & numbers (possible venture)
-        eventID = new Random().nextLong();
 //        checkUniqueness(eventID);
 
 
