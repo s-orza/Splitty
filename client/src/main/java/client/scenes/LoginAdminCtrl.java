@@ -3,18 +3,39 @@ package client.scenes;
 import client.utils.ServerUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import static client.scenes.MainPageCtrl.currentLocale;
+
+
 import javax.inject.Inject;
 
-public class LoginAdminCtrl implements Controller{
+
+public class LoginAdminCtrl implements Controller, Initializable {
 
     @FXML
     private TextField loginInput;
+
+    @FXML
+    private Button cancelButton;
+
+    @FXML
+    private Button loginButton;
+
+    @FXML
+    private Text passwordText;
     //Imports used to swap scenes
     private Stage stage;
     private ServerUtils server;
@@ -41,8 +62,17 @@ public class LoginAdminCtrl implements Controller{
     public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "loginAdmin.fxml");
     }
+
+    @Override
     public String getTitle() {
         return "Login Page";
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+        loginButton.setText(resourceBundle.getString("loginText"));
+        cancelButton.setText(resourceBundle.getString("cancelText"));
+        passwordText.setText(resourceBundle.getString("passwordText"));
+    }
 }

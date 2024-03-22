@@ -8,13 +8,13 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="104.0" prefWidth="377.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LoginAdminCtrl">
     <children>
-        <Button layoutX="260.0" layoutY="52.0" mnemonicParsing="false" onAction="#login" text="Login" />
+        <Button fx:id="loginButton" layoutX="260.0" layoutY="52.0" mnemonicParsing="false" onAction="#login" text="Login" />
         <TextField id="loginInput" fx:id="loginInput" alignment="CENTER" layoutX="101.0" layoutY="52.0" />
-        <Text layoutX="101.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Passcode" wrappingWidth="149.60000000000014">
+        <Text fx:id="passwordText" layoutX="101.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Passcode" wrappingWidth="149.60000000000014">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
         </Text>
-        <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
+        <Button fx:id="cancelButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
     </children>
 </AnchorPane>
