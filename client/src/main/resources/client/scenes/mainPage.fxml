@@ -9,10 +9,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-border-color: 000000;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
     <children>
+
         <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="300.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
         <Button fx:id="joinButton" layoutX="483.0" layoutY="127.0" mnemonicParsing="false" onAction="#joinEvent" style="-fx-alignment: 53D3D1; -fx-border-color: #53D3D1; -fx-background-color: blue;" text="Join" textAlignment="CENTER" />
+        <Button alignment="CENTER_RIGHT" layoutX="483.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
+
       <TextField id="joinInput" fx:id="joinInput" layoutX="300.0" layoutY="128.0" />
       <Text layoutX="-35.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
       <Text fx:id="createNewEventLabel" fill="#002447" layoutX="300.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create New Event">
@@ -38,8 +41,11 @@
             <Font name="Broadway" size="48.0" />
          </font>
       </Label>
+
       <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
-        <ComboBox layoutX="14.0" layoutY="82.0" prefWidth="150.0" fx:id="comboBox"/>
+        <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
+
+      <TextField id="createInput" fx:id="createInput" layoutX="300.0" layoutY="187.0" />
 
     </children>
 </AnchorPane>

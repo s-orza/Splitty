@@ -1,8 +1,6 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
-import com.google.inject.Injector;
+import client.utils.ServerUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
@@ -20,7 +18,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static client.scenes.MainPageCtrl.currentLocale;
-import static com.google.inject.Guice.createInjector;
+
+
+import javax.inject.Inject;
+
 
 public class LoginAdminCtrl implements Controller, Initializable {
 
@@ -37,26 +38,33 @@ public class LoginAdminCtrl implements Controller, Initializable {
     private Text passwordText;
     //Imports used to swap scenes
     private Stage stage;
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+    private ServerUtils server;
+
+    @Inject
+    public LoginAdminCtrl(ServerUtils server) {
+        this.server = server;
+    }
 
     public void login(ActionEvent e){
         System.out.println("login to admin page");
         String passcode = loginInput.getText();
         System.out.println(passcode);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AdminPageCtrl.getPair(), AdminPageCtrl.getTitle());
+        AdminPageCtrl adminPageCtrl = new AdminPageCtrl(server);
+        mainCtrl.initialize(stage, adminPageCtrl.getPair(), adminPageCtrl.getTitle());
     }
     public void close(ActionEvent e){
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
+        MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
+        mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
     }
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "loginAdmin.fxml");
     }
-    public static String getTitle() {
+
+    @Override
+    public String getTitle() {
         return "Login Page";
     }
 

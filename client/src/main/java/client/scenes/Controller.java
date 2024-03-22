@@ -15,12 +15,8 @@ public interface Controller {
  MyFXML FXML = new MyFXML(INJECTOR);
  MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
-  static Pair<Controller, Parent> getPair(){
-    return FXML.load(Controller.class, "client", "scenes", "Dummy.fxml");
-  }
-  static String getTitle(){
-    return "Dummy page";
-  }
+ Pair<Controller, Parent> getPair();
+  String getTitle();
   /* swapping to a page on button press template
   public void goToScene(ActionEvent e){
         System.out.println("Go to page");
