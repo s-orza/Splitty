@@ -6,7 +6,6 @@ import commons.Event;
 import commons.Participant;
 import java.util.List;
 import commons.ParticipantEvent;
-import commons.ParticipantEventDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
@@ -15,7 +14,6 @@ import server.database.ParticipantRepository;
 
 @RestController
 @RequestMapping("/api/participant/event")
-//TODO change path
 public class ParticipantEventController {
     private final ParticipantEventRepository repo;
     private final EventRepository eventRepository;
@@ -30,78 +28,50 @@ public class ParticipantEventController {
     }
 
     /**
-     * This method adds an entry to the Participant table
-     * and also an entry to the participantEvent table
+     * This method correctly creates a participant and the connection with the event
      * @param eventId the id of the event that the participant is in
      * @param participant the participant instance itself
      */
     @PostMapping(path = {  "/{eventId}" })
-    public void createParticipantEvent(@PathVariable(required = false) Long eventId,
+    public ResponseEntity<String> createParticipantEvent(@PathVariable Long eventId,
                                        @RequestBody Participant participant) {
         System.out.println("In ParticipantEvent controller");
-        participantRepository.save(participant);
+        Participant p=participantRepository.save(participant);
         if (eventId != null) {
             // Assuming you have a method to find an event by its ID
             Optional<Event> event = eventRepository.findById(eventId);
 
             if (event.isPresent()) {
-                repo.save(new ParticipantEvent(event.get().getEventId(), participant.getParticipantID()));
+                repo.save(new ParticipantEvent(event.get().getEventId(),p.getParticipantID()));
                 System.out.println("Saved to database");
-//                return ResponseEntity.ok("Saved to database");
+                return ResponseEntity.ok("Saved to database");
             }
             else {
                 System.out.println("Provided event not found");
-//                return ResponseEntity.ok("Provided event not found");
+                return ResponseEntity.notFound().build();
             }
         }
         System.out.println("No event provided");
-//        return ResponseEntity.ok("No event provided");
+        return ResponseEntity.badRequest().body("eventId was null");
 
-        // Return the saved participant and a 201 Created status
     }
 
     /**
-     * This method will add only an entry to the participant_event table
-     * using an existing participant and an existing event. The participant and the event
-     * must exist for the method to work.
+     * This works!
+     * @param eventId the event
+     * @return a list with participants.
      */
-    @PostMapping(path = { "", "/" })
-    public void createParticipantEvent(@RequestBody ParticipantEventDto pedto) {
-        System.out.println("in participant_event controller");
-        System.out.println(pedto.getEventId() +" "+ pedto.getParticipantId());
-        if (pedto != null) {
-
-            Optional<Event> eventFromDatabase = eventRepository.findById(pedto.getEventId());
-            Optional<Participant> participantFromDatabase = participantRepository.findById(pedto.getParticipantId());
-
-            if (eventFromDatabase.isPresent() && participantFromDatabase.isPresent()) {
-                repo.save(new ParticipantEvent(eventFromDatabase.get().getEventId(),
-                        participantFromDatabase.get().getParticipantID()));
-                System.out.println("Saved to database");
-//                return ResponseEntity.ok("Saved to database");
-            }
-            else {
-                System.out.println("Provided event not found");
-//                return ResponseEntity.ok("Provided event not found");
-            }
-        }
-        System.out.println("No event provided");
-//        return ResponseEntity.ok("No event provided");
-
-        // Return the saved participant and a 201 Created status
-    }
-
-    @GetMapping(path = {"/getParticipants/{eventId}" })
+    @GetMapping(path = {"/{eventId}/allParticipants" })
     public ResponseEntity<List<Participant>> getParticipantsOfEvent(@PathVariable long eventId) {
-        System.out.println(eventId);
-        System.out.println("in api methode");
+
+        System.out.println("in api method");
         List<Long> participantIds = repo.findParticipantIdsByEventId(eventId);
         List<Participant> participants = new ArrayList<>();
         for(long id : participantIds){
             Participant toAdd = participantRepository.findById(id).get();
             participants.add(toAdd);
         }
-        return ResponseEntity.of(Optional.of(participants));
+        return ResponseEntity.ok(participants);
     }
 
     @GetMapping(path = {"/getEvents/{participantId}" })
@@ -117,7 +87,7 @@ public class ParticipantEventController {
             Event toAdd = eventRepository.findById(id).get();
             events.add(toAdd);
         }
-        return ResponseEntity.of(Optional.of(events));
+        return ResponseEntity.ok(events);
     }
 
     /**

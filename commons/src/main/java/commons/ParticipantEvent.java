@@ -21,6 +21,9 @@ public class ParticipantEvent {
         this.participantId = participantId;
     }
 
+    public ParticipantEvent() {
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

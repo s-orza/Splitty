@@ -162,27 +162,7 @@ public class EventPageCtrl implements Controller{
 
         System.out.println("in init");
 
-        try {
-            expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
-        }
-        catch (Exception e){
-            System.out.println(e);
-        }
-        participantsData = FXCollections.observableArrayList(new Participant("ivan", "", "", ""));
-
-        renderExpenseColumns(expenseData);
-        renderParticipants(participantsData);
-       // System.out.println(server.getEvent(server.getCurrentId()));
-        // just initializes some properties needed for the elements
-        addParticipant.setOnAction(e->addParticipantHandler(e));
-        addExpense.setOnAction(e->addExpenseHandler(e));
-        removeExpense.setOnAction(e->removeExpenseHandler());
-        expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        editEventName.setOnAction(e->{
-            editEventNameHandler();
-        });
-        viewDebts.setOnAction(e->viewDebtsHandler(e));
-        viewStatistics.setOnAction(e->viewStatisticsHandler(e));
+        //initializes flags and loads from database
         initializePage();
     }
 
@@ -238,6 +218,32 @@ public class EventPageCtrl implements Controller{
 
         eventName.setText(server.getEvent(server.getCurrentId()).getName());
         eventCode.setText("Event Code: " + server.getEvent(server.getCurrentId()).getEventId());
+
+
+        //load from database:
+        List<Expense> expenseList=server.getAllExpensesOfEvent(server.getCurrentId());
+        expenseData = FXCollections.observableArrayList();
+        for(Expense e:expenseList)
+            expenseData.add(e);
+
+        List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
+        participantsData = FXCollections.observableArrayList();
+        for(Participant p:participantList)
+            participantsData.add(p);
+
+        renderExpenseColumns(expenseData);
+        renderParticipants(participantsData);
+        // System.out.println(server.getEvent(server.getCurrentId()));
+        // just initializes some properties needed for the elements
+        addParticipant.setOnAction(e->addParticipantHandler(e));
+        addExpense.setOnAction(e->addExpenseHandler(e));
+        removeExpense.setOnAction(e->removeExpenseHandler());
+        expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        editEventName.setOnAction(e->{
+            editEventNameHandler();
+        });
+        viewDebts.setOnAction(e->viewDebtsHandler(e));
+        viewStatistics.setOnAction(e->viewStatisticsHandler(e));
     }
 
     ////////////////////////////////////////
@@ -516,7 +522,7 @@ public class EventPageCtrl implements Controller{
     public void addParticipantHandler(ActionEvent event) {
         try {
 
-            server.deleteParticipantEvent(52752,92757);
+            //server.deleteParticipantEvent(52752,92757);
 //            server.getParticipantsOfEvent(52752);
 //            System.out.println(server.getEventsOfParticipant(92755));
 
@@ -524,7 +530,7 @@ public class EventPageCtrl implements Controller{
 //            for(Event a : la){
 //                System.out.println(a);
 //            }
-            var la = server.getParticipantsOfEvent(52753);
+            var la = server.getParticipantsOfEvent(server.getCurrentId());
             for(Participant a : la){
                 System.out.println(a);
             }

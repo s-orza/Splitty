@@ -46,22 +46,6 @@ public class ParticipantController {
         return ResponseEntity.ok(participants);
     }
 
-    /**
-     * Post request to add a participant to an event
-     * @param participant the participant to be added to the
-     * @return OK - 200 if participant was created
-     */
-    @PostMapping(path = { "", "/{eventId}" })
-    public ResponseEntity<List<Participant>> createParticipant(@RequestBody Participant participant) {
-        List<Participant> participantList = repo.findAll();
-        if (!participantList.contains(participant)){
-            repo.saveAndFlush(participant);
-            //TODO
-            // Create a return statement with a created responseEntity
-        }
-
-        return ResponseEntity.ok(repo.findAll());
-    }
 
     /**
      * Get request for a list of participants given by IDS.
