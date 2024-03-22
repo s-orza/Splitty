@@ -265,11 +265,10 @@ public class ServerUtils {
 			return response.readEntity(listType);
 		return null;
 	}
-	public List<Tag> getAllTags()
+	public List<Tag> getAllTagsFromEvent(long eventId)
 	{
-		//to be done in the next MR
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/allTags")
+				.target(SERVER+"api/expenses/allTags?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		List<Tag> tags=new ArrayList<>();
@@ -281,20 +280,20 @@ public class ServerUtils {
 	public Tag getTagByIdOfEvent(String tagName,long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20")+"&eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()==200)
-			return response.readEntity(Tag.class);
+		{
+			Tag tag=response.readEntity(Tag.class);
+			System.out.println(tag);
+			return tag;
+		}
 		return null;
 	}
-	public boolean checkIfTagExists(String tagName)
+	public boolean checkIfTagExists(String tagName,long eventId)
 	{
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get();
-		if(response.getStatus()==200)
+		if(getTagByIdOfEvent(tagName,eventId)!=null)
 			return true;
 		return false;
 	}
@@ -343,7 +342,7 @@ public class ServerUtils {
 	{
 		System.out.println(tag);
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tag.getName().replace(" ","%20"))
+				.target(SERVER+"api/expenses/tags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(tag,APPLICATION_JSON));
@@ -365,6 +364,20 @@ public class ServerUtils {
 			return null;
 		return response.readEntity(Expense.class);
 
+	}
+	public boolean updateTag(String tagName,long eventId,Tag newtag)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+						+"&eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.put(Entity.entity(newtag,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		if(response.getStatus()==200)
+			return true;
+		return false;
 	}
 	//DELETE functions
 	public boolean deleteExpenseFromEvent(long eventId, long expenseId)
@@ -389,5 +402,24 @@ public class ServerUtils {
 		if(response.getStatus()==200)
 			return response.readEntity(Integer.class);
 		return -1;
+	}
+
+	/**
+	 * This function deletes a tag from the event, but this is tricky because we need
+	 * to change all expenses that contains that tag. I changed their tags to "other"
+	 * @param tagName the name of the tag
+	 * @param eventId the event
+	 * @return true if the tag was successfully deleted
+	 */
+	public boolean deleteTagFromEvent(String tagName,long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+						+"&eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+		if(response.getStatus()==200)
+			return true;
+		return false;
 	}
 }

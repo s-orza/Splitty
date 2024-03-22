@@ -2,8 +2,11 @@
 
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -17,7 +20,7 @@
         </Text>
         <Text fx:id="totalSpentText" layoutX="405.0" layoutY="354.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " />
         <ListView fx:id="tagsListView" layoutX="406.0" layoutY="83.0" prefHeight="118.0" prefWidth="178.0" />
-        <Text layoutX="406.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
+        <Text fx:id="tagsText" layoutX="406.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
          <font>
             <Font size="14.0" />
          </font></Text>
@@ -25,6 +28,16 @@
       <PieChart fx:id="pieChart" layoutX="14.0" layoutY="52.0" legendVisible="false" prefHeight="298.0" prefWidth="344.0" title="Costs:" />
      
       <ListView fx:id="legendListView" layoutX="406.0" layoutY="221.0" prefHeight="107.0" prefWidth="178.0" />
+      <Pane fx:id="editPanel" layoutX="406.0" layoutY="43.0" prefHeight="157.0" prefWidth="178.0">
+         <children>
+            <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="60.0" />
+            <TextField fx:id="editNameField" layoutX="13.0" layoutY="28.0" prefHeight="25.0" prefWidth="124.0" />
+            <Button fx:id="saveButton" layoutX="98.0" layoutY="100.0" mnemonicParsing="false" onAction="#saveEditTag" text="Save" />
+            <Button fx:id="cancelEditButton" layoutX="13.0" layoutY="100.0" mnemonicParsing="false" onAction="#closeEditPane" text="Cancel" />
+            <Button fx:id="deleteButton" layoutX="98.0" layoutY="100.0" mnemonicParsing="false" onAction="#deleteTagButton" text="Delete" />
+            <Text fx:id="editOrAreYouSureText" layoutX="12.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edit tag" textAlignment="CENTER" wrappingWidth="153.96817016601562" />
+         </children>
+      </Pane>
       <Text layoutX="406.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
          <font>
             <Font size="14.0" />
