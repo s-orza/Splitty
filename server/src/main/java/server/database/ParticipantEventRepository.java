@@ -29,7 +29,7 @@ import java.util.List;
 @Repository
 public interface ParticipantEventRepository extends JpaRepository<ParticipantEvent, Long> {
     @Query("SELECT pe.participantId FROM ParticipantEvent pe WHERE pe.eventId = :eventId")
-    List<Long> findParticipantIdsByEventId(@Param("eventId") Long eventId);
+    List<Long> findParticipantIdsByEventId(long eventId);
 
 
     @Query("SELECT pe.eventId FROM ParticipantEvent pe WHERE pe.participantId = :participantId")
