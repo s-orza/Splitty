@@ -35,6 +35,15 @@ public class Event {
     @Column
     public List<Participant> participants;
 
+    @OneToMany
+    @JoinTable(
+            name = "ParticipantEventRepository",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
+    @Column
+    public List<Debt> debts;
+
 //    @Column
     @OneToMany
     public List<Expense> expenses;
@@ -54,6 +63,7 @@ public class Event {
 
 
         this.participants = new ArrayList<>();
+        this.debts = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.name = name;
         this.creationDate = new Date(System.currentTimeMillis());
@@ -162,15 +172,35 @@ public class Event {
         return creationDate;
     }
 
+    /**
+     * The getter method for the debts
+     *
+     * @return debts of this event
+     **/
+    public List<Debt> getDebts() {
+        return debts;
+    }
+
+    /**
+     * The setter method for the debts
+     *
+     * @param debts The List of Debts to set debts to
+     **/
+    public void setDebts(List<Debt> debts) {
+        this.debts = debts;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
-                "event_id= " + eventID +
-                ", participants= " + participants +
-                ", expenses= " + expenses +
-                ", name= " + name +
-                ", creatinDate= " + creationDate +
-                ", activityDate= " +activityDate +
+                "eventID=" + eventID +
+                ", name='" + name + '\'' +
+                ", participants=" + participants +
+                ", debts=" + debts +
+                ", expenses=" + expenses +
+                ", creationDate=" + creationDate +
+                ", activityDate=" + activityDate +
+                ", eventList=" + eventList +
                 '}';
     }
 
@@ -183,6 +213,7 @@ public class Event {
 
         if (eventID != event.eventID) return false;
         if (!Objects.equals(participants, event.participants)) return false;
+        if (!Objects.equals(debts, event.debts)) return false;
         return Objects.equals(expenses, event.expenses);
     }
 
@@ -190,6 +221,7 @@ public class Event {
     public int hashCode() {
         int result = (int) (eventID ^ (eventID >>> 32));
         result = 31 * result + (participants != null ? participants.hashCode() : 0);
+        result = 31 * result + (debts != null ? debts.hashCode() : 0);
         result = 31 * result + (expenses != null ? expenses.hashCode() : 0);
         return result;
     }
