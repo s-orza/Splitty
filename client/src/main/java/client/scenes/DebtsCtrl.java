@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.Debt;
 import commons.DebtManager;
+import commons.Event;
 import commons.Participant;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -48,7 +49,7 @@ public class DebtsCtrl implements Controller, Initializable {
     private Stage stage;
     private ServerUtils server;
     private String test;
-    private static DebtManager currentDebtManager;
+    private static Event currentEvent;
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -164,9 +165,9 @@ public class DebtsCtrl implements Controller, Initializable {
         ObservableList<Debt> list = FXCollections.observableArrayList(d1,d2,d3);
         debtTable.setItems(list);
     }
-    public void connectDebtManager(DebtManager dm){
-        currentDebtManager = dm;
-        System.out.println("Connecting to " + currentDebtManager);
+    public void connectEvent(Event ev){
+        currentEvent = ev;
+        System.out.println("Connecting to " + currentEvent);
     }
 
     private void cancelHandler(ActionEvent e){
