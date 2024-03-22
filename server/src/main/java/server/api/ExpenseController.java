@@ -42,7 +42,7 @@ public class ExpenseController {
         }
         catch (Exception e)
         {
-            System.out.println("something bad bad happend");
+            System.out.println("something bad bad happened");
         }
 
         expense.setParticipants(participantList);
@@ -233,14 +233,13 @@ public class ExpenseController {
                                              @RequestBody Tag tag)
     {
         //tagName is th the name of the current tag. tag.getId().getName() is the new name
-        Optional<Tag> t=repoTag.findById(new TagId(tagName,eventId));
         if(!repoTag.existsById(new TagId(tagName,eventId)))
             return ResponseEntity.notFound().build();
-        System.out.println(repoTag.updateTag(tagName,eventId,tag.getId().getName(),tag.getColor()));
+        repoTag.updateTag(tagName,eventId,tag.getId().getName(),tag.getColor());
         Tag newTag=repoTag.getTagByIdFromEvent(tag.getId().getName(),eventId);
         if(tag==null)
             return ResponseEntity.status(304).build();//not modified
-        //we need to update the expenses
+        //we need to update all the expenses from this event that had tagName as type
         List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
         for(Expense e:expensesOfEvent)
             if(e.getType().equals(tagName))
@@ -311,16 +310,18 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses.size());
     }
     @DeleteMapping (path={"/tags"})
-    public ResponseEntity<Tag> deleteTag(@RequestParam("tag") String tagName,
+    public ResponseEntity<Tag> deleteTag(@RequestParam("tagName") String tagName,
                                          @RequestParam("eventId")long eventId)
     {
         TagId tagId=new TagId(tagName,eventId);
-        if(repoTag.existsById(tagId))
-        {
-            Tag tag=repoTag.findById(tagId).get();
-            repoTag.deleteById(tagId);
-            return ResponseEntity.ok(tag);
-        }
-        return ResponseEntity.notFound().build();
+        if(!repoTag.existsById(tagId))
+            return ResponseEntity.notFound().build();
+        repoTag.deleteById(new TagId(tagName,eventId));
+        //we need to update all the expenses from this event that had tagName as type
+        List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
+        for(Expense e:expensesOfEvent)
+            if(e.getType().equals(tagName))
+                repoExp.updateExpenseWithTag(e.getExpenseId(),"other");
+        return ResponseEntity.ok().build();
     }
 }

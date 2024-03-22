@@ -32,9 +32,10 @@
          <children>
             <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="60.0" />
             <TextField fx:id="editNameField" layoutX="13.0" layoutY="28.0" prefHeight="25.0" prefWidth="124.0" />
-            <Text layoutX="57.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edit tag" />
             <Button fx:id="saveButton" layoutX="98.0" layoutY="100.0" mnemonicParsing="false" onAction="#saveEditTag" text="Save" />
             <Button fx:id="cancelEditButton" layoutX="13.0" layoutY="100.0" mnemonicParsing="false" onAction="#closeEditPane" text="Cancel" />
+            <Button fx:id="deleteButton" layoutX="98.0" layoutY="100.0" mnemonicParsing="false" onAction="#deleteTagButton" text="Delete" />
+            <Text fx:id="editOrAreYouSureText" layoutX="12.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edit tag" textAlignment="CENTER" wrappingWidth="153.96817016601562" />
          </children>
       </Pane>
       <Text layoutX="406.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">

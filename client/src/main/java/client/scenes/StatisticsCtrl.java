@@ -13,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -36,6 +38,8 @@ public class StatisticsCtrl implements Controller, Initializable {
     @FXML
     private Button cancelEditButton;
     @FXML
+    private Button deleteButton;
+    @FXML
     private ColorPicker colorPicker;
 
     @FXML
@@ -45,6 +49,8 @@ public class StatisticsCtrl implements Controller, Initializable {
     private Pane editPanel;
     @FXML
     private Button saveButton;
+    @FXML
+    private Text editOrAreYouSureText;
     @FXML
     private Text tagsText;
 
@@ -67,7 +73,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private List<Expense> expenses;
     private Map<String, String> tagColors;
     private Map<String, String> namesForLegend;
-    private String selectedTagForEditing;
+    private String selectedTagForEditing;//it also helps at deleting (from tag list)
 
     @Inject
     public StatisticsCtrl(ServerUtils server) {
@@ -77,8 +83,24 @@ public class StatisticsCtrl implements Controller, Initializable {
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         selectedTagForEditing=null;
+        long eventId= server.getCurrentId();
+        if(!server.checkIfTagExists("other", eventId))
+            server.addTag(new Tag(new TagId("other",eventId),"#e0e0e0"));
+
+        if(!server.checkIfTagExists("food", eventId))
+            server.addTag(new Tag(new TagId("food",eventId),"#00ff00"));
+
+        if(!server.checkIfTagExists("entrance fees", eventId))
+            server.addTag(new Tag(new TagId("entrance fees",eventId),"#0000ff"));
+
+        if(!server.checkIfTagExists("travel", eventId))
+            server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
         refresh();
     }
+
+    /**
+     * This function refreshes everything on this page.
+     */
     public void refresh()
     {
         totalAmount=0;
@@ -92,6 +114,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         updateTextsOnTheScreen();
         //create the list of tags used in this event
         createTagsUsedInThisEventList(server.getAllTagsFromEvent(server.getCurrentId()));
+        //to be sure it is not opened
         closeEditPane();
     }
 
@@ -137,10 +160,8 @@ public class StatisticsCtrl implements Controller, Initializable {
         totalAmount=expenses.stream().mapToDouble(x->x.getMoney()).sum();
         long eventId=server.getCurrentId();
         //a map with the name (including percentages) and the color of a tag
-        //Map<String, String> tagColors = new HashMap<>();
         tagColors = new HashMap<>();
         //it maps a name (ex "food 23%") to the name for the legend (ex: "food 200 EUR")
-        //Map<String, String> namesForLegend = new HashMap<>();
         namesForLegend = new HashMap<>();
         for(String tag: tagsWithValues.keySet()){
             double amount=tagsWithValues.get(tag);
@@ -247,24 +268,45 @@ public class StatisticsCtrl implements Controller, Initializable {
         private TagsListViewCell() {
             container=new HBox();
             tagLabel=new Label();
-            editButton=new Button("E");
-            deleteButton=new Button("D");
+            //create the edit button
+            editButton=new Button();
+            try {
+                //load the icon
+                Image editIcon=new Image(getClass().getResourceAsStream("/pencil.png"));
+                ImageView imageView=new ImageView(editIcon);
+                imageView.setFitWidth(12);
+                imageView.setFitHeight(12);
+                editButton.setGraphic(imageView);
+            }
+            catch (Exception e) {}
+
+            //create the delete button
+            deleteButton=new Button();
+            deleteButton.setShape(new javafx.scene.shape.Circle(6));
+            try {
+                //load the icon
+                Image deleteIcon=new Image(getClass().getResourceAsStream("/bin.png"));
+                ImageView imageView=new ImageView(deleteIcon);
+                imageView.setFitWidth(16);
+                imageView.setFitHeight(16);
+                deleteButton.setGraphic(imageView);
+            }
+            catch (Exception e) {}
             //edit the size of buttons/icons
-            editButton.setPrefSize(12, 12);
-            deleteButton.setPrefSize(25, 12);
+            editButton.setPrefSize(11, 12);
+            deleteButton.setPrefSize(11, 12);
 
             editButton.setOnAction(event -> handleEdit(getItem()));
             deleteButton.setOnAction(event -> handleDelete(getItem()));
 
-            // Add components to the element (the line from the list view)
+            //Add components to the element (the line from the list view)
             container.getChildren().addAll(deleteButton,editButton,tagLabel);
             container.setHgrow(tagLabel, Priority.ALWAYS);
 
-            // Set spacing between components, 4 it is good
             container.setSpacing(4);
 
             // Set padding between lines
-            container.setPadding(new javafx.geometry.Insets(1));
+            //container.setPadding(new javafx.geometry.Insets(1));
         }
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -275,6 +317,12 @@ public class StatisticsCtrl implements Controller, Initializable {
                 setGraphic(null);
             } else {
                 tagLabel.setText(item);
+                if(item.equals("other")) {
+                    try {
+
+                        container.getChildren().get(0).setStyle("-fx-opacity: 0.5;");
+                    }catch (Exception e){}
+                }
                 setGraphic(container);
             }
         }
@@ -284,13 +332,21 @@ public class StatisticsCtrl implements Controller, Initializable {
 
         selectedTagForEditing=tag;
         System.out.println("Edit: " + tag);
-        showEditPane(tag);
+        showEditOrDeletePane(tag,true);
     }
 
     // Method to handle delete button click
     private void handleDelete(String tag) {
         // Here we would delete the tag
-        System.out.println("Delete: " + tag);
+        System.out.println("Delete: "+tag);
+        if(!tag.equals("other"))
+        {
+            //open are you sure menu
+            selectedTagForEditing=tag;
+            //false is for are you sure menu
+            showEditOrDeletePane(tag,false);
+        }
+        System.out.println("You cannot delete this tag.");
     }
     @FXML
     void saveEditTag(ActionEvent event) {
@@ -306,22 +362,51 @@ public class StatisticsCtrl implements Controller, Initializable {
             refresh();
             return;
         }
+        if(selectedTagForEditing.equals("other"))
+        {
+            //Problem!! We cannot change this tag's name.
+            editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
+            return;
+        }
         //verify if there is no other tag with this name and eventId
         if(!server.checkIfTagExists(newName,server.getCurrentId()))
         {
             //we can save it
-            //also when we update a tag, all expenses that contains that tag will be a changed
+            //also when we update a tag, all expenses that contains that tag will be changed
             server.updateTag(selectedTagForEditing,server.getCurrentId(),
                     new Tag(new TagId(newName, server.getCurrentId()),newColor));
             //reload the page
             refresh();
             return;
         }
+
+        editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
         System.out.println("There is already a tag with this name.");
     }
-    void showEditPane(String tagName)
+    @FXML
+    void deleteTagButton(ActionEvent event) {
+        if(server.deleteTagFromEvent(selectedTagForEditing, server.getCurrentId()))
+            refresh();
+    }
+    void showEditOrDeletePane(String tagName,boolean editElseDelete)
     {
         editPanel.setVisible(true);
+        //if we edit
+        if(editElseDelete==true) {
+            editOrAreYouSureText.setText("Edit tag "+selectedTagForEditing);
+            editNameField.setVisible(true);
+            colorPicker.setVisible(true);
+            saveButton.setVisible(true);
+            deleteButton.setVisible(false);
+        }
+        else //if we delete (are you sure?)
+        {
+            editOrAreYouSureText.setText("Are you sure?");
+            editNameField.setVisible(false);
+            colorPicker.setVisible(false);
+            saveButton.setVisible(false);
+            deleteButton.setVisible(true);
+        }
         tagsText.setVisible(false);
         tagsListView.setVisible(false);
         Tag tag=server.getTagByIdOfEvent(tagName,server.getCurrentId());
@@ -341,6 +426,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         editNameField.setText("");
         colorPicker.setValue(Color.WHITE);
         selectedTagForEditing=null;
+        editNameField.setStyle("-fx-border-radius: 5px;");
     }
     /**
      * This is like a back button

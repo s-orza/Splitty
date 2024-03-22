@@ -403,4 +403,23 @@ public class ServerUtils {
 			return response.readEntity(Integer.class);
 		return -1;
 	}
+
+	/**
+	 * This function deletes a tag from the event, but this is tricky because we need
+	 * to change all expenses that contains that tag. I changed their tags to "other"
+	 * @param tagName the name of the tag
+	 * @param eventId the event
+	 * @return true if the tag was successfully deleted
+	 */
+	public boolean deleteTagFromEvent(String tagName,long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+						+"&eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+		if(response.getStatus()==200)
+			return true;
+		return false;
+	}
 }
