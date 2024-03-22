@@ -1,0 +1,55 @@
+/* Light gray body with black text */
+.root {
+  background-color: #f2f2f2;
+  color: #000000;
+}
+/* Generic button with same color as table column names */
+.generic-button {
+  background-color: #0077b6;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Green OK button */
+.okButton {
+  background-color: #4caf50;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.okButton:hover {
+   background-color: #5fb962;
+   color: #ffffff;
+   border: none;
+   padding: 8px 16px;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 16px;
+   cursor: pointer;
+ }
+
+/* Red Cancel button */
+.cancelButton {
+  background-color: #f44336;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
