@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Expense;
 import commons.Participant;
 import commons.Tag;
@@ -24,13 +21,8 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.inject.Guice.createInjector;
-
 public class AddExpenseCtrl implements Controller{
-    //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
     private final ServerUtils server;
     private Stage stage;
 
@@ -328,7 +320,9 @@ public class AddExpenseCtrl implements Controller{
                 dateString,list,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
-        long id= EventPageCtrl.getCurrentEvent().getEventId();
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        System.out.println("Adding to event id" + server.getCurrentId());
+        long id= server.getCurrentId();
         //if we just add an expense, this will be null
         if(expenseToBeModified==null)
             server.addExpenseToEvent(id,expense);
@@ -349,7 +343,7 @@ public class AddExpenseCtrl implements Controller{
         resetElements();
         //go back to event page
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
 
     }
     /**
@@ -361,7 +355,8 @@ public class AddExpenseCtrl implements Controller{
         resetElements();
         System.out.println("Expense canceled");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), "Event Page");
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
     @FXML
     void createTag(MouseEvent event) {
@@ -459,10 +454,10 @@ public class AddExpenseCtrl implements Controller{
             selectedNamesList.remove(index);
         System.out.println(selectedNamesList);
     }
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "AddExpense.fxml");
     }
-    public static String getTitle(){
+    public String getTitle(){
         return "Add Expense";
     }
 }

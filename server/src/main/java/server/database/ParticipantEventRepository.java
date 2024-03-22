@@ -21,10 +21,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 // here there was an unused import
+@Repository
 public interface ParticipantEventRepository extends JpaRepository<ParticipantEvent, Long> {
     @Query("SELECT pe.participantId FROM ParticipantEvent pe WHERE pe.eventId = :eventId")
     List<Long> findParticipantIdsByEventId(@Param("eventId") Long eventId);

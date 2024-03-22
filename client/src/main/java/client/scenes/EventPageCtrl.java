@@ -1,16 +1,9 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-
-import client.MyFXML;
-import client.MyModule;
-import com.google.inject.Injector;
-
 import commons.*;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -18,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -29,11 +21,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.inject.Guice.createInjector;
-
 public class EventPageCtrl implements Controller{
     ServerUtils server;
-    static Event currentEvent;
 
     @Inject
     public EventPageCtrl(ServerUtils server) {
@@ -86,16 +75,13 @@ public class EventPageCtrl implements Controller{
     Button viewDebts;
 
     @FXML
+    Button viewStatistics;
+
+    @FXML
     Label eventCode;
 
     @FXML
     Label eventName;
-
-    //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     private Stage stage;
 
@@ -140,15 +126,17 @@ public class EventPageCtrl implements Controller{
 
         System.out.println("in init");
 
-
-        expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(currentEvent.getEventId()));
-
+        try {
+            expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
         participantsData = FXCollections.observableArrayList(new Participant("ivan", "", "", ""));
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
-
-        System.out.println(currentEvent);
+       // System.out.println(server.getEvent(server.getCurrentId()));
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
@@ -158,18 +146,15 @@ public class EventPageCtrl implements Controller{
             editEventNameHandler();
         });
         viewDebts.setOnAction(e->viewDebtsHandler(e));
+        viewStatistics.setOnAction(e->viewStatisticsHandler(e));
         initializePage();
     }
 
     //set event page title and event code
     private void initializePage() {
-        eventName.setText(currentEvent.getName());
-        eventCode.setText("Event Code: " + currentEvent.getEventId());
-    }
-
-    public void connectEvent(Event event){
-        currentEvent = event;
-        System.out.println("Connecting to " + currentEvent);
+        System.out.println(server.getCurrentId());
+        eventName.setText(server.getEvent(server.getCurrentId()).getName());
+        eventCode.setText("Event Code: " + server.getCurrentId());
     }
 
     public long findEventId(String name) throws Exception {
@@ -201,7 +186,7 @@ public class EventPageCtrl implements Controller{
         changeButton.setOnAction(e -> {
             popupStage.close();
             eventName.setText(newName.getText());
-            server.changeEventName(currentEvent.getEventId(), newName.getText());
+            server.changeEventName(server.getCurrentId(), newName.getText());
         });
 
         cancelButton.setOnAction(e -> {
@@ -221,7 +206,8 @@ public class EventPageCtrl implements Controller{
     private void addExpenseHandler(ActionEvent e) {
         System.out.println("This will lead to another page to add expense");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AddExpenseCtrl.getPair(), AddExpenseCtrl.getTitle());
+        AddExpenseCtrl addExpenseCtrl = new AddExpenseCtrl(server);
+        mainCtrl.initialize(stage, addExpenseCtrl.getPair(), addExpenseCtrl.getTitle());
 
     }
 
@@ -308,14 +294,15 @@ public class EventPageCtrl implements Controller{
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
         for (Expense x: toRemove) {
-            server.deleteExpenseFromEvent(currentEvent.getEventId(), x.getExpenseId());
+            server.deleteExpenseFromEvent(server.getCurrentId(), x.getExpenseId());
         }
         // this method will remove the expenses from the database
     }
     public void close(ActionEvent e){
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, MainPageCtrl.getPair(), MainPageCtrl.getTitle());
+        MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
+        mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
     }
 
     /**
@@ -354,7 +341,8 @@ public class EventPageCtrl implements Controller{
         }
 
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, AddParticipantCtrl.getPair(), AddParticipantCtrl.getTitle());
+        AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), addParticipantCtrl.getTitle());
     }
 
 
@@ -364,18 +352,21 @@ public class EventPageCtrl implements Controller{
     public void viewDebtsHandler(ActionEvent event) {
         System.out.println("switching to debts");
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, DebtsCtrl.getPair(), DebtsCtrl.getTitle());
+        DebtsCtrl debtsCtrl = new DebtsCtrl(server);
+        mainCtrl.initialize(stage, debtsCtrl.getPair(), debtsCtrl.getTitle());
     }
-
-    public static Event getCurrentEvent(){
-        return currentEvent;
+    public void viewStatisticsHandler(ActionEvent event) {
+        System.out.println("switching to Statistics");
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        StatisticsCtrl statisticsCtrl = new StatisticsCtrl(server);
+        mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
     }
 
     //getter for swapping scenes
-    public static Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
     }
-    public static String getTitle(){
+    public String getTitle(){
         return "Event Page";
     }
 

@@ -64,8 +64,18 @@ import jakarta.ws.rs.core.GenericType;
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
+	public static long currentId = -1;
 
-
+	public long getCurrentId(){
+		return currentId;
+	}
+	public void connect(long newEvent){
+		currentId = newEvent;
+		Event updated = getEvent(currentId);
+		updated.activity();
+		createEvent(updated);
+		System.out.println("Äctivity on event " + updated.getName());
+	}
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
 		var is = url.openConnection().getInputStream();
@@ -115,8 +125,11 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
+		deleteAllExpensesFromEvent(id);
+		//WIll be added when we get the API
+		//deleteAllParticipantEvent(id)
 		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
-			System.out.println("Quote removed successfully.");
+			System.out.println("Event removed successfully.");
 		} else {
 			throw new Exception("Failed to remove quote. Status code: "+ response.getStatus());
 		}
@@ -294,6 +307,16 @@ public class ServerUtils {
 			tags=response.readEntity(listType);
 		return tags;
 	}
+	public Tag getTagByIdOfEvent(String tagName,long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()==200)
+			return response.readEntity(Tag.class);
+		return null;
+	}
 	public boolean checkIfTagExists(String tagName)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
@@ -319,7 +342,7 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response);
+		System.out.println(response + "addExpensetoEvent response");
 		if(response.getStatus()==200)
 			return true;
 		return false;
@@ -366,7 +389,7 @@ public class ServerUtils {
 				.target(SERVER+"api/expenses/?expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).put(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response);
+		System.out.println(response + "Update expense response");
 		if(response.getStatus()!=200)
 			return null;
 		return response.readEntity(Expense.class);

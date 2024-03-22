@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -16,8 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.text.Text;
-
-import static com.google.inject.Guice.createInjector;
 
 public class AddParticipantCtrl implements Controller{
     private ServerUtils server;
@@ -93,14 +88,15 @@ public class AddParticipantCtrl implements Controller{
     public void close(ActionEvent e){
         System.out.println("close window");
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, EventPageCtrl.getPair(), EventPageCtrl.getTitle());
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
 
 
-    static Pair<Controller, Parent> getPair(){
+    public Pair<Controller, Parent> getPair(){
         return FXML.load(Controller.class, "client", "scenes", "AddParticipant.fxml");
     }
-    static String getTitle(){
+    public String getTitle(){
         return "Add Participant";
     }
 }
