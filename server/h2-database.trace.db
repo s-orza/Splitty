@@ -708,3 +708,18 @@ SELECT * FROM INFORMATION_SCHEMA.VIEWS INFORMATION_SCHEMA.VIEWS INFORMATION_SCHE
 2024-03-19 18:27:26.075818+01:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "INTO" not found; SQL statement:
 update into event set EVENTID= 7952 where EVENTID=11152 [42102-224]
+2024-03-20 21:25:33.763563+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete [*]table tag"; expected "identifier"; SQL statement:
+delete table tag [42001-224]
+2024-03-20 21:26:16.737329+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TAG" not found; SQL statement:
+select count(*) from tag t1_0 where (t1_0.event_id,t1_0.name)=(?,?) [42102-224]
+2024-03-20 21:27:11.743930+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TAG" not found; SQL statement:
+select count(*) from tag t1_0 where (t1_0.event_id,t1_0.name)=(?,?) [42102-224]
+2024-03-20 21:27:36.315670+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TAG" not found; SQL statement:
+select t1_0.event_id,t1_0.name,t1_0.color from tag t1_0 where t1_0.event_id=? order by t1_0.name [42102-224]
+2024-03-20 21:27:47.072597+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TAG" not found; SQL statement:
+select count(*) from tag t1_0 where (t1_0.event_id,t1_0.name)=(?,?) [42102-224]
