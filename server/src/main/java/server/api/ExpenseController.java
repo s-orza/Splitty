@@ -15,7 +15,6 @@ public class ExpenseController {
     private final ExpenseEventRepository repoExpEv;
     private final ParticipantExpenseRepository repoPaExp;
     private final TagRepository repoTag;
-    private final ParticipantRepository repoPa;
     private final ExpenseService service;
     public ExpenseController(ExpenseRepository repoExp, ExpenseEventRepository repoExpEv,
                              ParticipantExpenseRepository repoPaExp, TagRepository repoTag,
@@ -24,7 +23,6 @@ public class ExpenseController {
         this.repoExpEv = repoExpEv;
         this.repoPaExp = repoPaExp;
         this.repoTag = repoTag;
-        this.repoPa = repoPa;
         this.service = service;
     }
     //here to put the POST APIs
@@ -85,17 +83,24 @@ public class ExpenseController {
     }
     @PostMapping(path = { "/tags"})
     public ResponseEntity<Tag> addTag(@RequestBody Tag tag) {
+        System.out.println(tag);
+        //tag=new Tag("other",7952,"#e0e0e0");
         if (tag==null) {
             System.out.println("tag is null");
             return ResponseEntity.badRequest().build();
         }
-        if(repoTag.existsById(tag.getName()))
+        if(tag.getId()==null)
+        {
+            System.out.println("tag id is null");
+            return ResponseEntity.notFound().build();
+        }
+        if(repoTag.existsById(new TagId(tag.getId().getName(),tag.getId().getEventId())))
         {
             System.out.println("Already in the database");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
-        repoTag.save(tag);
-        Tag saved=repoTag.findById(tag.getName()).get();
+
+        Tag saved=repoTag.save(tag);
         return ResponseEntity.ok(saved);
     }
 
@@ -149,19 +154,21 @@ public class ExpenseController {
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/tags"})
-    public ResponseEntity<Tag> getTag(@RequestParam("tag") String tagName)
+    public ResponseEntity<Tag> getTag(@RequestParam("tag") String tagName,@RequestParam("eventId") long eventId)
     {
-        if(repoTag.existsById(tagName))
+        if(repoTag.existsById(new TagId(tagName,eventId)))
         {
-            Tag tag=repoTag.findById(tagName).get();
+            Tag tag=repoTag.getTagByIdFromEvent(tagName,eventId);
             return ResponseEntity.ok(tag);
+
         }
-        return ResponseEntity.notFound().build();
+        else
+         return ResponseEntity.notFound().build();
     }
     @GetMapping(path={"/allTags"})
-    public ResponseEntity<List<Tag>> getAllTag()
+    public ResponseEntity<List<Tag>> getAllTagsFromEvent(@RequestParam("eventId") long eventId)
     {
-        List<Tag> tags= repoTag.getAllTags();
+        List<Tag> tags= repoTag.getAllTagsFromEvent(eventId);
         return ResponseEntity.ok(tags);
     }
     //here to put the PUT APIs (update)
@@ -180,6 +187,25 @@ public class ExpenseController {
         Expense newExpense=repoExp.findById(expenseId).get();
         service.putParticipants(newExpense);
         return ResponseEntity.ok(newExpense);
+    }
+    @PutMapping(path={"/tags"})
+    public ResponseEntity<Tag> updateTag(@RequestParam("tagName") String tagName,
+                                             @RequestParam("eventId") long eventId,
+                                             @RequestBody Tag tag)
+    {
+        //tagName is th the name of the current tag. tag.getId().getName() is the new name
+        if(!repoTag.existsById(new TagId(tagName,eventId)))
+            return ResponseEntity.notFound().build();
+        repoTag.updateTag(tagName,eventId,tag.getId().getName(),tag.getColor());
+        Tag newTag=repoTag.getTagByIdFromEvent(tag.getId().getName(),eventId);
+        if(tag==null)
+            return ResponseEntity.status(304).build();//not modified
+        //we need to update all the expenses from this event that had tagName as type
+        List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
+        for(Expense e:expensesOfEvent)
+            if(e.getType().equals(tagName))
+                repoExp.updateExpenseWithTag(e.getExpenseId(),tag.getId().getName());
+        return ResponseEntity.ok(newTag);
     }
     //here to put the DELETE APIs
 
@@ -245,14 +271,18 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses.size());
     }
     @DeleteMapping (path={"/tags"})
-    public ResponseEntity<Tag> deleteTag(@RequestParam("tag") String tagName)
+    public ResponseEntity<Tag> deleteTag(@RequestParam("tagName") String tagName,
+                                         @RequestParam("eventId")long eventId)
     {
-        if(repoTag.existsById(tagName))
-        {
-            Tag tag=repoTag.findById(tagName).get();
-            repoTag.deleteById(tagName);
-            return ResponseEntity.ok(tag);
-        }
-        return ResponseEntity.notFound().build();
+        TagId tagId=new TagId(tagName,eventId);
+        if(!repoTag.existsById(tagId))
+            return ResponseEntity.notFound().build();
+        repoTag.deleteById(new TagId(tagName,eventId));
+        //we need to update all the expenses from this event that had tagName as type
+        List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
+        for(Expense e:expensesOfEvent)
+            if(e.getType().equals(tagName))
+                repoExp.updateExpenseWithTag(e.getExpenseId(),"other");
+        return ResponseEntity.ok().build();
     }
 }

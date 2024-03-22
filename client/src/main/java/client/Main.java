@@ -33,6 +33,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage){
     // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
+
     MainCtrl mainCtrl = new MainCtrl();
     MainPageCtrl mainPageCtrl = new MainPageCtrl(new ServerUtils());
     mainCtrl.initialize(primaryStage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());

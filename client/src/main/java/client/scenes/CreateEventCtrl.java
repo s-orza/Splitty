@@ -1,10 +1,18 @@
 package client.scenes;
 
+import client.MyFXML;
+import client.MyModule;
 import client.utils.ServerUtils;
+import com.google.inject.Injector;
 import commons.Event;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+
+import javafx.fxml.Initializable;
+
+
 import javafx.geometry.Pos;
+
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,14 +26,34 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 
-public class CreateEventCtrl implements Controller{
+
+
+import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+
+import static com.google.inject.Guice.createInjector;
+
+public class CreateEventCtrl implements Controller, Initializable {
+    //Imports used to swap scenes
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     //Gets the different FXML page components
     @FXML
     private Button CreateEventButton;
     @FXML
     private TextField textField;
+    @FXML
+    private Label createEventLabel;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private Label joinCodeLabel;
 
+    private Locale currentLocale = MainPageCtrl.getCurrentLocale();
     private String eventName;
     private Stage stage;
     ServerUtils server;
@@ -33,7 +61,6 @@ public class CreateEventCtrl implements Controller{
     public CreateEventCtrl(ServerUtils server) {
         this.server = server;
     }
-
     //method to go to the eventPage once you create a new event with eventName as the title of the new event.
     // It also adds a new event to the data base
     public void create(ActionEvent e){
@@ -98,4 +125,16 @@ public class CreateEventCtrl implements Controller{
         return "Create Event";
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("we should be seeing this");
+        try{
+            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+            joinCodeLabel.setText(resourceBundle.getString("joinCodeText"));
+            titleLabel.setText(resourceBundle.getString("titleText"));
+            createEventLabel.setText(resourceBundle.getString("createNewEventText"));
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
 }

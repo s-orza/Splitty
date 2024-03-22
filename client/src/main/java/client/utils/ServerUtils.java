@@ -32,6 +32,35 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 
+/**
+ * Accessing parts of the page will happen as follows (please take keen eye on indentation):
+ * 	/api - where everything happens for the front-end (for developer access check below)
+ * 	(suggest to replace api with com - commons or just skip to events/{eventId}
+ * 		/events/{eventId}
+ * 				/participants/{participantId}
+ * 					/{name}
+ * 					/{email}
+ * 					/{iban}
+ * 					/{bic}
+ * 				/expenses/{expenseId}
+ * 					/expenseType
+ * 						/author/{authorId} | participantsId
+ * 						/content	| 'For what?' section
+ * 						/participant/{participantId} | In case of splitting with whom
+ * 						/date
+ * 						/payment
+ * 							/{currencyType}
+ * 							/{amount}
+ * 				/debts
+ *					/{debtId}
+ *						/{DebtorId} | participantId
+ *						/{currencyType} | should also have a column for such
+ *						/{Amount}
+ * 	/dev
+ * 		/events
+ *			/{eventId}
+ */
+
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
@@ -108,15 +137,15 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to get participants from specific event
-	public List<Participant> getParticipants(long id) {
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/events/participants/"+id)
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get();
-		if(response.getStatus()<300)
-			return response.readEntity(List.class);
-		return null;
-	}
+//	public List<Participant> getParticipants(long eventId) {
+//		Response response=ClientBuilder.newClient(new ClientConfig())
+//				.target(SERVER).path("api/events/" + eventId + "/participants")
+//				.request(APPLICATION_JSON)
+//				.accept(APPLICATION_JSON).get();
+//		if(response.getStatus()<300)
+//			return response.readEntity(List.class);
+//		return null;
+//	}
 
 
 	//connects to the database through the endpoint to get an event with an id
@@ -142,13 +171,13 @@ public class ServerUtils {
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
 
-	public void addParticipant(Participant participant){
-		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-	}
+//	public void addParticipant(Participant participant){
+//		ClientBuilder.newClient(new ClientConfig()) //
+//				.target(SERVER).path("/api/participant") //
+//				.request(APPLICATION_JSON) //
+//				.accept(APPLICATION_JSON) //
+//				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+//	}
 
 	public Participant getParticipant(long participantId){
         return ClientBuilder.newClient(new ClientConfig()) //
@@ -158,18 +187,22 @@ public class ServerUtils {
 				.get(Participant.class);
 	}
 
+	/**
+	 * THIS IS CORRECT
+	 * @param eventId event id
+	 * @return the list of participants
+	 */
 	public List<Participant> getParticipantsOfEvent(long eventId){
-		System.out.println("in servero");
+		System.out.println("in server");
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("/api/participant/event/getParticipants/" + eventId)
+				.target(SERVER).path("/api/participant/event/"+eventId+"/allParticipants")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
-		System.out.println("out servero");
+		System.out.println(response);
 		if(response.getStatus() < 300) {
 			GenericType<List<Participant>> genericType = new GenericType<List<Participant>>() {};
 			return response.readEntity(genericType);  // Use a specific type reference here
 		}
-
 		return null;
 	}
 
@@ -208,19 +241,19 @@ public class ServerUtils {
 	 * @param participant the participant - instance
 	 * @param eventId the id of the event the participant is connected to
 	 */
-	public void addParticipantEvent(Participant participant, int eventId){
+	public void addParticipantEvent(Participant participant, long eventId){
 		System.out.println("In server");
-		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant/event/" + eventId) //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-		System.out.println("Out server");
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("/api/participant/event/" + eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.post(Entity.entity(participant,APPLICATION_JSON));
+		System.out.println(response);
 	}
 
 	/**
 	 * This method will add just an entry to the participant_event table
-	 * @param participantEventDto an object that contains particpantId and eventId
+	 * @param participantEventDto an object that contains participantId and eventId
 	 */
 	public void addParticipantEvent(ParticipantEventDto participantEventDto) {
 		System.out.println("In server");
@@ -252,7 +285,7 @@ public class ServerUtils {
 		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
 		if(response.getStatus()<300)
 			return response.readEntity(listType);
-		return null;
+		return new ArrayList<>();
 	}
 	public List<Expense> getAllExpensesFromDatabase()
 	{
@@ -265,11 +298,10 @@ public class ServerUtils {
 			return response.readEntity(listType);
 		return null;
 	}
-	public List<Tag> getAllTags()
+	public List<Tag> getAllTagsFromEvent(long eventId)
 	{
-		//to be done in the next MR
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/allTags")
+				.target(SERVER+"api/expenses/allTags?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		List<Tag> tags=new ArrayList<>();
@@ -281,20 +313,20 @@ public class ServerUtils {
 	public Tag getTagByIdOfEvent(String tagName,long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
+				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20")+"&eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()==200)
-			return response.readEntity(Tag.class);
+		{
+			Tag tag=response.readEntity(Tag.class);
+			System.out.println(tag);
+			return tag;
+		}
 		return null;
 	}
-	public boolean checkIfTagExists(String tagName)
+	public boolean checkIfTagExists(String tagName,long eventId)
 	{
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20"))
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get();
-		if(response.getStatus()==200)
+		if(getTagByIdOfEvent(tagName,eventId)!=null)
 			return true;
 		return false;
 	}
@@ -343,7 +375,7 @@ public class ServerUtils {
 	{
 		System.out.println(tag);
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tag.getName().replace(" ","%20"))
+				.target(SERVER+"api/expenses/tags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(tag,APPLICATION_JSON));
@@ -365,6 +397,20 @@ public class ServerUtils {
 			return null;
 		return response.readEntity(Expense.class);
 
+	}
+	public boolean updateTag(String tagName,long eventId,Tag newtag)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+						+"&eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.put(Entity.entity(newtag,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		if(response.getStatus()==200)
+			return true;
+		return false;
 	}
 	//DELETE functions
 	public boolean deleteExpenseFromEvent(long eventId, long expenseId)
@@ -389,5 +435,24 @@ public class ServerUtils {
 		if(response.getStatus()==200)
 			return response.readEntity(Integer.class);
 		return -1;
+	}
+
+	/**
+	 * This function deletes a tag from the event, but this is tricky because we need
+	 * to change all expenses that contains that tag. I changed their tags to "other"
+	 * @param tagName the name of the tag
+	 * @param eventId the event
+	 * @return true if the tag was successfully deleted
+	 */
+	public boolean deleteTagFromEvent(String tagName,long eventId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+						+"&eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+		if(response.getStatus()==200)
+			return true;
+		return false;
 	}
 }

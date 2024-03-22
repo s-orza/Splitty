@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import commons.Expense;
 import commons.Participant;
 import commons.Tag;
+import commons.TagId;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,11 +21,39 @@ import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+
+
+import static client.scenes.MainPageCtrl.currentLocale;
 
 public class AddExpenseCtrl implements Controller{
 
     private final ServerUtils server;
     private Stage stage;
+
+    @FXML
+    private Text addEditExpenseText;
+
+    @FXML
+    private Text whoPaidText;
+
+    @FXML
+    private Text forWhatText;
+
+    @FXML
+    private Text howMuchText;
+
+    @FXML
+    private Text whenText;
+
+    @FXML
+    private Text expenseTypeText;
+
+    @FXML
+    private Text howToSplitText;
+
+    @FXML
+    private Text cantText;
 
     @FXML
     private Button addButton;
@@ -66,13 +95,15 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     private Text warningText;
     private List<Integer> selectedNamesList=new ArrayList<>();
-    private ObservableList<Pair2> names = FXCollections.observableArrayList(
-            new Pair2("Serban",0), new Pair2("David",1),
-            new Pair2("Olav",2), new Pair2("Alex",3));
+    private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
+            //new Pair2("Serban",0), new Pair2("David",1),
+            //new Pair2("Olav",2), new Pair2("Alex",3));
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
     private Expense expenseToBeModified=null;
+
+    ResourceBundle resourceBundle;
     @Inject
     public AddExpenseCtrl(ServerUtils server) {
         this.server = server;
@@ -81,45 +112,76 @@ public class AddExpenseCtrl implements Controller{
     public void initialize() {
         //load resources
         loadFromDatabase();
+        toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
         //reset
         resetElements();
     }
+
+    private void toggleLanguage() {
+        try{
+            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+            addEditExpenseText.setText(resourceBundle.getString("addEditExpenseText"));
+            whoPaidText.setText(resourceBundle.getString("whoPaidText"));
+            forWhatText.setText(resourceBundle.getString("forWhatText"));
+            howMuchText.setText(resourceBundle.getString("howMuchText"));
+            whenText.setText(resourceBundle.getString("whenText"));
+            expenseTypeText.setText(resourceBundle.getString("expenseTypeText"));
+            howToSplitText.setText(resourceBundle.getString("howToSplitText"));
+            checkBoxAllPeople.setText(resourceBundle.getString("ebeText"));
+            checkBoxSomePeople.setText(resourceBundle.getString("obspText"));
+            cancelButton.setText(resourceBundle.getString("cancelText"));
+            addButton.setText(resourceBundle.getString("addText"));
+            cantText.setText(resourceBundle.getString("cantText"));
+            whoPaidText.setText(resourceBundle.getString("whoPaidText"));
+            whoPaidText.setText(resourceBundle.getString("whoPaidText"));
+            authorSelector.setPromptText(resourceBundle.getString("selectPersonText"));
+            typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
     public void loadFromDatabase()
     {
         //first we need to create a list with the names of the participants:
-        //->here to put code for creating the list
-        //server.getAllParticipatns(eventId) or somrthing like that
-        participantsObjectList=new ArrayList<>();
-        //this "if" will be removed when we can access the participant list
-        if(1==2)
+        participantsObjectList=server.getParticipantsOfEvent(server.getCurrentId());
+        names=FXCollections.observableArrayList();
+        int k=0;
+        for(Participant person:participantsObjectList)
         {
-            int k=0;
-            for(Participant person:participantsObjectList)
-            {
-                names.add(new Pair2(person.getName(),k));
-                k++;
-            }
+            names.add(new Pair2(person.getName(),k));
+            k++;
         }
         //initialise the expenseTypesAvailable
         expenseTypesAvailable.clear();
         expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
         //initialise the tags
         tagsAvailable=new ArrayList<>();
-        if(server.checkIfTagExists("other")==false)
-        {
-            server.addTag(new Tag("other","#e0e0e0"));
-        }
-        List<Tag> temp=server.getAllTags();
+        long eventId= server.getCurrentId();
+        //adding the 4 tags that always need to be
+        if(!server.checkIfTagExists("other", eventId))
+            server.addTag(new Tag(new TagId("other",eventId),"#e0e0e0"));
+
+        if(!server.checkIfTagExists("food", eventId))
+            server.addTag(new Tag(new TagId("food",eventId),"#00ff00"));
+
+        if(!server.checkIfTagExists("entrance fees", eventId))
+            server.addTag(new Tag(new TagId("entrance fees",eventId),"#0000ff"));
+
+        if(!server.checkIfTagExists("travel", eventId))
+            server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
+
+        List<Tag> temp=server.getAllTagsFromEvent(eventId);
         System.out.println(temp);
         for(Tag t:temp)
-            tagsAvailable.add(t.getName());
+            tagsAvailable.add(t.getId().getName());
     }
     /**
      * This is a function that resets and prepare the scene.
-     * You should call this function everytime you open AddExpense page.
+     * This resets the elements on screen with what we have from the database
      */
     public void resetElements(){
         //reset the scene
@@ -128,7 +190,7 @@ public class AddExpenseCtrl implements Controller{
         warningText.setText("");
         //prepare the possible authors
         authorSelector.getItems().clear();
-        authorSelector.setPromptText("-Select person");
+
         authorSelector.setValue(null);
         authorSelector.getItems().addAll(names.stream().map(x->x.element).toList());
         authorSelector.setOnAction(this::handleSelectAuthor);
@@ -159,13 +221,13 @@ public class AddExpenseCtrl implements Controller{
 
         //at the beginning the list is hidden
         namesList.setVisible(false);
-        //without these 2 lines, the list will be buggy and you won t be able to select participants
+        //without these 2 lines, the list will be buggy, and you won t be able to select participants
         //in this way, you cannot select the element,only the checkbox
         namesList.setSelectionModel(null);
         namesList.setFocusTraversable(false);
 
         typeSelector.getItems().clear();
-        typeSelector.setPromptText("-Select type-");
+
         typeSelector.setValue(null);
 
         typeSelector.getItems().addAll(tagsAvailable);
@@ -234,50 +296,56 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     void addExpenseToTheEvent(MouseEvent event) {
         //we need to verify if the expense is valid.
+
         if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
         {
             System.out.println("The author cannot be empty.");
-            warningText.setText("The author cannot be empty.");
+            warningText.setText(resourceBundle.getString("authorWarning"));
             return;
         }
         if(contentBox.getText()==null || contentBox.getText().isEmpty())
         {
             System.out.println("What is the money for?");
-            warningText.setText("What is the money for?");
+            warningText.setText(resourceBundle.getString("forWhatWarning"));
             return;
         }
         if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
         {
             System.out.println(moneyPaid.getText());
-            warningText.setText("The amount of money must be specified.");
+            warningText.setText(resourceBundle.getString("amountWarning"));
             return;
         }
         if(moneyPaid.getText().contains("-") || moneyPaid.getText().equals("0"))
         {
-            warningText.setText("The amount of money must be positive.");
+            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            return;
+        }
+        if(Double.parseDouble(moneyPaid.getText())==0.0)
+        {
+            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
             return;
         }
         if(date.getValue()==null) {
             System.out.println("You need to select a date!");
-            warningText.setText("You need to select a date!");
+            warningText.setText(resourceBundle.getString("dateWarning"));
             return;
         }
         if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
         {
             System.out.println("You need to enter the type");
-            warningText.setText("Enter the type please.");
+            warningText.setText(resourceBundle.getString("typeWarning"));
             return;
         }
         if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
         {
             System.out.println("Select how to split the expense.");
-            warningText.setText("Select how to split the expense.");
+            warningText.setText(resourceBundle.getString("splitWarning"));
             return;
         }
         if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
         {
             System.out.println("Select the participants.");
-            warningText.setText("Select the participants.");
+            warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
             return;
         }
         //the expense can be considered valid now
@@ -289,34 +357,24 @@ public class AddExpenseCtrl implements Controller{
                 date.getValue().getMonthValue()+","+
                 date.getValue().getYear();
         //the expense
-        Participant pa=new Participant("a","b","c","d");
-        pa.setParticipantID(3152);
         //this will be the final author
-        if(1==2) {
-            Participant authorP = participantsObjectList.get(authorSelector.getSelectionModel().getSelectedIndex());
-        }
-        //I still need to adjust this list
+
+        Participant authorP = participantsObjectList.get(authorSelector.getSelectionModel().getSelectedIndex());
+
         List<Participant> list=new ArrayList<>();
         //if we selected all participants
         if(checkBoxAllPeople.isSelected())
         {
-            if(1==2)
             for(Participant p:participantsObjectList)
                 list.add(p);
         }
         else
             //then, if some participants are selected
-        //REMOVE THIS IF WHEN WE HAVE REAL PARTICIPANTS
-        if(1==2)
-        {
             for(Integer p:selectedNamesList)
             {
                 list.add(participantsObjectList.get(p));
             }
-        }
-        else
-            list.add(pa);
-        Expense expense=new Expense(pa,content,money,moneyTypeSelector.getValue(),
+        Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
                 dateString,list,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change
@@ -341,7 +399,7 @@ public class AddExpenseCtrl implements Controller{
         }
         //System.out.println(server.getExpenseById(1));
         resetElements();
-        //go back to event page
+        //go back to the event page
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
 
@@ -367,20 +425,20 @@ public class AddExpenseCtrl implements Controller{
             return;
         }
         tagName=tagName.trim();
-        if(server.checkIfTagExists(tagName))
+        if(server.checkIfTagExists(tagName,server.getCurrentId()))
         {
             System.out.println("Already in the database!");
             return;
         }
         String color=colorPicker.getValue().toString();
-        server.addTag(new Tag(tagName,"#"+color.substring(2,8)));
+        server.addTag(new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
         System.out.println("tag added");
         tagsAvailable.add(tagName);
 
         //reset tags from the screen
         typeSelector.getItems().clear();
         typeSelector.getItems().addAll(tagsAvailable);
-        typeSelector.setPromptText("-Select type-");
+        typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
         typeSelector.setValue(null);
 
         newTypeTextField.setText("");
