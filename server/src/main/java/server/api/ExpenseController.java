@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.*;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ExpenseEventRepository;
@@ -11,6 +10,7 @@ import server.database.TagRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -226,6 +226,26 @@ public class ExpenseController {
         Expense newExpense=repoExp.findById(expenseId).get();
         putParticipants(newExpense);
         return ResponseEntity.ok(newExpense);
+    }
+    @PutMapping(path={"/tags"})
+    public ResponseEntity<Tag> updateTag(@RequestParam("tagName") String tagName,
+                                             @RequestParam("eventId") long eventId,
+                                             @RequestBody Tag tag)
+    {
+        //tagName is th the name of the current tag. tag.getId().getName() is the new name
+        Optional<Tag> t=repoTag.findById(new TagId(tagName,eventId));
+        if(!repoTag.existsById(new TagId(tagName,eventId)))
+            return ResponseEntity.notFound().build();
+        System.out.println(repoTag.updateTag(tagName,eventId,tag.getId().getName(),tag.getColor()));
+        Tag newTag=repoTag.getTagByIdFromEvent(tag.getId().getName(),eventId);
+        if(tag==null)
+            return ResponseEntity.status(304).build();//not modified
+        //we need to update the expenses
+        List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
+        for(Expense e:expensesOfEvent)
+            if(e.getType().equals(tagName))
+                repoExp.updateExpenseWithTag(e.getExpenseId(),tag.getId().getName());
+        return ResponseEntity.ok(newTag);
     }
     //here to put the DELETE APIs
 

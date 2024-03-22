@@ -27,7 +27,6 @@ import java.util.List;
 
 import commons.*;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
 import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -365,6 +364,20 @@ public class ServerUtils {
 			return null;
 		return response.readEntity(Expense.class);
 
+	}
+	public boolean updateTag(String tagName,long eventId,Tag newtag)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+						+"&eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.put(Entity.entity(newtag,APPLICATION_JSON));
+		System.out.println(response.readEntity(String.class));
+		System.out.println(response);
+		if(response.getStatus()==200)
+			return true;
+		return false;
 	}
 	//DELETE functions
 	public boolean deleteExpenseFromEvent(long eventId, long expenseId)

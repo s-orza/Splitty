@@ -7,7 +7,6 @@ import java.util.Objects;
 
 @Embeddable
 public class TagId implements Serializable {
-    //private static final long serialVersionUID = 1L;
     private String name;
     private long eventId;
 
