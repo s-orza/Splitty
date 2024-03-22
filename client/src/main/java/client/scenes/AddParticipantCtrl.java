@@ -38,7 +38,7 @@ public class AddParticipantCtrl implements Controller{
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
     private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
+    
     @Inject
     public AddParticipantCtrl(ServerUtils server){
         this.server = server;
@@ -79,7 +79,10 @@ public class AddParticipantCtrl implements Controller{
         }
         Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         try {
-            server.addParticipant(newParticipant);
+            //TODO
+            // make the eventID be specific to each event
+            server.addParticipantEvent(newParticipant, 1);
+            close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
         }

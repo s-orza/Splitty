@@ -32,6 +32,35 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 
+/**
+ * Accessing parts of the page will happen as follows (please take keen eye on indentation):
+ * 	/api - where everything happens for the front-end (for developer access check below)
+ * 	(suggest to replace api with com - commons or just skip to events/{eventId}
+ * 		/events/{eventId}
+ * 				/participants/{participantId}
+ * 					/{name}
+ * 					/{email}
+ * 					/{iban}
+ * 					/{bic}
+ * 				/expenses/{expenseId}
+ * 					/expenseType
+ * 						/author/{authorId} | participantsId
+ * 						/content	| 'For what?' section
+ * 						/participant/{participantId} | In case of splitting with whom
+ * 						/date
+ * 						/payment
+ * 							/{currencyType}
+ * 							/{amount}
+ * 				/debts
+ *					/{debtId}
+ *						/{DebtorId} | participantId
+ *						/{currencyType} | should also have a column for such
+ *						/{Amount}
+ * 	/dev
+ * 		/events
+ *			/{eventId}
+ */
+
 public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
@@ -108,9 +137,9 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to get participants from specific event
-	public List<Participant> getParticipants(long id) {
+	public List<Participant> getParticipants(long eventId) {
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/events/participants/"+id)
+				.target(SERVER).path("api/events/" + eventId + "/participants")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()<300)
@@ -220,7 +249,7 @@ public class ServerUtils {
 
 	/**
 	 * This method will add just an entry to the participant_event table
-	 * @param participantEventDto an object that contains particpantId and eventId
+	 * @param participantEventDto an object that contains participantId and eventId
 	 */
 	public void addParticipantEvent(ParticipantEventDto participantEventDto) {
 		System.out.println("In server");
@@ -252,7 +281,7 @@ public class ServerUtils {
 		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
 		if(response.getStatus()<300)
 			return response.readEntity(listType);
-		return null;
+		return new ArrayList<>();
 	}
 	public List<Expense> getAllExpensesFromDatabase()
 	{
