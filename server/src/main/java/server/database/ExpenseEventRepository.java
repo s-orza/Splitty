@@ -19,10 +19,11 @@ import commons.Expense;
 import commons.ExpenseEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+@Repository
 public interface ExpenseEventRepository extends JpaRepository<ExpenseEvent, Long> {
     @Query("SELECT ev FROM ExpenseEvent ev JOIN Expense ex ON ev.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId AND ex.author = :author")

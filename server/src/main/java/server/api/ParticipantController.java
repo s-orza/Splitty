@@ -3,9 +3,7 @@ package server.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import commons.Participant;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
