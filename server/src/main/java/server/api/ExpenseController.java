@@ -15,7 +15,6 @@ public class ExpenseController {
     private final ExpenseEventRepository repoExpEv;
     private final ParticipantExpenseRepository repoPaExp;
     private final TagRepository repoTag;
-    private final ParticipantRepository repoPa;
     private final ExpenseService service;
     public ExpenseController(ExpenseRepository repoExp, ExpenseEventRepository repoExpEv,
                              ParticipantExpenseRepository repoPaExp, TagRepository repoTag,
@@ -24,7 +23,6 @@ public class ExpenseController {
         this.repoExpEv = repoExpEv;
         this.repoPaExp = repoPaExp;
         this.repoTag = repoTag;
-        this.paCon = paCon;
         this.service = service;
     }
     //here to put the POST APIs
