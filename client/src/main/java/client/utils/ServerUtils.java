@@ -313,6 +313,30 @@ public class ServerUtils {
 			return response.readEntity(listType);
 		return new ArrayList<>();
 	}
+
+	private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+	public void registerForUpdatesExpenses(long eventId, Consumer<Expense> consumer)
+	{
+		EXEC.submit(() -> {
+			while(!Thread.interrupted()) {
+				var res = ClientBuilder.newClient(new ClientConfig())
+						.target(SERVER+"api/expenses/allFromEvent/updates?eventId="+eventId)
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.get(Response.class);
+				if (res.getStatus()==204) {
+					continue;
+				}
+				var e = res.readEntity(Expense.class);
+				consumer.accept(e);
+			}
+		});
+	}
+
+	public void stop () {
+		EXEC.shutdown();
+	}
+
 	public List<Expense> getAllExpensesFromDatabase()
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
