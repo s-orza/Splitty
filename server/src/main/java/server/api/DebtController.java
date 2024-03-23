@@ -1,28 +1,32 @@
 package server.api;
 
 import commons.Debt;
+import commons.Event;
+import commons.Participant;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.database.DebtRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/debt")
+@RequestMapping("api/events/{eventId}/debt")
 public class DebtController {
 
     private final DebtRepository repo;
 
     /**
+     *
      * Constructor for the DebtController
      * @param repo the repository that holds all the debts
+     * @param eventId the ID of the event to join (for the requestMapping Above)
      */
-    public DebtController(DebtRepository repo) {
+    public DebtController(DebtRepository repo, @PathVariable("eventId") long eventId) {
         this.repo = repo;
     }
 
@@ -72,4 +76,29 @@ public class DebtController {
         }
         return ResponseEntity.ok(debts);
     }
+
+    /**
+     * Adds a new debt to the debt repository
+     * @param debt the debt to be added (Must not be Null)
+     * @return the debt that was added
+     */
+    @PostMapping()
+    public ResponseEntity<Debt> addDebt(@RequestBody Debt debt) {
+        repo.save(debt);
+        return ResponseEntity.ok(debt);
+    }
+
+    /**
+     * Adds a new debt to the debt repository
+     * @param debts the List of debts to be added
+     * @return the List of debts that were added
+     */
+    @PostMapping()
+    public ResponseEntity<List<Debt>> addListOfDebts(@RequestBody List<Debt> debts) {
+        for (Debt debt: debts){
+            repo.save(debt);
+        }
+        return ResponseEntity.ok(debts);
+    }
+    
 }
