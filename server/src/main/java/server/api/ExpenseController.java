@@ -1,11 +1,17 @@
 package server.api;
 
 import commons.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.*;
 import server.service.ExpenseService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -41,6 +47,7 @@ public class ExpenseController {
             System.out.println("is null");
             return ResponseEntity.badRequest().build();
         }
+        listeners.forEach((k, l) -> l.accept(expense));
         List<Participant> participants = expense.getParticipants();
         //for storing it in the database
         expense.setParticipants(null);
@@ -153,6 +160,22 @@ public class ExpenseController {
             service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
+
+    private Map<Object, Consumer<Expense>> listeners = new HashMap<>();
+    @GetMapping(path={"/allFromEvent/updates"})
+    public DeferredResult<ResponseEntity<Expense>> getUpdatesFromEvent(@RequestParam("eventId") long eventId) {
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<Expense>>(5000L, noContent);
+        var key = new Object();
+        listeners.put(key, e -> {
+            res.setResult(ResponseEntity.ok(e));
+        });
+        res.onCompletion(() -> {
+            listeners.remove(key);
+        });
+        return res;
+    }
+
     @GetMapping(path={"/tags"})
     public ResponseEntity<Tag> getTag(@RequestParam("tag") String tagName,@RequestParam("eventId") long eventId)
     {

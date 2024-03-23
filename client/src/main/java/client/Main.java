@@ -43,5 +43,11 @@ public class Main extends Application {
     primaryStage.setOnCloseRequest(e-> {
       adminPageCtrl.stop();
     });
+
+    EventPageCtrl eventPage = new EventPageCtrl(new ServerUtils());
+
+    primaryStage.setOnCloseRequest(e-> {
+      eventPage.stop();
+    });
   }
 }
