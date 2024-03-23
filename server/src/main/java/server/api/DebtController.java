@@ -1,10 +1,6 @@
 package server.api;
 
 import commons.Debt;
-import commons.Event;
-import commons.Participant;
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.DebtRepository;
@@ -195,13 +191,13 @@ public class DebtController {
      * replaces a debt with a new one
      * @param oldDebt the debt to be replaced
      * @param newDebt the debt replacing the old one
-     * @return the debt that was replaced
+     * @return OK - 200 and the debt that was replaced if the old debt was found,
+     *         NOT FOUND - 404 otherwise
      */
     public ResponseEntity<Debt> replace(Debt oldDebt, Debt newDebt){
         ResponseEntity<Debt> result = settleDebt(oldDebt);
+        newDebt.setDebtID(oldDebt.getDebtID());
         addDebt(newDebt);
         return result;
     }
-
-
 }
