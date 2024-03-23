@@ -95,9 +95,9 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     private Text warningText;
     private List<Integer> selectedNamesList=new ArrayList<>();
-    private ObservableList<Pair2> names = FXCollections.observableArrayList(
-            new Pair2("Serban",0), new Pair2("David",1),
-            new Pair2("Olav",2), new Pair2("Alex",3));
+    private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
+            //new Pair2("Serban",0), new Pair2("David",1),
+            //new Pair2("Olav",2), new Pair2("Alex",3));
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
@@ -147,18 +147,13 @@ public class AddExpenseCtrl implements Controller{
     public void loadFromDatabase()
     {
         //first we need to create a list with the names of the participants:
-        //->here to put code for creating the list
-        //server.getAllParticipatns(eventId) or something like that
-        participantsObjectList=new ArrayList<>();
-        //this "if" will be removed when we can access the participant list
-        if(1==2)
+        participantsObjectList=server.getParticipantsOfEvent(server.getCurrentId());
+        names=FXCollections.observableArrayList();
+        int k=0;
+        for(Participant person:participantsObjectList)
         {
-            int k=0;
-            for(Participant person:participantsObjectList)
-            {
-                names.add(new Pair2(person.getName(),k));
-                k++;
-            }
+            names.add(new Pair2(person.getName(),k));
+            k++;
         }
         //initialise the expenseTypesAvailable
         expenseTypesAvailable.clear();
@@ -186,7 +181,7 @@ public class AddExpenseCtrl implements Controller{
     }
     /**
      * This is a function that resets and prepare the scene.
-     * You should call this function everytime you open AddExpense page.
+     * This resets the elements on screen with what we have from the database
      */
     public void resetElements(){
         //reset the scene
@@ -325,6 +320,11 @@ public class AddExpenseCtrl implements Controller{
             warningText.setText(resourceBundle.getString("negativeAmountWarning"));
             return;
         }
+        if(Double.parseDouble(moneyPaid.getText())==0.0)
+        {
+            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            return;
+        }
         if(date.getValue()==null) {
             System.out.println("You need to select a date!");
             warningText.setText(resourceBundle.getString("dateWarning"));
@@ -357,34 +357,24 @@ public class AddExpenseCtrl implements Controller{
                 date.getValue().getMonthValue()+","+
                 date.getValue().getYear();
         //the expense
-        Participant pa=new Participant("a","b","c","d");
-        pa.setParticipantID(3152);
         //this will be the final author
-        if(1==2) {
-            Participant authorP = participantsObjectList.get(authorSelector.getSelectionModel().getSelectedIndex());
-        }
-        //I still need to adjust this list
+
+        Participant authorP = participantsObjectList.get(authorSelector.getSelectionModel().getSelectedIndex());
+
         List<Participant> list=new ArrayList<>();
         //if we selected all participants
         if(checkBoxAllPeople.isSelected())
         {
-            if(1==2)
             for(Participant p:participantsObjectList)
                 list.add(p);
         }
         else
             //then, if some participants are selected
-        //REMOVE THIS IF WHEN WE HAVE REAL PARTICIPANTS
-        if(1==2)
-        {
             for(Integer p:selectedNamesList)
             {
                 list.add(participantsObjectList.get(p));
             }
-        }
-        else
-            list.add(pa);
-        Expense expense=new Expense(pa,content,money,moneyTypeSelector.getValue(),
+        Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
                 dateString,list,typeSelector.getValue());
         System.out.println(expense);
         //the id is the id of the current event, we need to change

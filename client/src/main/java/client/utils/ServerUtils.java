@@ -137,15 +137,15 @@ public class ServerUtils {
 	}
 
 	//connects to the database through the endpoint to get participants from specific event
-	public List<Participant> getParticipants(long eventId) {
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/events/" + eventId + "/participants")
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get();
-		if(response.getStatus()<300)
-			return response.readEntity(List.class);
-		return null;
-	}
+//	public List<Participant> getParticipants(long eventId) {
+//		Response response=ClientBuilder.newClient(new ClientConfig())
+//				.target(SERVER).path("api/events/" + eventId + "/participants")
+//				.request(APPLICATION_JSON)
+//				.accept(APPLICATION_JSON).get();
+//		if(response.getStatus()<300)
+//			return response.readEntity(List.class);
+//		return null;
+//	}
 
 
 	//connects to the database through the endpoint to get an event with an id
@@ -171,13 +171,13 @@ public class ServerUtils {
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
 
-	public void addParticipant(Participant participant){
-		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-	}
+//	public void addParticipant(Participant participant){
+//		ClientBuilder.newClient(new ClientConfig()) //
+//				.target(SERVER).path("/api/participant") //
+//				.request(APPLICATION_JSON) //
+//				.accept(APPLICATION_JSON) //
+//				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+//	}
 
 	public Participant getParticipant(long participantId){
         return ClientBuilder.newClient(new ClientConfig()) //
@@ -187,18 +187,22 @@ public class ServerUtils {
 				.get(Participant.class);
 	}
 
+	/**
+	 * THIS IS CORRECT
+	 * @param eventId event id
+	 * @return the list of participants
+	 */
 	public List<Participant> getParticipantsOfEvent(long eventId){
-		System.out.println("in servero");
+		System.out.println("in server");
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("/api/participant/event/getParticipants/" + eventId)
+				.target(SERVER).path("/api/participant/event/"+eventId+"/allParticipants")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
-		System.out.println("out servero");
+		System.out.println(response);
 		if(response.getStatus() < 300) {
 			GenericType<List<Participant>> genericType = new GenericType<List<Participant>>() {};
 			return response.readEntity(genericType);  // Use a specific type reference here
 		}
-
 		return null;
 	}
 
@@ -237,14 +241,14 @@ public class ServerUtils {
 	 * @param participant the participant - instance
 	 * @param eventId the id of the event the participant is connected to
 	 */
-	public void addParticipantEvent(Participant participant, int eventId){
+	public void addParticipantEvent(Participant participant, long eventId){
 		System.out.println("In server");
-		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant/event/" + eventId) //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-		System.out.println("Out server");
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("/api/participant/event/" + eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.post(Entity.entity(participant,APPLICATION_JSON));
+		System.out.println(response);
 	}
 
 	/**

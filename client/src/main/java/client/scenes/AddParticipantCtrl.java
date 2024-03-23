@@ -81,7 +81,7 @@ public class AddParticipantCtrl implements Controller{
         try {
             //TODO
             // make the eventID be specific to each event
-            server.addParticipantEvent(newParticipant, 1);
+            server.addParticipantEvent(newParticipant, server.getCurrentId());
             close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
