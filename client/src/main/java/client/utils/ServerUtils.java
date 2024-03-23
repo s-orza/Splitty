@@ -314,7 +314,8 @@ public class ServerUtils {
 		return new ArrayList<>();
 	}
 
-	private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+	private static final int THREAD_POOL_SIZE = 10;
+	private static final ExecutorService EXEC = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 	public void registerForUpdatesExpenses(long eventId, Consumer<Expense> consumer)
 	{
 		EXEC.submit(() -> {
