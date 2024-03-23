@@ -190,4 +190,18 @@ public class DebtController {
         addListOfDebts(debts);
         return result;
     }
+
+    /**
+     * replaces a debt with a new one
+     * @param oldDebt the debt to be replaced
+     * @param newDebt the debt replacing the old one
+     * @return the debt that was replaced
+     */
+    public ResponseEntity<Debt> replace(Debt oldDebt, Debt newDebt){
+        ResponseEntity<Debt> result = settleDebt(oldDebt);
+        addDebt(newDebt);
+        return result;
+    }
+
+
 }
