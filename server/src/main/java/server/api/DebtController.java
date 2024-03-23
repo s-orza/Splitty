@@ -36,7 +36,7 @@ public class DebtController {
     @GetMapping("/{id}")
     public ResponseEntity<Debt> getDebtById(@PathVariable("id") long id) {
         // check if id is valid
-        if (id < 0) {return ResponseEntity.badRequest().build();}
+        if (Objects.isNull(id) ||id < 0) {return ResponseEntity.badRequest().build();}
 
         // return debt if it exists, else create builder with notFound status
         Optional<Debt> debtOptional = repo.findById(id);
@@ -57,13 +57,20 @@ public class DebtController {
      * Get request for a list of debts
      * @param ids the list of ids to find
      * @return OK - 200 and the debt of the ID if it is found,
+     *         else if an id in the list is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @GetMapping("")
     public ResponseEntity<List<Debt>> getListOfDebts(List<Long> ids){
         List<Debt> debts = new ArrayList<>();
 
+        //check if list is null
+        if(Objects.isNull(ids)){return ResponseEntity.badRequest().build();}
+
         for (Long id: ids){
+            //check if ID is null or invalid
+            if (Objects.isNull(id) ||id < 0) {return ResponseEntity.badRequest().build();}
+
             if (repo.existsById(id)){
                 debts.add(getDebtById(id).getBody());
             } else {
@@ -76,10 +83,15 @@ public class DebtController {
     /**
      * Adds a new debt to the debt repository
      * @param debt the debt to be added (Must not be Null)
-     * @return OK -200 and the debt that was added
+     * @return OK - 200 and the debt that was added on success,
+     *         else if the debt is invalid: BAD REQUEST - 400,
      */
     @PostMapping("")
     public ResponseEntity<Debt> addDebt(@RequestBody Debt debt) {
+        // Check if debt is null or exists on DB
+        if(Objects.isNull(debt) || getDebtById(debt.getDebtID()).getStatusCode().is2xxSuccessful()){
+            return ResponseEntity.badRequest().build();
+        }
         repo.save(debt);
         return ResponseEntity.ok(debt);
     }
@@ -87,11 +99,19 @@ public class DebtController {
     /**
      * Adds a new debt to the debt repository
      * @param debts the List of debts to be added
-     * @return the List of debts that were added
+     * @return the List of debts that were added on success,
+     *         else if a debt in the list is invalid: BAD REQUEST - 400,
      */
     @PostMapping("")
     public ResponseEntity<List<Debt>> addListOfDebts(@RequestBody List<Debt> debts) {
+        // check if list is null
+        if(Objects.isNull(debts)){return ResponseEntity.badRequest().build();}
+
         for (Debt debt: debts){
+            // Check if debt is null or exists on DB
+            if(Objects.isNull(debt) || getDebtById(debt.getDebtID()).getStatusCode().is2xxSuccessful()){
+                return ResponseEntity.badRequest().build();
+            }
             repo.save(debt);
         }
         return ResponseEntity.ok(debts);
@@ -101,10 +121,15 @@ public class DebtController {
      * Deletes/settles a Debt by its ID
      * @param id the ID of the debt to be settled
      * @return OK - 200 and the debt of the ID if it is found,
+     *         else if the id is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Debt> settleDebtByID(@PathVariable Long id) {
+        // check if id is null
+        if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
+
+        // check if the debt exists on the db
         Optional<Debt> debt = repo.findById(id);
         if (debt.isPresent()) {
             repo.delete(debt.get());
@@ -118,10 +143,15 @@ public class DebtController {
      * Deletes/settles a Debt
      * @param debt the debt to be settled
      * @return OK - 200 and the debt if it is found,
+     *         else if the debt is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Debt> settleDebt(Debt debt) {
+        // check if debt is null
+        if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}
+
+        //check if debt exists
         if (repo.existsById(debt.getDebtID())) {
             repo.delete(debt);
             return ResponseEntity.ok(debt);
@@ -134,13 +164,18 @@ public class DebtController {
      * Deletes/settles a list of Debt
      * @param debts the list of debts to be settled
      * @return OK - 200 and the list of debts if they are all found,
+     *         else if a debt is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("")
     public ResponseEntity<List<Debt>> settleListOfDebts(List<Debt> debts) {
+        // check if list is null
+        if(Objects.isNull(debts)){return ResponseEntity.badRequest().build();}
         List<Debt> result = new ArrayList<>();
 
         for(Debt debt: debts){
+            // check if debt is null
+            if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}
             ResponseEntity<Debt> response = settleDebt(debt);
             if(response.getStatusCode().isError()){return ResponseEntity.notFound().build();}
             result.add(response.getBody());
@@ -152,13 +187,19 @@ public class DebtController {
      * Deletes/settles a list of Debt by their IDs
      * @param ids the list of ids of the debts to be settled
      * @return OK - 200 and the list of debts if they are all found,
+     *         else if an ID is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("")
     public ResponseEntity<List<Debt>> settleListOfDebtsByID(List<Long> ids) {
+        // check if list is null
+        if(Objects.isNull(ids)){return ResponseEntity.badRequest().build();}
         List<Debt> result = new ArrayList<>();
 
         for(Long id: ids){
+            // check if id is null
+            if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
+
             ResponseEntity<Debt> response = settleDebtByID(id);
             if(response.getStatusCode().isError()){return ResponseEntity.notFound().build();}
             result.add(response.getBody());
@@ -168,14 +209,17 @@ public class DebtController {
 
     /**
      * settles/deletes all debts
-     * @return OK - 200 all previous debts
+     * @return OK - 200 and all previous debts if any debts exist,
+     *         and else NOT FOUND - 404
      */
     @DeleteMapping("")
     public ResponseEntity<List<Debt>> settleAll(){
         ResponseEntity<List<Debt>> result = getAllDebts();
+        // if no debts existed, return notFound
         if(Objects.isNull(result)){
             return ResponseEntity.notFound().build();
         }
+        
         settleListOfDebts(Objects.requireNonNull(result.getBody()));
         return result;
     }
@@ -183,11 +227,18 @@ public class DebtController {
     /**
      * replaces all debts with a new list of debts
      * @param debts the new list of debts
-     * @return OK - 200 and all previous Debts
+     * @return OK - 200 and all previous Debts if any debts exist,
+     *         else if a debt is invalid: BAD REQUEST - 400,
+     *         and else NOT FOUND - 404
      */
     @RequestMapping("")
     public ResponseEntity<List<Debt>> replaceAll(List<Debt> debts){
+        // check if list is null
+        if(Objects.isNull(debts)){return ResponseEntity.badRequest().build();}
+
         ResponseEntity<List<Debt>> result = settleAll();
+
+        // adds debts and checks if they are valid, and whether they exist already
         addListOfDebts(debts);
         return result;
     }
@@ -197,10 +248,15 @@ public class DebtController {
      * @param oldDebt the debt to be replaced
      * @param newDebt the debt replacing the old one
      * @return OK - 200 and the debt that was replaced if the old debt was found,
+     *         else if a debt is invalid: BAD REQUEST - 400,
      *         NOT FOUND - 404 otherwise
      */
     @RequestMapping("")
     public ResponseEntity<Debt> replace(Debt oldDebt, Debt newDebt){
+        // check if a debt is null
+        if(Objects.isNull(oldDebt) || Objects.isNull(newDebt)){return ResponseEntity.badRequest().build();}
+
+        // settleDebt checks if debt exists
         ResponseEntity<Debt> result = settleDebt(oldDebt);
         newDebt.setDebtID(oldDebt.getDebtID());
         addDebt(newDebt);
