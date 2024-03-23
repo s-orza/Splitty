@@ -15,9 +15,7 @@ public class Debt {
 
     private double amount;
     private String currency;
-    @Id
     private long debtor;
-    @Id
     private long creditor;
 
     public Debt(double amount, String currency, Participant debtor, Participant creditor){
