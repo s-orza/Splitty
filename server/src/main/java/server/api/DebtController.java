@@ -80,7 +80,7 @@ public class DebtController {
     /**
      * Adds a new debt to the debt repository
      * @param debt the debt to be added (Must not be Null)
-     * @return the debt that was added
+     * @return OK -200 and the debt that was added
      */
     @PostMapping()
     public ResponseEntity<Debt> addDebt(@RequestBody Debt debt) {
@@ -100,5 +100,71 @@ public class DebtController {
         }
         return ResponseEntity.ok(debts);
     }
-    
+
+    /**
+     * Deletes/settles a Debt by its ID
+     * @param id the ID of the debt to be settled
+     * @return OK - 200 and the debt of the ID if it is found,
+     *         and else NOT FOUND - 404
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Debt> settleDebtByID(@PathVariable Long id) {
+        Optional<Debt> debt = repo.findById(id);
+        if (debt.isPresent()) {
+            repo.delete(debt.get());
+            return ResponseEntity.ok(debt.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Deletes/settles a Debt
+     * @param debt the debt to be settled
+     * @return OK - 200 and the debt if it is found,
+     *         and else NOT FOUND - 404
+     */
+    public ResponseEntity<Debt> settleDebt(Debt debt) {
+        if (repo.existsById(debt.getDebtID())) {
+            repo.delete(debt);
+            return ResponseEntity.ok(debt);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Deletes/settles a list of Debt
+     * @param debts the list of debts to be settled
+     * @return OK - 200 and the list of debts if they are all found,
+     *         and else NOT FOUND - 404
+     */
+    public ResponseEntity<List<Debt>> settleListOfDebts(List<Debt> debts) {
+        List<Debt> result = new ArrayList<>();
+
+        for(Debt debt: debts){
+            ResponseEntity<Debt> response = settleDebt(debt);
+            if(response.getStatusCode().isError()){return ResponseEntity.notFound().build();}
+            result.add(response.getBody());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Deletes/settles a list of Debt by their IDs
+     * @param ids the list of ids of the debts to be settled
+     * @return OK - 200 and the list of debts if they are all found,
+     *         and else NOT FOUND - 404
+     */
+    public ResponseEntity<List<Debt>> settleListOfDebtsByID(List<Long> ids) {
+        List<Debt> result = new ArrayList<>();
+
+        for(Long id: ids){
+            ResponseEntity<Debt> response = settleDebtByID(id);
+            if(response.getStatusCode().isError()){return ResponseEntity.notFound().build();}
+            result.add(response.getBody());
+        }
+        return ResponseEntity.ok(result);
+    }
+
 }
