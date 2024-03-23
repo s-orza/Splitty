@@ -78,7 +78,7 @@ public class DebtController {
      * @param debt the debt to be added (Must not be Null)
      * @return OK -200 and the debt that was added
      */
-    @PostMapping()
+    @PostMapping("")
     public ResponseEntity<Debt> addDebt(@RequestBody Debt debt) {
         repo.save(debt);
         return ResponseEntity.ok(debt);
@@ -89,7 +89,7 @@ public class DebtController {
      * @param debts the List of debts to be added
      * @return the List of debts that were added
      */
-    @PostMapping()
+    @PostMapping("")
     public ResponseEntity<List<Debt>> addListOfDebts(@RequestBody List<Debt> debts) {
         for (Debt debt: debts){
             repo.save(debt);
@@ -120,6 +120,7 @@ public class DebtController {
      * @return OK - 200 and the debt if it is found,
      *         and else NOT FOUND - 404
      */
+    @DeleteMapping("/{id}")
     public ResponseEntity<Debt> settleDebt(Debt debt) {
         if (repo.existsById(debt.getDebtID())) {
             repo.delete(debt);
@@ -135,6 +136,7 @@ public class DebtController {
      * @return OK - 200 and the list of debts if they are all found,
      *         and else NOT FOUND - 404
      */
+    @DeleteMapping("")
     public ResponseEntity<List<Debt>> settleListOfDebts(List<Debt> debts) {
         List<Debt> result = new ArrayList<>();
 
@@ -152,6 +154,7 @@ public class DebtController {
      * @return OK - 200 and the list of debts if they are all found,
      *         and else NOT FOUND - 404
      */
+    @DeleteMapping("")
     public ResponseEntity<List<Debt>> settleListOfDebtsByID(List<Long> ids) {
         List<Debt> result = new ArrayList<>();
 
@@ -167,6 +170,7 @@ public class DebtController {
      * settles/deletes all debts
      * @return OK - 200 all previous debts
      */
+    @DeleteMapping("")
     public ResponseEntity<List<Debt>> settleAll(){
         ResponseEntity<List<Debt>> result = getAllDebts();
         if(Objects.isNull(result)){
@@ -181,6 +185,7 @@ public class DebtController {
      * @param debts the new list of debts
      * @return OK - 200 and all previous Debts
      */
+    @RequestMapping("")
     public ResponseEntity<List<Debt>> replaceAll(List<Debt> debts){
         ResponseEntity<List<Debt>> result = settleAll();
         addListOfDebts(debts);
@@ -194,6 +199,7 @@ public class DebtController {
      * @return OK - 200 and the debt that was replaced if the old debt was found,
      *         NOT FOUND - 404 otherwise
      */
+    @RequestMapping("")
     public ResponseEntity<Debt> replace(Debt oldDebt, Debt newDebt){
         ResponseEntity<Debt> result = settleDebt(oldDebt);
         newDebt.setDebtID(oldDebt.getDebtID());
