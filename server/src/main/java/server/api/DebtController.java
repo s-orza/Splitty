@@ -1,11 +1,11 @@
 package server.api;
 
-import commons.Event;
 import commons.Debt;
-import commons.Participant;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import server.database.DebtRepository;
 
 import java.util.ArrayList;
