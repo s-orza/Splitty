@@ -2,12 +2,13 @@ package server.api;
 
 import commons.Event;
 import commons.Debt;
-import commons.DebtManager;
+import commons.Participant;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.DebtRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class DebtController {
 
     /**
      * Constructor for the DebtController
-     * @param repo the repository that holds all the debts (of a debtManager)
+     * @param repo the repository that holds all the debts
      */
     public DebtController(DebtRepository repo) {
         this.repo = repo;
@@ -43,12 +44,32 @@ public class DebtController {
     }
 
     /**
-     * Get request for retrieving all debts of a DebtManager
-     * @return OK - 200 and a list with all debts of a DebtManager
+     * Get request for retrieving all debts
+     * @return OK - 200 and a list with all debts
      */
-    @GetMapping
-    public ResponseEntity<List<Debt>> getAllParticipants() {
+    @GetMapping("")
+    public ResponseEntity<List<Debt>> getAllDebts() {
         List<Debt> debts = repo.findAll();
+        return ResponseEntity.ok(debts);
+    }
+
+    /**
+     * Get request for a list of debts
+     * @param ids the list of ids to find
+     * @return OK - 200 and the debt of the ID if it is found,
+     *         and else NOT FOUND - 404
+     */
+    @GetMapping("")
+    public ResponseEntity<List<Debt>> getListOfDebts(List<Long> ids){
+        List<Debt> debts = new ArrayList<>();
+
+        for (Long id: ids){
+            if (repo.existsById(id)){
+                debts.add(getDebtById(id).getBody());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        }
         return ResponseEntity.ok(debts);
     }
 }
