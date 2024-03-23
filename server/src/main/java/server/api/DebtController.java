@@ -167,4 +167,27 @@ public class DebtController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * settles/deletes all debts
+     * @return OK - 200 all previous debts
+     */
+    public ResponseEntity<List<Debt>> settleAll(){
+        ResponseEntity<List<Debt>> result = getAllDebts();
+        if(Objects.isNull(result)){
+            return ResponseEntity.notFound().build();
+        }
+        settleListOfDebts(Objects.requireNonNull(result.getBody()));
+        return result;
+    }
+
+    /**
+     * replaces all debts with a new list of debts
+     * @param debts the new list of debts
+     * @return OK - 200 and all previous Debts
+     */
+    public ResponseEntity<List<Debt>> replaceAll(List<Debt> debts){
+        ResponseEntity<List<Debt>> result = settleAll();
+        addListOfDebts(debts);
+        return result;
+    }
 }
