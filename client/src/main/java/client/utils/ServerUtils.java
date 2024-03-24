@@ -24,6 +24,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import commons.*;
 import jakarta.ws.rs.core.Response;
@@ -157,6 +160,29 @@ public class ServerUtils {
 				.get(new GenericType<Event>() {});
 	}
 
+	private static final ExecutorService EXEC2 = Executors.newSingleThreadExecutor();
+	public void registerForUpdatesEvents(long eventId, Consumer<Event> consumer)
+	{
+		EXEC2.submit(() -> {
+			while(!Thread.interrupted()) {
+				var res = ClientBuilder.newClient(new ClientConfig())
+						.target(SERVER+"api/events/updates")
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.get(Response.class);
+				if (res.getStatus()==204) {
+					continue;
+				}
+				var e = res.readEntity(Event.class);
+				consumer.accept(e);
+			}
+		});
+	}
+
+	public void stop2 () {
+		EXEC2.shutdown();
+	}
+
 	//connects to the database through the endpoint to change name of an event with an id
 	// needs a bit of tweaking
 	public void changeEventName(long id, String newName) {
@@ -287,6 +313,31 @@ public class ServerUtils {
 			return response.readEntity(listType);
 		return new ArrayList<>();
 	}
+
+	private static final int THREAD_POOL_SIZE = 10;
+	private static final ExecutorService EXEC = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+	public void registerForUpdatesExpenses(long eventId, Consumer<Expense> consumer)
+	{
+		EXEC.submit(() -> {
+			while(!Thread.interrupted()) {
+				var res = ClientBuilder.newClient(new ClientConfig())
+						.target(SERVER+"api/expenses/allFromEvent/updates?eventId="+eventId)
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.get(Response.class);
+				if (res.getStatus()==204) {
+					continue;
+				}
+				var e = res.readEntity(Expense.class);
+				consumer.accept(e);
+			}
+		});
+	}
+
+	public void stop () {
+		EXEC.shutdown();
+	}
+
 	public List<Expense> getAllExpensesFromDatabase()
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())

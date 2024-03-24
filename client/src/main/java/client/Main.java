@@ -37,5 +37,17 @@ public class Main extends Application {
     MainCtrl mainCtrl = new MainCtrl();
     MainPageCtrl mainPageCtrl = new MainPageCtrl(new ServerUtils());
     mainCtrl.initialize(primaryStage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
+
+    AdminPageCtrl adminPageCtrl = new AdminPageCtrl(new ServerUtils());
+
+    primaryStage.setOnCloseRequest(e-> {
+      adminPageCtrl.stop();
+    });
+
+    EventPageCtrl eventPage = new EventPageCtrl(new ServerUtils());
+
+    primaryStage.setOnCloseRequest(e-> {
+      eventPage.stop();
+    });
   }
 }

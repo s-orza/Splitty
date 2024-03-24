@@ -169,6 +169,20 @@ public class EventPageCtrl implements Controller{
 
     //set event page title and event code
     private void initializePage() {
+        //load from database:
+        expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
+        server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
+            expenseData.add(e);
+        });
+
+
+        List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
+        participantsData = FXCollections.observableArrayList();
+        for(Participant p:participantList)
+            participantsData.add(p);
+
+        renderExpenseColumns(expenseData);
+        renderParticipants(participantsData);
 
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
@@ -220,19 +234,7 @@ public class EventPageCtrl implements Controller{
         eventCode.setText("Event Code: " + server.getEvent(server.getCurrentId()).getEventId());
 
 
-        //load from database:
-        List<Expense> expenseList=server.getAllExpensesOfEvent(server.getCurrentId());
-        expenseData = FXCollections.observableArrayList();
-        for(Expense e:expenseList)
-            expenseData.add(e);
 
-        List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
-        participantsData = FXCollections.observableArrayList();
-        for(Participant p:participantList)
-            participantsData.add(p);
-
-        renderExpenseColumns(expenseData);
-        renderParticipants(participantsData);
         // System.out.println(server.getEvent(server.getCurrentId()));
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
@@ -506,6 +508,7 @@ public class EventPageCtrl implements Controller{
         mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
     }
 
+
     /**
      * this method will change the name of the event in the databse
      * @param newName String the new name of the event
@@ -561,6 +564,10 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         StatisticsCtrl statisticsCtrl = new StatisticsCtrl(server);
         mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
+    }
+
+    public void stop () {
+        server.stop();
     }
 
     //getter for swapping scenes
