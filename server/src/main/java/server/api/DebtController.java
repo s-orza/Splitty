@@ -4,6 +4,7 @@ import commons.Debt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.DebtRepository;
+import server.service.DebtService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +12,21 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/events/{eventId}/debt")
+@RequestMapping("api/events/debts")//do not put here the {eventId}, it causes an error
 public class DebtController {
 
     private final DebtRepository repo;
+    private final DebtService debtService;
 
     /**
-     *
      * Constructor for the DebtController
-     * @param repo the repository that holds all the debts
-     * @param eventId the ID of the event to join (for the requestMapping Above)
+     *
+     * @param repo        the repository that holds all the debts
+     * @param debtService the debt service
      */
-    public DebtController(DebtRepository repo, @PathVariable("eventId") long eventId) {
+    public DebtController(DebtRepository repo, DebtService debtService) {
         this.repo = repo;
+        this.debtService = debtService;
     }
 
     /**
@@ -60,8 +63,8 @@ public class DebtController {
      *         else if an id in the list is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
-    @GetMapping("")
-    public ResponseEntity<List<Debt>> getListOfDebts(List<Long> ids){
+    @GetMapping("all")
+    public ResponseEntity<List<Debt>> getListOfDebts(@RequestBody List<Long> ids){
         List<Debt> debts = new ArrayList<>();
 
         //check if list is null
@@ -81,18 +84,20 @@ public class DebtController {
     }
 
     /**
-     * Adds a new debt to the debt repository
+     * Adds a new debt to the debt repository or updates an old one (See debt service)
      * @param debt the debt to be added (Must not be Null)
      * @return OK - 200 and the debt that was added on success,
      *         else if the debt is invalid: BAD REQUEST - 400,
      */
     @PostMapping("")
-    public ResponseEntity<Debt> addDebt(@RequestBody Debt debt) {
+    public ResponseEntity<Debt> addDebt(@RequestParam("eventId") long eventId,
+                                        @RequestBody Debt debt) {
         // Check if debt is null or exists on DB
         if(Objects.isNull(debt) || getDebtById(debt.getDebtID()).getStatusCode().is2xxSuccessful()){
             return ResponseEntity.badRequest().build();
         }
-        repo.save(debt);
+        //post or put the values of the debt, (this debt usually has the debtId 0)
+        debtService.saveDebtToEvent(eventId,debt);
         return ResponseEntity.ok(debt);
     }
 
@@ -102,7 +107,7 @@ public class DebtController {
      * @return the List of debts that were added on success,
      *         else if a debt in the list is invalid: BAD REQUEST - 400,
      */
-    @PostMapping("")
+    @PostMapping("all")
     public ResponseEntity<List<Debt>> addListOfDebts(@RequestBody List<Debt> debts) {
         // check if list is null
         if(Objects.isNull(debts)){return ResponseEntity.badRequest().build();}
@@ -116,6 +121,7 @@ public class DebtController {
         }
         return ResponseEntity.ok(debts);
     }
+
 
     /**
      * Deletes/settles a Debt by its ID
@@ -146,8 +152,8 @@ public class DebtController {
      *         else if the debt is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Debt> settleDebt(Debt debt) {
+    @DeleteMapping("")
+    public ResponseEntity<Debt> settleDebt(@RequestBody Debt debt) {
         // check if debt is null
         if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}
 
@@ -167,8 +173,8 @@ public class DebtController {
      *         else if a debt is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
-    @DeleteMapping("")
-    public ResponseEntity<List<Debt>> settleListOfDebts(List<Debt> debts) {
+    @DeleteMapping("d")
+    public ResponseEntity<List<Debt>> settleListOfDebts(@RequestBody List<Debt> debts) {
         // check if list is null
         if(Objects.isNull(debts)){return ResponseEntity.badRequest().build();}
         List<Debt> result = new ArrayList<>();
@@ -190,8 +196,8 @@ public class DebtController {
      *         else if an ID is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
-    @DeleteMapping("")
-    public ResponseEntity<List<Debt>> settleListOfDebtsByID(List<Long> ids) {
+    @DeleteMapping("dd")
+    public ResponseEntity<List<Debt>> settleListOfDebtsByID(@RequestBody List<Long> ids) {
         // check if list is null
         if(Objects.isNull(ids)){return ResponseEntity.badRequest().build();}
         List<Debt> result = new ArrayList<>();
@@ -212,14 +218,14 @@ public class DebtController {
      * @return OK - 200 and all previous debts if any debts exist,
      *         and else NOT FOUND - 404
      */
-    @DeleteMapping("")
-    public ResponseEntity<List<Debt>> settleAll(){
+    @DeleteMapping("/all")
+    public ResponseEntity<List<Debt>> settleAll(){  //this function is dangerous!
         ResponseEntity<List<Debt>> result = getAllDebts();
         // if no debts existed, return notFound
         if(Objects.isNull(result)){
             return ResponseEntity.notFound().build();
         }
-        
+
         settleListOfDebts(Objects.requireNonNull(result.getBody()));
         return result;
     }
@@ -232,7 +238,7 @@ public class DebtController {
      *         and else NOT FOUND - 404
      */
     @RequestMapping("")
-    public ResponseEntity<List<Debt>> replaceAll(List<Debt> debts){
+    public ResponseEntity<List<Debt>> replaceAll(@RequestBody List<Debt> debts){
         // check if list is null
         if(Objects.isNull(debts)){return ResponseEntity.badRequest().build();}
 
@@ -243,7 +249,7 @@ public class DebtController {
         return result;
     }
 
-    /**
+    /*
      * replaces a debt with a new one
      * @param oldDebt the debt to be replaced
      * @param newDebt the debt replacing the old one
@@ -251,6 +257,7 @@ public class DebtController {
      *         else if a debt is invalid: BAD REQUEST - 400,
      *         NOT FOUND - 404 otherwise
      */
+    /* This function cannot have 2 RequestBody, this is why I commented it.
     @RequestMapping("")
     public ResponseEntity<Debt> replace(Debt oldDebt, Debt newDebt){
         // check if a debt is null
@@ -262,4 +269,5 @@ public class DebtController {
         addDebt(newDebt);
         return result;
     }
+    */
 }
