@@ -30,7 +30,7 @@ Functionality to be implemented, task splitting (5 min):
 - Start making it all bombastically pretty.
 
 Bugs: 10 min
-- We plagued by some devious bugs, thus we might consider exterminating them.
+- We are plagued by some devious bugs, thus we might consider exterminating them.
 - Participant bug - fixed/not fixed?
 - Expenses bug
 - Everything else that you noticed is not alright.
