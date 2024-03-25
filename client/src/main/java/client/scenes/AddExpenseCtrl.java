@@ -329,7 +329,46 @@ public class AddExpenseCtrl implements Controller{
         if(expenseToBeModified==null)
         {
             server.addExpenseToEvent(id,expense);
-            
+            //add debts
+            //we know there is at least one participant.
+            double split=expense.getMoney()/expense.getParticipants().size();
+            System.out.println("The selected persons need to pay: "+split);
+            double authorNeedsToReceive=0;
+            double othersNeedsToGive=split;
+            Event currentEvent=server.getEvent(server.getCurrentId());
+            //if the author is included
+            if(expense.getParticipants().contains(expense.getAuthor()))
+            {
+                authorNeedsToReceive=expense.getMoney()-split;
+                for(Participant p:expense.getParticipants())
+                {
+                    //update debs from p to author
+                    if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
+                    {
+                        System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                                +expense.getAuthor().getName());
+                        server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
+                                expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                    }
+                }
+            }
+            else
+            {
+                //the author need to receive all the money
+                authorNeedsToReceive=expense.getMoney();
+                System.out.println("ev: "+currentEvent);
+                for(Participant p:expense.getParticipants())
+                {
+                    //update debs from p to author
+                    System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                            +expense.getAuthor().getName());
+
+                    server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
+                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                }
+
+            }
+
         }
         else
         {
