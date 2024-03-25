@@ -196,7 +196,21 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
+	 public void addDebtToEvent(long eventId,Debt debt)
+	 {
+		 //this post is a "put" if the debt is already there
+		 Response response=ClientBuilder.newClient(new ClientConfig())
+				 .target(SERVER+"api/events/debts?eventId="+eventId)
+				 .request(APPLICATION_JSON)
+				 .accept(APPLICATION_JSON)
+				 .post(Entity.entity(debt, APPLICATION_JSON));
 
+		 System.out.println(response);
+	 }
+	public void deleteDebtFromEvent(long eventId,Debt debt)
+	{
+		//to do
+	}
 //	public void addParticipant(Participant participant){
 //		ClientBuilder.newClient(new ClientConfig()) //
 //				.target(SERVER).path("/api/participant") //
