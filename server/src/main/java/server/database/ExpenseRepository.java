@@ -27,15 +27,15 @@ import java.util.List;
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
-            "WHERE ev.eventId=:eventId AND ex.author = :author")
-    List<Expense> findEventByAuthor(long eventId,String author);
+            "WHERE ev.eventId=:eventId AND ex.author.participantID=:authorId")
+    List<Expense> findEventByAuthor(long eventId,long authorId);
     @Query("SELECT e FROM Expense e WHERE e.author.participantID =:authorId")
     List<Expense> findByAuthor(long authorId);
     @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
-            "JOIN ParticipantEvent pev ON pev.eventId=ev.eventId " +
-            "JOIN Participant  p ON p.participantID=pev.participantId " +
-            "WHERE ev.eventId=:eventId AND p.name=:name")
-    List<Expense> findEventsThatInvolvesName(long eventId,String name);
+            "JOIN ParticipantExpense pex ON pex.expenseId=ex.expenseId " +
+            "WHERE ev.eventId=:eventId AND (pex.participantId=:participantId OR " +
+            "ex.author.participantID=:participantId)")
+    List<Expense> findEventsThatInvolvesParticipant(long eventId,long participantId);
     @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId")
     List<Expense> findAllExpOfAnEvent(long eventId);
