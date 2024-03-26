@@ -49,3 +49,56 @@ Summary
   - Do you think that the current workload is too much/little?
   - What are you having for lunch today?
 - Recap on what happened today and what is there to come.
+
+
+Notes:
+
+-----Remarks----
+
+David and Oliwer joined online.
+Oliwer wrote a file in which he said what we have done until now and what we still need to do
+-add checks when we add participants
+-resize the whole up
+-add romanian language
+-we don t have currencies conversions
+-we agreed that we need to figure out who we are when we use the app.
+-we need at leaast 10 clients simultaneous
+-we agreed we need key shortcuts (for example when selecting an event and the back button)
+-we will look after the meeting on the document that Oliwer created and decide what to do
+-there is a bug with the css of the add participant page
+Oliwer showed us how we could solve the bug with the css fom the add participant page. But we need to discuss this after the meeting
+-add icons+text in the event page
+
+-----------------------------Wonderful announcements from Miss Elena------------------------------
+
+For product pitch :
+-theory knowledge, but not all exam questions will be about therory (ex: what dependency injection is )
+-questions about how we implemented stuff
+-read the file from brightspace about the pitch
+
+
+-----------------------------Negatives from feedback------------------------------
+
+-we NEED web sockets
+-we don't have a spring planning in the agenda for week 6
+-we don t have error messages for when the server is down (when we receive 500 error status)
+-test coverage is insufficient
+-we need to add informative feedback(to confirm that something was succesful)
+
+
+-----------------------------Good feedback------------------------------
+
+-our MRs are better!
+-the app is on the right way!
+
+------------------------To be implemented-----------------------
+
+-add a template for adding a new language.
+-add the part with json format from the admin page. (import/export)
+-create the front end of the detailed expenses (Serban)
+-remove/edit buttons to work for expenses (Serban)
+-front end for debts (Olav)
+-websockets (Shahar)
+(we will discuss the rest of them after the meeting)
+-tests for next week
+-add edge cases for testing
