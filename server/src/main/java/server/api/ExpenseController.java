@@ -113,19 +113,20 @@ public class ExpenseController {
         return ResponseEntity.ok(saved);
     }
 
-    /**
-     * This gets the expenses of an author from the entire database
-     * @param authorId author id
-     * @return their expenses
-     */
-    @GetMapping(path={"/authorInAllEvents"})
-    public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("authorId") long authorId)
-    {
-        List<Expense> ans=repoExp.findByAuthor(authorId);
-        for(Expense e:ans)
-            service.putParticipants(e);
-        return ResponseEntity.ok(ans);
-    }
+    //WE DO NOT NEED IT ANYMORE
+//    /**
+//     * This gets the expenses of an author from the entire database
+//     * @param authorId author id
+//     * @return their expenses
+//     */
+//    @GetMapping(path={"/authorInAllEvents"})
+//    public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("authorId") long authorId)
+//    {
+//        List<Expense> ans=repoExp.findByAuthor(authorId);
+//        for(Expense e:ans)
+//            service.putParticipants(e);
+//        return ResponseEntity.ok(ans);
+//    }
 
     /**
      * This is the function that we use in the event page.

@@ -77,9 +77,12 @@ public class EventPageCtrl implements Controller{
     private ComboBox<String> searchByComboBox;
     @FXML
     private ToggleButton fromxButton;
+    private String fromxButtonText;
 
     @FXML
     private ToggleButton includingxButton;
+    private String includingxButtonText;
+    private String allText;
 
     @FXML
     Button addParticipant;
@@ -498,6 +501,7 @@ public class EventPageCtrl implements Controller{
         if(searchByComboBox.getValue()==null)
         {
             System.out.println("You must select a person!");
+            //popUpWarningText("Please select the person!");
             return;
         }
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
@@ -525,6 +529,8 @@ public class EventPageCtrl implements Controller{
         if(searchByComboBox.getValue()==null)
         {
             System.out.println("You must select which the included person!");
+            //popUpWarningText("Please select the person!");
+
             return;
         }
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
