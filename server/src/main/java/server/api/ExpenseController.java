@@ -64,6 +64,8 @@ public class ExpenseController {
         }
         //create ExpenseEvent connection
         repoExpEv.save(new ExpenseEvent(saved.getExpenseId(),eventId));
+        //we need this line because if someone is still playing with this expense, we need it to be complete.
+        expense.setParticipants(participants);
         System.out.println("expenseEvent saved");
         return ResponseEntity.ok(saved);
     }
@@ -111,7 +113,12 @@ public class ExpenseController {
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping(path={"/author"})
+    /**
+     * This gets the expenses of an author from the entire database
+     * @param authorId author id
+     * @return their expenses
+     */
+    @GetMapping(path={"/authorInAllEvents"})
     public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("authorId") long authorId)
     {
         List<Expense> ans=repoExp.findByAuthor(authorId);
@@ -119,24 +126,35 @@ public class ExpenseController {
             service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
-    @GetMapping(path={"/events"})
+
+    /**
+     * This is the function that we use in the event page.
+     * @param eventId event id
+     * @param authorId author id
+     * @return their expenses
+     */
+    @GetMapping(path={"/author"})
     public ResponseEntity<List<Expense>> getExpenseByAuthorInEvent(@RequestParam("eventId") long eventId,
-                                                   @RequestParam("author") String author)
+                                                   @RequestParam("authorId") long authorId)
     {
         if(eventId<0)
             return ResponseEntity.badRequest().build();
-        List<Expense> ans=repoExp.findEventByAuthor(eventId,author);
+        List<Expense> ans=repoExp.findEventByAuthor(eventId,authorId);
+        if(ans==null || ans.isEmpty())
+            return ResponseEntity.notFound().build();
         for(Expense e:ans)
             service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
-    @GetMapping(path={"events/personInvolved"})
+    @GetMapping(path={"/participantIncluded"})
     public ResponseEntity<List<Expense>> getExpensePInvolvedInEvent(@RequestParam("eventId") long eventId,
-                                                   @RequestParam("author") String author)
+                                                                    @RequestParam("authorId") long authorId)
     {
         if(eventId<0)
             return ResponseEntity.badRequest().build();
-        List<Expense> ans=repoExp.findEventsThatInvolvesName(eventId,author);
+        List<Expense> ans=repoExp.findEventsThatInvolvesParticipant(eventId,authorId);
+        if(ans==null || ans.isEmpty())
+            return ResponseEntity.notFound().build();
         for(Expense e:ans)
             service.putParticipants(e);
         return ResponseEntity.ok(ans);

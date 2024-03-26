@@ -220,11 +220,17 @@ public class ServerUtils {
 //	}
 
 	public Participant getParticipant(long participantId){
-        return ClientBuilder.newClient(new ClientConfig()) //
+        Response response =ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("/api/participant/" + participantId) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
-				.get(Participant.class);
+				.get();
+		if(response.getStatus()<300)
+		{
+			GenericType<Participant> genericType = new GenericType<Participant>() {};
+			return response.readEntity(genericType);
+		}
+		return null;
 	}
 
 	/**
@@ -320,6 +326,29 @@ public class ServerUtils {
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER+"api/expenses/allFromEvent?eventId="+eventId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
+		if(response.getStatus()<300)
+			return response.readEntity(listType);
+		return new ArrayList<>();
+	}
+	public List<Expense> getAllExpensesFromXOfEvent(long eventId,long authorId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/author?eventId="+eventId+"&authorId="+authorId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
+		if(response.getStatus()<300)
+			return response.readEntity(listType);
+		return new ArrayList<>();
+	}
+	public List<Expense> getAllExpensesIncludingXOfEvent(long eventId,long authorId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/participantIncluded?eventId="+eventId+
+						"&authorId="+authorId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};

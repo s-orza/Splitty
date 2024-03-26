@@ -6,3 +6,6 @@ First download (and unzip) an OpenJFX SDK from https://openjfx.io that matches y
 
 Tip: Make sure you adapt the path to the lib(!) directory (not just the directory that you unzipped).
 Tip: Double check that the path is correct. You will receive abstract error messages otherwise.
+
+Icons link:
+<a href="https://www.flaticon.com/free-icons/search" title="search icons">Search icons created by Kiranshastry - Flaticon</a>
