@@ -72,7 +72,7 @@ public class EventPageCtrl implements Controller{
     TableColumn<Expense, String> dateColumn;
 
     @FXML
-    TableColumn<Expense, List<Participant>> participantColumn2;
+    TableColumn<Expense, List<Participant>> participantsColumn2;
 
     @FXML
     TableColumn<Expense, String> typeColumn;
@@ -159,8 +159,6 @@ public class EventPageCtrl implements Controller{
 
 
         System.out.println("Event Page initialize method");
-
-        System.out.println("in init");
 
         //initializes flags and loads from database
         initializePage();
@@ -285,33 +283,20 @@ public class EventPageCtrl implements Controller{
 
        try{
            eventName.setText(resourceBundle.getString("eventNameText"));
-           System.out.println(1);
            eventCode.setText(resourceBundle.getString("eventCodeText"));
-           System.out.println(2);
            addExpense.setText(resourceBundle.getString("addExpenseText"));
-           System.out.println(3);
            removeExpense.setText(resourceBundle.getString("removeExpenseText"));
-           System.out.println(4);
            authorColumn.setText(resourceBundle.getString("authorText"));
-           System.out.println(5);
            descriptionColumn.setText(resourceBundle.getString("descriptionText"));
-           System.out.println(6);
            amountColumn.setText(resourceBundle.getString("amountText"));
-           System.out.println(7);
            currencyColumn.setText(resourceBundle.getString("currencyText"));
-           System.out.println(8);
            dateColumn.setText(resourceBundle.getString("dateText"));
-           System.out.println(1);
-           participantsColumn.setText(resourceBundle.getString("participantsText"));
-           System.out.println(1);
+           participantsColumn2.setText(resourceBundle.getString("participantsText"));
            typeColumn.setText(resourceBundle.getString("typeText"));
-           System.out.println(1);
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
-           System.out.println(1);
            editEventName.setText(resourceBundle.getString("editEventNameText"));
-           System.out.println(1);
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
-           System.out.println(1);
+
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
            cancelButton.setText(resourceBundle.getString("cancelText"));
        }catch (Exception e){
@@ -439,7 +424,7 @@ public class EventPageCtrl implements Controller{
             amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
             currencyColumn.setCellValueFactory(new PropertyValueFactory<>("currency"));
             dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            participantColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
+            participantsColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
             typeColumn.setCellValueFactory(new PropertyValueFactory<>("Type"));
 
             expensesTable.setItems(model);

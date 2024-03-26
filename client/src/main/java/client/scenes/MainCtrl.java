@@ -36,6 +36,6 @@ public class MainCtrl {
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 }
+
