@@ -276,11 +276,11 @@ public class AddExpenseCtrl implements Controller{
         //reload money
         moneyPaid.setText(expense.getMoney()+"");
         //reload money type
-        moneyTypeSelector.setValue(expense.getType());
+        moneyTypeSelector.setValue(expense.getType().getName());
         //reload date
             //magic formula needs to be found
         //reload type
-        typeSelector.setValue(expense.getType());
+        typeSelector.setValue(expense.getType().getName());
         //reload participants stuff
         //not yet available as we need participants, to be done in future
 
@@ -321,7 +321,7 @@ public class AddExpenseCtrl implements Controller{
                 list.add(participantsObjectList.get(p));
             }
         Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
-                dateString,list,typeSelector.getValue());
+                dateString,list, server.getTagByIdOfEvent(typeSelector.getValue(), server.getCurrentId()).getId());
         System.out.println(expense);
         System.out.println("Adding to event id" + server.getCurrentId());
         long id= server.getCurrentId();

@@ -7,8 +7,8 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
     <children>
-        <Button layoutX="419.0" layoutY="105.0" mnemonicParsing="false" onAction="#addParticipantToEvent" text="Ok" />
-        <Button layoutX="350.0" layoutY="105.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+        <Button layoutX="419.0" layoutY="105.0" mnemonicParsing="false" styleClass="button-styled" onAction="#addParticipantToEvent" text="Ok" />
+        <Button layoutX="350.0" layoutY="105.0" mnemonicParsing="false" styleClass="button-styled" onAction="#close" text="Cancel" />
         <TextField fx:id="name" layoutX="109.0" layoutY="24.0" prefHeight="26.0" prefWidth="200.0" />
         <TextField fx:id="email" layoutX="109.0" layoutY="64.0" prefHeight="26.0" prefWidth="200.0" />
         <TextField fx:id="iban" layoutX="109.0" layoutY="104.0" prefHeight="26.0" prefWidth="200.0" />

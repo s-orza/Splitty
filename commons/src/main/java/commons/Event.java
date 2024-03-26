@@ -451,9 +451,8 @@ public class Event {
                 ", participants=" + participants +
                 ", debts=" + debts +
                 ", expenses=" + expenses +
-                ", creationDate=" + creationDate +
-                ", activityDate=" + activityDate +
-                ", eventList=" + eventList +
+                ", creationDate=" + creationDate.getTime() +
+                ", activityDate=" + activityDate.getTime() +
                 '}';
     }
 

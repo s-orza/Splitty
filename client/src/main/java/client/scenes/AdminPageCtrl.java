@@ -1,7 +1,10 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import commons.Event;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,7 +25,8 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.io.File;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,7 +80,36 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public void exportEvent(ActionEvent e) {
-    System.out.println("export event to file");
+    Event event = server.getEvent(selectedEvent.getId());
+    List<Expense> expenses = server.getAllExpensesOfEvent(event.getEventId());
+    List<Participant> participants = server.getParticipantsOfEvent(event.getEventId());
+    List<Tag> tags= server.getAllTagsFromEvent(event.getEventId());
+    List<Debt> debts = event.debts;
+    event.setExpenses(expenses);
+    event.setParticipants(participants);
+    System.out.println(event + " \nTags " + tags);
+    ObjectMapper mapper = new ObjectMapper();
+    StringWriter writer = new StringWriter();
+    try{
+        mapper.writeValue(writer, event);
+        String json  = writer.toString();
+        System.out.println(json);
+        String filePath = new File("").getAbsolutePath().replace("\\", "/");
+        filePath += ("/EventsBackup/");
+        String fileName = event.getName() + ".json";
+        //Open file
+        // FileOutputStream Class Used
+        FileOutputStream fileOutputStream = new FileOutputStream(filePath + fileName);
+        // Write data to the file if needed.
+        fileOutputStream.write(json.getBytes());
+        //Close file
+        fileOutputStream.close();
+
+        System.out.println("Exported succesfully to " + filePath + fileName);
+      }
+    catch(Exception exception){
+      System.out.println(exception);
+    }
   }
   public void importEvent(ActionEvent e) {
     System.out.println("import event from file");
