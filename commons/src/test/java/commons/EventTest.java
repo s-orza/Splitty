@@ -32,9 +32,9 @@ public class EventTest {
         participants.add(new Participant("name", "email", "iban", "bic"));
         participants.add(new Participant("name2", "email2", "iban2", "bic2"));
         Expense expense1 = new Expense(Gotye,"Eating-out",15.99,"EUR",
-                "2024,2,23",participants,"Papa Johns"),
+                "2024,2,23",participants,new TagId("Papa Johns", 1)),
                 expense2 = new Expense(Skillet,"Groceries",99.99,"EUR",
-                        "2024,2,23", participants,"from AH - expensive");
+                        "2024,2,23", participants,new TagId("from AH - expensive", 2));
         expensesList.add(expense1);
         expensesList.add(expense2);
         event.addExpense(expense1);

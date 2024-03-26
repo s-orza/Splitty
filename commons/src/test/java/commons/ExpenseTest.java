@@ -18,7 +18,7 @@ class ExpenseTest {
         participants.add(new Participant("Gigi","a","b","c"));
         expense=new Expense(new Participant("Alex","a","b","c"),
                 "some water",23.5,"EUR",
-                "22,2,2024",participants,"Drinks");
+                "22,2,2024",participants,new TagId("Drinks", 1));
     }
 
     @Test
@@ -59,7 +59,7 @@ class ExpenseTest {
 
     @Test
     void getType() {
-        assertEquals("Drinks", expense.getType());
+        assertEquals("Drinks", expense.getType().getName());
     }
 
     @Test
@@ -70,7 +70,7 @@ class ExpenseTest {
         people.add(new Participant("Gigi","a","b","c"));
         Expense expense2=new Expense(new Participant("Alex","a","b","c"),
                 "some water",23.5,"EUR",
-                        "22,2,2024",people,"Drinks");
+                        "22,2,2024",people,new TagId("Drinks", 1));
         assertEquals(expense,expense2);
     }
 
@@ -82,7 +82,7 @@ class ExpenseTest {
         people.add(new Participant("Gigi","a","b","c"));
         Expense expense2=new Expense(new Participant("Alex","a","b","c"),
                 "some water",23.5,"EUR",
-                "22,2,2024",people,"Drinks");
+                "22,2,2024",people,new TagId("Drinks", 1));
         assertEquals(expense.hashCode(),expense2.hashCode());
     }
 }
