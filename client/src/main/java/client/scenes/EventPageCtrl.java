@@ -95,6 +95,8 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     Button editEventName;
+    @FXML
+    private Button editExpense;
 
     @FXML
     Button viewDebts;
@@ -261,6 +263,7 @@ public class EventPageCtrl implements Controller{
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
+        editExpense.setOnAction(e->editExpenseHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         editEventName.setOnAction(e->{
             editEventNameHandler();
@@ -426,6 +429,27 @@ public class EventPageCtrl implements Controller{
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
+    private void editExpenseHandler(ActionEvent e)
+    {
+        ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
+        if(selectedItems.isEmpty())
+        {
+            System.out.println("Please select only one expense.");
+            //WARNING
+            return;
+        }
+        List<Expense> itemsToEdit = new ArrayList<>(selectedItems);
+        if(itemsToEdit.size()>1)
+        {
+            System.out.println("Please select only one expense.");
+            //WARNING
+            return;
+        }
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        AddExpenseCtrl addExpenseCtrl = new AddExpenseCtrl(server);
+        server.setExpenseToBeModified(itemsToEdit.get(0).getExpenseId());
+        mainCtrl.initialize(stage, addExpenseCtrl.getPair(), "View expense");
+    }
 
     private void addExpenseHandler(ActionEvent e) {
         System.out.println("This will lead to another page to add expense");
@@ -528,7 +552,7 @@ public class EventPageCtrl implements Controller{
     void searchIncludingX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            System.out.println("You must select which the included person!");
+            System.out.println("You must select the included person!");
             //popUpWarningText("Please select the person!");
 
             return;

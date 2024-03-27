@@ -49,21 +49,21 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="addParticipant" layoutX="431.0" layoutY="134.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant" >
+      <Button fx:id="addParticipant" layoutX="431.0" layoutY="134.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
       <graphic>
          <ImageView fitHeight="20" fitWidth="20">
             <Image url="@/add.png" />
          </ImageView>
       </graphic>
       </Button>
-      <Button fx:id="removeExpense" layoutX="422.0" layoutY="179.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Remove Expenses" >
+      <Button fx:id="removeExpense" layoutX="422.0" layoutY="179.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Remove Expenses">
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <Image url="@/bin.png" />
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="editEventName" layoutX="427.0" layoutY="93.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Edit Event Name" >
+      <Button fx:id="editEventName" layoutX="427.0" layoutY="93.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Edit Event Name">
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <Image url="@/pencil.png" />
@@ -113,6 +113,15 @@
          <font>
             <Font size="13.0" />
          </font></Text>
+      <Button fx:id="editExpense" layoutX="260.0" layoutY="162.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Edit/View Expense">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <image>
+                  <Image url="@/pencil.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
 
    </children>
 </AnchorPane>

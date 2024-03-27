@@ -55,6 +55,8 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     private Button addButton;
     @FXML
+    private Button saveButton;
+    @FXML
     private Button addTypeButton;
     @FXML
     private TextField newTypeTextField;
@@ -98,7 +100,7 @@ public class AddExpenseCtrl implements Controller{
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
-    private Expense expenseToBeModified=null;
+    private Expense expenseToBeModified;
 
     ResourceBundle resourceBundle;
     @Inject
@@ -108,13 +110,28 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     public void initialize() {
         //load resources
+        System.out.println(server.getExIdToModify());
         loadFromDatabase();
         toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
-        //reset
+        //reset fields
         resetElements();
+        //in case we are in the edit page
+        if(server.getExIdToModify()!=-1)
+        {
+            expenseToBeModified=server.getExpenseToBeModified();
+            System.out.println("We edit");
+            reloadExpense(expenseToBeModified);
+        }
+        //in add page
+        else
+        {
+            System.out.println("We add");
+            addButton.setVisible(true);
+            saveButton.setVisible(false);
+        }
     }
 
     private void toggleLanguage() {
@@ -145,6 +162,7 @@ public class AddExpenseCtrl implements Controller{
     {
         //first we need to create a list with the names of the participants:
         participantsObjectList=server.getParticipantsOfEvent(server.getCurrentId());
+        System.out.println(server.getExIdToModify());
         names=FXCollections.observableArrayList();
         int k=0;
         for(Participant person:participantsObjectList)
@@ -214,7 +232,7 @@ public class AddExpenseCtrl implements Controller{
         checkBoxAllPeople.setSelected(false);
         //create the list view with indexes+ "names"
         namesList.setItems(names);
-        namesList.setCellFactory(param -> new CheckBoxListCell());
+        namesList.setCellFactory(param -> new CheckBoxListCell(false));
 
         //at the beginning the list is hidden
         namesList.setVisible(false);
@@ -228,8 +246,6 @@ public class AddExpenseCtrl implements Controller{
         typeSelector.setValue(null);
 
         typeSelector.getItems().addAll(tagsAvailable);
-        //this only makes sense for the edit part of an expense
-        expenseToBeModified=null;
     }
     private class Pair2{
         public String element;
@@ -244,7 +260,9 @@ public class AddExpenseCtrl implements Controller{
     }
     private class CheckBoxListCell extends ListCell<Pair2>{
         private CheckBox checkBox;
-        public CheckBoxListCell() {
+        private boolean isOnEdit;
+        public CheckBoxListCell(boolean isOnEdit) {
+            this.isOnEdit=isOnEdit;
         }
         @Override
         protected void updateItem(Pair2 item, boolean empty) {
@@ -254,21 +272,33 @@ public class AddExpenseCtrl implements Controller{
             } else {
                 checkBox=new CheckBox(item.element);//we create a checkbox with that name
                 checkBox.setOnAction(event -> handleCheckBoxSelectName(checkBox, item.index));
+                //if we are on the edit page we need to reload the selected participants
+                if(isOnEdit && expenseToBeModified!=null)
+                {
+                    List<String> participantNames=expenseToBeModified.getParticipants().stream()
+                            .map(x->x.getName()).toList();
+                    //if the name is in the list
+                    if(participantNames.contains(item.element))
+                    {
+                        checkBox.setSelected(true);
+                        handleCheckBoxSelectName(checkBox,item.index);
+                    }
+                }
+                else
+                    checkBox.setSelected(false);
                 setGraphic(checkBox);
                // checkBox.setFocusTraversable(true);
             }
         }
     }
-
     /**
      * This function is to reload/get an expense from even in order to be modified.
      * @param expense the expense which will be modified
      */
     public void reloadExpense(Expense expense)
     {
-        expenseToBeModified=expense;
-        loadFromDatabase();
-        resetElements();
+        addButton.setVisible(false);
+        saveButton.setVisible(true);
         //reload author
         authorSelector.setValue(expense.getAuthor().getName());
         //reload content
@@ -276,12 +306,31 @@ public class AddExpenseCtrl implements Controller{
         //reload money
         moneyPaid.setText(expense.getMoney()+"");
         //reload money type
-        moneyTypeSelector.setValue(expense.getType());
+        moneyTypeSelector.setValue(expense.getCurrency());
         //reload date
             //magic formula needs to be found
         //reload type
         typeSelector.setValue(expense.getType());
         //reload participants stuff
+        //if the expense has all the participants
+        if(expense.getParticipants().size()==names.size())
+        {
+            checkBoxAllPeople.setSelected(true);
+            //we only need to mark this as selected because the save/add function will take this into
+            //consideration.
+        }
+        else
+        {
+            checkBoxSomePeople.setSelected(true);
+            namesList.setVisible(true);
+
+            selectedNamesList = new ArrayList<>();
+            namesList.setCellFactory(null);
+            namesList.setItems(null);
+            namesList.setItems(names);
+            namesList.setCellFactory(param -> new CheckBoxListCell(true));
+            System.out.println("list e "+selectedNamesList);
+        }
         //not yet available as we need participants, to be done in future
 
     }
@@ -385,11 +434,22 @@ public class AddExpenseCtrl implements Controller{
         }
         //System.out.println(server.getExpenseById(1));
         resetElements();
+        server.setExpenseToBeModified(-1);
         //go back to the event page
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
 
+    }
+    @FXML
+    void saveEditExpense(MouseEvent event)
+    {
+        if(!inputIsCorrect())
+            return;
+        server.setExpenseToBeModified(-1);
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
     }
 
     /**
@@ -459,6 +519,7 @@ public class AddExpenseCtrl implements Controller{
     void cancelAddExpense(MouseEvent e) {
         resetElements();
         System.out.println("Expense canceled");
+        server.setExpenseToBeModified(-1);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
@@ -553,7 +614,10 @@ public class AddExpenseCtrl implements Controller{
         String name=checkBox.getText();
         System.out.println(index+", "+name);
         if(checkBox.isSelected()){
-            selectedNamesList.add(index);
+            //if this is not already there (this is just to make sure everything is ok!
+            //double safe measurement!
+            if(!selectedNamesList.contains(index))
+                selectedNamesList.add(index);
         }
         else
             selectedNamesList.remove(index);

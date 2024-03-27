@@ -127,7 +127,15 @@ public class ExpenseController {
 //            service.putParticipants(e);
 //        return ResponseEntity.ok(ans);
 //    }
-
+    @GetMapping(path={"/"})
+    public ResponseEntity<Expense> getExpenseById(@RequestParam("expenseId") long expenseId)
+    {
+        if(!repoExp.existsById(expenseId))
+            return ResponseEntity.notFound().build();
+        Expense ex=repoExp.findById(expenseId).get();
+        service.putParticipants(ex);
+        return ResponseEntity.ok(ex);
+    }
     /**
      * This is the function that we use in the event page.
      * @param eventId event id
