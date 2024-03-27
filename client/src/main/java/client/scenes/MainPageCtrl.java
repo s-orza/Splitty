@@ -14,20 +14,12 @@ import javafx.event.ActionEvent;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-
 import javafx.scene.image.Image;
-
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
