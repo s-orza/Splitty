@@ -462,6 +462,9 @@ public class AddExpenseCtrl implements Controller{
     {
         if(!inputIsCorrect())
             return;
+        //reload again the expense to be sure that it is the last version of the expense
+        //possible future bug solved
+        expenseToBeModified=server.getExpenseToBeModified();
         server.setExpenseToBeModified(-1);
         Expense expense=takeExpenseFromFields();
         //reset the debts
