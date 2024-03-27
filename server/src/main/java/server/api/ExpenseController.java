@@ -136,6 +136,17 @@ public class ExpenseController {
         service.putParticipants(ex);
         return ResponseEntity.ok(ex);
     }
+    @GetMapping(path={"/deletedDebts"})
+    public ResponseEntity<Boolean> resetDebtsFromExpenseId(@RequestParam("eventId") long eventId,
+                                                           @RequestParam("expenseId") long expenseId)
+    {
+        if(!repoExp.existsById(expenseId))
+            return ResponseEntity.notFound().build();
+        Expense ex=repoExp.findById(expenseId).get();
+        service.putParticipants(ex);
+        service.resetDebtsFromThisExpense(ex,eventId);
+        return ResponseEntity.ok(true);
+    }
     /**
      * This is the function that we use in the event page.
      * @param eventId event id
@@ -222,6 +233,14 @@ public class ExpenseController {
         return ResponseEntity.ok(tags);
     }
     //here to put the PUT APIs (update)
+
+    /**
+     * This functions updates the content of an expense and its participants. It doesn t update the
+     * debts. (This should be handled in the add expense controller)
+     * @param expenseId the id of the expense
+     * @param expense the new content of the expense which has an invalid id (we use expenseId)
+     * @return the new expense with expenseId as id
+     */
     @PutMapping(path={"/"})
     public ResponseEntity<Expense> updateExpense(@RequestParam("expenseId") long expenseId,
                                                  @RequestBody Expense expense)
@@ -230,12 +249,30 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         if(!repoExp.existsById(expenseId))
             return ResponseEntity.notFound().build();
-        Integer a=repoExp.updateExpenseWithId(expenseId,expense.getAuthor().getParticipantID(),expense.getContent(),
-                expense.getMoney(),expense.getCurrency(),expense.getDate(),expense.getType());
-        //if a>0 means we updated something
-        System.out.println(a);
-        Expense newExpense=repoExp.findById(expenseId).get();
-        service.putParticipants(newExpense);
+        //get the old expense
+        Expense oldExpense=repoExp.findById(expenseId).get();
+        //update the old expense
+        oldExpense.setAuthor(expense.getAuthor());
+        oldExpense.setContent(expense.getContent());
+        oldExpense.setMoney(expense.getMoney());
+        oldExpense.setCurrency(expense.getCurrency());
+        oldExpense.setDate(expense.getDate());
+        oldExpense.setType(expense.getType());
+        Expense newExpense=repoExp.save(oldExpense);
+
+        //delete the connections with "old" participants
+        repoExp.deleteAllParticipantConnectionsFromExpense(expenseId);
+        //create connections with "new" participants
+        List<Participant> participants=expense.getParticipants();
+        if(participants!=null && !participants.isEmpty()) {
+            //now we need to create connections between the expense and the participants
+            for (Participant p : participants) {
+                ParticipantExpense pe = new ParticipantExpense(expenseId, p.getParticipantID());
+                repoPaExp.save(pe);
+            }
+        }
+        newExpense.setParticipants(participants);
+        //service.putParticipants(newExpense);
         return ResponseEntity.ok(newExpense);
     }
     @PutMapping(path={"/tags"})
@@ -254,7 +291,9 @@ public class ExpenseController {
         List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
         for(Expense e:expensesOfEvent)
             if(e.getType().equals(tagName))
+            {
                 repoExp.updateExpenseWithTag(e.getExpenseId(),tag.getId().getName());
+            }
         return ResponseEntity.ok(newTag);
     }
     //here to put the DELETE APIs

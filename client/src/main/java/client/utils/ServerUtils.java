@@ -224,17 +224,6 @@ public class ServerUtils {
 
 		 System.out.println(response);
 	 }
-	public void deleteDebtFromEvent(long eventId,Debt debt)
-	{
-		//to do
-	}
-//	public void addParticipant(Participant participant){
-//		ClientBuilder.newClient(new ClientConfig()) //
-//				.target(SERVER).path("/api/participant") //
-//				.request(APPLICATION_JSON) //
-//				.accept(APPLICATION_JSON) //
-//				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-//	}
 
 	public Participant getParticipant(long participantId){
         Response response =ClientBuilder.newClient(new ClientConfig()) //
@@ -338,6 +327,17 @@ public class ServerUtils {
 		if(response.getStatus()<300)
 			return response.readEntity(Expense.class);
 		return null;
+	}
+	public boolean resetDebtsFromExpense(long eventId,long expenseId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/deletedDebts?eventId="+eventId+"&expenseId="+expenseId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println(response);
+		if(response.getStatus()<300)
+			return true;
+		return false;
 	}
 	public List<Expense> getAllExpensesOfEvent(long eventId)
 	{

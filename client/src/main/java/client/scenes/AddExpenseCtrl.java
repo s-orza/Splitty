@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import javafx.scene.text.Text;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -93,6 +94,7 @@ public class AddExpenseCtrl implements Controller{
     private ListView<Pair2> namesList;//names showed on screen from which we select
     @FXML
     private Text warningText;
+    //in this list are the persons that have their checkbox checked.
     private List<Integer> selectedNamesList=new ArrayList<>();
     private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
             //new Pair2("Serban",0), new Pair2("David",1),
@@ -123,7 +125,7 @@ public class AddExpenseCtrl implements Controller{
         {
             expenseToBeModified=server.getExpenseToBeModified();
             System.out.println("We edit");
-            reloadExpense(expenseToBeModified);
+            reloadExpense();
         }
         //in add page
         else
@@ -293,27 +295,34 @@ public class AddExpenseCtrl implements Controller{
     }
     /**
      * This function is to reload/get an expense from even in order to be modified.
-     * @param expense the expense which will be modified
      */
-    public void reloadExpense(Expense expense)
+    public void reloadExpense()
     {
         addButton.setVisible(false);
         saveButton.setVisible(true);
         //reload author
-        authorSelector.setValue(expense.getAuthor().getName());
+        authorSelector.setValue(expenseToBeModified.getAuthor().getName());
         //reload content
-        contentBox.setText(expense.getContent());
+        contentBox.setText(expenseToBeModified.getContent());
         //reload money
-        moneyPaid.setText(expense.getMoney()+"");
+        moneyPaid.setText(expenseToBeModified.getMoney()+"");
         //reload money type
-        moneyTypeSelector.setValue(expense.getCurrency());
+        moneyTypeSelector.setValue(expenseToBeModified.getCurrency());
         //reload date
-            //magic formula needs to be found
+        try{
+            LocalDate time = LocalDate.parse(expenseToBeModified.getDate());
+
+            System.out.println(time);
+           date.setValue(time);
+        }catch (Exception e)
+        {
+            System.out.println("The date has a problem");
+        }
         //reload type
-        typeSelector.setValue(expense.getType());
+        typeSelector.setValue(expenseToBeModified.getType());
         //reload participants stuff
         //if the expense has all the participants
-        if(expense.getParticipants().size()==names.size())
+        if(expenseToBeModified.getParticipants().size()==names.size())
         {
             checkBoxAllPeople.setSelected(true);
             //we only need to mark this as selected because the save/add function will take this into
@@ -331,7 +340,6 @@ public class AddExpenseCtrl implements Controller{
             namesList.setCellFactory(param -> new CheckBoxListCell(true));
             System.out.println("list e "+selectedNamesList);
         }
-        //not yet available as we need participants, to be done in future
 
     }
 
@@ -346,11 +354,43 @@ public class AddExpenseCtrl implements Controller{
             return;
         //the expense can be considered valid now
         warningText.setText("");
+
+        Expense expense=takeExpenseFromFields();
+
+        System.out.println(expense);
+        System.out.println("Adding to event id" + server.getCurrentId());
+
+        boolean b=server.addExpenseToEvent(server.getCurrentId(),expense);
+        if(!b)
+        {
+            //warning, connection with server lost
+            System.out.println("Problems with the server");
+            return;
+        }
+        //add debts
+        createDebtsFromExpense(expense);
+
+        resetElements();
+        server.setExpenseToBeModified(-1);
+        //go back to the event page
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+    }
+    private Expense takeExpenseFromFields()
+    {
         String content=contentBox.getText();
         double money=Double.parseDouble(moneyPaid.getText());
-        String dateString=date.getValue().getDayOfMonth()+","+
-                date.getValue().getMonthValue()+","+
-                date.getValue().getYear();
+        String dateString=date.getValue().getYear()+"-";
+        //if we need to add a "0"
+        if(date.getValue().getMonthValue()<10)
+            dateString=dateString+"0";
+        dateString=dateString+date.getValue().getMonthValue()+"-";
+        //if we need to add a "0"
+        if(date.getValue().getDayOfMonth()<10)
+            dateString=dateString+"0";
+        dateString=dateString+date.getValue().getDayOfMonth();
+
         //the expense
         //this will be the final author
 
@@ -371,82 +411,75 @@ public class AddExpenseCtrl implements Controller{
             }
         Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
                 dateString,list,typeSelector.getValue());
-        System.out.println(expense);
-        System.out.println("Adding to event id" + server.getCurrentId());
-        long id= server.getCurrentId();
-        //if we just add an expense, this will be null
-        if(expenseToBeModified==null)
+            return expense;
+    }
+    private void createDebtsFromExpense(Expense expense)
+    {
+        //we know there is at least one participant.
+        if(expense.getParticipants().isEmpty()) //(just in case)
+            return; //but we would never arrive here
+        double split=expense.getMoney()/expense.getParticipants().size();
+        System.out.println("The selected persons need to pay: "+split);
+        double authorNeedsToReceive=0;
+        double othersNeedsToGive=split;
+        Event currentEvent=server.getEvent(server.getCurrentId());
+        //if the author is included
+        if(expense.getParticipants().contains(expense.getAuthor()))
         {
-            server.addExpenseToEvent(id,expense);
-            //add debts
-            //we know there is at least one participant.
-            double split=expense.getMoney()/expense.getParticipants().size();
-            System.out.println("The selected persons need to pay: "+split);
-            double authorNeedsToReceive=0;
-            double othersNeedsToGive=split;
-            Event currentEvent=server.getEvent(server.getCurrentId());
-            //if the author is included
-            if(expense.getParticipants().contains(expense.getAuthor()))
+            authorNeedsToReceive=expense.getMoney()-split;
+            for(Participant p:expense.getParticipants())
             {
-                authorNeedsToReceive=expense.getMoney()-split;
-                for(Participant p:expense.getParticipants())
+                //update debs from p to author
+                if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
                 {
-                    //update debs from p to author
-                    if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
-                    {
-                        System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                                +expense.getAuthor().getName());
-                        server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                                expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
-                    }
-                }
-            }
-            else
-            {
-                //the author need to receive all the money
-                authorNeedsToReceive=expense.getMoney();
-                System.out.println("ev: "+currentEvent);
-                for(Participant p:expense.getParticipants())
-                {
-                    //update debs from p to author
                     System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
                             +expense.getAuthor().getName());
-
                     server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
                             expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
                 }
-
             }
-
         }
         else
         {
-            //modify the expense and save it to tha database
-            expenseToBeModified.setAuthor(expense.getAuthor());
-            expenseToBeModified.setContent(expense.getContent());
-            expenseToBeModified.setMoney(expense.getMoney());
-            expenseToBeModified.setCurrency(expense.getCurrency());
-            expenseToBeModified.setDate(expense.getDate());
-            expenseToBeModified.setParticipants(expense.getParticipants());
-            expenseToBeModified.setType(expense.getType());
-            //save it
-            server.updateExpense(expenseToBeModified.getExpenseId(),expenseToBeModified);
-        }
-        //System.out.println(server.getExpenseById(1));
-        resetElements();
-        server.setExpenseToBeModified(-1);
-        //go back to the event page
-        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+            //the author need to receive all the money
+            authorNeedsToReceive=expense.getMoney();
+            System.out.println("ev: "+currentEvent);
+            for(Participant p:expense.getParticipants())
+            {
+                //update debs from p to author
+                System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                        +expense.getAuthor().getName());
 
+                server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
+                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+            }
+
+        }
     }
+
     @FXML
     void saveEditExpense(MouseEvent event)
     {
         if(!inputIsCorrect())
             return;
         server.setExpenseToBeModified(-1);
+        Expense expense=takeExpenseFromFields();
+        //reset the debts
+        server.resetDebtsFromExpense(server.getCurrentId(),expenseToBeModified.getExpenseId());
+        //creates new debts
+        createDebtsFromExpense(expense);
+        //modify the expense and save it to tha database
+//        expenseToBeModified.setAuthor(expense.getAuthor());
+//        expenseToBeModified.setContent(expense.getContent());
+//        expenseToBeModified.setMoney(expense.getMoney());
+//        expenseToBeModified.setCurrency(expense.getCurrency());
+//        expenseToBeModified.setDate(expense.getDate());
+//        expenseToBeModified.setParticipants(expense.getParticipants());
+//        expenseToBeModified.setType(expense.getType());
+        server.updateExpense(expenseToBeModified.getExpenseId(),expense);
+        expenseToBeModified=null;
+        server.setExpenseToBeModified(-1);
+
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
