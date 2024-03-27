@@ -17,9 +17,9 @@
 }
 
 /* Green OK button */
-.okButton {
+.addButton {
     -fx-background-color: #206c24;
-    -fx-color: #ffffff;
+    -fx-color: #000000;
     -fx-border: none;
     -fx-padding: 8px 16px;
     -fx-text-align: center;
@@ -29,7 +29,7 @@
     -fx-cursor: pointer;
 }
 
-.okButton:hover {
+.addButton:hover {
     -fx-background-color: #5fb962;
     -fx-color: #ffffff;
     -fx-border: none;
@@ -44,7 +44,7 @@
 /* Red Cancel button */
 .cancelButton {
     -fx-background-color: #93221a;
-    -fx-color: #ffffff;
+    -fx-color: #000000;
     -fx-border: none;
     -fx-padding: 8px 16px;
     -fx-text-align: center;
