@@ -29,10 +29,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -76,6 +73,16 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     TableColumn<Expense, String> typeColumn;
+    @FXML
+    private ComboBox<String> searchByComboBox;
+    @FXML
+    private ToggleButton fromxButton;
+    private String fromxButtonText;
+
+    @FXML
+    private ToggleButton includingxButton;
+    private String includingxButtonText;
+    private String allText;
 
     @FXML
     Button addParticipant;
@@ -110,6 +117,9 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     ComboBox comboBox;
+    //here we map every index from the selection comboBox to the id of its participant
+    //we need this for searching by author X /including X
+    private Map<Integer,Long> indexesToIds;
 
     private ResourceBundle resourceBundle;
 
@@ -146,7 +156,7 @@ public class EventPageCtrl implements Controller{
                     new ParticipantTest("Olav"),
                     new ParticipantTest("Oliwer")
                      */
-
+    private ObservableList<String> participantsToSelectFrom;
     /**
      * just the initialize method
      */
@@ -174,12 +184,23 @@ public class EventPageCtrl implements Controller{
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
             expenseData.add(e);
         });
-
-
+        //we need this to get the id of the selected person
+        indexesToIds=new HashMap<>();
         List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
         participantsData = FXCollections.observableArrayList();
+        participantsToSelectFrom=FXCollections.observableArrayList();
+        int k=0;
         for(Participant p:participantList)
+        {
             participantsData.add(p);
+            participantsToSelectFrom.add(p.getName());
+            //map the position in the selection combo box to ids
+            indexesToIds.put(k,p.getParticipantID());
+            k++;
+        }
+        searchByComboBox.setItems(participantsToSelectFrom);
+        fromxButton.setText("From ?");
+        includingxButton.setText("Including ?");
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
@@ -448,6 +469,88 @@ public class EventPageCtrl implements Controller{
         }catch(Exception e){
             System.out.println(e);
         }
+    }
+    @FXML
+    void personWasSelected()
+    {
+        System.out.println("///");
+        System.out.println(searchByComboBox.getValue());
+        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+        Participant x;
+        x=server.getParticipant(id);
+        if(x==null)
+            return;
+        fromxButton.setText("From "+x.getName());
+        includingxButton.setText("Including "+x.getName());
+        if(fromxButton.isSelected())
+            searchFromX(new ActionEvent());
+        else
+            if(includingxButton.isSelected())
+                searchIncludingX(new ActionEvent());
+    }
+    @FXML
+    void searchAll(ActionEvent event) {
+
+        //show all expenses
+        System.out.println("all");
+        renderExpenseColumns(expenseData);
+    }
+
+    @FXML
+    void searchFromX(ActionEvent event) {
+        if(searchByComboBox.getValue()==null)
+        {
+            System.out.println("You must select a person!");
+            //popUpWarningText("Please select the person!");
+            return;
+        }
+        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+        Participant x;
+        x=server.getParticipant(id);
+        if(x==null)//there has been a problem
+        {
+            System.out.println("Problem with getParticipant with id "+id);
+            return;
+        }
+        System.out.println(x);
+        //show all expenses from x in this event
+        List<Expense> listFromServer=server.getAllExpensesFromXOfEvent(server.getCurrentId(),x.getParticipantID());
+        if(listFromServer==null)
+            return;
+        ObservableList<Expense> expensesFromX=FXCollections.observableArrayList();
+
+        expensesFromX.addAll(listFromServer);
+        renderExpenseColumns(expensesFromX);
+
+    }
+
+    @FXML
+    void searchIncludingX(ActionEvent event) {
+        if(searchByComboBox.getValue()==null)
+        {
+            System.out.println("You must select which the included person!");
+            //popUpWarningText("Please select the person!");
+
+            return;
+        }
+        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+        Participant x;
+        x=server.getParticipant(id);
+        if(x==null)//there has been a problem
+        {
+            System.out.println("Problem with getParticipant with id "+id);
+            return;
+        }
+        System.out.println(x);
+        //show all expenses that includes x in this event
+        List<Expense> listFromServer=server.getAllExpensesIncludingXOfEvent(server.getCurrentId(),x.getParticipantID());
+        if(listFromServer==null)
+            return;
+        ObservableList<Expense> expensesFromX=FXCollections.observableArrayList();
+
+        expensesFromX.addAll(listFromServer);
+        renderExpenseColumns(expensesFromX);
+
     }
 
     /**

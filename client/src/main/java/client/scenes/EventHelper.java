@@ -57,6 +57,11 @@ public class EventHelper {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getTitle(), getCreationDate(), getLastActivity());
+  }
+
+  @Override
   public String toString() {
     return id + " - " + title;
   }
