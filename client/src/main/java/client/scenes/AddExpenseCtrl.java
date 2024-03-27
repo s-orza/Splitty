@@ -6,10 +6,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import com.google.inject.Inject;
@@ -465,6 +469,39 @@ public class AddExpenseCtrl implements Controller{
         //reload again the expense to be sure that it is the last version of the expense
         //possible future bug solved
         expenseToBeModified=server.getExpenseToBeModified();
+        if(expenseToBeModified==null)
+        {
+            //this can happen if somebody else deleted this expense while you were editing it. In this case
+            //let's send a message to the user to inform him and to abort editing.
+            VBox layout = new VBox(10);
+            Label label = new Label("Somebody deleted this expense while you were editing it. \n" +
+                    "Return to the event page:(");
+            Button okButton = new Button("Ok");
+
+            // Set up the stage
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setTitle("Warning");
+
+
+            okButton.setOnAction(e -> {
+                popupStage.close();
+                //you still need to do this because the server utils object is only on your app
+                server.setExpenseToBeModified(-1);
+                EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+            });
+
+            // Set up the layout
+            layout.getChildren().addAll(label, okButton);
+            layout.setAlignment(Pos.CENTER);
+            // Set the scene and show the stage
+            Scene scene = new Scene(layout, 450, 150);
+            popupStage.setScene(scene);
+            popupStage.showAndWait();
+            return;
+        }
         server.setExpenseToBeModified(-1);
         Expense expense=takeExpenseFromFields();
         //reset the debts
