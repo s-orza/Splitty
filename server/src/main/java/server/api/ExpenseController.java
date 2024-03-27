@@ -280,6 +280,10 @@ public class ExpenseController {
             if(eventId!=0)
                 return ResponseEntity.status(444).build();
         }
+        //now let s change the debts
+        Expense ex=repoExp.findById(expenseId).get();
+        service.putParticipants(ex);
+        service.resetDebtsFromThisExpense(ex,eventId);
         //then we delete the expense
         Integer b=repoExp.deleteWithId(expenseId);
         if(b==0)
