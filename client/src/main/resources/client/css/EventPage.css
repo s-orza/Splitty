@@ -17,6 +17,11 @@
     -fx-background-radius: 5;
     -fx-padding: 5 15 5 15;
 }
+.button-styled:selected {
+    -fx-background-color: #45b1b0;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #01203f;
+}
 
 .button-styled:hover {
     -fx-background-color: #3BB9B9;
