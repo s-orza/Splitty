@@ -135,7 +135,9 @@ public class AdminPageCtrl implements Controller, Initializable {
                 return;
               }
             }
-            server.createEvent(new Event(newEvent.getName()));
+            Event createdEvent = new Event(newEvent.getName());
+            createdEvent.setCreationDate(newEvent.getCreationDate());
+            server.createEvent(createdEvent);
             long id = server.getEvents().getLast().getEventId();
             List<Participant> participants = newEvent.getParticipants();
             for(Participant p : participants){

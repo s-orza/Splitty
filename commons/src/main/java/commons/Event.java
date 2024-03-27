@@ -84,6 +84,14 @@ public class Event {
 //    @Column
 
 
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setActivityDate(Date activityDate) {
+        this.activityDate = activityDate;
+    }
+
     // for the next PUBLIC method, consider this temporary 'database' representation of events
     @Column
     @OneToMany
