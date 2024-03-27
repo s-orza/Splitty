@@ -41,7 +41,7 @@
       <Button fx:id="addParticipant" layoutX="410.0" layoutY="151.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant" />
       <Button fx:id="removeExpense" layoutX="194.0" layoutY="151.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Remove Expenses" />
       <Button fx:id="editEventName" layoutX="407.0" layoutY="110.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Edit Event Name" />
-      <Button fx:id="cancelButton" layoutX="23.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" onAction="#close" styleClass="button-styled" text="Cancel" />
+      <Button fx:id="cancelButton" layoutX="23.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled"  onAction="#close" text="Cancel" />
       <Button fx:id="viewDebts" layoutX="612.0" layoutY="412.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="View Debts" />
       <Button fx:id="flagButton" layoutX="239.0" layoutY="21.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="104.0" />
       <ComboBox fx:id="comboBox" layoutX="216.0" layoutY="97.0" prefWidth="150.0" />

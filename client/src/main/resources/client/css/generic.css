@@ -1,67 +1,67 @@
 /* Light gray body with black text */
-body {
-  background-color: #f2f2f2;
-  color: #000000;
+.body {
+  -fx-background-color: #f2f2f2;
+  -fx-color: #000000;
 }
 
 /* Table column names with blue background and white text */
-th {
-  background-color: #0077b6;
-  color: #ffffff;
+.table-header {
+  -fx-background-color: #0077b6;
+  -fx-color: #ffffff;
 }
 
 /* Odd rows white, even rows light gray */
-tr:nth-child(odd) {
-  background-color: #ffffff;
+.table-header:nth-child(odd) {
+  -fx-background-color: #ffffff;
 }
 
-tr:nth-child(even) {
-  background-color: #e6e6e6;
+.table-header:nth-child(even) {
+  -fx-background-color: #e6e6e6;
 }
 
 /* Generic button with same color as table column names */
-.generic-button {
-  background-color: #0077b6;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
+.button {
+  -fx-background-color: #0077b6;
+  -fx-color: #ffffff;
+  -fx-border: none;
+  -fx-padding: 8px 16px;
+  -fx-text-align: center;
+  -fx-text-decoration: none;
+  -fx-display: inline-block;
+  -fx-font-size: 16px;
+  -fx-cursor: pointer;
 }
 
 /* Green OK button */
 .okButton {
-  background-color: #4caf50;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
+  -fx-background-color: #4caf50;
+  -fx-color: #ffffff;
+  -fx-border: none;
+  -fx-padding: 8px 16px;
+  -fx-text-align: center;
+  -fx-text-decoration: none;
+  -fx-display: inline-block;
+  -fx-font-size: 16px;
+  -fx-cursor: pointer;
 }
 
 /* Red Cancel button */
 .cancelButton {
-  background-color: #f44336;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
+  -fx-background-color: #f44336;
+  -fx-color: #000000;
+  -fx-border: none;
+  -fx-padding: 8px 16px;
+  -fx-text-align: center;
+  -fx-text-decoration: none;
+  -fx-display: inline-block;
+  -fx-font-size: 16px;
+  -fx-cursor: pointer;
 }
 
 /* Hover effect for all button types */
-.generic-button:hover,
-.ok-button:hover,
-.cancel-button:hover {
-  /* Darken the background color by 10% */
-  filter: brightness(90%);
+.button:hover,
+.okButton:hover,
+.cancelButton:hover {
+  /* Brighten the background color by 25% */
+  -fx-background;
 }
