@@ -43,7 +43,7 @@ public class MainCtrl {
         primaryStage.show();
 
     }
-    public void popup(String text){
+    public void popup(String text, String title){
         VBox layout = new VBox(10);
         Label label = new Label(text);
         Button cancelButton = new Button("Cancel");
@@ -51,7 +51,7 @@ public class MainCtrl {
         // Set up the stage
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Warning!");
+        popupStage.setTitle(title);
 
         cancelButton.setOnAction(e -> {
             popupStage.close();

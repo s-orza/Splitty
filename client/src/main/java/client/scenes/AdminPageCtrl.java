@@ -110,7 +110,7 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        popup("Exported succesfully to " + filePath + fileName);
+        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success");
       }
     catch(Exception exception){
       System.out.println(exception);
@@ -131,7 +131,7 @@ public class AdminPageCtrl implements Controller, Initializable {
             System.out.println(newEvent);
             for(Event event : server.getEvents()) {
               if (event.getName().equals(newEvent.getName())) {
-                mainCtrl.popup("Event with that name already exists!");
+                mainCtrl.popup("Event with that name already exists!", "Warning!");
                 return;
               }
             }
@@ -175,7 +175,7 @@ public class AdminPageCtrl implements Controller, Initializable {
           }
         }
         else{
-          popup("Wrong file format! Please select a .json file");
+          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning");
           return;
         }
     }
@@ -264,30 +264,6 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
   public void stop () {
     server.stop2();
-  }
-
-  private void popup(String text){
-    VBox layout = new VBox(10);
-    Label label = new Label(text);
-    Button cancelButton = new Button("Cancel");
-
-    // Set up the stage
-    Stage popupStage = new Stage();
-    popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle("Warning!");
-
-    cancelButton.setOnAction(e -> {
-      popupStage.close();
-    });
-
-    // Set up the layout
-    layout.getChildren().addAll(label, cancelButton);
-    layout.setAlignment(Pos.CENTER);
-
-    // Set the scene and show the stage
-    Scene scene = new Scene(layout, 370, 150);
-    popupStage.setScene(scene);
-    popupStage.showAndWait();
   }
 
   public Pair<Controller, Parent> getPair() {

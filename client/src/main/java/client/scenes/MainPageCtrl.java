@@ -77,13 +77,13 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void createEvent(ActionEvent e){
     if (createInput.getText().equals("")){
-      mainCtrl.popup("Name can't be empty!");
+      mainCtrl.popup("Name can't be empty!", "Waring!");
       return;
     }
     Event newEvent = new Event(createInput.getText());
     for(Event event : server.getEvents()) {
       if (event.getName().equals(newEvent.getName())) {
-        mainCtrl.popup("Event already exists!");
+        mainCtrl.popup("Event already exists!", "Warning!");
         return;
       }
     }
