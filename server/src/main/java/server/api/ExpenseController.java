@@ -334,6 +334,7 @@ public class ExpenseController {
         service.putParticipants(ex);
         service.resetDebtsFromThisExpense(ex,eventId);
         //then we delete the expense
+        repoExp.deleteAllParticipantConnectionsFromExpense(expenseId);
         Integer b=repoExp.deleteWithId(expenseId);
         if(b==0)
         {
@@ -357,11 +358,10 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         List<Expense> expenses=repoExp.findAllExpOfAnEvent(eventId);
         //delete all Expense-Event connections
-        repoExp.deleteAllExpensesEventCon(eventId);
         //delete all expenses related to the event
         if(expenses!=null) {
             for(Expense e:expenses)
-                repoExp.deleteById(e.getExpenseId());
+                deleteExpById(eventId,e.getExpenseId());
         }
         return ResponseEntity.ok(expenses.size());
     }
