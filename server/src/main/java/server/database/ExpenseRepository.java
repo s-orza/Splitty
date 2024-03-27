@@ -29,8 +29,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId AND ex.author.participantID=:authorId")
     List<Expense> findEventByAuthor(long eventId,long authorId);
-    @Query("SELECT e FROM Expense e WHERE e.author.participantID =:authorId")
-    List<Expense> findByAuthor(long authorId);
     @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "JOIN ParticipantExpense pex ON pex.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId AND (pex.participantId=:participantId OR " +
@@ -39,25 +37,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId")
     List<Expense> findAllExpOfAnEvent(long eventId);
-    @Query("SELECT DISTINCT ex FROM Expense ex")
-    List<Expense> findAllExp();
     @Transactional
     @Modifying
     @Query("DELETE FROM Expense ex WHERE ex.expenseId=:expenseId")
     Integer deleteWithId(long expenseId);
 
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE Expense ex SET ex.author=:authorId, ex.content=:content, ex.money=:money, " +
-            "ex.currency=:currency, ex.date=:date, ex.type=:type WHERE ex.expenseId=:expenseId")
-    Integer updateExpenseWithId(long expenseId, long authorId, String content, double money,
-                                           String currency, String date, String type);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE Expense ex SET ex.type=:tagName WHERE ex.expenseId=:expenseId")
-    Integer updateExpenseWithTag(long expenseId, String tagName);
     @Transactional
     @Modifying
     @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId AND ev.expenseId=:expenseId")
@@ -66,4 +50,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Modifying
     @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId")
     void deleteAllExpensesEventCon(long eventId);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM ParticipantExpense pex WHERE pex.expenseId=:expenseId")
+    void deleteAllParticipantConnectionsFromExpense(long expenseId);
 }

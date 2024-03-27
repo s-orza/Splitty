@@ -68,6 +68,8 @@ public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
 	public static long currentId = -1;
+	private static long expenseIdToModify=-1;
+
 
 	public long getCurrentId(){
 		return currentId;
@@ -77,8 +79,23 @@ public class ServerUtils {
 		Event updated = getEvent(currentId);
 		updated.activity();
 		createEvent(updated);
+		expenseIdToModify=-1;
 		System.out.println("Äctivity on event " + updated.getName());
 	}
+	public void setExpenseToBeModified(long expenseId)
+	{
+		expenseIdToModify=expenseId;
+	}
+	public long getExIdToModify()
+	{
+		return expenseIdToModify;
+	}
+	public Expense getExpenseToBeModified()
+	{
+		Expense ex=getExpenseById(expenseIdToModify);
+		return ex;
+	}
+
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
 		var is = url.openConnection().getInputStream();
@@ -207,17 +224,6 @@ public class ServerUtils {
 
 		 System.out.println(response);
 	 }
-	public void deleteDebtFromEvent(long eventId,Debt debt)
-	{
-		//to do
-	}
-//	public void addParticipant(Participant participant){
-//		ClientBuilder.newClient(new ClientConfig()) //
-//				.target(SERVER).path("/api/participant") //
-//				.request(APPLICATION_JSON) //
-//				.accept(APPLICATION_JSON) //
-//				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-//	}
 
 	public Participant getParticipant(long participantId){
         Response response =ClientBuilder.newClient(new ClientConfig()) //
@@ -315,12 +321,23 @@ public class ServerUtils {
 	public Expense getExpenseById(long id)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/?id="+id)
+				.target(SERVER+"api/expenses/?expenseId="+id)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()<300)
 			return response.readEntity(Expense.class);
 		return null;
+	}
+	public boolean resetDebtsFromExpense(long eventId,long expenseId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/deletedDebts?eventId="+eventId+"&expenseId="+expenseId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println(response);
+		if(response.getStatus()<300)
+			return true;
+		return false;
 	}
 	public List<Expense> getAllExpensesOfEvent(long eventId)
 	{
