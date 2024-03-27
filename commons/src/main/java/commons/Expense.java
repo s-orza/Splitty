@@ -26,10 +26,10 @@ public class Expense {
     @ManyToMany
     private List<Participant> participants;
     @Column
-    private TagId type;
+    private String type;
 
     public Expense(Participant author, String content, double money, String currency,
-                   String date, List<Participant> participants, TagId type) {
+                   String date, List<Participant> participants, String type) {
         this.author = author;
         this.content = content;
         this.money = money;
@@ -95,7 +95,7 @@ public class Expense {
         this.participants = participants;
     }
 
-    public void setType(TagId type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -103,7 +103,7 @@ public class Expense {
         return participants;
     }
 
-    public TagId getType() {
+    public String getType() {
         return type;
     }
 

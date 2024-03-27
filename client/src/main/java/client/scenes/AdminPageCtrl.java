@@ -1,9 +1,13 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
+import java.io.*;
+
 import commons.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,19 +24,21 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+@JsonIgnoreProperties(ignoreUnknown= true)
 public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
@@ -87,6 +93,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     List<Debt> debts = event.debts;
     event.setExpenses(expenses);
     event.setParticipants(participants);
+    event.setTags(tags);
     System.out.println(event + " \nTags " + tags);
     ObjectMapper mapper = new ObjectMapper();
     StringWriter writer = new StringWriter();
@@ -111,7 +118,59 @@ public class AdminPageCtrl implements Controller, Initializable {
       System.out.println(exception);
     }
   }
-  public void importEvent(ActionEvent e) {
+  public void importEvent(ActionEvent actionEvent) {
+    FileChooser fc = new FileChooser();
+    String filePath = new File("").getAbsolutePath().replace("\\", "/");
+    filePath += ("/EventsBackup/");
+    fc.setInitialDirectory(new File(filePath));
+    File selectedFile = fc.showOpenDialog(null);
+    if(selectedFile !=null){
+        if(selectedFile.getName().contains(".json") ){
+          ObjectMapper mapper = new ObjectMapper();
+          try {
+            System.out.println("This file" + new String(Files.readAllBytes(Paths.get(selectedFile.toURI()))));
+            Event newEvent = mapper.readValue(selectedFile, Event.class);
+            System.out.println(newEvent);
+            for(Event event : server.getEvents()) {
+              if (event.getName().equals(newEvent.getName())) {
+                mainCtrl.popup("Event with that name already exists!");
+                return;
+              }
+            }
+            server.createEvent(new Event(newEvent.getName()));
+            long id = server.getEvents().getLast().getEventId();
+            List<Participant> participants = newEvent.getParticipants();
+            for(Participant p : participants){
+              server.addParticipantEvent(p, id);
+            }
+            List<Expense> expenses = newEvent.getExpenses();
+            for(Expense e : expenses){
+              server.addExpenseToEvent(id, e);
+            }
+            /*
+            List<Debt> debts = newEvent.getDebts();
+            for(Debt d : debts){
+              server.addDebtToEvent(id, d);
+            }
+             */
+
+
+
+
+
+          }
+          catch (Exception e){
+            e.printStackTrace();
+          }
+        }
+        else{
+          popup("Wrong file format! Please select a .json file");
+          return;
+        }
+    }
+    else {
+        return;
+    }
     System.out.println("import event from file");
   }
 
@@ -195,6 +254,31 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void stop () {
     server.stop2();
   }
+
+  private void popup(String text){
+    VBox layout = new VBox(10);
+    Label label = new Label(text);
+    Button cancelButton = new Button("Cancel");
+
+    // Set up the stage
+    Stage popupStage = new Stage();
+    popupStage.initModality(Modality.APPLICATION_MODAL);
+    popupStage.setTitle("Warning!");
+
+    cancelButton.setOnAction(e -> {
+      popupStage.close();
+    });
+
+    // Set up the layout
+    layout.getChildren().addAll(label, cancelButton);
+    layout.setAlignment(Pos.CENTER);
+
+    // Set the scene and show the stage
+    Scene scene = new Scene(layout, 370, 150);
+    popupStage.setScene(scene);
+    popupStage.showAndWait();
+  }
+
   public Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");
   }

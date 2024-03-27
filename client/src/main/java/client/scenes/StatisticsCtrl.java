@@ -130,7 +130,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         for(Expense e:expensesList)
         {
             System.out.println(e.getType()+"  "+e.getMoney());
-            String type=e.getType().getName();
+            String type=e.getType();
             if(type==null || type.equals(""))
                 type="other";
             if(tagsWithValues.containsKey(type))

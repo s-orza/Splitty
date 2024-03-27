@@ -15,8 +15,13 @@
  */
 package client.scenes;
 
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -37,5 +42,28 @@ public class MainCtrl {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+    }
+    public void popup(String text){
+        VBox layout = new VBox(10);
+        Label label = new Label(text);
+        Button cancelButton = new Button("Cancel");
+
+        // Set up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Warning!");
+
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, cancelButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
     }
 }

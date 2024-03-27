@@ -204,7 +204,7 @@ public class ExpenseController {
         if(!repoExp.existsById(expenseId))
             return ResponseEntity.notFound().build();
         Integer a=repoExp.updateExpenseWithId(expenseId,expense.getAuthor().getParticipantID(),expense.getContent(),
-                expense.getMoney(),expense.getCurrency(),expense.getDate(),expense.getType().getName());
+                expense.getMoney(),expense.getCurrency(),expense.getDate(),expense.getType());
         //if a>0 means we updated something
         System.out.println(a);
         Expense newExpense=repoExp.findById(expenseId).get();
