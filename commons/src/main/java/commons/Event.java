@@ -61,6 +61,7 @@ public class Event {
         this.participants = new ArrayList<>();
         this.debts = new ArrayList<>();
         this.expenses = new ArrayList<>();
+        this.tags = new ArrayList<>();
         this.name = name;
         this.creationDate = new Date(System.currentTimeMillis());
         this.activityDate = creationDate;

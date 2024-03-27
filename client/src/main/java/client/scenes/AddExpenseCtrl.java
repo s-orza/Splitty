@@ -321,7 +321,7 @@ public class AddExpenseCtrl implements Controller{
                 list.add(participantsObjectList.get(p));
             }
         Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
-                dateString,list, server.getTagByIdOfEvent(typeSelector.getValue(), server.getCurrentId()).getId().getName());
+                dateString,list, typeSelector.getValue());
         System.out.println(expense);
         System.out.println("Adding to event id" + server.getCurrentId());
         long id= server.getCurrentId();
