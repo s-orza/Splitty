@@ -112,7 +112,7 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        System.out.println("Exported succesfully to " + filePath + fileName);
+        popup("Exported succesfully to " + filePath + fileName);
       }
     catch(Exception exception){
       System.out.println(exception);
@@ -143,20 +143,33 @@ public class AdminPageCtrl implements Controller, Initializable {
             for(Participant p : participants){
               server.addParticipantEvent(p, id);
             }
+            List<Tag> tags = newEvent.getTags();
+            for(Tag t : tags){
+              if(server.checkIfTagExists(t.getId().getName(), id))
+              {
+                System.out.println("Already in the database!");
+              }
+              else {
+                server.addTag(new Tag(new TagId(t.getId().getName(),id),t.getColor()));
+              }
+            }
+
             List<Expense> expenses = newEvent.getExpenses();
             for(Expense e : expenses){
-              server.addExpenseToEvent(id, e);
+              server.addExpenseToEvent(id, new Expense(
+                      e.getAuthor(),
+                      e.getContent(),
+                      e.getMoney(),
+                      e.getCurrency(),
+                      e.getDate(),
+                      e.getParticipants(),
+                      e.getType()));
             }
-            /*
+
             List<Debt> debts = newEvent.getDebts();
             for(Debt d : debts){
-              server.addDebtToEvent(id, d);
+              server.addDebtToEvent(id, new Debt(d.getAmount(), d.getCurrency(), d.getDebtor(), d.getCreditor()));
             }
-             */
-
-
-
-
 
           }
           catch (Exception e){
