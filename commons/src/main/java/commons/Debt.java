@@ -25,6 +25,9 @@ public class Debt {
         this.creditor = creditor.getParticipantID();
     }
 
+    public Debt() {
+    }
+
     public Debt(double amount, String currency, long debtorID, long creditorID){
         this.amount = amount;
         this.currency = currency;

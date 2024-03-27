@@ -1,10 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import commons.Expense;
-import commons.Participant;
-import commons.Tag;
-import commons.TagId;
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -296,61 +293,10 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     void addExpenseToTheEvent(MouseEvent event) {
         //we need to verify if the expense is valid.
-
-        if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
-        {
-            System.out.println("The author cannot be empty.");
-            warningText.setText(resourceBundle.getString("authorWarning"));
+        if(!inputIsCorrect())
             return;
-        }
-        if(contentBox.getText()==null || contentBox.getText().isEmpty())
-        {
-            System.out.println("What is the money for?");
-            warningText.setText(resourceBundle.getString("forWhatWarning"));
-            return;
-        }
-        if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
-        {
-            System.out.println(moneyPaid.getText());
-            warningText.setText(resourceBundle.getString("amountWarning"));
-            return;
-        }
-        if(moneyPaid.getText().contains("-") || moneyPaid.getText().equals("0"))
-        {
-            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
-            return;
-        }
-        if(Double.parseDouble(moneyPaid.getText())==0.0)
-        {
-            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
-            return;
-        }
-        if(date.getValue()==null) {
-            System.out.println("You need to select a date!");
-            warningText.setText(resourceBundle.getString("dateWarning"));
-            return;
-        }
-        if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
-        {
-            System.out.println("You need to enter the type");
-            warningText.setText(resourceBundle.getString("typeWarning"));
-            return;
-        }
-        if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
-        {
-            System.out.println("Select how to split the expense.");
-            warningText.setText(resourceBundle.getString("splitWarning"));
-            return;
-        }
-        if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
-        {
-            System.out.println("Select the participants.");
-            warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
-            return;
-        }
         //the expense can be considered valid now
         warningText.setText("");
-        int year=date.getValue().getYear();
         String content=contentBox.getText();
         double money=Double.parseDouble(moneyPaid.getText());
         String dateString=date.getValue().getDayOfMonth()+","+
@@ -377,13 +323,53 @@ public class AddExpenseCtrl implements Controller{
         Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
                 dateString,list,typeSelector.getValue());
         System.out.println(expense);
-        //the id is the id of the current event, we need to change
-        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         System.out.println("Adding to event id" + server.getCurrentId());
         long id= server.getCurrentId();
         //if we just add an expense, this will be null
         if(expenseToBeModified==null)
+        {
             server.addExpenseToEvent(id,expense);
+            //add debts
+            //we know there is at least one participant.
+            double split=expense.getMoney()/expense.getParticipants().size();
+            System.out.println("The selected persons need to pay: "+split);
+            double authorNeedsToReceive=0;
+            double othersNeedsToGive=split;
+            Event currentEvent=server.getEvent(server.getCurrentId());
+            //if the author is included
+            if(expense.getParticipants().contains(expense.getAuthor()))
+            {
+                authorNeedsToReceive=expense.getMoney()-split;
+                for(Participant p:expense.getParticipants())
+                {
+                    //update debs from p to author
+                    if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
+                    {
+                        System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                                +expense.getAuthor().getName());
+                        server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
+                                expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                    }
+                }
+            }
+            else
+            {
+                //the author need to receive all the money
+                authorNeedsToReceive=expense.getMoney();
+                System.out.println("ev: "+currentEvent);
+                for(Participant p:expense.getParticipants())
+                {
+                    //update debs from p to author
+                    System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                            +expense.getAuthor().getName());
+
+                    server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
+                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                }
+
+            }
+
+        }
         else
         {
             //modify the expense and save it to tha database
@@ -400,9 +386,70 @@ public class AddExpenseCtrl implements Controller{
         //System.out.println(server.getExpenseById(1));
         resetElements();
         //go back to the event page
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
 
+    }
+
+    /**
+     * This function verifies if the input is correct.
+     * @return true if the input is correct
+     */
+    private boolean inputIsCorrect()
+    {
+        if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
+        {
+            System.out.println("The author cannot be empty.");
+            warningText.setText(resourceBundle.getString("authorWarning"));
+            return false;
+        }
+        if(contentBox.getText()==null || contentBox.getText().isEmpty())
+        {
+            System.out.println("What is the money for?");
+            warningText.setText(resourceBundle.getString("forWhatWarning"));
+            return false;
+        }
+        if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
+        {
+            System.out.println(moneyPaid.getText());
+            warningText.setText(resourceBundle.getString("amountWarning"));
+            return false;
+        }
+        if(moneyPaid.getText().contains("-") || moneyPaid.getText().equals("0"))
+        {
+            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            return false;
+        }
+        if(Double.parseDouble(moneyPaid.getText())==0.0)
+        {
+            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            return false;
+        }
+        if(date.getValue()==null) {
+            System.out.println("You need to select a date!");
+            warningText.setText(resourceBundle.getString("dateWarning"));
+            return false;
+        }
+        if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
+        {
+            System.out.println("You need to enter the type");
+            warningText.setText(resourceBundle.getString("typeWarning"));
+            return false;
+        }
+        if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
+        {
+            System.out.println("Select how to split the expense.");
+            warningText.setText(resourceBundle.getString("splitWarning"));
+            return false;
+        }
+        if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
+        {
+            System.out.println("Select the participants.");
+            warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
+            return false;
+        }
+        return true;
     }
     /**
      * this function will be called when you press the cancel Button.

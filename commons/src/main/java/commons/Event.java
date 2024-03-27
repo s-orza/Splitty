@@ -37,9 +37,9 @@ public class Event {
 
     @OneToMany
     @JoinTable(
-            name = "ParticipantEventRepository",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "participant_id")
+            name = "DebtEvent",
+            joinColumns = @JoinColumn(name = "eventId"),
+            inverseJoinColumns = @JoinColumn(name = "debtID")
     )
     @Column
     public List<Debt> debts;
