@@ -193,7 +193,7 @@ public class ExpenseController {
     @GetMapping(path={"/all"})
     public ResponseEntity<List<Expense>> getAll()
     {
-        List<Expense> ans=repoExp.findAllExp();
+        List<Expense> ans=repoExp.findAll();
         for(Expense e:ans)
             service.putParticipants(e);
         return ResponseEntity.ok(ans);
@@ -292,7 +292,9 @@ public class ExpenseController {
         for(Expense e:expensesOfEvent)
             if(e.getType().equals(tagName))
             {
-                repoExp.updateExpenseWithTag(e.getExpenseId(),tag.getId().getName());
+                e.setType(tag.getId().getName());
+                repoExp.save(e);
+                //old version: repoExp.updateExpenseWithTag(e.getExpenseId(),tag.getId().getName());
             }
         return ResponseEntity.ok(newTag);
     }
@@ -359,7 +361,7 @@ public class ExpenseController {
         //delete all expenses related to the event
         if(expenses!=null) {
             for(Expense e:expenses)
-                repoExp.deleteWithId(e.getExpenseId());
+                repoExp.deleteById(e.getExpenseId());
         }
         return ResponseEntity.ok(expenses.size());
     }
@@ -375,7 +377,10 @@ public class ExpenseController {
         List<Expense> expensesOfEvent=repoExp.findAllExpOfAnEvent(eventId);
         for(Expense e:expensesOfEvent)
             if(e.getType().equals(tagName))
-                repoExp.updateExpenseWithTag(e.getExpenseId(),"other");
+            {
+                e.setType("other");
+                repoExp.save(e);
+            }
         return ResponseEntity.ok().build();
     }
 }

@@ -469,13 +469,6 @@ public class AddExpenseCtrl implements Controller{
         //creates new debts
         createDebtsFromExpense(expense);
         //modify the expense and save it to tha database
-//        expenseToBeModified.setAuthor(expense.getAuthor());
-//        expenseToBeModified.setContent(expense.getContent());
-//        expenseToBeModified.setMoney(expense.getMoney());
-//        expenseToBeModified.setCurrency(expense.getCurrency());
-//        expenseToBeModified.setDate(expense.getDate());
-//        expenseToBeModified.setParticipants(expense.getParticipants());
-//        expenseToBeModified.setType(expense.getType());
         server.updateExpense(expenseToBeModified.getExpenseId(),expense);
         expenseToBeModified=null;
         server.setExpenseToBeModified(-1);

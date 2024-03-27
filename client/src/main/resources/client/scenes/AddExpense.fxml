@@ -50,7 +50,7 @@
       </Text>
       <Button fx:id="addButton" layoutX="517.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#addExpenseToTheEvent" text="Add" />
       <Button fx:id="cancelButton" layoutX="424.0" layoutY="342.0" mnemonicParsing="false" onMouseClicked="#cancelAddExpense" text="Cancel" />
-      <DatePicker fx:id="date" layoutX="213.0" layoutY="174.0" />
+      <DatePicker fx:id="date" editable="false" layoutX="213.0" layoutY="174.0" />
       <CheckBox fx:id="checkBoxAllPeople" layoutX="204.0" layoutY="248.0" mnemonicParsing="false" onAction="#handleCheckBoxAllPeople" text="Equally between everybody" />
       <ComboBox fx:id="authorSelector" layoutX="213.0" layoutY="73.0" prefWidth="150.0" />
       <ComboBox fx:id="moneyTypeSelector" layoutX="363.0" layoutY="139.0" prefHeight="25.0" prefWidth="73.0" promptText="EUR" />
