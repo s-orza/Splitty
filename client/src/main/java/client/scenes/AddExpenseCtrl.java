@@ -605,7 +605,8 @@ public class AddExpenseCtrl implements Controller{
             return;
         }
         String color=colorPicker.getValue().toString();
-        server.addTag(new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
+        server.send("/app/expenses", new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
+    //        server.addTag();
         System.out.println("tag added");
         tagsAvailable.add(tagName);
 

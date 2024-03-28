@@ -82,6 +82,7 @@ public class StatisticsCtrl implements Controller, Initializable {
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
+
         selectedTagForEditing=null;
         long eventId= server.getCurrentId();
         if(!server.checkIfTagExists("other", eventId))
@@ -95,6 +96,12 @@ public class StatisticsCtrl implements Controller, Initializable {
 
         if(!server.checkIfTagExists("travel", eventId))
             server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
+
+        server.registerForMessages("/topic/expenses", Tag.class, t -> {
+            System.out.printf("workrkrkrkkrkkdkskssksks");
+            tagsListView.getItems().add(t.getId().getName());
+        });
+
         refresh();
     }
 
@@ -207,12 +214,14 @@ public class StatisticsCtrl implements Controller, Initializable {
     {
         tagsListView.getItems().clear();
         tagsListView.getItems().addAll(tags.stream().map(x->x.getId().getName()).sorted().toList());
+
         tagsListView.setCellFactory(param -> new TagsListViewCell());
         //we need these for making the front end beautiful
         tagsListView.setSelectionModel(null);
         tagsListView.setFocusTraversable(false);
 
         selectedTagForEditing=null;
+
     }
 
     /**

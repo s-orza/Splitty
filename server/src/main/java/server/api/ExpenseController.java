@@ -3,6 +3,8 @@ package server.api;
 import commons.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.database.*;
@@ -112,6 +114,15 @@ public class ExpenseController {
         Tag saved=repoTag.save(tag);
         return ResponseEntity.ok(saved);
     }
+
+    @MessageMapping("/expenses")
+    @SendTo("/topic/expenses")
+    public Tag addMessage(Tag tag) {
+        addTag(tag);
+        return tag;
+    }
+
+
 
     //WE DO NOT NEED IT ANYMORE
 //    /**
