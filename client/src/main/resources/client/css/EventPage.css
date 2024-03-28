@@ -10,12 +10,17 @@
 
 .button-styled {
     -fx-background-color: #53D3D1;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #000000;
     -fx-border-color: #002447;
     -fx-border-width: 1;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
     -fx-padding: 5 15 5 15;
+}
+.button-styled:selected {
+    -fx-background-color: #45b1b0;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #01203f;
 }
 
 .button-styled:hover {
@@ -56,7 +61,7 @@
 }
 
 .text-field:focused {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #e8e8e8;
 }
 
 

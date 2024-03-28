@@ -67,7 +67,7 @@ public class AdminPageCtrl implements Controller, Initializable {
       for (EventHelper event: contents) {
         if (event.getTitle().equals(e.getName())){
           alreadyExists = true;
-        };
+        }
       }
       if (!alreadyExists){
         contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));

@@ -161,7 +161,9 @@ public class DebtsCtrl implements Controller, Initializable {
         d3.setDebtID(30);
 
         //put into observable array
-        ObservableList<Debt> list = FXCollections.observableArrayList(d1,d2,d3);
+        ObservableList<Debt> list = FXCollections.observableArrayList();//d1,d2,d3);
+        Event ev=server.getEvent(server.getCurrentId());
+        list.addAll(ev.getDebts());
         debtTable.setItems(list);
     }
     public void connectEvent(Event ev){

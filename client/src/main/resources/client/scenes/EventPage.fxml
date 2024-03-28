@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
 
    <children>
-      <TableView fx:id="expensesTable" layoutX="14.0" layoutY="186.0" prefHeight="298.0" prefWidth="554.0">
+      <TableView fx:id="expensesTable" layoutX="14.0" layoutY="261.0" prefHeight="223.0" prefWidth="554.0">
          <columns>
-            <TableColumn fx:id="authorColumn" prefWidth="75.0" text="Author" />
+            <TableColumn fx:id="authorColumn" prefWidth="107.33331298828125" text="Author" />
             <TableColumn fx:id="descriptionColumn" prefWidth="88.79997253417969" text="Description" />
             <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="92.00006103515625" text="Amount" />
             <TableColumn fx:id="currencyColumn" prefWidth="76.0" text="Currency" />
@@ -37,16 +42,86 @@
             <Font size="19.0" />
          </font></Label>
 
-      <Button fx:id="addExpense" layoutX="32.0" layoutY="151.0" mnemonicParsing="false" styleClass="button-styled" text="Add Expense" />
-      <Button fx:id="addParticipant" layoutX="410.0" layoutY="151.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant" />
-      <Button fx:id="removeExpense" layoutX="194.0" layoutY="151.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Remove Expenses" />
-      <Button fx:id="editEventName" layoutX="407.0" layoutY="110.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Edit Event Name" />
+      <Button fx:id="addExpense" layoutX="437.0" layoutY="228.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="131.0" styleClass="button-styled" text="Add Expense">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <Image url="@/add.png" />
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button fx:id="addParticipant" layoutX="430.0" layoutY="27.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
+      <graphic>
+         <ImageView fitHeight="20" fitWidth="20">
+            <Image url="@/add.png" />
+         </ImageView>
+      </graphic>
+      </Button>
+      <Button fx:id="removeExpense" layoutX="422.0" layoutY="179.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Remove Expenses">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <Image url="@/bin.png" />
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button fx:id="editEventName" layoutX="427.0" layoutY="93.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Edit Event Name">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <Image url="@/pencil.png" />
+            </ImageView>
+         </graphic>
+      </Button>
       <Button fx:id="cancelButton" layoutX="23.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" onAction="#close" styleClass="button-styled" text="Cancel" />
       <Button fx:id="viewDebts" layoutX="612.0" layoutY="412.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="View Debts" />
       <Button fx:id="flagButton" layoutX="239.0" layoutY="21.0" mnemonicParsing="false" prefHeight="64.0" prefWidth="104.0" />
       <ComboBox fx:id="comboBox" layoutX="216.0" layoutY="97.0" prefWidth="150.0" />
 
-      <Button fx:id="viewStatistics" layoutX="604.0" layoutY="471.0" mnemonicParsing="false" text="View Statistics" />
+      <Button fx:id="viewStatistics" layoutX="604.0" layoutY="471.0" mnemonicParsing="false" styleClass="button-styled" text="View Statistics" />
+      <BorderPane layoutX="21.0" layoutY="228.0" prefHeight="31.0" prefWidth="410.0">
+         <left>
+            <ToggleButton mnemonicParsing="false" onAction="#searchAll" prefHeight="31.0" prefWidth="95.0" styleClass="button-styled" text="All" BorderPane.alignment="CENTER">
+               <toggleGroup>
+                  <ToggleGroup fx:id="searchGroup" />
+               </toggleGroup>
+               <graphic>
+                  <ImageView fitHeight="20" fitWidth="20">
+                     <Image url="@/search.png" />
+                  </ImageView>
+               </graphic>
+            </ToggleButton>
+         </left>
+         <center>
+            <ToggleButton fx:id="fromxButton" mnemonicParsing="false" onAction="#searchFromX" prefHeight="31.0" prefWidth="145.0" styleClass="button-styled" text="From Mihai" toggleGroup="$searchGroup" BorderPane.alignment="CENTER">
+            <graphic>
+               <ImageView fitHeight="20" fitWidth="20">
+                  <Image url="@/search.png" />
+               </ImageView>
+            </graphic>
+            </ToggleButton>
+         </center>
+         <right>
+            <ToggleButton fx:id="includingxButton" mnemonicParsing="false" onAction="#searchIncludingX" prefHeight="31.0" prefWidth="145.0" styleClass="button-styled" text="Including Mihai" toggleGroup="$searchGroup" BorderPane.alignment="CENTER">
+               <graphic>
+                  <ImageView fitHeight="20" fitWidth="20">
+                     <Image url="@/search.png" />
+                  </ImageView>
+               </graphic>
+            </ToggleButton>
+         </right>
+      </BorderPane>
+      <ComboBox fx:id="searchByComboBox" layoutX="23.0" layoutY="166.0" onAction="#personWasSelected" prefWidth="150.0" promptText="-Select Person-" />
+      <Text layoutX="23.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filter expenses by:" wrappingWidth="123.33333333333326">
+         <font>
+            <Font size="13.0" />
+         </font></Text>
+      <Button fx:id="editExpense" layoutX="422.0" layoutY="141.0" maxWidth="180" mnemonicParsing="false" prefHeight="35.0" prefWidth="147.0" styleClass="button-styled" text="Edit/View Expense">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <image>
+                  <Image url="@/pencil.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
 
    </children>
 </AnchorPane>

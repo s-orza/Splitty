@@ -45,6 +45,33 @@ Ending:
 --------
 - Planned meeting duration (1 hour) actual duration? Where/why did you mis -estimate? (? min)
 
+Sprint planning:
+ - Long polling + Websockets (Shahar + Serban)
+ - implement statistics (Serban)
+ - backend Debt splitting (Olav)
+ - Fixes
+    - fix Participants methods (David)
+    - fix Event Code (Oliwier)
+ - Multi-Language (basic REQ) (Ivan)
+ - sending email invites (Delay)
+ - Admin JSON  (WildCard)
+ - MORE CHECKSTYLE RULES (All)
+ - Use service annotations for dependancy injection (Oliwier)
+ - HCI (David)
+
+ Sprint review:
+ - Participant API methods were added however some are still not functioning properly
+ - The debt front end was created but still needs to be connected to database the splitting part
+ - The event page and api are connected but now need to have long polling
+ - Event api tests were made
+ - Tags added to expenses correctly
+
+
+ Sprint retrospective:
+ - The team struggled with some issues because two people thought they were connecting the event page to the api, this was quickly resolved and a different issue was done
+ - Another issue was miscommunication about what we wanted to happen witht he participant api that lead to it not fully functioning. We found the issues and will sort them as bugs in the following week
+
+
 Notes 
 
 -----------------------------Announcements from Miss Elena------------------------------

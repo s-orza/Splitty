@@ -68,6 +68,8 @@ public class ServerUtils {
 
 	private static final String SERVER = "http://localhost:8080/";
 	public static long currentId = -1;
+	private static long expenseIdToModify=-1;
+
 
 	public long getCurrentId(){
 		return currentId;
@@ -77,8 +79,23 @@ public class ServerUtils {
 		Event updated = getEvent(currentId);
 		updated.activity();
 		createEvent(updated);
+		expenseIdToModify=-1;
 		System.out.println("Äctivity on event " + updated.getName());
 	}
+	public void setExpenseToBeModified(long expenseId)
+	{
+		expenseIdToModify=expenseId;
+	}
+	public long getExIdToModify()
+	{
+		return expenseIdToModify;
+	}
+	public Expense getExpenseToBeModified()
+	{
+		Expense ex=getExpenseById(expenseIdToModify);
+		return ex;
+	}
+
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
 		var is = url.openConnection().getInputStream();
@@ -196,21 +213,30 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
+	 public void addDebtToEvent(long eventId,Debt debt)
+	 {
+		 //this post is a "put" if the debt is already there
+		 Response response=ClientBuilder.newClient(new ClientConfig())
+				 .target(SERVER+"api/events/debts?eventId="+eventId)
+				 .request(APPLICATION_JSON)
+				 .accept(APPLICATION_JSON)
+				 .post(Entity.entity(debt, APPLICATION_JSON));
 
-//	public void addParticipant(Participant participant){
-//		ClientBuilder.newClient(new ClientConfig()) //
-//				.target(SERVER).path("/api/participant") //
-//				.request(APPLICATION_JSON) //
-//				.accept(APPLICATION_JSON) //
-//				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
-//	}
+		 System.out.println(response);
+	 }
 
 	public Participant getParticipant(long participantId){
-        return ClientBuilder.newClient(new ClientConfig()) //
+        Response response =ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("/api/participant/" + participantId) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
-				.get(Participant.class);
+				.get();
+		if(response.getStatus()<300)
+		{
+			GenericType<Participant> genericType = new GenericType<Participant>() {};
+			return response.readEntity(genericType);
+		}
+		return null;
 	}
 
 	/**
@@ -295,12 +321,23 @@ public class ServerUtils {
 	public Expense getExpenseById(long id)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/?id="+id)
+				.target(SERVER+"api/expenses/?expenseId="+id)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()<300)
 			return response.readEntity(Expense.class);
 		return null;
+	}
+	public boolean resetDebtsFromExpense(long eventId,long expenseId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/deletedDebts?eventId="+eventId+"&expenseId="+expenseId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println(response);
+		if(response.getStatus()<300)
+			return true;
+		return false;
 	}
 	public List<Expense> getAllExpensesOfEvent(long eventId)
 	{
@@ -313,6 +350,54 @@ public class ServerUtils {
 			return response.readEntity(listType);
 		return new ArrayList<>();
 	}
+	public List<Expense> getAllExpensesFromXOfEvent(long eventId,long authorId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/author?eventId="+eventId+"&authorId="+authorId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
+		if(response.getStatus()<300)
+			return response.readEntity(listType);
+		return new ArrayList<>();
+	}
+	public List<Expense> getAllExpensesIncludingXOfEvent(long eventId,long authorId)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/expenses/participantIncluded?eventId="+eventId+
+						"&authorId="+authorId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
+		if(response.getStatus()<300)
+			return response.readEntity(listType);
+		return new ArrayList<>();
+	}
+
+	private static final int THREAD_POOL_SIZE = 10;
+	private static final ExecutorService EXEC = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+	public void registerForUpdatesExpenses(long eventId, Consumer<Expense> consumer)
+	{
+		EXEC.submit(() -> {
+			while(!Thread.interrupted()) {
+				var res = ClientBuilder.newClient(new ClientConfig())
+						.target(SERVER+"api/expenses/allFromEvent/updates?eventId="+eventId)
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.get(Response.class);
+				if (res.getStatus()==204) {
+					continue;
+				}
+				var e = res.readEntity(Expense.class);
+				consumer.accept(e);
+			}
+		});
+	}
+
+	public void stop () {
+		EXEC.shutdown();
+	}
+
 	public List<Expense> getAllExpensesFromDatabase()
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
