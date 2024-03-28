@@ -6,16 +6,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import com.google.inject.Inject;
 import javafx.scene.text.Text;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -55,6 +60,8 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     private Button addButton;
     @FXML
+    private Button saveButton;
+    @FXML
     private Button addTypeButton;
     @FXML
     private TextField newTypeTextField;
@@ -91,6 +98,7 @@ public class AddExpenseCtrl implements Controller{
     private ListView<Pair2> namesList;//names showed on screen from which we select
     @FXML
     private Text warningText;
+    //in this list are the persons that have their checkbox checked.
     private List<Integer> selectedNamesList=new ArrayList<>();
     private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
             //new Pair2("Serban",0), new Pair2("David",1),
@@ -98,7 +106,7 @@ public class AddExpenseCtrl implements Controller{
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
-    private Expense expenseToBeModified=null;
+    private Expense expenseToBeModified;
 
     ResourceBundle resourceBundle;
     @Inject
@@ -108,13 +116,28 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     public void initialize() {
         //load resources
+        System.out.println(server.getExIdToModify());
         loadFromDatabase();
         toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
-        //reset
+        //reset fields
         resetElements();
+        //in case we are in the edit page
+        if(server.getExIdToModify()!=-1)
+        {
+            expenseToBeModified=server.getExpenseToBeModified();
+            System.out.println("We edit");
+            reloadExpense();
+        }
+        //in add page
+        else
+        {
+            System.out.println("We add");
+            addButton.setVisible(true);
+            saveButton.setVisible(false);
+        }
     }
 
     private void toggleLanguage() {
@@ -145,6 +168,7 @@ public class AddExpenseCtrl implements Controller{
     {
         //first we need to create a list with the names of the participants:
         participantsObjectList=server.getParticipantsOfEvent(server.getCurrentId());
+        System.out.println(server.getExIdToModify());
         names=FXCollections.observableArrayList();
         int k=0;
         for(Participant person:participantsObjectList)
@@ -214,7 +238,7 @@ public class AddExpenseCtrl implements Controller{
         checkBoxAllPeople.setSelected(false);
         //create the list view with indexes+ "names"
         namesList.setItems(names);
-        namesList.setCellFactory(param -> new CheckBoxListCell());
+        namesList.setCellFactory(param -> new CheckBoxListCell(false));
 
         //at the beginning the list is hidden
         namesList.setVisible(false);
@@ -228,8 +252,6 @@ public class AddExpenseCtrl implements Controller{
         typeSelector.setValue(null);
 
         typeSelector.getItems().addAll(tagsAvailable);
-        //this only makes sense for the edit part of an expense
-        expenseToBeModified=null;
     }
     private class Pair2{
         public String element;
@@ -244,7 +266,9 @@ public class AddExpenseCtrl implements Controller{
     }
     private class CheckBoxListCell extends ListCell<Pair2>{
         private CheckBox checkBox;
-        public CheckBoxListCell() {
+        private boolean isOnEdit;
+        public CheckBoxListCell(boolean isOnEdit) {
+            this.isOnEdit=isOnEdit;
         }
         @Override
         protected void updateItem(Pair2 item, boolean empty) {
@@ -254,35 +278,72 @@ public class AddExpenseCtrl implements Controller{
             } else {
                 checkBox=new CheckBox(item.element);//we create a checkbox with that name
                 checkBox.setOnAction(event -> handleCheckBoxSelectName(checkBox, item.index));
+                //if we are on the edit page we need to reload the selected participants
+                if(isOnEdit && expenseToBeModified!=null)
+                {
+                    List<String> participantNames=expenseToBeModified.getParticipants().stream()
+                            .map(x->x.getName()).toList();
+                    //if the name is in the list
+                    if(participantNames.contains(item.element))
+                    {
+                        checkBox.setSelected(true);
+                        handleCheckBoxSelectName(checkBox,item.index);
+                    }
+                }
+                else
+                    checkBox.setSelected(false);
                 setGraphic(checkBox);
                // checkBox.setFocusTraversable(true);
             }
         }
     }
-
     /**
      * This function is to reload/get an expense from even in order to be modified.
-     * @param expense the expense which will be modified
      */
-    public void reloadExpense(Expense expense)
+    public void reloadExpense()
     {
-        expenseToBeModified=expense;
-        loadFromDatabase();
-        resetElements();
+        addButton.setVisible(false);
+        saveButton.setVisible(true);
         //reload author
-        authorSelector.setValue(expense.getAuthor().getName());
+        authorSelector.setValue(expenseToBeModified.getAuthor().getName());
         //reload content
-        contentBox.setText(expense.getContent());
+        contentBox.setText(expenseToBeModified.getContent());
         //reload money
-        moneyPaid.setText(expense.getMoney()+"");
+        moneyPaid.setText(expenseToBeModified.getMoney()+"");
         //reload money type
-        moneyTypeSelector.setValue(expense.getType());
+        moneyTypeSelector.setValue(expenseToBeModified.getCurrency());
         //reload date
-            //magic formula needs to be found
+        try{
+            LocalDate time = LocalDate.parse(expenseToBeModified.getDate());
+
+            System.out.println(time);
+           date.setValue(time);
+        }catch (Exception e)
+        {
+            System.out.println("The date has a problem");
+        }
         //reload type
-        typeSelector.setValue(expense.getType());
+        typeSelector.setValue(expenseToBeModified.getType());
         //reload participants stuff
-        //not yet available as we need participants, to be done in future
+        //if the expense has all the participants
+        if(expenseToBeModified.getParticipants().size()==names.size())
+        {
+            checkBoxAllPeople.setSelected(true);
+            //we only need to mark this as selected because the save/add function will take this into
+            //consideration.
+        }
+        else
+        {
+            checkBoxSomePeople.setSelected(true);
+            namesList.setVisible(true);
+
+            selectedNamesList = new ArrayList<>();
+            namesList.setCellFactory(null);
+            namesList.setItems(null);
+            namesList.setItems(names);
+            namesList.setCellFactory(param -> new CheckBoxListCell(true));
+            System.out.println("list e "+selectedNamesList);
+        }
 
     }
 
@@ -297,11 +358,43 @@ public class AddExpenseCtrl implements Controller{
             return;
         //the expense can be considered valid now
         warningText.setText("");
+
+        Expense expense=takeExpenseFromFields();
+
+        System.out.println(expense);
+        System.out.println("Adding to event id" + server.getCurrentId());
+
+        boolean b=server.addExpenseToEvent(server.getCurrentId(),expense);
+        if(!b)
+        {
+            //warning, connection with server lost
+            System.out.println("Problems with the server");
+            return;
+        }
+        //add debts
+        createDebtsFromExpense(expense);
+
+        resetElements();
+        server.setExpenseToBeModified(-1);
+        //go back to the event page
+        EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+    }
+    private Expense takeExpenseFromFields()
+    {
         String content=contentBox.getText();
         double money=Double.parseDouble(moneyPaid.getText());
-        String dateString=date.getValue().getDayOfMonth()+","+
-                date.getValue().getMonthValue()+","+
-                date.getValue().getYear();
+        String dateString=date.getValue().getYear()+"-";
+        //if we need to add a "0"
+        if(date.getValue().getMonthValue()<10)
+            dateString=dateString+"0";
+        dateString=dateString+date.getValue().getMonthValue()+"-";
+        //if we need to add a "0"
+        if(date.getValue().getDayOfMonth()<10)
+            dateString=dateString+"0";
+        dateString=dateString+date.getValue().getDayOfMonth();
+
         //the expense
         //this will be the final author
 
@@ -321,75 +414,108 @@ public class AddExpenseCtrl implements Controller{
                 list.add(participantsObjectList.get(p));
             }
         Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
-                dateString,list, typeSelector.getValue());
-        System.out.println(expense);
-        System.out.println("Adding to event id" + server.getCurrentId());
-        long id= server.getCurrentId();
-        //if we just add an expense, this will be null
-        if(expenseToBeModified==null)
+                dateString,list,typeSelector.getValue());
+            return expense;
+    }
+    private void createDebtsFromExpense(Expense expense)
+    {
+        //we know there is at least one participant.
+        if(expense.getParticipants().isEmpty()) //(just in case)
+            return; //but we would never arrive here
+        double split=expense.getMoney()/expense.getParticipants().size();
+        System.out.println("The selected persons need to pay: "+split);
+        double authorNeedsToReceive=0;
+        double othersNeedsToGive=split;
+        Event currentEvent=server.getEvent(server.getCurrentId());
+        //if the author is included
+        if(expense.getParticipants().contains(expense.getAuthor()))
         {
-            server.addExpenseToEvent(id,expense);
-            //add debts
-            //we know there is at least one participant.
-            double split=expense.getMoney()/expense.getParticipants().size();
-            System.out.println("The selected persons need to pay: "+split);
-            double authorNeedsToReceive=0;
-            double othersNeedsToGive=split;
-            Event currentEvent=server.getEvent(server.getCurrentId());
-            //if the author is included
-            if(expense.getParticipants().contains(expense.getAuthor()))
+            authorNeedsToReceive=expense.getMoney()-split;
+            for(Participant p:expense.getParticipants())
             {
-                authorNeedsToReceive=expense.getMoney()-split;
-                for(Participant p:expense.getParticipants())
+                //update debs from p to author
+                if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
                 {
-                    //update debs from p to author
-                    if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
-                    {
-                        System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                                +expense.getAuthor().getName());
-                        server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                                expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
-                    }
-                }
-            }
-            else
-            {
-                //the author need to receive all the money
-                authorNeedsToReceive=expense.getMoney();
-                System.out.println("ev: "+currentEvent);
-                for(Participant p:expense.getParticipants())
-                {
-                    //update debs from p to author
                     System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
                             +expense.getAuthor().getName());
-
                     server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
                             expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
                 }
-
             }
-
         }
         else
         {
-            //modify the expense and save it to tha database
-            expenseToBeModified.setAuthor(expense.getAuthor());
-            expenseToBeModified.setContent(expense.getContent());
-            expenseToBeModified.setMoney(expense.getMoney());
-            expenseToBeModified.setCurrency(expense.getCurrency());
-            expenseToBeModified.setDate(expense.getDate());
-            expenseToBeModified.setParticipants(expense.getParticipants());
-            expenseToBeModified.setType(expense.getType());
-            //save it
-            server.updateExpense(expenseToBeModified.getExpenseId(),expenseToBeModified);
+            //the author need to receive all the money
+            authorNeedsToReceive=expense.getMoney();
+            System.out.println("ev: "+currentEvent);
+            for(Participant p:expense.getParticipants())
+            {
+                //update debs from p to author
+                System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                        +expense.getAuthor().getName());
+
+                server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
+                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+            }
+
         }
-        //System.out.println(server.getExpenseById(1));
-        resetElements();
-        //go back to the event page
+    }
+
+    @FXML
+    void saveEditExpense(MouseEvent event)
+    {
+        if(!inputIsCorrect())
+            return;
+        //reload again the expense to be sure that it is the last version of the expense
+        //possible future bug solved
+        expenseToBeModified=server.getExpenseToBeModified();
+        if(expenseToBeModified==null)
+        {
+            //this can happen if somebody else deleted this expense while you were editing it. In this case
+            //let's send a message to the user to inform him and to abort editing.
+            VBox layout = new VBox(10);
+            Label label = new Label("Somebody deleted this expense while you were editing it. \n" +
+                    "Return to the event page:(");
+            Button okButton = new Button("Ok");
+
+            // Set up the stage
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setTitle("Warning");
+
+
+            okButton.setOnAction(e -> {
+                popupStage.close();
+                //you still need to do this because the server utils object is only on your app
+                server.setExpenseToBeModified(-1);
+                EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+            });
+
+            // Set up the layout
+            layout.getChildren().addAll(label, okButton);
+            layout.setAlignment(Pos.CENTER);
+            // Set the scene and show the stage
+            Scene scene = new Scene(layout, 450, 150);
+            popupStage.setScene(scene);
+            popupStage.showAndWait();
+            return;
+        }
+        server.setExpenseToBeModified(-1);
+        Expense expense=takeExpenseFromFields();
+        //reset the debts
+        server.resetDebtsFromExpense(server.getCurrentId(),expenseToBeModified.getExpenseId());
+        //creates new debts
+        createDebtsFromExpense(expense);
+        //modify the expense and save it to tha database
+        server.updateExpense(expenseToBeModified.getExpenseId(),expense);
+        expenseToBeModified=null;
+        server.setExpenseToBeModified(-1);
+
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
-
     }
 
     /**
@@ -459,6 +585,7 @@ public class AddExpenseCtrl implements Controller{
     void cancelAddExpense(MouseEvent e) {
         resetElements();
         System.out.println("Expense canceled");
+        server.setExpenseToBeModified(-1);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
@@ -553,7 +680,10 @@ public class AddExpenseCtrl implements Controller{
         String name=checkBox.getText();
         System.out.println(index+", "+name);
         if(checkBox.isSelected()){
-            selectedNamesList.add(index);
+            //if this is not already there (this is just to make sure everything is ok!
+            //double safe measurement!
+            if(!selectedNamesList.contains(index))
+                selectedNamesList.add(index);
         }
         else
             selectedNamesList.remove(index);

@@ -323,6 +323,14 @@ public class StatisticsCtrl implements Controller, Initializable {
                         container.getChildren().get(0).setStyle("-fx-opacity: 0.5;");
                     }catch (Exception e){}
                 }
+                else
+                {
+                    //this fixes the bug where other tags has transparent background
+                    try {
+
+                        container.getChildren().get(0).setStyle("-fx-opacity: 1;");
+                    }catch (Exception e){}
+                }
                 setGraphic(container);
             }
         }
