@@ -163,6 +163,7 @@ public class MainPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+
     ArrayList<EventHelper> contents = new ArrayList<>();
     for(Event e : server.getEvents()){
       contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
@@ -288,8 +289,24 @@ public class MainPageCtrl implements Controller, Initializable {
   }
   public void toggleLanguage(){
       System.out.println("image pressed " + counter++);
-      ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
-      createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
+    // Custom control to force reloading of the resource bundle
+    ResourceBundle.Control control = new ResourceBundle.Control() {
+      @Override
+      public long getTimeToLive(String baseName, Locale locale) {
+        return ResourceBundle.Control.TTL_DONT_CACHE;
+      }
+
+      @Override
+      public boolean needsReload(String baseName, Locale locale,
+                                 String format, ClassLoader loader,
+                                 ResourceBundle bundle, long loadTime) {
+        return true;
+      }
+    };
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale, control);
+    ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+
+    createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
       joinEventLabel.setText(resourceBundle.getString("joinEventText"));
       joinButton.setText(resourceBundle.getString("joinText"));
       adminButton.setText(resourceBundle.getString("adminText"));
@@ -313,11 +330,11 @@ public class MainPageCtrl implements Controller, Initializable {
   public void prepareAnimation(){
     // Shrink transition
     ScaleTransition shrink = new ScaleTransition(Duration.millis(150), flagButton);
-    shrink.setToY(0.0); // Shrink to disappear on the Y axis
+    shrink.setToY(0.0);
     shrink.setInterpolator(Interpolator.EASE_BOTH);
 
     ScaleTransition restore = new ScaleTransition(Duration.millis(150), flagButton);
-    restore.setToY(1); // Restore to original size on the Y axis
+    restore.setToY(1);
     restore.setInterpolator(Interpolator.EASE_BOTH);
 
     seqTransition = new SequentialTransition(shrink, restore);
