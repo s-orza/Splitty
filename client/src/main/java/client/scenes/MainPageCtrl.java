@@ -287,6 +287,10 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.play();
     }
   }
+
+  /**
+   * this is a very bad attempt to do a live language switching which appears to be impossible
+   */
   public void toggleLanguage(){
       System.out.println("image pressed " + counter++);
     // Custom control to force reloading of the resource bundle
@@ -306,7 +310,7 @@ public class MainPageCtrl implements Controller, Initializable {
     ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale, control);
     ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
 
-    createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
+      createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
       joinEventLabel.setText(resourceBundle.getString("joinEventText"));
       joinButton.setText(resourceBundle.getString("joinText"));
       adminButton.setText(resourceBundle.getString("adminText"));

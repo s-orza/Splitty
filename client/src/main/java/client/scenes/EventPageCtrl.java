@@ -298,7 +298,6 @@ public class EventPageCtrl implements Controller{
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
        try{
-           eventName.setText(resourceBundle.getString("eventNameText"));
            eventCode.setText(resourceBundle.getString("eventCodeText"));
            addExpense.setText(resourceBundle.getString("addExpenseText"));
            removeExpense.setText(resourceBundle.getString("removeExpenseText"));
