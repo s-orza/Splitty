@@ -26,7 +26,7 @@ public class PasswordController {
      * @return OK - 200 and the password if success, else NOT FOUND - 404
      */
     @GetMapping("")
-    private ResponseEntity<Password> getPass() {
+    public ResponseEntity<Password> getPass() {
         List<Password> passwords = repo.findAll();
 
         // null check
@@ -44,7 +44,7 @@ public class PasswordController {
      *         else if the pass is invalid or a pass exists: BAD REQUEST - 400,
      */
     @PostMapping("")
-    private ResponseEntity<Password> addPass(@RequestBody Password pass) {
+    public ResponseEntity<Password> addPass(@RequestBody Password pass) {
         // Check if debt is null or if a pass exists
         if(Objects.isNull(pass) || getPass().getStatusCode().is2xxSuccessful()){
             return ResponseEntity.badRequest().build();
@@ -72,4 +72,32 @@ public class PasswordController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    /**
+     * Authenticates a string against the password
+     * @return OK - 200 and whether the string is correct,
+     *         else NOT FOUND - 404 if the pass/string were invalid
+     */
+    @GetMapping("")
+    public ResponseEntity<Boolean> authenticateString(String pass) {
+        // check for null or error
+        if(Objects.isNull(pass) || getPass().getStatusCode().isError()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        // retrieve pass and check if null
+        Password realPass = getPass().getBody();
+        if(Objects.isNull(realPass) || Objects.isNull(realPass.getPassword())){
+            return ResponseEntity.badRequest().build();
+        }
+
+        // check passwords
+        if(pass.equals(realPass.getPassword())){
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.ok(false);
+        }
+    }
+
+
 }
