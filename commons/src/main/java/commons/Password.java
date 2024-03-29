@@ -14,11 +14,18 @@ public class Password {
     private int length = 7;
     private String password;
 
+    /**
+     * Constructor for a password
+     */
     public Password() {
         password = genPass();
 
     }
 
+    /**
+     * Constructor for a password of specified length
+     * @param length length of password
+     */
     public Password(int length) {
         this.length = length;
         password = genPass();

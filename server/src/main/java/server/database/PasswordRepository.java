@@ -1,7 +1,7 @@
 package server.database;
 
-import commons.Debt;
+import commons.Password;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PasswordRepository extends JpaRepository<Debt, Long>  {
+public interface PasswordRepository extends JpaRepository<Password, Long>  {
 }
