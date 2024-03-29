@@ -9,9 +9,10 @@ import server.database.PasswordRepository;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/quotes")
+@RequestMapping("/api/password")
 public class PasswordController {
 
     @Autowired
@@ -45,59 +46,61 @@ public class PasswordController {
      */
     @PostMapping("")
     public ResponseEntity<Password> addPass(@RequestBody Password pass) {
-        // Check if debt is null or if a pass exists
+        // Check if password is null or if a pass exists
         if(Objects.isNull(pass) || getPass().getStatusCode().is2xxSuccessful()){
             return ResponseEntity.badRequest().build();
         }
+        System.out.println("Password: " + pass.getPassword());
         return ResponseEntity.ok(pass);
     }
 
     /**
      * Deletes a Password
-     * @param pass the password to be settled
+     * @param id the id of the password to be settled
      * @return OK - 200 and the pass if it is found,
      *         else if the pass is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
-    @DeleteMapping("")
-    public ResponseEntity<Password> deletePass(@RequestBody Password pass) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Password> deletePass(@PathVariable("id") long id) {
         // check if pass is null
-        if(Objects.isNull(pass)){return ResponseEntity.badRequest().build();}
+        if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
 
         //check if pass exists, and delete
-        if (repo.existsById(pass.getDebtID())) {
-            repo.delete(pass);
-            return ResponseEntity.ok(pass);
+        Optional<Password> password = repo.findById(id);
+        if (password.isPresent()) {
+            repo.delete(password.get());
+            return ResponseEntity.ok(password.get());
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    /**
-     * Authenticates a string against the password
-     * @return OK - 200 and whether the string is correct,
-     *         else NOT FOUND - 404 if the pass/string were invalid
-     */
-    @GetMapping("")
-    public ResponseEntity<Boolean> authenticateString(String pass) {
-        // check for null or error
-        if(Objects.isNull(pass) || getPass().getStatusCode().isError()){
-            return ResponseEntity.badRequest().build();
-        }
-
-        // retrieve pass and check if null
-        Password realPass = getPass().getBody();
-        if(Objects.isNull(realPass) || Objects.isNull(realPass.getPassword())){
-            return ResponseEntity.badRequest().build();
-        }
-
-        // check passwords
-        if(pass.equals(realPass.getPassword())){
-            return ResponseEntity.ok(true);
-        } else {
-            return ResponseEntity.ok(false);
-        }
-    }
+//    /**
+//     * Authenticates a string against the password
+//     * @return OK - 200 and whether the string is correct,
+//     *         else NOT FOUND - 404 if the pass/string were invalid
+//     */
+//    @GetMapping("")
+//    public ResponseEntity<Boolean> authenticateString(String pass) {
+//        // check for null or error
+//        if(Objects.isNull(pass) || getPass().getStatusCode().isError()){
+//            return ResponseEntity.badRequest().build();
+//        }
+//
+//        // retrieve pass and check if null
+//        Password realPass = getPass().getBody();
+//        if(Objects.isNull(realPass) || Objects.isNull(realPass.getPassword())){
+//            return ResponseEntity.badRequest().build();
+//        }
+//
+//        // check passwords
+//        if(pass.equals(realPass.getPassword())){
+//            return ResponseEntity.ok(true);
+//        } else {
+//            return ResponseEntity.ok(false);
+//        }
+//    }
 
 
 }

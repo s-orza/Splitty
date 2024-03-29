@@ -566,4 +566,47 @@ public class ServerUtils {
 			return true;
 		return false;
 	}
+
+	/**
+	 * connects to the database through the endpoint to add password
+	 * @param password password to be added
+	 */
+	public void addPassword(Password password) {
+		ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.post(Entity.entity(password, APPLICATION_JSON), Password.class);
+		System.out.println("Password added successfully.");
+	}
+
+	/**
+	 * connects to the database through the endpoint to get password
+	 */
+	public Password getPass() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<Password>() {});
+	}
+
+	/**
+	 * connects to the database through the endpoint to delete an event
+	 * @param id ID of the password
+	 * @throws Exception If password could not be removed
+	 */
+	public void deletePass (long id) throws Exception {
+		Response response = ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password/" + id) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.delete();
+		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+			System.out.println("Password removed successfully.");
+		} else {
+			throw new Exception("Failed to remove password. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
 }

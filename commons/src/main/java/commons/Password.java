@@ -9,7 +9,7 @@ import java.util.Random;
 @Entity
 public class Password {
     @Id
-    private long debtID;
+    private long passID;
 
     private int length = 7;
     private String password;
@@ -53,8 +53,8 @@ public class Password {
      *
      * @return debtID of this object
      **/
-    public long getDebtID() {
-        return debtID;
+    public long getPassID() {
+        return passID;
     }
 
     /**
@@ -62,8 +62,8 @@ public class Password {
      *
      * @param debtID The value to set debtID to
      **/
-    public void setDebtID(long debtID) {
-        this.debtID = debtID;
+    public void setPassID(long passID) {
+        this.passID = passID;
     }
 
     /**
