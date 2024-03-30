@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.checkerframework.checker.initialization.qual.Initialized;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -39,6 +40,7 @@ public class LoginAdminCtrl implements Controller, Initializable {
     @Inject
     public LoginAdminCtrl(ServerUtils server) {
         this.server = server;
+
     }
 
     public void login(ActionEvent e){
@@ -49,8 +51,13 @@ public class LoginAdminCtrl implements Controller, Initializable {
         // authenticate password
         String password = server.getPass().getPassword();
         if(!password.equals(passcode)){
+            System.out.println("Wrong Password");
+            loginInput.setStyle("-fx-background-color: #FF999C;");
+            loginInput.setText("");
+            passwordText.setText("Wrong Password");
             return;
         }
+        System.out.println("Password Accepted");
 
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AdminPageCtrl adminPageCtrl = new AdminPageCtrl(server);
