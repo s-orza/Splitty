@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.PasswordRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,32 +25,62 @@ public class PasswordController {
 
     /**
      * Get request for retrieving the password
-     * @return OK - 200 and the password if success, else NOT FOUND - 404
+     * @return OK - 200 and the password if success
      */
     @GetMapping("")
-    public ResponseEntity<Password> getPass() {
+    private ResponseEntity<List<Password>> getPasswords() {
         List<Password> passwords = repo.findAll();
+
+        // return empty
+        if(passwords.size()==0){
+            return ResponseEntity.ok(passwords);
+        }
 
         // null check
         if(Objects.isNull(passwords.get(0))){
             return ResponseEntity.notFound().build();
         }
-        Password pass = passwords.get(0);
-        return ResponseEntity.ok(pass);
+
+        return ResponseEntity.ok(passwords);
+    }
+
+    /**
+     * Get request for retrieving the password
+     * @return OK - 200 and the password if success, BAD REQUEST - 400 else
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Password> getPassword() {
+        List<Password> passwords = repo.findAll();
+
+        // return empty
+        if(passwords.size()==0){
+            System.out.println("retrieved no Password");
+            return ResponseEntity.badRequest().build();
+        }
+
+        // null check
+        if(Objects.isNull(passwords.get(0))){
+            return ResponseEntity.badRequest().build();
+        }
+
+        System.out.println("retrieved Pass: " + passwords.get(0).getPassword());
+        return ResponseEntity.ok(passwords.get(0));
     }
 
     /**
      * Adds a new password to the database (only if no other exists yet)
      * @param pass the new password
      * @return OK - 200 and the pass that was added on success,
-     *         else if the pass is invalid or a pass exists: BAD REQUEST - 400,
+     *         else if the pass is invalid or a pass exists: BAD REQUEST - 400
      */
     @PostMapping("")
     public ResponseEntity<Password> addPass(@RequestBody Password pass) {
         // Check if password is null or if a pass exists
-        if(Objects.isNull(pass) || getPass().getStatusCode().is2xxSuccessful()){
+        if(Objects.isNull(pass) || Objects.requireNonNull(getPasswords().getBody()).size()>0){
+            System.out.println("Password: exists or is null");
             return ResponseEntity.badRequest().build();
         }
+        repo.save(pass);
         System.out.println("Password: " + pass.getPassword());
         return ResponseEntity.ok(pass);
     }
@@ -70,10 +101,28 @@ public class PasswordController {
         Optional<Password> password = repo.findById(id);
         if (password.isPresent()) {
             repo.delete(password.get());
+            System.out.println("Deleted Pass: " + password.get().getPassword());
             return ResponseEntity.ok(password.get());
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * Deletes a Password
+     * @return OK - 200
+     */
+    @DeleteMapping("")
+    public ResponseEntity<Password> deleteAllPass() {
+        List<Password> passwords = getPasswords().getBody();
+
+        assert passwords != null;
+        for (Password pass: passwords) {
+            deletePass(pass.getPassID());
+        }
+
+        System.out.println("deleted all");
+        return ResponseEntity.ok().build();
     }
 
 //    /**

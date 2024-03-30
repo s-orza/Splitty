@@ -1,14 +1,15 @@
 package commons;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
-import java.nio.charset.Charset;
 import java.util.Random;
 
 @Entity
 public class Password {
     @Id
+    @GeneratedValue
     private long passID;
 
     private int length = 7;

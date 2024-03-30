@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Password;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
@@ -48,11 +49,19 @@ public class LoginAdminCtrl implements Controller, Initializable {
     public void login(ActionEvent e){
         System.out.println("login to admin page");
         String passcode = loginInput.getText();
-        System.out.println(passcode);
+        System.out.println("submitted pass:"+passcode);
+
+
+
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AdminPageCtrl adminPageCtrl = new AdminPageCtrl(server);
         mainCtrl.initialize(stage, adminPageCtrl.getPair(), adminPageCtrl.getTitle());
     }
+//
+//    public boolean authenticatePass(String input){
+//        String password = server.getPass().
+//    }
+
     public void close(ActionEvent e){
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();

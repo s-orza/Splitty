@@ -1114,3 +1114,9 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/serba/M
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 59 more
+2024-03-29 19:21:27.769766+01:00 jdbc[14]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM PERSON QUOTE [*]PASSWORD"; SQL statement:
+SELECT * FROM PERSON QUOTE PASSWORD [42000-224]
+2024-03-29 19:44:11.725306+01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]PERSON PASSWORD"; expected "PREPARE"; SQL statement:
+PERSON PASSWORD [42001-224]

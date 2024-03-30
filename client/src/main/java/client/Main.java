@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import client.scenes.*;
 import client.utils.ServerUtils;
 
+import commons.Password;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -31,7 +32,7 @@ public class Main extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage){
+  public void start(Stage primaryStage) throws Exception {
     // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
 
     MainCtrl mainCtrl = new MainCtrl();
