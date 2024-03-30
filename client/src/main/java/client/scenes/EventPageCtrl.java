@@ -189,9 +189,9 @@ public class EventPageCtrl implements Controller{
 
         String destination = "/topic/expenses/" + server.getCurrentId();
         server.registerForMessages(destination, Expense.class, t -> {
-            System.out.println("works");
             expenseData.remove(t);
         });
+
         //we need this to get the id of the selected person
         indexesToIds=new HashMap<>();
         List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
@@ -206,6 +206,15 @@ public class EventPageCtrl implements Controller{
             indexesToIds.put(k,p.getParticipantID());
             k++;
         }
+
+        server.registerForMessages("/topic/participant/event/"+ server.getCurrentId(), Participant.class, t -> {
+            participantsData.add(t);
+        });
+
+        server.registerForMessages("/topic/participant"+ server.getCurrentId(), Participant.class, t -> {
+            participantsData.remove(t);
+        });
+
         searchByComboBox.setItems(participantsToSelectFrom);
         fromxButton.setText("From ?");
         includingxButton.setText("Including ?");
