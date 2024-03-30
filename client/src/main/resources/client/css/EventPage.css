@@ -10,7 +10,7 @@
 
 .button-styled {
     -fx-background-color: #53D3D1;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #000000;
     -fx-border-color: #002447;
     -fx-border-width: 1;
     -fx-border-radius: 5;
@@ -61,7 +61,7 @@
 }
 
 .text-field:focused {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #e8e8e8;
 }
 
 
