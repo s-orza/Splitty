@@ -14,20 +14,12 @@ import javafx.event.ActionEvent;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-
 import javafx.scene.image.Image;
-
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -85,13 +77,13 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void createEvent(ActionEvent e){
     if (createInput.getText().equals("")){
-      popup("Name can't be empty!");
+      mainCtrl.popup("Name can't be empty!", "Waring!");
       return;
     }
     Event newEvent = new Event(createInput.getText());
     for(Event event : server.getEvents()) {
       if (event.getName().equals(newEvent.getName())) {
-        popup("Event already exists!");
+        mainCtrl.popup("Event already exists!", "Warning!");
         return;
       }
     }
@@ -108,29 +100,6 @@ public class MainPageCtrl implements Controller, Initializable {
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
-  private void popup(String text){
-    VBox layout = new VBox(10);
-    Label label = new Label(text);
-    Button cancelButton = new Button("Cancel");
-
-    // Set up the stage
-    Stage popupStage = new Stage();
-    popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle("Warning!");
-
-    cancelButton.setOnAction(e -> {
-      popupStage.close();
-    });
-
-    // Set up the layout
-    layout.getChildren().addAll(label, cancelButton);
-    layout.setAlignment(Pos.CENTER);
-
-    // Set the scene and show the stage
-    Scene scene = new Scene(layout, 370, 150);
-    popupStage.setScene(scene);
-    popupStage.showAndWait();
-  }
 
   public void joinEvent(ActionEvent event) {
     System.out.println("Join event window");
