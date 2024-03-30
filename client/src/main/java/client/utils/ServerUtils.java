@@ -554,6 +554,11 @@ public class ServerUtils {
 //		session.send(dest, o, eventID);
 	}
 
+	public void sendRemoveExpense(String dest, Expense o) {
+		session.send(dest, o);
+//		session.send(dest, o, eventID);
+	}
+
 	//PUT functions (update)
 	public Expense updateExpense(long expenseId,Expense expense)
 	{

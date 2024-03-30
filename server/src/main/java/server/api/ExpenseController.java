@@ -329,6 +329,14 @@ public class ExpenseController {
     }
     //here to put the DELETE APIs
 
+
+    @Transactional
+    @MessageMapping("expenses/{eventId}")
+    public Expense deleteExpenseMessage(@DestinationVariable @NonNull Long eventId, @Payload Expense expense) {
+        deleteExpById(eventId, expense.getExpenseId());
+        return expense;
+    }
+
     /**
      * This function deletes an expense from an event, and it's
      * expense-event connection with the event. If the expense-event

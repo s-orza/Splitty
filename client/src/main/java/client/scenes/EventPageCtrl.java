@@ -186,6 +186,12 @@ public class EventPageCtrl implements Controller{
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
             expenseData.add(e);
         });
+
+        String destination = "/topic/expenses/" + server.getCurrentId();
+        server.registerForMessages(destination, Expense.class, t -> {
+            System.out.println("works");
+            expenseData.remove(t);
+        });
         //we need this to get the id of the selected person
         indexesToIds=new HashMap<>();
         List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
@@ -624,7 +630,8 @@ public class EventPageCtrl implements Controller{
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
         for (Expense x: toRemove) {
-            server.deleteExpenseFromEvent(server.getCurrentId(), x.getExpenseId());
+            String destination = "/app/expenses/" + String.valueOf(server.getCurrentId());
+            server.sendRemoveExpense(destination,x);
         }
         // this method will remove the expenses from the database
     }
