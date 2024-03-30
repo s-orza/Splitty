@@ -609,4 +609,22 @@ public class ServerUtils {
 		}
 		response.close();
 	}
+
+	/**
+	 * connects to the database through the endpoint to delete an event
+	 * @throws Exception If password could not be removed
+	 */
+	public void deleteAllPass () throws Exception {
+		Response response = ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password/") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.delete();
+		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+			System.out.println("Password/s removed successfully.");
+		} else {
+			throw new Exception("Failed to remove password/s. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
 }

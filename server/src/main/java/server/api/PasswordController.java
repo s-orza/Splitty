@@ -27,7 +27,6 @@ public class PasswordController {
      * Get request for retrieving the password
      * @return OK - 200 and the password if success
      */
-    @GetMapping("")
     private ResponseEntity<List<Password>> getPasswords() {
         List<Password> passwords = repo.findAll();
 
@@ -48,7 +47,7 @@ public class PasswordController {
      * Get request for retrieving the password
      * @return OK - 200 and the password if success, BAD REQUEST - 400 else
      */
-    @GetMapping("/{id}")
+    @GetMapping("")
     public ResponseEntity<Password> getPassword() {
         List<Password> passwords = repo.findAll();
 
