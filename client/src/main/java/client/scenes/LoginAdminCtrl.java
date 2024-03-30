@@ -46,16 +46,17 @@ public class LoginAdminCtrl implements Controller, Initializable {
         String passcode = loginInput.getText();
         System.out.println("submitted pass:"+passcode);
 
-
+        // authenticate password
+        String password = server.getPass().getPassword();
+        if(!password.equals(passcode)){
+            return;
+        }
 
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AdminPageCtrl adminPageCtrl = new AdminPageCtrl(server);
         mainCtrl.initialize(stage, adminPageCtrl.getPair(), adminPageCtrl.getTitle());
     }
-//
-//    public boolean authenticatePass(String input){
-//        String password = server.getPass().
-//    }
+
 
     public void close(ActionEvent e){
         System.out.println("close window");
