@@ -102,7 +102,14 @@ public class StatisticsCtrl implements Controller, Initializable {
             tagsListView.getItems().add(t.getId().getName());
         });
 
+        String destination = "/topic/expenses/tag/" + server.getCurrentId();
+        server.registerForMessages(destination, Expense.class, t -> {
+            System.out.println("also works");
+//            Map<String, Double> tagsWithValues=getTagsWithValuesFromExpenses(expenses);
+//            createPieChart(tagsWithValues);
+        });
         refresh();
+
     }
 
     /**

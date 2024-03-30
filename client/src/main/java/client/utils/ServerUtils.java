@@ -24,7 +24,9 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +41,7 @@ import jakarta.ws.rs.core.GenericType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
@@ -528,22 +531,27 @@ public class ServerUtils {
 		}
 		throw new IllegalStateException();
 	}
-	public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
-		session.subscribe(dest, new StompFrameHandler() {
-			@Override
-			public Type getPayloadType(StompHeaders headers) {
-				return type;
-			}
+		public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
+			session.subscribe(dest, new StompFrameHandler() {
+				@Override
+				public Type getPayloadType(StompHeaders headers) {
+					return type;
+				}
 
-			@Override
-			public void handleFrame(StompHeaders headers, Object payload) {
-				consumer.accept((T) payload);
-			}
-		});
+				@Override
+				public void handleFrame(StompHeaders headers, Object payload) {
+					consumer.accept((T) payload);
+				}
+			});
+		}
+
+	public void sendTag(String dest, Object o) {
+		session.send(dest, o);
 	}
 
-	public void send(String dest, Object o) {
+	public void sendExpense(String dest, Expense o) {
 		session.send(dest, o);
+//		session.send(dest, o, eventID);
 	}
 
 	//PUT functions (update)
