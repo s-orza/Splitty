@@ -60,7 +60,6 @@ public class PasswordController {
             return ResponseEntity.badRequest().build();
         }
 
-        System.out.println("retrieved Pass: " + passwords.get(0).getPassword());
         return ResponseEntity.ok(passwords.get(0));
     }
 
@@ -78,7 +77,7 @@ public class PasswordController {
             return ResponseEntity.badRequest().build();
         }
         repo.save(pass);
-        System.out.println("Password: " + pass.getPassword());
+        System.out.println("New Password: " + pass.getPassword());
         return ResponseEntity.ok(pass);
     }
 
@@ -118,35 +117,6 @@ public class PasswordController {
             deletePass(pass.getPassID());
         }
 
-        System.out.println("deleted all");
         return ResponseEntity.ok().build();
     }
-
-//    /**
-//     * Authenticates a string against the password
-//     * @return OK - 200 and whether the string is correct,
-//     *         else NOT FOUND - 404 if the pass/string were invalid
-//     */
-//    @GetMapping("")
-//    public ResponseEntity<Boolean> authenticateString(String pass) {
-//        // check for null or error
-//        if(Objects.isNull(pass) || getPass().getStatusCode().isError()){
-//            return ResponseEntity.badRequest().build();
-//        }
-//
-//        // retrieve pass and check if null
-//        Password realPass = getPass().getBody();
-//        if(Objects.isNull(realPass) || Objects.isNull(realPass.getPassword())){
-//            return ResponseEntity.badRequest().build();
-//        }
-//
-//        // check passwords
-//        if(pass.equals(realPass.getPassword())){
-//            return ResponseEntity.ok(true);
-//        } else {
-//            return ResponseEntity.ok(false);
-//        }
-//    }
-
-
 }

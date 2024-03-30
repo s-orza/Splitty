@@ -602,7 +602,7 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
-		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			System.out.println("Password removed successfully.");
 		} else {
 			throw new Exception("Failed to remove password. Status code: " + response.getStatus());
@@ -620,7 +620,7 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
-		if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			System.out.println("Password/s removed successfully.");
 		} else {
 			throw new Exception("Failed to remove password/s. Status code: " + response.getStatus());

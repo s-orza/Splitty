@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Event;
+import commons.Password;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,10 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -42,6 +40,13 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
   private TableColumn<EventHelper, String> tableTitle;
+
+  @FXML
+  private Button generatePassButton;
+
+  @FXML
+  private TextField passLengthField;
+
   @FXML
   private Label showEvent;
 
@@ -158,6 +163,14 @@ public class AdminPageCtrl implements Controller, Initializable {
         showEvent.setText("");
       }
     });
+
+    // add listener for pass length
+    passLengthField.clear();
+    passLengthField.textProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue.matches("-?\\d?")) {
+        passLengthField.setText(oldValue);
+      }
+    });
   }
   public void stop () {
     server.stop2();
@@ -167,6 +180,18 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
   public String getTitle(){
     return "Admin Page";
+  }
+
+  public void generatePassword() throws Exception {
+    if(passLengthField.getText().isEmpty()){
+      server.deletePass(server.getPass().getPassID());
+      server.addPassword(new Password());
+      return;
+    }
+    int length = Integer.parseInt(passLengthField.getText());
+
+    server.deletePass(server.getPass().getPassID());
+    server.addPassword(new Password(length));
   }
 }
 
