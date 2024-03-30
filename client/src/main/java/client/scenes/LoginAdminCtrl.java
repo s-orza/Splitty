@@ -11,7 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.checkerframework.checker.initialization.qual.Initialized;
 
 import javax.inject.Inject;
 import java.net.URL;
