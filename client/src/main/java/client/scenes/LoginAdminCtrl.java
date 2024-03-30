@@ -1,27 +1,22 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import commons.Password;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static client.scenes.MainPageCtrl.currentLocale;
-
-
-import javax.inject.Inject;
 
 
 public class LoginAdminCtrl implements Controller, Initializable {

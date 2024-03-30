@@ -22,11 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import server.api.PasswordController;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @SpringBootApplication
 @EntityScan(basePackages = {"commons", "server" })

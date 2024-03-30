@@ -15,15 +15,16 @@
  */
 package client;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import client.scenes.*;
+import client.scenes.AdminPageCtrl;
+import client.scenes.EventPageCtrl;
+import client.scenes.MainCtrl;
+import client.scenes.MainPageCtrl;
 import client.utils.ServerUtils;
-
-import commons.Password;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Main extends Application {
 
