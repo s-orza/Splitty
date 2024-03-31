@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -35,21 +36,26 @@ public class AddParticipantCtrl implements Controller{
     private TextField bic;
     @FXML
     private Text warningText;
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+    private static Injector INJECTOR;
+    private static MyFXML FXML;
+    private static MainCtrl mainCtrl;
+    private static Alert warning;
     
     @Inject
     public AddParticipantCtrl(ServerUtils server){
         this.server = server;
+        initialize();
     }
 
     @FXML
     public void initialize(){
-
-        // TODO
-        // a method that
         System.out.println("Initializing AddParticipantCtrl...");
+
+        // Initializing everything related to the
+        INJECTOR = createInjector(new MyModule());
+        FXML = new MyFXML(INJECTOR);
+        mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        warningText = new Text();
     }
 
     /**
@@ -57,34 +63,63 @@ public class AddParticipantCtrl implements Controller{
      */
     @FXML
     void addParticipantToEvent(ActionEvent event) {
-        if (name.getText().isEmpty()) {
-            System.out.println("Name field is empty warning displayed");
-            warningText.setText("Name field is empty");
+        if(checkAnyFieldIsEmpty(event))
             return;
-        }
-        if (email.getText().isEmpty()) {
-            System.out.println("Email field is empty warning displayed");
-            warningText.setText("Email field is empty");
-            return;
-        }
-        if (iban.getText().isEmpty()) {
-            System.out.println("IBAN field is empty warning displayed");
-            warningText.setText("IBAN field is empty");
-            return;
-        }
-        if (bic.getText().isEmpty()) {
-            System.out.println("BIC field is empty warning displayed");
-            warningText.setText("BIC field is empty");
-            return;
-        }
+
         Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         try {
-            //TODO
-            // make the eventID be specific to each event
             server.addParticipantEvent(newParticipant, server.getCurrentId());
             close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
+        }
+    }
+
+    private boolean checkAnyFieldIsEmpty(ActionEvent event) {
+        if (name.getText().isEmpty()) {
+            System.out.println("Name field is empty warning displayed");
+            warningText.setText("Name field is empty");
+            displayError(event, "Name");
+            return true;
+        }
+        if (email.getText().isEmpty()) {
+            System.out.println("Email field is empty warning displayed");
+            warningText.setText("Email field is empty");
+            displayError(event, "Email");
+            return true;
+        }
+        if (iban.getText().isEmpty()) {
+            System.out.println("IBAN field is empty warning displayed");
+            warningText.setText("IBAN field is empty");
+            displayError(event, "IBAN");
+            return true;
+        }
+        if (bic.getText().isEmpty()) {
+            System.out.println("BIC field is empty warning displayed");
+            warningText.setText("BIC field is empty");
+            displayError(event, "BIC");
+            return true;
+        }
+        return false;
+    }
+
+    public void displayError(ActionEvent event, String cause){
+        switch(cause){
+            case "Name" -> {
+                System.out.println("Name field is empty!");
+            }
+            case "Email" -> {
+                System.out.println("Email field is empty!");
+            }
+            case "IBAN" -> {
+                System.out.println("IBAN field is empty!");
+            }
+            case "BIC" -> {
+                System.out.println("BIC field is empty!");
+            }
+            default -> {
+                System.out.println("Unrecognized field...");
+            }
         }
     }
 
