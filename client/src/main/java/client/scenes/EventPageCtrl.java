@@ -207,7 +207,8 @@ public class EventPageCtrl implements Controller{
             k++;
         }
 
-        server.registerForMessages("/topic/participant/event/"+ String.valueOf(server.getCurrentId()), Participant.class, t -> {
+        server.registerForMessages("/topic/participant/event/"+
+                String.valueOf(server.getCurrentId()), Participant.class, t -> {
             participantsData.add(t);
         });
 

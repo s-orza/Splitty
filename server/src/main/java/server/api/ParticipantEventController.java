@@ -3,7 +3,6 @@ package server.api;
 import java.util.ArrayList;
 import java.util.Optional;
 import commons.Event;
-import commons.Expense;
 import commons.Participant;
 import java.util.List;
 import commons.ParticipantEvent;
@@ -64,14 +63,16 @@ public class ParticipantEventController {
 
     @Transactional
     @MessageMapping("participant/event/{eventId}")
-    public Participant ParticipantMessage(@DestinationVariable @NonNull Long eventId, @Payload Participant participant) {
+    public Participant ParticipantMessage(@DestinationVariable @NonNull Long eventId,
+                                          @Payload Participant participant) {
         createParticipantEvent(eventId, participant);
         return participant;
     }
 
     @Transactional
     @MessageMapping("participant/{eventId}")
-    public Participant RemoveParticipantMessage(@DestinationVariable @NonNull Long eventId, @Payload Participant participant) {
+    public Participant RemoveParticipantMessage(@DestinationVariable @NonNull Long eventId,
+                                                @Payload Participant participant) {
         deleteParticipantEvent(eventId, participant.getParticipantID());
         return participant;
     }
