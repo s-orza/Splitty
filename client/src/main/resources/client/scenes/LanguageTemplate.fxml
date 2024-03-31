@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LanguageTemplateCtrl">
+   <children>
+      <Label fx:id="addNewLanguageText" layoutX="14.0" layoutY="14.0" prefHeight="87.0" prefWidth="227.0" text="Add a new language!">
+         <font>
+            <Font size="23.0" />
+         </font>
+      </Label>
+      <Label fx:id="overridesLanguageText" layoutX="14.0" layoutY="84.0" text="?" />
+      <Label fx:id="whatTheLanguageCalledText" layoutX="354.0" layoutY="49.0" text="?" />
+      <TextField layoutX="353.0" layoutY="80.0" promptText="Language Name" />
+      <Label fx:id="pleaseFillInText" layoutX="14.0" layoutY="106.0" text="?" />
+      <Label fx:id="joinEventText" layoutX="14.0" layoutY="138.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="joinText" layoutX="159.0" layoutY="138.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="recentEventsText" layoutX="304.0" layoutY="138.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="createText" layoutX="450.0" layoutY="138.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="createNewEventText" layoutX="633.0" layoutY="138.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="adminText" layoutX="802.0" layoutY="134.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="joinEventInput" layoutX="14.0" layoutY="156.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="adminInput" layoutX="802.0" layoutY="152.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="createNewEventInput" layoutX="633.0" layoutY="156.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="createInput" layoutX="450.0" layoutY="156.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="recentEventsInput" layoutX="304.0" layoutY="156.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="joinInput" layoutX="159.0" layoutY="156.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="titleText" layoutX="14.0" layoutY="182.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="joinCodeText" layoutX="159.0" layoutY="182.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="cancelText" layoutX="304.0" layoutY="182.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="eventNameText" layoutX="450.0" layoutY="182.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="eventCodeText" layoutX="633.0" layoutY="182.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="addExpenseText" layoutX="802.0" layoutY="178.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="titleInput" layoutX="14.0" layoutY="200.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="addExpenseInput" layoutX="802.0" layoutY="196.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="eventCodeInput" layoutX="633.0" layoutY="200.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="eventNameInput" layoutX="450.0" layoutY="200.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="cancelInput" layoutX="304.0" layoutY="200.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="joinCodeInput" layoutX="159.0" layoutY="200.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="removeExpenseText" layoutX="14.0" layoutY="226.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="authorText" layoutX="159.0" layoutY="226.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="descriptionText" layoutX="304.0" layoutY="226.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="amountText" layoutX="450.0" layoutY="226.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="currencyText" layoutX="633.0" layoutY="226.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="participantsText" layoutX="802.0" layoutY="222.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="removeExpenseInput" layoutX="14.0" layoutY="244.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="participantsInput" layoutX="802.0" layoutY="240.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="currencyInput" layoutX="633.0" layoutY="244.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="amountInput" layoutX="450.0" layoutY="244.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="descriptionInput" layoutX="304.0" layoutY="244.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="authorInput" layoutX="159.0" layoutY="244.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="dateText" layoutX="14.0" layoutY="278.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="typeText" layoutX="159.0" layoutY="278.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="addParticipantText" layoutX="304.0" layoutY="278.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="editEventNameText" layoutX="450.0" layoutY="278.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="viewDebtsText" layoutX="633.0" layoutY="278.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="passwordText" layoutX="802.0" layoutY="274.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="dateInput" layoutX="14.0" layoutY="296.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="passwordInput" layoutX="802.0" layoutY="292.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="viewDebtsInput" layoutX="633.0" layoutY="296.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="editEventNameInput" layoutX="450.0" layoutY="296.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="addParticipantInput" layoutX="304.0" layoutY="296.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="typeInput" layoutX="159.0" layoutY="296.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="loginText" layoutX="14.0" layoutY="322.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="addEditExpenseText" layoutX="159.0" layoutY="322.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="whoPaidText" layoutX="304.0" layoutY="322.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="forWhatText" layoutX="450.0" layoutY="322.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="howMuchText" layoutX="633.0" layoutY="322.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="whenText" layoutX="802.0" layoutY="318.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="loginInput" layoutX="10.0" layoutY="356.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="whenInput" layoutX="798.0" layoutY="352.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="howMuchInput" layoutX="629.0" layoutY="356.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="forWhatInput" layoutX="446.0" layoutY="356.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="whoPaidInput" layoutX="300.0" layoutY="356.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="addEditExpenseInput" layoutX="155.0" layoutY="356.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="expenseTypeText" layoutX="14.0" layoutY="386.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="howToSplitText" layoutX="159.0" layoutY="386.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="ebeText" layoutX="304.0" layoutY="386.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="obspText" layoutX="450.0" layoutY="386.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="selectPersonText" layoutX="633.0" layoutY="386.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="cantText" layoutX="802.0" layoutY="382.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="expenseTypeInput" layoutX="12.0" layoutY="415.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="cantInput" layoutX="800.0" layoutY="411.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="selectPersonInput" layoutX="629.0" layoutY="424.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="obspInput" layoutX="448.0" layoutY="415.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="ebeInput" layoutX="302.0" layoutY="415.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="howToSplitInput" layoutX="157.0" layoutY="415.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="addText" layoutX="14.0" layoutY="469.0" maxWidth="156.0" text="Label" wrapText="true" />
+      <Label fx:id="dateWarning" layoutX="159.0" layoutY="469.0" maxWidth="156.0" text="Label" wrapText="true" />
+      <Label fx:id="forWhatWarning" layoutX="304.0" layoutY="469.0" maxWidth="156.0" text="Label" wrapText="true" />
+      <Label fx:id="negativeAmountWarning" layoutX="633.0" layoutY="469.0" maxWidth="156.0" text="Label" wrapText="true" />
+      <Label fx:id="authorWarning" layoutX="802.0" layoutY="468.0" maxWidth="156.0" text="Label" wrapText="true" />
+      <TextField fx:id="addInput" layoutX="10.0" layoutY="518.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="authorWarningInput" layoutX="794.0" layoutY="518.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="negativeAmountWarningInput" layoutX="617.0" layoutY="518.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="amountWarningInput" layoutX="446.0" layoutY="518.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="forWhatWarningInput" layoutX="296.0" layoutY="518.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="dateWarningInput" layoutX="151.0" layoutY="518.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="typeWarning" layoutX="6.0" layoutY="562.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="splitWarning" layoutX="151.0" layoutY="562.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="selectParticipantsWarning" layoutX="296.0" layoutY="562.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="removeExpenseQuestionText" layoutX="442.0" layoutY="562.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="removeText" layoutX="623.0" layoutY="571.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label fx:id="removeExpenseTitle" layoutX="794.0" layoutY="558.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="typeWarningInput" layoutX="4.0" layoutY="608.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="removeExpenseTitleInput" layoutX="786.0" layoutY="595.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="removeInput" layoutX="617.0" layoutY="599.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="removeExpenseQuestionInput" layoutX="434.0" layoutY="599.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="selectParticipantsWarningInput" layoutX="288.0" layoutY="599.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField fx:id="splitWarningInput" layoutX="143.0" layoutY="599.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Label fx:id="selectTypeText" layoutX="6.0" layoutY="630.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label layoutX="151.0" layoutY="630.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label layoutX="296.0" layoutY="630.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label layoutX="442.0" layoutY="635.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label layoutX="625.0" layoutY="630.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <Label layoutX="794.0" layoutY="626.0" maxWidth="150.0" text="Label" wrapText="true" />
+      <TextField fx:id="selectTypeInput" layoutX="6.0" layoutY="662.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField layoutX="794.0" layoutY="658.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField layoutX="625.0" layoutY="662.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField layoutX="434.0" layoutY="658.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField layoutX="296.0" layoutY="662.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <TextField layoutX="151.0" layoutY="662.0" maxWidth="150.0" prefHeight="26.0" prefWidth="111.0" />
+      <Button fx:id="cancelButton" layoutX="832.0" layoutY="14.0" mnemonicParsing="false" text="Cancel" />
+      <Button fx:id="saveButton" layoutX="838.0" layoutY="54.0" mnemonicParsing="false" text="Save" />
+      <Label fx:id="amountWarning" layoutX="449.0" layoutY="468.0" maxWidth="156.0"  text="Label" wrapText="true" />
+      <Label layoutX="687.0" layoutY="92.0" text="A Restart is needed for the new Language!" />
+   </children>
+</AnchorPane>

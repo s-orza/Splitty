@@ -14,20 +14,12 @@ import javafx.event.ActionEvent;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-
 import javafx.scene.image.Image;
-
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
-
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -62,6 +54,8 @@ public class MainPageCtrl implements Controller, Initializable {
   private Button adminButton;
   @FXML
   private ComboBox comboBox;
+  @FXML
+  private Button addLanguageButton;
 
   private EventHelper selectedEv;
   //Imports used to swap scenes
@@ -85,13 +79,13 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void createEvent(ActionEvent e){
     if (createInput.getText().equals("")){
-      popup("Name can't be empty!");
+      mainCtrl.popup("Name can't be empty!", "Waring!");
       return;
     }
     Event newEvent = new Event(createInput.getText());
     for(Event event : server.getEvents()) {
       if (event.getName().equals(newEvent.getName())) {
-        popup("Event already exists!");
+        mainCtrl.popup("Event already exists!", "Warning!");
         return;
       }
     }
@@ -108,29 +102,6 @@ public class MainPageCtrl implements Controller, Initializable {
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
-  private void popup(String text){
-    VBox layout = new VBox(10);
-    Label label = new Label(text);
-    Button cancelButton = new Button("Cancel");
-
-    // Set up the stage
-    Stage popupStage = new Stage();
-    popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle("Warning!");
-
-    cancelButton.setOnAction(e -> {
-      popupStage.close();
-    });
-
-    // Set up the layout
-    layout.getChildren().addAll(label, cancelButton);
-    layout.setAlignment(Pos.CENTER);
-
-    // Set the scene and show the stage
-    Scene scene = new Scene(layout, 370, 150);
-    popupStage.setScene(scene);
-    popupStage.showAndWait();
-  }
 
   public void joinEvent(ActionEvent event) {
     System.out.println("Join event window");
@@ -161,6 +132,7 @@ public class MainPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+
     ArrayList<EventHelper> contents = new ArrayList<>();
     for(Event e : server.getEvents()){
       contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
@@ -185,27 +157,38 @@ public class MainPageCtrl implements Controller, Initializable {
 
     if(currentLocale.getLanguage().equals("en")){
       putFlag("enFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("English");
     }
     if(currentLocale.getLanguage().equals("nl")){
       putFlag("nlFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Dutch");
     }
     if(currentLocale.getLanguage().equals("de")){
       putFlag("deFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("German");
     }
     if(currentLocale.getLanguage().equals("es")){
       putFlag("esFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Spanish");
+    }
+    if(currentLocale.getLanguage().equals("xx")){
+      putFlag("xxFlag.png");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+      comboBox.setItems(comboBoxItems);
+      comboBox.setPromptText("xx");
     }
     toggleLanguage();
     prepareAnimation();
@@ -216,6 +199,7 @@ public class MainPageCtrl implements Controller, Initializable {
       if(newValue.equals("Dutch")) changeFlag("nl");
       if(newValue.equals("Spanish")) changeFlag("es");
       if(newValue.equals("German")) changeFlag("de");
+      if(newValue.equals("Extra")) changeFlag("xx");
       toggleLanguage();
     });
 
@@ -223,6 +207,12 @@ public class MainPageCtrl implements Controller, Initializable {
 //      changeFlag();
 //      toggleLanguage();
       comboBox.show();
+    });
+
+    addLanguageButton.setOnMouseClicked(e -> {
+      stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+      LanguageTemplateCtrl languageTemplateCtrl = new LanguageTemplateCtrl(server);
+      mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
     });
   }
   public void changeFlag(String toChange){
@@ -251,6 +241,14 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.setOnFinished(e -> putFlag("deFlag.png"));
       pause.play();
     }
+    else if(toChange.equals("xx")){
+      currentLocale = new Locale("xx", "XX");
+      // pause for a bit so that the flag shrinks and then changes it
+      PauseTransition pause = new PauseTransition(Duration.millis(150));
+      // This executes changeFlag after the pause
+      pause.setOnFinished(e -> putFlag("xxFlag.png"));
+      pause.play();
+    }
     else{
       currentLocale = new Locale("en", "US");
       PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -258,9 +256,29 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.play();
     }
   }
+
+  /**
+   * this is a very bad attempt to do a live language switching which appears to be impossible
+   */
   public void toggleLanguage(){
       System.out.println("image pressed " + counter++);
-      ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+    // Custom control to force reloading of the resource bundle
+    ResourceBundle.Control control = new ResourceBundle.Control() {
+      @Override
+      public long getTimeToLive(String baseName, Locale locale) {
+        return ResourceBundle.Control.TTL_DONT_CACHE;
+      }
+
+      @Override
+      public boolean needsReload(String baseName, Locale locale,
+                                 String format, ClassLoader loader,
+                                 ResourceBundle bundle, long loadTime) {
+        return true;
+      }
+    };
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale, control);
+    ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+
       createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
       joinEventLabel.setText(resourceBundle.getString("joinEventText"));
       joinButton.setText(resourceBundle.getString("joinText"));
@@ -285,11 +303,11 @@ public class MainPageCtrl implements Controller, Initializable {
   public void prepareAnimation(){
     // Shrink transition
     ScaleTransition shrink = new ScaleTransition(Duration.millis(150), flagButton);
-    shrink.setToY(0.0); // Shrink to disappear on the Y axis
+    shrink.setToY(0.0);
     shrink.setInterpolator(Interpolator.EASE_BOTH);
 
     ScaleTransition restore = new ScaleTransition(Duration.millis(150), flagButton);
-    restore.setToY(1); // Restore to original size on the Y axis
+    restore.setToY(1);
     restore.setInterpolator(Interpolator.EASE_BOTH);
 
     seqTransition = new SequentialTransition(shrink, restore);

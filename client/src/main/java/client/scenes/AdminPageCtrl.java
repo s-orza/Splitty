@@ -3,6 +3,12 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Password;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.*;
+
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,18 +21,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+@JsonIgnoreProperties(ignoreUnknown= true)
 public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
@@ -81,9 +90,106 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public void exportEvent(ActionEvent e) {
-    System.out.println("export event to file");
+    Event event = server.getEvent(selectedEvent.getId());
+    List<Expense> expenses = server.getAllExpensesOfEvent(event.getEventId());
+    List<Participant> participants = server.getParticipantsOfEvent(event.getEventId());
+    List<Tag> tags= server.getAllTagsFromEvent(event.getEventId());
+    List<Debt> debts = event.debts;
+    event.setExpenses(expenses);
+    event.setParticipants(participants);
+    event.setTags(tags);
+    System.out.println(event + " \nTags " + tags);
+    ObjectMapper mapper = new ObjectMapper();
+    StringWriter writer = new StringWriter();
+    try{
+        mapper.writeValue(writer, event);
+        String json  = writer.toString();
+        System.out.println(json);
+        String filePath = new File("").getAbsolutePath().replace("\\", "/");
+        filePath += ("/EventsBackup/");
+        String fileName = event.getName() + ".json";
+        //Open file
+        // FileOutputStream Class Used
+        FileOutputStream fileOutputStream = new FileOutputStream(filePath + fileName);
+        // Write data to the file if needed.
+        fileOutputStream.write(json.getBytes());
+        //Close file
+        fileOutputStream.close();
+
+        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success");
+      }
+    catch(Exception exception){
+      System.out.println(exception);
+    }
   }
-  public void importEvent(ActionEvent e) {
+  public void importEvent(ActionEvent actionEvent) {
+    FileChooser fc = new FileChooser();
+    String filePath = new File("").getAbsolutePath().replace("\\", "/");
+    filePath += ("/EventsBackup/");
+    fc.setInitialDirectory(new File(filePath));
+    File selectedFile = fc.showOpenDialog(null);
+    if(selectedFile !=null){
+        if(selectedFile.getName().contains(".json") ){
+          ObjectMapper mapper = new ObjectMapper();
+          try {
+            System.out.println("This file" + new String(Files.readAllBytes(Paths.get(selectedFile.toURI()))));
+            Event newEvent = mapper.readValue(selectedFile, Event.class);
+            System.out.println(newEvent);
+            for(Event event : server.getEvents()) {
+              if (event.getName().equals(newEvent.getName())) {
+                mainCtrl.popup("Event with that name already exists!", "Warning!");
+                return;
+              }
+            }
+            Event createdEvent = new Event(newEvent.getName());
+            createdEvent.setCreationDate(newEvent.getCreationDate());
+            server.createEvent(createdEvent);
+            long id = server.getEvents().getLast().getEventId();
+            List<Participant> participants = newEvent.getParticipants();
+            for(Participant p : participants){
+              server.addParticipantEvent(p, id);
+            }
+            List<Tag> tags = newEvent.getTags();
+            for(Tag t : tags){
+              if(server.checkIfTagExists(t.getId().getName(), id))
+              {
+                System.out.println("Already in the database!");
+              }
+              else {
+                server.addTag(new Tag(new TagId(t.getId().getName(),id),t.getColor()));
+              }
+            }
+
+            List<Expense> expenses = newEvent.getExpenses();
+            for(Expense e : expenses){
+              server.addExpenseToEvent(id, new Expense(
+                      e.getAuthor(),
+                      e.getContent(),
+                      e.getMoney(),
+                      e.getCurrency(),
+                      e.getDate(),
+                      e.getParticipants(),
+                      e.getType()));
+            }
+
+            List<Debt> debts = newEvent.getDebts();
+            for(Debt d : debts){
+              server.addDebtToEvent(id, new Debt(d.getAmount(), d.getCurrency(), d.getDebtor(), d.getCreditor()));
+            }
+
+          }
+          catch (Exception e){
+            e.printStackTrace();
+          }
+        }
+        else{
+          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning");
+          return;
+        }
+    }
+    else {
+        return;
+    }
     System.out.println("import event from file");
   }
 
@@ -175,6 +281,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void stop () {
     server.stop2();
   }
+
   public Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");
   }
