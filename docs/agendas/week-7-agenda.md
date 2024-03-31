@@ -30,7 +30,11 @@ Functionality to be implemented, task splitting (5 min):
 - Start making it all bombastically pretty.
 
 Bugs: 10 min
+<<<<<<< HEAD
+- We plagued by some devious bugs, thus we might consider exterminating them.
+=======
 - We are plagued by some devious bugs, thus we might consider exterminating them.
+>>>>>>> main
 - Participant bug - fixed/not fixed?
 - Expenses bug
 - Everything else that you noticed is not alright.
@@ -49,6 +53,7 @@ Summary
   - Do you think that the current workload is too much/little?
   - What are you having for lunch today?
 - Recap on what happened today and what is there to come.
+
 
 
 Notes:
@@ -102,3 +107,4 @@ For product pitch :
 - (we will discuss the rest of them after the meeting)
 - tests for next week
 - add edge cases for testing
+

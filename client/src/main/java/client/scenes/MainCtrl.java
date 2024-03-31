@@ -41,8 +41,8 @@ public class MainCtrl {
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
+
     public void popup(String text, String title){
         VBox layout = new VBox(10);
         Label label = new Label(text);
@@ -67,3 +67,7 @@ public class MainCtrl {
         popupStage.showAndWait();
     }
 }
+
+
+
+

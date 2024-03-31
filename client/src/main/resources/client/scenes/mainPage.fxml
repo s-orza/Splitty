@@ -12,9 +12,9 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
     <children>
 
-        <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="300.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
+        <Button alignment="CENTER_RIGHT" layoutX="300.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" textAlignment="CENTER" />
         <Button fx:id="joinButton" layoutX="483.0" layoutY="127.0" mnemonicParsing="false" onAction="#joinEvent" style="-fx-alignment: 53D3D1; -fx-border-color: #53D3D1; -fx-background-color: blue;" text="Join" textAlignment="CENTER" />
-        <Button alignment="CENTER_RIGHT" layoutX="483.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
+        <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="483.0" layoutY="187.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
 
       <TextField id="joinInput" fx:id="joinInput" layoutX="300.0" layoutY="128.0" />
       <Text layoutX="-35.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
@@ -46,6 +46,7 @@
         <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
 
       <TextField id="createInput" fx:id="createInput" layoutX="300.0" layoutY="187.0" />
+      <Button fx:id="addLanguageButton" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" text="Add Language" />
 
     </children>
 </AnchorPane>
