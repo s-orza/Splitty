@@ -1,15 +1,6 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 
 import java.util.*;
@@ -20,7 +11,7 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     @Column
-    long eventID;
+    long eventId;
 
     @Column
     String name;
@@ -47,10 +38,15 @@ public class Event {
 //    @Column
     @OneToMany
     public List<Expense> expenses;
+    @Transient
+    private List<Tag> tags;
+
+
     @Column
     private Date creationDate;
     @Column
     private Date activityDate;
+
 
     /**
      * Constructor for an Event object
@@ -65,6 +61,7 @@ public class Event {
         this.participants = new ArrayList<>();
         this.debts = new ArrayList<>();
         this.expenses = new ArrayList<>();
+        this.tags = new ArrayList<>();
         this.name = name;
         this.creationDate = new Date(System.currentTimeMillis());
         this.activityDate = creationDate;
@@ -74,7 +71,12 @@ public class Event {
      * Empty constructor for testing and more
       */
     public Event() {
-
+        this.participants = new ArrayList<>();
+        this.debts = new ArrayList<>();
+        this.expenses = new ArrayList<>();
+        this.name = "Name not set";
+        this.creationDate = new Date(System.currentTimeMillis());
+        this.activityDate = creationDate;
     }
 
 
@@ -82,11 +84,19 @@ public class Event {
 //    @Column
 
 
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setActivityDate(Date activityDate) {
+        this.activityDate = activityDate;
+    }
+
     // for the next PUBLIC method, consider this temporary 'database' representation of events
     @Column
     @OneToMany
     private List<Event> eventList = new ArrayList<>();
-    private void setUpEventList(){
+    private void setUpEventList() {
         eventList.add(new Event());
         eventList.add(new Event());
         eventList.add(new Event());
@@ -94,23 +104,6 @@ public class Event {
         eventList.get(1).setEventId(2);
         eventList.get(2).setEventId(3);
     }
-    /**
-     * Checks whether the ID of the event has already been used and whether to generate a new one
-     * or not
-     * @param eventID ID to be tested for uniqueness
-     */
-//    private void checkUniqueness(Long eventID){
-//        //TODO
-//        // Pull from the database a list of all events and compare this ID with all other IDS
-//        // If similar to any, generate a new random number
-//        setUpEventList();
-//        while (eventList.contains(eventID)){
-//            eventID = new Random().nextLong();
-//        }
-//    }
-
-
-
     // Debt Functions
 
     /**
@@ -379,13 +372,19 @@ public class Event {
     }
 
     // End Debt Functions
-
-    public void setEventId(long eventID) {
-        this.eventID = eventID;
+    public List<Tag> getTags() {
+        return tags;
     }
 
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void setEventId(long eventID) {
+        this.eventId = eventID;
+    }
     public long getEventId() {
-        return eventID;
+        return eventId;
     }
 
     public List<Participant> getParticipants() {
@@ -446,14 +445,13 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-                "eventID=" + eventID +
+                "eventID=" + eventId +
                 ", name='" + name + '\'' +
                 ", participants=" + participants +
                 ", debts=" + debts +
                 ", expenses=" + expenses +
                 ", creationDate=" + creationDate +
                 ", activityDate=" + activityDate +
-                ", eventList=" + eventList +
                 '}';
     }
 
@@ -464,7 +462,7 @@ public class Event {
 
         Event event = (Event) o;
 
-        if (eventID != event.eventID) return false;
+        if (eventId != event.eventId) return false;
         if (!Objects.equals(participants, event.participants)) return false;
         if (!Objects.equals(debts, event.debts)) return false;
         return Objects.equals(expenses, event.expenses);
@@ -472,7 +470,7 @@ public class Event {
 
     @Override
     public int hashCode() {
-        int result = (int) (eventID ^ (eventID >>> 32));
+        int result = (int) (eventId ^ (eventId >>> 32));
         result = 31 * result + (participants != null ? participants.hashCode() : 0);
         result = 31 * result + (debts != null ? debts.hashCode() : 0);
         result = 31 * result + (expenses != null ? expenses.hashCode() : 0);
