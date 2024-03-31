@@ -223,6 +223,8 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
+
+
 	 public void addDebtToEvent(long eventId,Debt debt)
 	 {
 		 //this post is a "put" if the debt is already there
@@ -561,7 +563,12 @@ public class ServerUtils {
 		session.send(dest, o);
 	}
 
-	public void sendRemoveParticipant(String dest, Participant o) {
+
+	public void sendEventName(String dest, String o) {
+		session.send(dest, o);
+	}
+
+	public void sendEvent(String dest, Long o) {
 		session.send(dest, o);
 	}
 

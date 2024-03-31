@@ -168,6 +168,16 @@ public class MainPageCtrl implements Controller, Initializable {
     contents.sort(new EventActivitySort());
     System.out.println(server.getEvents());
     recentList.getItems().addAll(contents);
+    server.registerForMessages("/topic/events", Long.class, e -> {
+      for (int i = 0; i<contents.size(); i++) {
+        if (contents.get(i).getId()==e) {
+          recentList.getItems().remove(i);
+          break;
+        }
+      }
+    });
+
+
     recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEv = recentList.getSelectionModel().getSelectedItem();
 

@@ -2,8 +2,14 @@ package server.api;
 
 import commons.Event;
 import commons.Participant;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
@@ -69,11 +75,30 @@ public class EventController {
             return ResponseEntity.badRequest().build();
         }
 
-        Event event = repo.findById(id).get();
-        event.setName(newName);
-        repo.save(event);
+        Optional<Event> optionalEvent = repo.findById(id);
+        if (optionalEvent.isPresent()) {
+            Event event = optionalEvent.get();
+            event.setName(newName);
+            repo.save(event);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
-        return ResponseEntity.ok().build();
+    @Transactional
+    @MessageMapping("events/name/{eventId}")
+    public String EventNameMessage(@DestinationVariable @NonNull Long eventId, @Payload String newName) {
+        updateEventName(eventId, newName);
+        return newName;
+    }
+
+    @MessageMapping("/events")
+    @SendTo("/topic/events")
+    public Long EventRemoveMessage(Long eventId) {
+        removeEventByID(eventId);
+        ResponseEntity responseEntity = getById(eventId);
+        return eventId;
     }
 
     //endpoint with an event with specific id in it to be deleted

@@ -187,7 +187,7 @@ public class EventPageCtrl implements Controller{
             expenseData.add(e);
         });
 
-        String destination = "/topic/expenses/" + server.getCurrentId();
+        String destination = "/topic/expenses/" + String.valueOf(server.getCurrentId());
         server.registerForMessages(destination, Expense.class, t -> {
             expenseData.remove(t);
         });
@@ -207,13 +207,10 @@ public class EventPageCtrl implements Controller{
             k++;
         }
 
-        server.registerForMessages("/topic/participant/event/"+ server.getCurrentId(), Participant.class, t -> {
+        server.registerForMessages("/topic/participant/event/"+ String.valueOf(server.getCurrentId()), Participant.class, t -> {
             participantsData.add(t);
         });
 
-        server.registerForMessages("/topic/participant"+ server.getCurrentId(), Participant.class, t -> {
-            participantsData.remove(t);
-        });
 
         searchByComboBox.setItems(participantsToSelectFrom);
         fromxButton.setText("From ?");
@@ -221,6 +218,10 @@ public class EventPageCtrl implements Controller{
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
+
+        server.registerForMessages("/topic/events/name/" + String.valueOf(server.getCurrentId()), String.class, t -> {
+            eventName.setText(t);
+        });
 
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
@@ -428,7 +429,8 @@ public class EventPageCtrl implements Controller{
         changeButton.setOnAction(e -> {
             popupStage.close();
             eventName.setText(newName.getText());
-            server.changeEventName(server.getCurrentId(), newName.getText());
+//            server.changeEventName(server.getCurrentId(), newName.getText());
+            server.sendEventName("/app/events/name/" + String.valueOf(server.getCurrentId()), newName.getText());
         });
 
         cancelButton.setOnAction(e -> {
