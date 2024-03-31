@@ -87,7 +87,8 @@ public class EventController {
     }
 
     @Transactional
-    @MessageMapping("events/name/{eventId}")
+    @MessageMapping("/events/name/{eventId}")
+    @SendTo("/topic/events/name/{eventId}")
     public String EventNameMessage(@DestinationVariable @NonNull Long eventId, @Payload String newName) {
         updateEventName(eventId, newName);
         return newName;

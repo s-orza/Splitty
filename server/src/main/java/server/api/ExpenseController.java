@@ -263,6 +263,13 @@ public class ExpenseController {
     }
     //here to put the PUT APIs (update)
 
+
+    @Transactional
+    @MessageMapping("expenses/edits/{expenseId}")
+    public Expense updateExpenseMessage(@DestinationVariable @NonNull Long expenseId, @Payload Expense expense) {
+        updateExpense(expenseId, expense);
+        return expense;
+    }
     /**
      * This functions updates the content of an expense and its participants. It doesn t update the
      * debts. (This should be handled in the add expense controller)
