@@ -1,8 +1,14 @@
 package server.api;
 
 import commons.*;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.database.*;
@@ -69,6 +75,15 @@ public class ExpenseController {
         System.out.println("expenseEvent saved");
         return ResponseEntity.ok(saved);
     }
+
+    @Transactional
+    @MessageMapping("expenses/tag/{eventId}")
+    public Expense addExpenseMessage(@DestinationVariable @NonNull Long eventId, @Payload Expense expense) {
+            addExpenseToEvent(eventId, expense);
+            return expense;
+    }
+
+
     @PostMapping(path = { "/s"})
     public ResponseEntity<Expense> addExpense(@RequestBody Expense expense)
     {
@@ -112,6 +127,18 @@ public class ExpenseController {
         Tag saved=repoTag.save(tag);
         return ResponseEntity.ok(saved);
     }
+
+    @MessageMapping("/expenses")
+    @SendTo("/topic/expenses")
+    public Tag addTagMessage(Tag tag) {
+        addTag(tag);
+        return tag;
+    }
+
+
+
+
+
 
     //WE DO NOT NEED IT ANYMORE
 //    /**
@@ -234,6 +261,13 @@ public class ExpenseController {
     }
     //here to put the PUT APIs (update)
 
+
+    @Transactional
+    @MessageMapping("expenses/edits/{expenseId}")
+    public Expense updateExpenseMessage(@DestinationVariable @NonNull Long expenseId, @Payload Expense expense) {
+        updateExpense(expenseId, expense);
+        return expense;
+    }
     /**
      * This functions updates the content of an expense and its participants. It doesn t update the
      * debts. (This should be handled in the add expense controller)
@@ -299,6 +333,14 @@ public class ExpenseController {
         return ResponseEntity.ok(newTag);
     }
     //here to put the DELETE APIs
+
+
+    @Transactional
+    @MessageMapping("expenses/{eventId}")
+    public Expense deleteExpenseMessage(@DestinationVariable @NonNull Long eventId, @Payload Expense expense) {
+        deleteExpById(eventId, expense.getExpenseId());
+        return expense;
+    }
 
     /**
      * This function deletes an expense from an event, and it's

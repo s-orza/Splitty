@@ -87,6 +87,16 @@ public class AdminPageCtrl implements Controller, Initializable {
         contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
       }
     });
+
+    server.registerForMessages("/topic/events", Long.class, e -> {
+      for (int i = 0; i<contents.size(); i++) {
+        if (contents.get(i).getId()==e) {
+          contents.remove(i);
+          break;
+        }
+      }
+      table.setItems(contents);
+    });
   }
 
   public void exportEvent(ActionEvent e) {
@@ -224,7 +234,8 @@ public class AdminPageCtrl implements Controller, Initializable {
       popupStage.close();
 
       try {
-        server.deleteEvent(selectedEvent.getId());
+//        server.deleteEvent(selectedEvent.getId());
+        server.sendEvent("/app/events", selectedEvent.getId());
         contents.remove(selectedEvent);
         table.setItems(contents);
       }catch (Exception exception){

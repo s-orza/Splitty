@@ -184,6 +184,12 @@ public class EventPageCtrl implements Controller{
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
             expenseData.add(e);
         });
+
+        String destination = "/topic/expenses/" + String.valueOf(server.getCurrentId());
+        server.registerForMessages(destination, Expense.class, t -> {
+            expenseData.remove(t);
+        });
+
         //we need this to get the id of the selected person
         indexesToIds=new HashMap<>();
         List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
@@ -198,12 +204,23 @@ public class EventPageCtrl implements Controller{
             indexesToIds.put(k,p.getParticipantID());
             k++;
         }
+
+        server.registerForMessages("/topic/participant/event/"+
+                String.valueOf(server.getCurrentId()), Participant.class, t -> {
+            participantsData.add(t);
+        });
+
+
         searchByComboBox.setItems(participantsToSelectFrom);
         fromxButton.setText("From ?");
         includingxButton.setText("Including ?");
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
+
+        server.registerForMessages("/topic/events/name/" + String.valueOf(server.getCurrentId()), String.class, t -> {
+            eventName.setText(t);
+        });
 
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
@@ -413,7 +430,8 @@ public class EventPageCtrl implements Controller{
         changeButton.setOnAction(e -> {
             popupStage.close();
             eventName.setText(newName.getText());
-            server.changeEventName(server.getCurrentId(), newName.getText());
+//            server.changeEventName(server.getCurrentId(), newName.getText());
+            server.sendEventName("/app/events/name/" + String.valueOf(server.getCurrentId()), newName.getText());
         });
 
         cancelButton.setOnAction(e -> {
@@ -624,7 +642,8 @@ public class EventPageCtrl implements Controller{
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
         for (Expense x: toRemove) {
-            server.deleteExpenseFromEvent(server.getCurrentId(), x.getExpenseId());
+            String destination = "/app/expenses/" + String.valueOf(server.getCurrentId());
+            server.sendRemoveExpense(destination,x);
         }
         // this method will remove the expenses from the database
     }

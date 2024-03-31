@@ -6,7 +6,12 @@ import commons.Event;
 import commons.Participant;
 import java.util.List;
 import commons.ParticipantEvent;
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.database.ParticipantEventRepository;
@@ -54,6 +59,22 @@ public class ParticipantEventController {
         System.out.println("No event provided");
         return ResponseEntity.badRequest().body("eventId was null");
 
+    }
+
+    @Transactional
+    @MessageMapping("participant/event/{eventId}")
+    public Participant ParticipantMessage(@DestinationVariable @NonNull Long eventId,
+                                          @Payload Participant participant) {
+        createParticipantEvent(eventId, participant);
+        return participant;
+    }
+
+    @Transactional
+    @MessageMapping("participant/{eventId}")
+    public Participant RemoveParticipantMessage(@DestinationVariable @NonNull Long eventId,
+                                                @Payload Participant participant) {
+        deleteParticipantEvent(eventId, participant.getParticipantID());
+        return participant;
     }
 
     /**

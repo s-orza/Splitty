@@ -364,13 +364,17 @@ public class AddExpenseCtrl implements Controller{
         System.out.println(expense);
         System.out.println("Adding to event id" + server.getCurrentId());
 
-        boolean b=server.addExpenseToEvent(server.getCurrentId(),expense);
-        if(!b)
-        {
-            //warning, connection with server lost
-            System.out.println("Problems with the server");
-            return;
-        }
+//        boolean b=
+//        server.addExpenseToEvent(server.getCurrentId(),expense);
+        String destination = "/app/expenses/tag/" + String.valueOf(server.getCurrentId());
+        server.sendExpense(destination,expense);
+
+//        if(!b)
+//        {
+//            //warning, connection with server lost
+//            System.out.println("Problems with the server");
+//            return;
+//        }
         //add debts
         createDebtsFromExpense(expense);
 
@@ -605,7 +609,8 @@ public class AddExpenseCtrl implements Controller{
             return;
         }
         String color=colorPicker.getValue().toString();
-        server.addTag(new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
+        server.sendTag("/app/expenses", new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
+    //        server.addTag();
         System.out.println("tag added");
         tagsAvailable.add(tagName);
 
