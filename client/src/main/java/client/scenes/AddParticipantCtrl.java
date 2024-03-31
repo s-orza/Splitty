@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -39,7 +40,8 @@ public class AddParticipantCtrl implements Controller{
     private static Injector INJECTOR;
     private static MyFXML FXML;
     private static MainCtrl mainCtrl;
-    private static Alert warning;
+    private static Alert warningAlert;
+    private static Alert errorAlert;
     
     @Inject
     public AddParticipantCtrl(ServerUtils server){
@@ -50,21 +52,26 @@ public class AddParticipantCtrl implements Controller{
     @FXML
     public void initialize(){
         System.out.println("Initializing AddParticipantCtrl...");
-
-        // Initializing everything related to the
+        // Nothing needs to be initialized from the database so nothing will be done about that
+        // Initializing everything that might be needed for this controller
         INJECTOR = createInjector(new MyModule());
         FXML = new MyFXML(INJECTOR);
         mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+
+        // initializing warning Text for whether an error is encountered and alerts for any case
         warningText = new Text();
     }
 
     /**
-     * Will return a participant if all the fields have been filled
+     * Will return a participant if all the fields have been filled up and no rules were broken
      */
     @FXML
     void addParticipantToEvent(ActionEvent event) {
-        if(checkAnyFieldIsEmpty(event))
+        String checkerString = checkAnyFieldIsEmpty();
+        if(!checkerString.isEmpty()) {
+            displayError(checkerString);
             return;
+        }
 
         Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         try {
@@ -75,57 +82,59 @@ public class AddParticipantCtrl implements Controller{
         }
     }
 
-    private boolean checkAnyFieldIsEmpty(ActionEvent event) {
+    /**
+     * Checks for any empty field.
+     * @return Any string for an empty field or an empty string if no errors were found
+     */
+    private String checkAnyFieldIsEmpty() {
         if (name.getText().isEmpty()) {
             System.out.println("Name field is empty warning displayed");
             warningText.setText("Name field is empty");
-            displayError(event, "Name");
-            return true;
+            return "Name";
         }
         if (email.getText().isEmpty()) {
             System.out.println("Email field is empty warning displayed");
             warningText.setText("Email field is empty");
-            displayError(event, "Email");
-            return true;
+            return "Email";
         }
         if (iban.getText().isEmpty()) {
             System.out.println("IBAN field is empty warning displayed");
             warningText.setText("IBAN field is empty");
-            displayError(event, "IBAN");
-            return true;
+            return "IBAN";
         }
         if (bic.getText().isEmpty()) {
             System.out.println("BIC field is empty warning displayed");
             warningText.setText("BIC field is empty");
-            displayError(event, "BIC");
-            return true;
+            return "BIC";
         }
-        return false;
+        return "";
     }
 
-    public void displayError(ActionEvent event, String cause){
+    public void displayError(String cause){
+        errorAlert = new Alert(AlertType.ERROR);
         switch(cause){
             case "Name" -> {
-                System.out.println("Name field is empty!");
+                errorAlert.setContentText("Name field cannot be empty!");
             }
             case "Email" -> {
-                System.out.println("Email field is empty!");
+                errorAlert.setContentText("Email field cannot be empty!");
             }
             case "IBAN" -> {
-                System.out.println("IBAN field is empty!");
+                errorAlert.setContentText("IBAN field cannot be empty!");
             }
             case "BIC" -> {
-                System.out.println("BIC field is empty!");
+                errorAlert.setContentText("BIC field cannot be empty!");
             }
             default -> {
-                System.out.println("Unrecognized field...");
+                errorAlert.setContentText("Unrecognized field... An Unknown error occurred");
             }
         }
+        errorAlert.show();
     }
 
     @FXML
     public void close(ActionEvent e){
-        System.out.println("close window");
+        System.out.println("Closing Addparticipants window...");
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
