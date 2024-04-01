@@ -37,7 +37,7 @@ public class AddParticipantCtrl implements Controller{
     private TextField bic;
     @FXML
     private Text warningText;
-    private static Injector INJECTOR;
+    private static Injector injector;
     private static MyFXML FXML;
     private static MainCtrl mainCtrl;
     private static Alert warningAlert;
@@ -54,9 +54,9 @@ public class AddParticipantCtrl implements Controller{
         System.out.println("Initializing AddParticipantCtrl...");
         // Nothing needs to be initialized from the database so nothing will be done about that
         // Initializing everything that might be needed for this controller
-        INJECTOR = createInjector(new MyModule());
-        FXML = new MyFXML(INJECTOR);
-        mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        injector = createInjector(new MyModule());
+        FXML = new MyFXML(injector);
+        mainCtrl = injector.getInstance(MainCtrl.class);
 
         // initializing warning Text for whether an error is encountered and alerts for any case
         warningText = new Text();
