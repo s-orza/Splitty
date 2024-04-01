@@ -69,7 +69,7 @@ public class EventPageCtrl implements Controller{
     TableColumn<Expense, String> dateColumn;
 
     @FXML
-    TableColumn<Expense, List<Participant>> participantColumn2;
+    TableColumn<Expense, List<Participant>> participantsColumn2;
 
     @FXML
     TableColumn<Expense, String> typeColumn;
@@ -172,8 +172,6 @@ public class EventPageCtrl implements Controller{
 
         System.out.println("Event Page initialize method");
 
-        System.out.println("in init");
-
         //initializes flags and loads from database
         initializePage();
     }
@@ -186,6 +184,12 @@ public class EventPageCtrl implements Controller{
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
             expenseData.add(e);
         });
+
+        String destination = "/topic/expenses/" + String.valueOf(server.getCurrentId());
+        server.registerForMessages(destination, Expense.class, t -> {
+            expenseData.remove(t);
+        });
+
         //we need this to get the id of the selected person
         indexesToIds=new HashMap<>();
         List<Participant> participantList=server.getParticipantsOfEvent(server.getCurrentId());
@@ -200,6 +204,13 @@ public class EventPageCtrl implements Controller{
             indexesToIds.put(k,p.getParticipantID());
             k++;
         }
+
+        server.registerForMessages("/topic/participant/event/"+
+                String.valueOf(server.getCurrentId()), Participant.class, t -> {
+            participantsData.add(t);
+        });
+
+
         searchByComboBox.setItems(participantsToSelectFrom);
         fromxButton.setText("From ?");
         includingxButton.setText("Including ?");
@@ -207,33 +218,44 @@ public class EventPageCtrl implements Controller{
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
 
+        server.registerForMessages("/topic/events/name/" + String.valueOf(server.getCurrentId()), String.class, t -> {
+            eventName.setText(t);
+        });
+
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("English");
         }
         if(currentLocale.getLanguage().equals("nl")){
             putFlag("nlFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Dutch");
         }
         if(currentLocale.getLanguage().equals("de")){
             putFlag("deFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("German");
         }
         if(currentLocale.getLanguage().equals("es")){
             putFlag("esFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Spanish");
+        }
+        if(currentLocale.getLanguage().equals("xx")){
+            putFlag("xxFlag.png");
+            ObservableList<String> comboBoxItems =
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+            comboBox.setItems(comboBoxItems);
+            comboBox.setPromptText("Extra");
         }
         toggleLanguage();
         prepareAnimation();
@@ -244,6 +266,7 @@ public class EventPageCtrl implements Controller{
             if(newValue.equals("Dutch")) changeFlag("nl");
             if(newValue.equals("Spanish")) changeFlag("es");
             if(newValue.equals("German")) changeFlag("de");
+            if(newValue.equals("Extra")) changeFlag("xx");
             toggleLanguage();
         });
 
@@ -299,6 +322,14 @@ public class EventPageCtrl implements Controller{
             pause.setOnFinished(e -> putFlag("deFlag.png"));
             pause.play();
         }
+        else if(toChange.equals("xx")){
+            currentLocale = new Locale("xx", "XX");
+            // pause for a bit so that the flag shrinks and then changes it
+            PauseTransition pause = new PauseTransition(Duration.millis(150));
+            // This executes changeFlag after the pause
+            pause.setOnFinished(e -> putFlag("xxFlag.png"));
+            pause.play();
+        }
         else{
             currentLocale = new Locale("en", "US");
             PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -310,34 +341,20 @@ public class EventPageCtrl implements Controller{
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
        try{
-           eventName.setText(resourceBundle.getString("eventNameText"));
-           System.out.println(1);
            eventCode.setText(resourceBundle.getString("eventCodeText"));
-           System.out.println(2);
            addExpense.setText(resourceBundle.getString("addExpenseText"));
-           System.out.println(3);
            removeExpense.setText(resourceBundle.getString("removeExpenseText"));
-           System.out.println(4);
            authorColumn.setText(resourceBundle.getString("authorText"));
-           System.out.println(5);
            descriptionColumn.setText(resourceBundle.getString("descriptionText"));
-           System.out.println(6);
            amountColumn.setText(resourceBundle.getString("amountText"));
-           System.out.println(7);
            currencyColumn.setText(resourceBundle.getString("currencyText"));
-           System.out.println(8);
            dateColumn.setText(resourceBundle.getString("dateText"));
-           System.out.println(1);
-           participantsColumn.setText(resourceBundle.getString("participantsText"));
-           System.out.println(1);
+           participantsColumn2.setText(resourceBundle.getString("participantsText"));
            typeColumn.setText(resourceBundle.getString("typeText"));
-           System.out.println(1);
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
-           System.out.println(1);
            editEventName.setText(resourceBundle.getString("editEventNameText"));
-           System.out.println(1);
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
-           System.out.println(1);
+
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
            cancelButton.setText(resourceBundle.getString("cancelText"));
        }catch (Exception e){
@@ -413,7 +430,8 @@ public class EventPageCtrl implements Controller{
         changeButton.setOnAction(e -> {
             popupStage.close();
             eventName.setText(newName.getText());
-            server.changeEventName(server.getCurrentId(), newName.getText());
+//            server.changeEventName(server.getCurrentId(), newName.getText());
+            server.sendEventName("/app/events/name/" + String.valueOf(server.getCurrentId()), newName.getText());
         });
 
         cancelButton.setOnAction(e -> {
@@ -486,7 +504,7 @@ public class EventPageCtrl implements Controller{
             amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
             currencyColumn.setCellValueFactory(new PropertyValueFactory<>("currency"));
             dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            participantColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
+            participantsColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
             typeColumn.setCellValueFactory(new PropertyValueFactory<>("Type"));
 
             expensesTable.setItems(model);
@@ -624,7 +642,8 @@ public class EventPageCtrl implements Controller{
      */
     private void removeExpensesFromDatabase(List<Expense> toRemove){
         for (Expense x: toRemove) {
-            server.deleteExpenseFromEvent(server.getCurrentId(), x.getExpenseId());
+            String destination = "/app/expenses/" + String.valueOf(server.getCurrentId());
+            server.sendRemoveExpense(destination,x);
         }
         // this method will remove the expenses from the database
     }

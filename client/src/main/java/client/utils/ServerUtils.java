@@ -20,10 +20,12 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -34,6 +36,10 @@ import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.*;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 /**
  * Accessing parts of the page will happen as follows (please take keen eye on indentation):
@@ -213,6 +219,8 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
+
+
 	 public void addDebtToEvent(long eventId,Debt debt)
 	 {
 		 //this post is a "put" if the debt is already there
@@ -496,6 +504,70 @@ public class ServerUtils {
 			return true;
 		return false;
 	}
+
+	private StompSession session = connectWebSocket("ws://localhost:8080/websocket");
+
+	/**
+	 * Stomp session is the connection to the websocket with an ip and port. To get to this session
+	 * a connectWebSocket method is done. Which makes a websocket client that can connect to the websocket.
+	 * And also a websocket stomp client that can communicate in stomp which can convert the messages
+	 * with jackson as the message converter that can serialise and deserialize by itself.
+	 * There is also a stomp session handler that makes this connection possible.
+	 * @param url
+	 * @return
+	 */
+	private StompSession connectWebSocket(String url) {
+		var client = new StandardWebSocketClient();
+		var stomp = new WebSocketStompClient(client);
+		stomp.setMessageConverter(new MappingJackson2MessageConverter());
+		try {
+			return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
+			throw new RuntimeException();
+		}
+		throw new IllegalStateException();
+	}
+		public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
+			session.subscribe(dest, new StompFrameHandler() {
+				@Override
+				public Type getPayloadType(StompHeaders headers) {
+					return type;
+				}
+
+				@Override
+				public void handleFrame(StompHeaders headers, Object payload) {
+					consumer.accept((T) payload);
+				}
+			});
+		}
+
+	public void sendTag(String dest, Object o) {
+		session.send(dest, o);
+	}
+
+	public void sendExpense(String dest, Expense o) {
+		session.send(dest, o);
+	}
+
+	public void sendRemoveExpense(String dest, Expense o) {
+		session.send(dest, o);
+	}
+
+	public void sendParticipant(String dest, Participant o) {
+		session.send(dest, o);
+	}
+
+
+	public void sendEventName(String dest, String o) {
+		session.send(dest, o);
+	}
+
+	public void sendEvent(String dest, Long o) {
+		session.send(dest, o);
+	}
+
 	//PUT functions (update)
 	public Expense updateExpense(long expenseId,Expense expense)
 	{
@@ -565,5 +637,66 @@ public class ServerUtils {
 		if(response.getStatus()==200)
 			return true;
 		return false;
+	}
+
+	/**
+	 * connects to the database through the endpoint to add password
+	 * @param password password to be added
+	 */
+	public void addPassword(Password password) {
+		ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.post(Entity.entity(password, APPLICATION_JSON), Password.class);
+		System.out.println("Password added successfully.");
+	}
+
+	/**
+	 * connects to the database through the endpoint to get password
+	 */
+	public Password getPass() {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.get(new GenericType<Password>() {});
+	}
+
+	/**
+	 * connects to the database through the endpoint to delete an event
+	 * @param id ID of the password
+	 * @throws Exception If password could not be removed
+	 */
+	public void deletePass (long id) throws Exception {
+		Response response = ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password/" + id) //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.delete();
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			System.out.println("Password removed successfully.");
+		} else {
+			throw new Exception("Failed to remove password. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
+
+	/**
+	 * connects to the database through the endpoint to delete an event
+	 * @throws Exception If password could not be removed
+	 */
+	public void deleteAllPass () throws Exception {
+		Response response = ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/password/") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.delete();
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			System.out.println("Password/s removed successfully.");
+		} else {
+			throw new Exception("Failed to remove password/s. Status code: " + response.getStatus());
+		}
+		response.close();
 	}
 }

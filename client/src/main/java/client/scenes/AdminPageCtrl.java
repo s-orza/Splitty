@@ -1,6 +1,8 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Event;
+import commons.Password;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,10 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -50,6 +49,13 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
   private TableColumn<EventHelper, String> tableTitle;
+
+  @FXML
+  private Button generatePassButton;
+
+  @FXML
+  private TextField passLengthField;
+
   @FXML
   private Label showEvent;
 
@@ -80,6 +86,16 @@ public class AdminPageCtrl implements Controller, Initializable {
       if (!alreadyExists){
         contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
       }
+    });
+
+    server.registerForMessages("/topic/events", Long.class, e -> {
+      for (int i = 0; i<contents.size(); i++) {
+        if (contents.get(i).getId()==e) {
+          contents.remove(i);
+          break;
+        }
+      }
+      table.setItems(contents);
     });
   }
 
@@ -218,7 +234,8 @@ public class AdminPageCtrl implements Controller, Initializable {
       popupStage.close();
 
       try {
-        server.deleteEvent(selectedEvent.getId());
+//        server.deleteEvent(selectedEvent.getId());
+        server.sendEvent("/app/events", selectedEvent.getId());
         contents.remove(selectedEvent);
         table.setItems(contents);
       }catch (Exception exception){
@@ -263,6 +280,14 @@ public class AdminPageCtrl implements Controller, Initializable {
         showEvent.setText("");
       }
     });
+
+    // add listener for pass length
+    passLengthField.clear();
+    passLengthField.textProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue.matches("-?\\d?")) {
+        passLengthField.setText(oldValue);
+      }
+    });
   }
   public void stop () {
     server.stop2();
@@ -273,6 +298,18 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
   public String getTitle(){
     return "Admin Page";
+  }
+
+  public void generatePassword() throws Exception {
+    if(passLengthField.getText().isEmpty()){
+      server.deletePass(server.getPass().getPassID());
+      server.addPassword(new Password());
+      return;
+    }
+    int length = Integer.parseInt(passLengthField.getText());
+
+    server.deletePass(server.getPass().getPassID());
+    server.addPassword(new Password(length));
   }
 }
 

@@ -54,6 +54,8 @@ public class MainPageCtrl implements Controller, Initializable {
   private Button adminButton;
   @FXML
   private ComboBox comboBox;
+  @FXML
+  private Button addLanguageButton;
 
   private EventHelper selectedEv;
   //Imports used to swap scenes
@@ -130,6 +132,7 @@ public class MainPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+
     ArrayList<EventHelper> contents = new ArrayList<>();
     for(Event e : server.getEvents()){
       contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
@@ -137,6 +140,16 @@ public class MainPageCtrl implements Controller, Initializable {
     contents.sort(new EventActivitySort());
     System.out.println(server.getEvents());
     recentList.getItems().addAll(contents);
+    server.registerForMessages("/topic/events", Long.class, e -> {
+      for (int i = 0; i<contents.size(); i++) {
+        if (contents.get(i).getId()==e) {
+          recentList.getItems().remove(i);
+          break;
+        }
+      }
+    });
+
+
     recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEv = recentList.getSelectionModel().getSelectedItem();
 
@@ -154,27 +167,38 @@ public class MainPageCtrl implements Controller, Initializable {
 
     if(currentLocale.getLanguage().equals("en")){
       putFlag("enFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("English");
     }
     if(currentLocale.getLanguage().equals("nl")){
       putFlag("nlFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Dutch");
     }
     if(currentLocale.getLanguage().equals("de")){
       putFlag("deFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("German");
     }
     if(currentLocale.getLanguage().equals("es")){
       putFlag("esFlag.png");
-      ObservableList<String> comboBoxItems = FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Spanish");
+    }
+    if(currentLocale.getLanguage().equals("xx")){
+      putFlag("xxFlag.png");
+      ObservableList<String> comboBoxItems =
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+      comboBox.setItems(comboBoxItems);
+      comboBox.setPromptText("xx");
     }
     toggleLanguage();
     prepareAnimation();
@@ -185,6 +209,7 @@ public class MainPageCtrl implements Controller, Initializable {
       if(newValue.equals("Dutch")) changeFlag("nl");
       if(newValue.equals("Spanish")) changeFlag("es");
       if(newValue.equals("German")) changeFlag("de");
+      if(newValue.equals("Extra")) changeFlag("xx");
       toggleLanguage();
     });
 
@@ -192,6 +217,12 @@ public class MainPageCtrl implements Controller, Initializable {
 //      changeFlag();
 //      toggleLanguage();
       comboBox.show();
+    });
+
+    addLanguageButton.setOnMouseClicked(e -> {
+      stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+      LanguageTemplateCtrl languageTemplateCtrl = new LanguageTemplateCtrl(server);
+      mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
     });
   }
   public void changeFlag(String toChange){
@@ -220,6 +251,14 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.setOnFinished(e -> putFlag("deFlag.png"));
       pause.play();
     }
+    else if(toChange.equals("xx")){
+      currentLocale = new Locale("xx", "XX");
+      // pause for a bit so that the flag shrinks and then changes it
+      PauseTransition pause = new PauseTransition(Duration.millis(150));
+      // This executes changeFlag after the pause
+      pause.setOnFinished(e -> putFlag("xxFlag.png"));
+      pause.play();
+    }
     else{
       currentLocale = new Locale("en", "US");
       PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -227,9 +266,29 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.play();
     }
   }
+
+  /**
+   * this is a very bad attempt to do a live language switching which appears to be impossible
+   */
   public void toggleLanguage(){
       System.out.println("image pressed " + counter++);
-      ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+    // Custom control to force reloading of the resource bundle
+    ResourceBundle.Control control = new ResourceBundle.Control() {
+      @Override
+      public long getTimeToLive(String baseName, Locale locale) {
+        return ResourceBundle.Control.TTL_DONT_CACHE;
+      }
+
+      @Override
+      public boolean needsReload(String baseName, Locale locale,
+                                 String format, ClassLoader loader,
+                                 ResourceBundle bundle, long loadTime) {
+        return true;
+      }
+    };
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale, control);
+    ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+
       createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
       joinEventLabel.setText(resourceBundle.getString("joinEventText"));
       joinButton.setText(resourceBundle.getString("joinText"));
@@ -254,11 +313,11 @@ public class MainPageCtrl implements Controller, Initializable {
   public void prepareAnimation(){
     // Shrink transition
     ScaleTransition shrink = new ScaleTransition(Duration.millis(150), flagButton);
-    shrink.setToY(0.0); // Shrink to disappear on the Y axis
+    shrink.setToY(0.0);
     shrink.setInterpolator(Interpolator.EASE_BOTH);
 
     ScaleTransition restore = new ScaleTransition(Duration.millis(150), flagButton);
-    restore.setToY(1); // Restore to original size on the Y axis
+    restore.setToY(1);
     restore.setInterpolator(Interpolator.EASE_BOTH);
 
     seqTransition = new SequentialTransition(shrink, restore);

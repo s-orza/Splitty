@@ -3,24 +3,20 @@ package client.scenes;
 import client.utils.ServerUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static client.scenes.MainPageCtrl.currentLocale;
-
-
-import javax.inject.Inject;
 
 
 public class LoginAdminCtrl implements Controller, Initializable {
@@ -43,16 +39,31 @@ public class LoginAdminCtrl implements Controller, Initializable {
     @Inject
     public LoginAdminCtrl(ServerUtils server) {
         this.server = server;
+
     }
 
     public void login(ActionEvent e){
         System.out.println("login to admin page");
         String passcode = loginInput.getText();
-        System.out.println(passcode);
+        System.out.println("submitted pass:"+passcode);
+
+        // authenticate password
+        String password = server.getPass().getPassword();
+        if(!password.equals(passcode)){
+            System.out.println("Wrong Password");
+            loginInput.setStyle("-fx-background-color: #FF999C;");
+            loginInput.setText("");
+            passwordText.setText("Wrong Password");
+            return;
+        }
+        System.out.println("Password Accepted");
+
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AdminPageCtrl adminPageCtrl = new AdminPageCtrl(server);
         mainCtrl.initialize(stage, adminPageCtrl.getPair(), adminPageCtrl.getTitle());
     }
+
+
     public void close(ActionEvent e){
         System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();

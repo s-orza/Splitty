@@ -75,7 +75,10 @@ public class AddParticipantCtrl implements Controller{
 
         Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         try {
-            server.addParticipantEvent(newParticipant, server.getCurrentId());
+            //TODO
+            // make the eventID be specific to each event
+            String destination = "/app/participant/event/" + String.valueOf(server.getCurrentId());
+            server.sendParticipant(destination, newParticipant);
             close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());

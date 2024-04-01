@@ -4,10 +4,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminPageCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminPageCtrl">
     <children>
         <Button layoutX="527.0" layoutY="14.0" mnemonicParsing="false" onAction="#importEvent" text="Import" />
         <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
@@ -27,12 +28,19 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="editButton" layoutX="467.0" layoutY="347.0" mnemonicParsing="false" onAction="#editEvent" text="Edit" />
-      <Button fx:id="deleteButton" layoutX="527.0" layoutY="347.0" mnemonicParsing="false" onAction="#deleteEvent" text="Delete" />
+      <Button fx:id="editButton" layoutX="467.0" layoutY="346.0" mnemonicParsing="false" onAction="#editEvent" text="Edit" />
+      <Button fx:id="deleteButton" layoutX="528.0" layoutY="346.0" mnemonicParsing="false" onAction="#deleteEvent" text="Delete" />
       <Label text="" />
       <Label fx:id="showEvent" layoutX="25.0" layoutY="346.0" prefHeight="26.0" prefWidth="438.0">
          <font>
             <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <Button fx:id="generatePassButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#generatePassword" text="Generate Admin Password" />
+      <TextField fx:id="passLengthField" layoutX="191.0" layoutY="346.0" prefHeight="26.0" prefWidth="35.0" />
+      <Label fx:id="passLengthText" alignment="CENTER" layoutX="183.0" layoutY="372.0" prefHeight="18.0" prefWidth="50.0" text="Length">
+         <font>
+            <Font size="10.0" />
          </font>
       </Label>
     </children>

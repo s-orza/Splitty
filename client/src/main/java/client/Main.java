@@ -15,14 +15,16 @@
  */
 package client;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import client.scenes.*;
+import client.scenes.AdminPageCtrl;
+import client.scenes.EventPageCtrl;
+import client.scenes.MainCtrl;
+import client.scenes.MainPageCtrl;
 import client.utils.ServerUtils;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Main extends Application {
 
@@ -31,7 +33,7 @@ public class Main extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage){
+  public void start(Stage primaryStage) throws Exception {
     // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
 
     MainCtrl mainCtrl = new MainCtrl();
