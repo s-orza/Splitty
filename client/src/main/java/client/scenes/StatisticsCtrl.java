@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import commons.Event;
 import commons.Expense;
 import commons.Tag;
 import commons.TagId;
@@ -73,6 +74,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private List<Expense> expenses;
     private Map<String, String> tagColors;
     private Map<String, String> namesForLegend;
+    private Map<String,String> tagsToColors;
     private String selectedTagForEditing;//it also helps at deleting (from tag list)
 
     @Inject
@@ -216,9 +218,15 @@ public class StatisticsCtrl implements Controller, Initializable {
         // put data in the legend
         legendListView.getItems().clear();
         legendListView.getItems().addAll(tagColors.keySet());
+
+        legendListView.setSelectionModel(null);
+        legendListView.setFocusTraversable(false);
     }
     private void createTagsUsedInThisEventList(List<Tag> tags)
     {
+        tagsToColors=new HashMap<>();
+        for(Tag t:tags)
+            tagsToColors.put(t.getId().getName(),t.getColor());
         tagsListView.getItems().clear();
         tagsListView.getItems().addAll(tags.stream().map(x->x.getId().getName()).sorted().toList());
 
@@ -237,9 +245,12 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void updateTextsOnTheScreen()
     {
         //update the name of the event
-        long eventId=7952;
-        eventId = server.getCurrentId();
-        titleId.setText("Statistics for event "+eventId);
+        long eventId=server.getCurrentId();
+        Event event=server.getEvent(eventId);
+        if(event==null)
+            titleId.setText("Statistics for event "+eventId);//just in case
+        else
+            titleId.setText("Statistics for event "+event.getName());
         //in case we don't have the total amount in EUR, we need to change it to EUR
         totalSpentText.setText("Total sum spent: "+totalAmount+ " EUR");
     }
@@ -267,6 +278,24 @@ public class StatisticsCtrl implements Controller, Initializable {
                 //for setting the size of the text (by default it is 12)
                 Label label=new Label(namesForLegend.get(item));
                 label.setFont(new Font(13));
+                try {
+                    //set background color, here we use tagColors! The difference is that here our item
+                    //contains the amount of money. For example: food 23 EUR
+                    String textForBackgroundColor="-fx-background-color: "+tagColors.get(item)+";";
+                    //set the text white or black (It depends on the contrast with the background)
+                    Color c=Color.web(tagColors.get(item));
+                    //calculate the luminance (I searched on the internet and this is the formula)
+                    //luminance= 0.2126*Red + 0.7152*Green + 0.0722*Blue
+                    double luminance=0.2126*c.getRed() + 0.7152*c.getGreen() + 0.0722*c.getBlue();
+                    //set the text color to white or black, depending on which one has the greatest contrast
+                    if(luminance>0.5)
+                        label.setStyle(textForBackgroundColor+"-fx-text-fill: black;");
+                    else
+                        label.setStyle(textForBackgroundColor+"-fx-text-fill: white;");
+                }
+                catch (Exception e){
+                    System.out.println(e);
+                }
                 //we need to align the circle and the text
                 HBox hbox=new HBox(circle, label);
                 hbox.setAlignment(Pos.CENTER_LEFT);
@@ -333,7 +362,25 @@ public class StatisticsCtrl implements Controller, Initializable {
                 setGraphic(null);
             } else {
                 tagLabel.setText(item);
-                if(item.equals("other")) {
+                try {
+                    //set background color
+                    String textForBackgroundColor="-fx-background-color: "+tagsToColors.get(item)+";";
+                    //set the text white or black (It depends on the contrast with the background)
+                    Color c=Color.web(tagsToColors.get(item));
+                    //calculate the luminance (I searched on the internet and this is the formula)
+                    //luminance= 0.2126*Red + 0.7152*Green + 0.0722*Blue
+                    double luminance=0.2126*c.getRed() + 0.7152*c.getGreen() + 0.0722*c.getBlue();
+                    System.out.println("luminance is "+luminance);
+                    //set the text color to white or black, depending on which one has the greatest contrast
+                    if(luminance>0.5)
+                        tagLabel.setStyle(textForBackgroundColor+"-fx-text-fill: black;");
+                    else
+                        tagLabel.setStyle(textForBackgroundColor+"-fx-text-fill: white;");
+                }
+                catch (Exception e){}
+
+                if(item.equals("other"))
+                {
                     try {
 
                         container.getChildren().get(0).setStyle("-fx-opacity: 0.5;");
@@ -355,14 +402,12 @@ public class StatisticsCtrl implements Controller, Initializable {
         // Here we would edit the tag
 
         selectedTagForEditing=tag;
-        System.out.println("Edit: " + tag);
         showEditOrDeletePane(tag,true);
     }
 
     // Method to handle delete button click
     private void handleDelete(String tag) {
         // Here we would delete the tag
-        System.out.println("Delete: "+tag);
         if(!tag.equals("other"))
         {
             //open are you sure menu
@@ -370,7 +415,8 @@ public class StatisticsCtrl implements Controller, Initializable {
             //false is for are you sure menu
             showEditOrDeletePane(tag,false);
         }
-        System.out.println("You cannot delete this tag.");
+        else
+            mainCtrl.popup("You cannot delete this tag.","Warning","Ok");
     }
     @FXML
     void saveEditTag(ActionEvent event) {
@@ -390,6 +436,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         {
             //Problem!! We cannot change this tag's name.
             editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
+            mainCtrl.popup("You cannot change this tag's name.","Warning","Ok");
             return;
         }
         //verify if there is no other tag with this name and eventId
@@ -405,7 +452,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         }
 
         editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
-        System.out.println("There is already a tag with this name.");
+        mainCtrl.popup("There is already a tag with this name.","Warning","Ok");
     }
     @FXML
     void deleteTagButton(ActionEvent event) {

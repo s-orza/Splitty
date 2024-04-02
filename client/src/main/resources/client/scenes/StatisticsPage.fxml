@@ -10,25 +10,28 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="481.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
+<AnchorPane prefHeight="650.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
     <children>
-        <Button fx:id="okButton" layoutX="476.0" layoutY="421.0" mnemonicParsing="false" onAction="#exitPage" prefHeight="25.0" prefWidth="49.0" text="OK" />
-        <Text fx:id="titleId" layoutX="227.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Statistics for " textAlignment="CENTER" wrappingWidth="146.64630126953125">
+        <Button fx:id="okButton" layoutX="584.0" layoutY="580.0" mnemonicParsing="false" onAction="#exitPage" prefHeight="25.0" prefWidth="49.0" text="OK" />
+        <Text fx:id="titleId" layoutX="222.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Statistics for " textAlignment="CENTER" wrappingWidth="255.31292724609375">
             <font>
                 <Font size="17.0" />
             </font>
         </Text>
-        <Text fx:id="totalSpentText" layoutX="405.0" layoutY="354.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " />
-        <ListView fx:id="tagsListView" layoutX="406.0" layoutY="83.0" prefHeight="118.0" prefWidth="178.0" />
-        <Text fx:id="tagsText" layoutX="406.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
+        <Text fx:id="totalSpentText" layoutX="450.0" layoutY="420.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " wrappingWidth="212.0836181640625">
+         <font>
+            <Font size="14.0" />
+         </font></Text>
+        <ListView fx:id="tagsListView" layoutX="450.0" layoutY="79.0" prefHeight="139.0" prefWidth="220.0" />
+        <Text fx:id="tagsText" layoutX="450.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
          <font>
             <Font size="14.0" />
          </font></Text>
 
-      <PieChart fx:id="pieChart" layoutX="14.0" layoutY="52.0" legendVisible="false" prefHeight="298.0" prefWidth="344.0" title="Costs:" />
+      <PieChart fx:id="pieChart" layoutX="14.0" layoutY="52.0" legendVisible="false" prefHeight="373.0" prefWidth="376.0" title="Costs:" />
      
-      <ListView fx:id="legendListView" layoutX="406.0" layoutY="221.0" prefHeight="107.0" prefWidth="178.0" />
-      <Pane fx:id="editPanel" layoutX="406.0" layoutY="43.0" prefHeight="157.0" prefWidth="178.0">
+      <ListView fx:id="legendListView" layoutX="450.0" layoutY="249.0" prefHeight="148.0" prefWidth="220.0" />
+      <Pane fx:id="editPanel" layoutX="467.0" layoutY="68.0" prefHeight="139.0" prefWidth="178.0">
          <children>
             <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="60.0" />
             <TextField fx:id="editNameField" layoutX="13.0" layoutY="28.0" prefHeight="25.0" prefWidth="124.0" />
@@ -38,7 +41,7 @@
             <Text fx:id="editOrAreYouSureText" layoutX="12.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edit tag" textAlignment="CENTER" wrappingWidth="153.96817016601562" />
          </children>
       </Pane>
-      <Text layoutX="406.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
+      <Text layoutX="450.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
          <font>
             <Font size="14.0" />
          </font>

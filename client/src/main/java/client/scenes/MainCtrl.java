@@ -66,6 +66,29 @@ public class MainCtrl {
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
+    public void popup(String text, String title,String buttonText){
+        VBox layout = new VBox(10);
+        Label label = new Label(text);
+        Button button = new Button(buttonText);
+
+        // Set up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle(title);
+
+        button.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, button);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 300, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
 }
 
 
