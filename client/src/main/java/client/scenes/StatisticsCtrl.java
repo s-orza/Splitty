@@ -56,19 +56,19 @@ public class StatisticsCtrl implements Controller, Initializable {
     @FXML
     private Button okButton;
     @FXML
-    private TableView<Map<String, Object>> participantsShareTable;
+    private TableView<Map<String, String>> participantsShareTable;
 
     @FXML
-    private TableColumn<Map<String, Object>, String> personColumn;
+    private TableColumn<Map<String, String>, String> personColumn;
 
     @FXML
-    private TableColumn<Map<String, Object>, String> shareColumn;
+    private TableColumn<Map<String, String>, String> shareColumn;
 
     @FXML
-    private TableColumn<Map<String, Object>, String> owesColumn;
+    private TableColumn<Map<String, String>, String> owesColumn;
 
     @FXML
-    private TableColumn<Map<String, Object>, String> isOwedColumn;
+    private TableColumn<Map<String, String>, String> isOwedColumn;
 
     @FXML
     private PieChart pieChart;
@@ -256,14 +256,24 @@ public class StatisticsCtrl implements Controller, Initializable {
     {
         List<Participant> participants=server.getParticipantsOfEvent(server.getCurrentId());
         //I used a List of maps to map each attribute to its column
-        ObservableList<Map<String, Object>> data = FXCollections.observableArrayList();
+        ObservableList<Map<String, String>> data = FXCollections.observableArrayList();
         Map<Long,Double> idToShare=new HashMap<>();
         Map<Long,Double> idToReceive=new HashMap<>();
         Map<Long,Double> idToGive=new HashMap<>();
 
+        //first let's set every share to 0
         for(Participant p:participants)
-        {
             idToShare.put(p.getParticipantID(),0.0);
+        //calculate share per person
+        for(Expense e:expenses)
+        {
+            //share per participant in each expense
+            double amount=e.getMoney()/e.getParticipants().size();
+            for(Participant p:e.getParticipants())
+            {
+                double k=idToShare.get(p.getParticipantID());
+                idToShare.put(p.getParticipantID(),k+amount);
+            }
         }
         Event event=server.getEvent(server.getCurrentId());
         //calculate the amount of money that each person needs to receive or to give
@@ -296,8 +306,7 @@ public class StatisticsCtrl implements Controller, Initializable {
             if(!idToGive.containsKey(p.getParticipantID()))
                 idToGive.put(p.getParticipantID(),0.0);
             //create cell (for the table)
-            //I used Object because we can have both String and Double
-            Map<String, Object> row = new HashMap<>();
+            Map<String, String> row = new HashMap<>();
             row.put("name", p.getName());
             //I also approximate to 2 decimals
             row.put("share", String.format("%.2f",idToShare.get(p.getParticipantID())));
