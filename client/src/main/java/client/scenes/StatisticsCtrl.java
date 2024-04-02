@@ -312,10 +312,10 @@ public class StatisticsCtrl implements Controller, Initializable {
                     .get("name")));
             shareColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
                     .get("share")));
-            owesColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
-                    .get("give")));
             isOwedColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
                     .get("receive")));
+            owesColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
+                    .get("give")));
 
             participantsShareTable.setItems(data);
         }catch(Exception e){

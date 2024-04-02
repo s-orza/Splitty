@@ -57,10 +57,10 @@
           <TableColumn fx:id="shareColumn" prefWidth="118.00000762939453" text="Share per person" >
 
           </TableColumn>
-            <TableColumn fx:id="owesColumn" prefWidth="117.33329772949219" text="Needs to receive" >
+            <TableColumn fx:id="owesColumn" prefWidth="117.33329772949219" text="Needs to give" >
 
             </TableColumn>
-            <TableColumn fx:id="isOwedColumn" prefWidth="152.0" text="Needs to give" >
+            <TableColumn fx:id="isOwedColumn" prefWidth="152.0" text="Needs to receive" >
 
             </TableColumn>
         </columns>
