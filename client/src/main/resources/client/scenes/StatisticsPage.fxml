@@ -4,12 +4,15 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <AnchorPane prefHeight="650.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
     <children>
         <Button fx:id="okButton" layoutX="584.0" layoutY="580.0" mnemonicParsing="false" onAction="#exitPage" prefHeight="25.0" prefWidth="49.0" text="OK" />
@@ -18,7 +21,7 @@
                 <Font size="17.0" />
             </font>
         </Text>
-        <Text fx:id="totalSpentText" layoutX="450.0" layoutY="420.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " wrappingWidth="212.0836181640625">
+        <Text fx:id="totalSpentText" layoutX="450.0" layoutY="420.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " textAlignment="CENTER" wrappingWidth="212.0836181640625">
          <font>
             <Font size="14.0" />
          </font></Text>
@@ -46,5 +49,21 @@
             <Font size="14.0" />
          </font>
       </Text>
+      <TableView fx:id="participantsShareTable" layoutX="26.0" layoutY="442.0" prefHeight="194.0" prefWidth="469.0">
+        <columns>
+          <TableColumn fx:id="personColumn" prefWidth="81.33331108093262" text="Person" >
+
+            </TableColumn>
+          <TableColumn fx:id="shareColumn" prefWidth="118.00000762939453" text="Share per person" >
+
+          </TableColumn>
+            <TableColumn fx:id="owesColumn" prefWidth="117.33329772949219" text="Needs to receive" >
+
+            </TableColumn>
+            <TableColumn fx:id="isOwedColumn" prefWidth="152.0" text="Needs to give" >
+
+            </TableColumn>
+        </columns>
+      </TableView>
     </children>
 </AnchorPane>
