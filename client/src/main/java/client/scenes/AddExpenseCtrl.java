@@ -116,7 +116,6 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     public void initialize() {
         //load resources
-        System.out.println(server.getExIdToModify());
         loadFromDatabase();
         toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
@@ -128,13 +127,11 @@ public class AddExpenseCtrl implements Controller{
         if(server.getExIdToModify()!=-1)
         {
             expenseToBeModified=server.getExpenseToBeModified();
-            System.out.println("We edit");
             reloadExpense();
         }
         //in add page
         else
         {
-            System.out.println("We add");
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
@@ -160,7 +157,7 @@ public class AddExpenseCtrl implements Controller{
             authorSelector.setPromptText(resourceBundle.getString("selectPersonText"));
             typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
         }catch (Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 

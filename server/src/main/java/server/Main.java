@@ -16,6 +16,8 @@
 package server;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commons.AppConfig;
 import commons.Password;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,9 +25,16 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @SpringBootApplication
-@EntityScan(basePackages = {"commons", "server" })
+@EntityScan(basePackages = {"commons", "server"})
 public class Main {
+
+
+    AppConfig config = new AppConfig();
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
@@ -35,6 +44,7 @@ public class Main {
     private static void genPass()
     {
         final String uri = "http://localhost:8080/api/password";
+
         Password password = new Password();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -43,5 +53,20 @@ public class Main {
 
         // post new password
         ResponseEntity<Password> response = restTemplate.postForEntity(uri, password, Password.class);
+    }
+    private static AppConfig readConfig() throws Exception {
+        File selectedFile = new File("App-Config.json");
+        if (selectedFile != null && selectedFile.getName().contains(".json")) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                System.out.println("This file" + new String(Files.readAllBytes(Paths.get(selectedFile.toURI()))));
+                AppConfig config = mapper.readValue(selectedFile, AppConfig.class);
+                System.out.println(config);
+                return config;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new AppConfig();
     }
 }

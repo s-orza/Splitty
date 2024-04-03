@@ -15,18 +15,21 @@
  */
 package client;
 
-import client.scenes.AdminPageCtrl;
-import client.scenes.EventPageCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.MainPageCtrl;
+import client.scenes.*;
 import client.utils.ServerUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import commons.AppConfig;
 import javafx.application.Application;
 import javafx.stage.Stage;
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class Main extends Application {
+
+  MainCtrl mainCtrl = new MainCtrl();
+  MainPageCtrl mainPageCtrl;
 
   public static void main(String[] args) throws URISyntaxException, IOException {
     launch(); // creates app instance, calls init(), and then start(javafx.stage.Stage)
@@ -35,21 +38,54 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
-
-    MainCtrl mainCtrl = new MainCtrl();
-    MainPageCtrl mainPageCtrl = new MainPageCtrl(new ServerUtils());
-    mainCtrl.initialize(primaryStage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
-
-    AdminPageCtrl adminPageCtrl = new AdminPageCtrl(new ServerUtils());
-
-    primaryStage.setOnCloseRequest(e-> {
-      adminPageCtrl.stop();
-    });
-
-    EventPageCtrl eventPage = new EventPageCtrl(new ServerUtils());
-
-    primaryStage.setOnCloseRequest(e-> {
-      eventPage.stop();
-    });
+    AppConfig config = new AppConfig();
+    try {
+      AppConfig newConfig = readConfig();
+      if(newConfig.getCurrency() != null){
+        config.setCurrency(newConfig.getCurrency());
+      }
+      else{
+        System.out.println("Config had incorrect Curency!");
+      }
+      if(     newConfig.getServerUrl() != null &&
+              newConfig.getServerUrl().startsWith("http://") &&
+              newConfig.getServerUrl().endsWith("/")){
+        config.setServerUrl(newConfig.getServerUrl());
+      }else{
+        System.out.println("Config had incorrect Url!");
+      }
+      if(newConfig.getLang() != null){
+        config.setLang(newConfig.getLang());
+      }else{
+        System.out.println("Config had incorrect Language!");
+      }
+      config.setRecentEvents(newConfig.getRecentEvents());
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+    ServerUtils.setServerUrl(config.getServerUrl());
+    mainPageCtrl= new MainPageCtrl(new ServerUtils());
+    mainCtrl.setRecents(config.getRecentEvents());
+    mainCtrl.setCurrency(config.getCurrency());
+    mainCtrl.setUrl(config.getServerUrl());
+    mainPageCtrl.setLang(config.getLang());
+    ServerSelectCtrl serverSelectCtrl = new ServerSelectCtrl(new ServerUtils());
+    mainCtrl.initialize(primaryStage, serverSelectCtrl.getPair(), serverSelectCtrl.getTitle());
+  }
+  private AppConfig readConfig() throws Exception {
+    File selectedFile = new File("App-Config.json");
+    if (selectedFile != null && selectedFile.getName().contains(".json")) {
+      ObjectMapper mapper = new ObjectMapper();
+      try {
+        AppConfig config = mapper.readValue(selectedFile, AppConfig.class);
+        return config;
+      } catch (FileNotFoundException e) {
+        System.out.println("No config file was found!");
+      } catch (Exception e){
+        e.printStackTrace();
+      }
+    }
+    System.out.println("Running default settings");
+    return new AppConfig();
   }
 }

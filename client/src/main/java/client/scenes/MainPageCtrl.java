@@ -23,12 +23,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 
 public class MainPageCtrl implements Controller, Initializable {
 
@@ -37,7 +35,7 @@ public class MainPageCtrl implements Controller, Initializable {
   @FXML
   private TextField joinInput;
   @FXML
-  private ListView<EventHelper> recentList;
+  private ListView<String> recentList;
   @FXML
   private Button flagButton;
   @FXML
@@ -57,7 +55,7 @@ public class MainPageCtrl implements Controller, Initializable {
   @FXML
   private Button addLanguageButton;
 
-  private EventHelper selectedEv;
+  private Event selectedEv;
   //Imports used to swap scenes
   private Stage stage;
   private ServerUtils server;
@@ -91,41 +89,39 @@ public class MainPageCtrl implements Controller, Initializable {
     }
     server.createEvent(newEvent);
     newEvent = server.getEvents().getLast();
-    System.out.println(newEvent.getEventId() + "id");
-    System.out.println("Crete event window");
-    System.out.println(createInput.getText());
-    System.out.println(server.getEvent(newEvent.getEventId()));
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
     server.connect(newEvent.getEventId());
-    System.out.println(server.getCurrentId() + "ID cur");
+    mainCtrl.addRecent(server.getCurrentId());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
 
   public void joinEvent(ActionEvent event) {
-    System.out.println("Join event window");
-    System.out.println(joinInput.getText());
     try {
       server.connect(Long.parseLong(joinInput.getText()));
     }catch (Exception e){
-      System.out.println(e);
+      e.printStackTrace();
       return;
     }
+    mainCtrl.addRecent(server.getCurrentId());
     stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
+  public void setLang(Locale currentLocale) {
+    this.currentLocale = currentLocale;
+  }
+
   public void openAdmin(ActionEvent e){
 
     try{
-      System.out.println("opening admin");
       stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
       LoginAdminCtrl loginAdminCtrl = new LoginAdminCtrl(server);
       mainCtrl.initialize(stage, loginAdminCtrl.getPair(), loginAdminCtrl.getTitle());
     }catch (Exception ex){
-      System.out.println(ex);
+      ex.printStackTrace();
     }
   }
 
@@ -133,16 +129,28 @@ public class MainPageCtrl implements Controller, Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
-    ArrayList<EventHelper> contents = new ArrayList<>();
-    for(Event e : server.getEvents()){
-      contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
+    ArrayList<Event> contents = new ArrayList<>();
+    ArrayList<Long> ids = new ArrayList<>();
+    ArrayList<Long> oldIds = new ArrayList<>();
+    server.getEvents().forEach(e -> ids.add(e.getEventId()));
+    for(Long id : mainCtrl.getRecents()){
+      if (ids.contains(id)) {
+        contents.add(server.getEvent(id));
+      }
+      else{
+        oldIds.add(id);
+      }
+    }
+    for(Long id : oldIds){
+      mainCtrl.removeRecent(id);
     }
     contents.sort(new EventActivitySort());
-    System.out.println(server.getEvents());
-    recentList.getItems().addAll(contents);
+    for (Event e : contents){
+      recentList.getItems().add(e.getEventId() + " - " + e.getName());
+    }
     server.registerForMessages("/topic/events", Long.class, e -> {
       for (int i = 0; i<contents.size(); i++) {
-        if (contents.get(i).getId()==e) {
+        if (contents.get(i).getEventId()==e) {
           recentList.getItems().remove(i);
           break;
         }
@@ -151,19 +159,19 @@ public class MainPageCtrl implements Controller, Initializable {
 
 
     recentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-      selectedEv = recentList.getSelectionModel().getSelectedItem();
+      selectedEv = server.getEvent(
+              Integer.parseInt(
+                      recentList.getSelectionModel().getSelectedItem()
+                              .split(" - ")[0]));
 
       EventPageCtrl eventCtrl = new EventPageCtrl(server);
       try {
-        String input = String.valueOf(eventCtrl.findEventId(selectedEv.getTitle()));
+        String input = String.valueOf(eventCtrl.findEventId(selectedEv.getName()));
         joinInput.setText(input);
       } catch (Exception e) {
-        System.out.println(e);
+        e.printStackTrace();
       }
     });
-
-
-
 
     if(currentLocale.getLanguage().equals("en")){
       putFlag("enFlag.png");
@@ -204,7 +212,6 @@ public class MainPageCtrl implements Controller, Initializable {
     prepareAnimation();
 
     comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-      System.out.println("Selected item: " + newValue);
       if(newValue.equals("English")) changeFlag("en");
       if(newValue.equals("Dutch")) changeFlag("nl");
       if(newValue.equals("Spanish")) changeFlag("es");
@@ -271,7 +278,6 @@ public class MainPageCtrl implements Controller, Initializable {
    * this is a very bad attempt to do a live language switching which appears to be impossible
    */
   public void toggleLanguage(){
-      System.out.println("image pressed " + counter++);
     // Custom control to force reloading of the resource bundle
     ResourceBundle.Control control = new ResourceBundle.Control() {
       @Override
