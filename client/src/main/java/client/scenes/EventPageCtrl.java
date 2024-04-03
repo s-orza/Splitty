@@ -78,7 +78,6 @@ public class EventPageCtrl implements Controller{
     private ToggleButton includingxButton;
     private String includingxButtonText;
     private String allText;
-
     @FXML
     Button addParticipant;
 
@@ -354,6 +353,7 @@ public class EventPageCtrl implements Controller{
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
+        removeParticipant.setOnAction(e->removeParticipantHandler(e));
         editExpense.setOnAction(e->editExpenseHandler(e));
         editParticipant.setOnAction(e -> editParticipantHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
