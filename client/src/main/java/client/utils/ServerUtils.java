@@ -685,6 +685,16 @@ public class ServerUtils {
 				.get(new GenericType<Password>() {});
 	}
 
+	public boolean deleteParticipant(long participantId){
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl+"api/participant/"+participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+		if (response.getStatus()==200)
+			return true;
+		return false;
+	}
+
 	/**
 	 * connects to the database through the endpoint to delete an event
 	 * @param id ID of the password

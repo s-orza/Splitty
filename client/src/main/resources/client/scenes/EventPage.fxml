@@ -132,6 +132,12 @@
          </graphic>
       </Button>
       <Button fx:id="Invite" layoutX="624.0" layoutY="400.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" />
-
+      <Button fx:id="removeParticipant" layoutX="447.0" layoutY="110.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="122.0" styleClass="button-styled" text="Remove Participant">
+         <ImageView fitHeight="20" fitWidth="20">
+            <image>
+               <Image url="@/bin.png" />
+            </image>
+         </ImageView>
+      </Button>
    </children>
 </AnchorPane>

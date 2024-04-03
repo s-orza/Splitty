@@ -106,8 +106,8 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     Label eventName;
-
-
+    @FXML
+    Button removeParticipant;
     @FXML
     Button flagButton;
 
@@ -790,6 +790,59 @@ public class EventPageCtrl implements Controller{
         renderExpenseColumns(expensesFromX);
 
     }
+
+    /**
+     * This method handles the removal of participants in the database
+     */
+    public void removeParticipantHandler(ActionEvent event){
+        VBox layout = new VBox(10);
+        Label label = new Label(resourceBundle.getString("removeParticipantQuestionText"));
+        Button cancelButton = new Button(resourceBundle.getString("cancelText"));
+
+        Button removeButton = new Button(resourceBundle.getString("removeText"));
+
+        // setting up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle(resourceBundle.getString("removeParticipantTitle"));
+
+        // set action for removing
+        removeButton.setOnAction(e -> {
+            popupStage.close();
+
+            ObservableList<Participant> selectedItems = participantsTable.getSelectionModel().getSelectedItems();
+            List<Participant> itemsToRemove = new ArrayList<>(selectedItems);
+            participantsData.removeAll(itemsToRemove);
+
+            removeParticipantsFromDatabase(itemsToRemove);
+        });
+
+        // set action for cancelling the removal process
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, cancelButton, removeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
+
+    /**
+     * This method will remove the provided list of participant from the database
+     * @param toRemove List of participants to remove
+     */
+    private void removeParticipantsFromDatabase(List<Participant> toRemove){
+        for (Participant p: toRemove){
+            server.deleteParticipantEvent(p.getParticipantID(), server.getCurrentId());
+            server.deleteParticipant(p.getParticipantID());
+        }
+    }
+
 
     /**
      * this method handles the functionality of removing visual entries in the table
