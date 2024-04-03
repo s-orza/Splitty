@@ -28,12 +28,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
-<<<<<<< HEAD
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
-=======
->>>>>>> main
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

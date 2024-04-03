@@ -152,10 +152,11 @@ public class StatisticsCtrl implements Controller, Initializable {
         expenseTypesAvailable.clear();
         expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
 
+        moneyTypeSelector.setOnAction(null);
         moneyTypeSelector.getItems().clear();
         moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
         //here to change with the value from the config file
-        moneyTypeSelector.setValue("EUR");
+        moneyTypeSelector.setValue(MainCtrl.getCurrency());
         moneyTypeSelector.setOnAction(this::handleCurrencySelection);
     }
 
@@ -168,7 +169,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private Map<String, Double> getTagsWithValuesFromExpenses(List<Expense> expensesList)
     {
 
-        String myCurrency="RON";
+        String myCurrency=MainCtrl.getCurrency();
         Map<String, Double> tagsWithValues=new HashMap<>();
         for(Expense e:expensesList)
         {
@@ -199,7 +200,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         ObservableList<PieChart.Data> pieChartData =FXCollections.observableArrayList();
         //calculate the total amount of money
         totalAmount=0;
-        String myCurrency="RON";
+        String myCurrency=MainCtrl.getCurrency();
         //we need to use the exchange rate from the day the expense was made
         for(Expense ex:expenses)
         {
@@ -219,7 +220,7 @@ public class StatisticsCtrl implements Controller, Initializable {
             //the tag name + %
             String name=tag+ " ("+String.format("%.2f", percentage)+"%)";
             //name for the legend.
-            String legendName=tag+"  "+amount+" "+myCurrency;
+            String legendName=tag+"  "+String.format("%.2f", amount)+" "+myCurrency;
 
             PieChart.Data data=new PieChart.Data(name,amount);
             pieChartData.add(data);
@@ -273,7 +274,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     }
     private void createSharePerPersonTable(List<Expense> expenses)
     {
-        String myCurrency="RON";
+        String myCurrency=MainCtrl.getCurrency();
         List<Participant> participants=server.getParticipantsOfEvent(server.getCurrentId());
         //I used a List of maps to map each attribute to its column
         ObservableList<Map<String, String>> data = FXCollections.observableArrayList();
@@ -366,7 +367,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void updateTextsOnTheScreen()
     {
         //update the name of the event
-        String myCurrency="RON";
+        String myCurrency=MainCtrl.getCurrency();
         long eventId=server.getCurrentId();
         Event event=server.getEvent(eventId);
         if(event==null)
@@ -612,6 +613,11 @@ public class StatisticsCtrl implements Controller, Initializable {
         String selectedMoneyType=moneyTypeSelector.getValue();
         //update in the config file
         System.out.println(selectedMoneyType);
+        if(!MainCtrl.getCurrency().equals(selectedMoneyType))
+        {
+            mainCtrl.setCurrency(selectedMoneyType);
+            refresh();
+        }
     }
     /**
      * This is like a back button

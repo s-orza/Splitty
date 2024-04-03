@@ -226,7 +226,7 @@ public class AddExpenseCtrl implements Controller{
         //for handling money type
         moneyTypeSelector.getItems().clear();
         moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
-        moneyTypeSelector.setValue("EUR");//setting EUR as the default value
+        moneyTypeSelector.setValue(MainCtrl.getCurrency());
         //moneyTypeSelector.setOnAction(this::handleCurrencySelection);
         ///date
         date.setValue(null);
