@@ -31,6 +31,9 @@ public class Tag   {
         this.color = color;
     }
 
+    public void setId(TagId id) {
+        this.id = id;
+    }
 
     @Override
     public String toString() {
