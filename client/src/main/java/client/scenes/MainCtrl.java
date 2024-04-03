@@ -51,7 +51,7 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
         this.ctrl = dummy.getKey();
         this.scene = new Scene(dummy.getValue());
-        primaryStage.setTitle(title);
+        primaryStage.setTitle(url + " " + title);
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest(windowEvent -> {
@@ -89,8 +89,8 @@ public class MainCtrl {
         return currency;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrl(String ip, String port) {
+        this.url = "http://" + ip + ":" + port + "/";
     }
 
     public void closeApp() {
@@ -107,7 +107,9 @@ public class MainCtrl {
             }
         }
         url = server.getServerUrl();
-        AppConfig config = new AppConfig(currency, exported, url, lang);
+        String id = url.replace("/", "").split(":")[1];
+        String port = url.replace("/", "").split(":")[2];
+        AppConfig config = new AppConfig(currency, exported, id, port, lang);
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         try {

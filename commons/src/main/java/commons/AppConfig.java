@@ -6,18 +6,24 @@ import java.util.Locale;
 public class AppConfig {
   String currency;
   ArrayList<Long> recentEvents;
-  String serverUrl;
+  String ip;
+  String port;
   Locale lang;
 
-  public Locale getLang() {
-    return lang;
-  }
-
-  public AppConfig(String currency, ArrayList<Long> recentEvents, String serverUrl, Locale lang) {
+  public AppConfig(String currency, ArrayList<Long> recentEvents, String ip, String port, Locale lang) {
     this.currency = currency;
     this.recentEvents = recentEvents;
-    this.serverUrl = serverUrl;
+    this.ip = ip;
+    this.port = port;
     this.lang = lang;
+  }
+
+  public AppConfig() {
+    this.currency = "EUR";
+    this.recentEvents = new ArrayList<>();
+    this.ip = "127.0.0.1";
+    this.port = "8080";
+    this.lang = new Locale("en", "US");
   }
 
   @Override
@@ -25,19 +31,19 @@ public class AppConfig {
     return "AppConfig{" +
             "currency='" + currency + '\'' +
             ", recentEvents=" + recentEvents +
-            ", serverUrl='" + serverUrl + '\'' + lang +
+            ", ip='" + ip + '\'' +
+            ", port='" + port + '\'' +
+            ", language='" + lang +
             '}';
+  }
+
+
+  public Locale getLang() {
+    return lang;
   }
 
   public void setLang(Locale lang) {
     this.lang = lang;
-  }
-
-  public AppConfig(){
-    currency = "EUR";
-    recentEvents = new ArrayList<>();
-    serverUrl = "http://localhost:8080/";
-    lang = new Locale("en", "US");
   }
 
   public String getCurrency() {
@@ -48,8 +54,11 @@ public class AppConfig {
     return recentEvents;
   }
 
-  public String getServerUrl() {
-    return serverUrl;
+  public String getIp() {
+    return ip;
+  }
+  public String getPort() {
+    return port;
   }
 
   public void setCurrency(String currency) {
@@ -60,7 +69,11 @@ public class AppConfig {
     this.recentEvents = recentEvents;
   }
 
-  public void setServerUrl(String serverUrl) {
-    this.serverUrl = serverUrl;
+  public void setIp(String ip) {
+    this.ip = ip;
   }
+  public void setPort(String port) {
+    this.port = port;
+  }
+
 }

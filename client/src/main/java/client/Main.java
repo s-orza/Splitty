@@ -47,12 +47,15 @@ public class Main extends Application {
       else{
         System.out.println("Config had incorrect Curency!");
       }
-      if(     newConfig.getServerUrl() != null &&
-              newConfig.getServerUrl().startsWith("http://") &&
-              newConfig.getServerUrl().endsWith("/")){
-        config.setServerUrl(newConfig.getServerUrl());
+      if(     newConfig.getIp() != null){
+        config.setIp(newConfig.getIp());
       }else{
-        System.out.println("Config had incorrect Url!");
+        System.out.println("Config had incorrect Ip!");
+      }
+      if(newConfig.getPort() != null){
+        config.setPort(newConfig.getPort());
+      }else{
+        System.out.println("Config had incorrect Port!");
       }
       if(newConfig.getLang() != null){
         config.setLang(newConfig.getLang());
@@ -63,14 +66,17 @@ public class Main extends Application {
     }catch (Exception e){
       e.printStackTrace();
     }
-    ServerUtils.setServerUrl(config.getServerUrl());
+    try{
+      ServerUtils.setServerUrl("http://" + config.getIp() + ":" + config.getPort() + "/");
+    }catch (Exception exception){
+      exception.printStackTrace();
+    }
     mainPageCtrl= new MainPageCtrl(new ServerUtils());
     mainCtrl.setRecents(config.getRecentEvents());
     mainCtrl.setCurrency(config.getCurrency());
-    mainCtrl.setUrl(config.getServerUrl());
+    mainCtrl.setUrl(config.getIp(), config.getPort());
     mainPageCtrl.setLang(config.getLang());
-    ServerSelectCtrl serverSelectCtrl = new ServerSelectCtrl(new ServerUtils());
-    mainCtrl.initialize(primaryStage, serverSelectCtrl.getPair(), serverSelectCtrl.getTitle());
+    mainCtrl.initialize(primaryStage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
   }
   private AppConfig readConfig() throws Exception {
     File selectedFile = new File("App-Config.json");
