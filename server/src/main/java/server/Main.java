@@ -43,5 +43,6 @@ public class Main {
 
         // post new password
         ResponseEntity<Password> response = restTemplate.postForEntity(uri, password, Password.class);
+
     }
 }

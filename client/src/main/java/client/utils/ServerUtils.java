@@ -101,6 +101,17 @@ public class ServerUtils {
 		Expense ex=getExpenseById(expenseIdToModify);
 		return ex;
 	}
+	public double getExchangeRate(String date,String from,String to)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER+"api/foreignCurrencies/"+date+"?from="+from+"&to="+to)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		System.out.println(response);
+		if(response.getStatus()<300)
+			return response.readEntity(Double.class);
+		return 1.0;
+	}
 
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
