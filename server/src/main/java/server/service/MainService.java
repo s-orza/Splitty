@@ -6,18 +6,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import server.database.ExpenseRepository;
-import server.database.ParticipantExpenseRepository;
-import server.database.ParticipantRepository;
-
 import java.io.File;
-import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MainService {

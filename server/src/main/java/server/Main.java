@@ -15,21 +15,10 @@
  */
 package server;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import commons.AppConfig;
-import commons.Password;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import server.service.MainService;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 
 @SpringBootApplication
 @EntityScan(basePackages = {"commons", "server"})
