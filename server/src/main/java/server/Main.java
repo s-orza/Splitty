@@ -15,33 +15,22 @@
  */
 package server;
 
-
-import commons.Password;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import server.service.MainService;
 
 @SpringBootApplication
-@EntityScan(basePackages = {"commons", "server" })
+@EntityScan(basePackages = {"commons", "server"})
 public class Main {
 
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
-        genPass();
+
+        final MainService service = new MainService();
+        SpringApplication app = new SpringApplication(Main.class);
+        service.setAddress(app);
+        app.run(args);
+        service.genPass();
     }
 
-    private static void genPass()
-    {
-        final String uri = "http://localhost:8080/api/password";
-        Password password = new Password();
-        RestTemplate restTemplate = new RestTemplate();
-
-        // delete all old passwords (0 or 1)
-        restTemplate.delete(uri);
-
-        // post new password
-        ResponseEntity<Password> response = restTemplate.postForEntity(uri, password, Password.class);
-    }
 }
