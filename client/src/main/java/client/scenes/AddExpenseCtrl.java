@@ -116,7 +116,6 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     public void initialize() {
         //load resources
-        //System.out.println(server.getExIdToModify());
         loadFromDatabase();
         toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
@@ -158,7 +157,7 @@ public class AddExpenseCtrl implements Controller{
             authorSelector.setPromptText(resourceBundle.getString("selectPersonText"));
             typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
         }catch (Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 

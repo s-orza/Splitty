@@ -43,20 +43,15 @@ public class LoginAdminCtrl implements Controller, Initializable {
     }
 
     public void login(ActionEvent e){
-        System.out.println("login to admin page");
         String passcode = loginInput.getText();
-        System.out.println("submitted pass:"+passcode);
-
         // authenticate password
         String password = server.getPass().getPassword();
         if(!password.equals(passcode)){
-            System.out.println("Wrong Password");
             loginInput.setStyle("-fx-background-color: #FF999C;");
             loginInput.setText("");
             passwordText.setText("Wrong Password");
             return;
         }
-        System.out.println("Password Accepted");
 
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AdminPageCtrl adminPageCtrl = new AdminPageCtrl(server);
@@ -65,7 +60,6 @@ public class LoginAdminCtrl implements Controller, Initializable {
 
 
     public void close(ActionEvent e){
-        System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
         mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());

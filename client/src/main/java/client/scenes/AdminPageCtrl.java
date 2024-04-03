@@ -28,9 +28,12 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+<<<<<<< HEAD
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+=======
+>>>>>>> main
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,7 +75,6 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void fillList(){
     List<EventHelper> list = new ArrayList<EventHelper>();
     for(Event e : server.getEvents()){
-      System.out.println("activity date: " + e.getActivityDate());
       list.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
     }
     contents =  FXCollections.observableArrayList(
@@ -109,13 +111,11 @@ public class AdminPageCtrl implements Controller, Initializable {
     event.setExpenses(expenses);
     event.setParticipants(participants);
     event.setTags(tags);
-    System.out.println(event + " \nTags " + tags);
     ObjectMapper mapper = new ObjectMapper();
     StringWriter writer = new StringWriter();
     try{
         mapper.writeValue(writer, event);
         String json  = writer.toString();
-        System.out.println(json);
         String filePath = new File("").getAbsolutePath().replace("\\", "/");
         filePath += ("/EventsBackup/");
         String fileName = event.getName() + ".json";
@@ -127,10 +127,10 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success");
+        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success", "OK");
       }
     catch(Exception exception){
-      System.out.println(exception);
+      exception.printStackTrace();
     }
   }
   public void importEvent(ActionEvent actionEvent) {
@@ -142,13 +142,11 @@ public class AdminPageCtrl implements Controller, Initializable {
     if(selectedFile !=null){
         if(selectedFile.getName().contains(".json") ){
           ObjectMapper mapper = new ObjectMapper();
-          try {
-            System.out.println("This file" + new String(Files.readAllBytes(Paths.get(selectedFile.toURI()))));
+          try{
             Event newEvent = mapper.readValue(selectedFile, Event.class);
-            System.out.println(newEvent);
             for(Event event : server.getEvents()) {
               if (event.getName().equals(newEvent.getName())) {
-                mainCtrl.popup("Event with that name already exists!", "Warning!");
+                mainCtrl.popup("Event with that name already exists!", "Warning!", "OK");
                 return;
               }
             }
@@ -156,17 +154,15 @@ public class AdminPageCtrl implements Controller, Initializable {
             createdEvent.setCreationDate(newEvent.getCreationDate());
             server.createEvent(createdEvent);
             long id = server.getEvents().getLast().getEventId();
+            mainCtrl.addRecent(id);
             List<Participant> participants = newEvent.getParticipants();
             for(Participant p : participants){
               server.addParticipantEvent(p, id);
             }
             List<Tag> tags = newEvent.getTags();
             for(Tag t : tags){
-              if(server.checkIfTagExists(t.getId().getName(), id))
+              if(!server.checkIfTagExists(t.getId().getName(), id))
               {
-                System.out.println("Already in the database!");
-              }
-              else {
                 server.addTag(new Tag(new TagId(t.getId().getName(),id),t.getColor()));
               }
             }
@@ -197,31 +193,28 @@ public class AdminPageCtrl implements Controller, Initializable {
           }
         }
         else{
-          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning");
+          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning", "Ok");
           return;
         }
     }
     else {
         return;
     }
-    System.out.println("import event from file");
   }
 
   public void editEvent(ActionEvent e){
-    System.out.println("edit selected event");
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
     server.connect(selectedEvent.getId());
+    mainCtrl.addRecent(selectedEvent.getId());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
 
   public void deleteEvent(ActionEvent e){
     if(selectedEvent == null){
-      System.out.println("No event selected!");
+      mainCtrl.popup("Please select an event", "Warning", "Okgit ");
       return;
     }
-    System.out.println("delete selected event with id :");
-    System.out.println(selectedEvent.getId());
 
     VBox layout = new VBox(10);
     Label label = new Label("Are you sure you want to remove the selected event?");
@@ -243,7 +236,7 @@ public class AdminPageCtrl implements Controller, Initializable {
         contents.remove(selectedEvent);
         table.setItems(contents);
       }catch (Exception exception){
-        System.out.println(exception);
+        exception.printStackTrace();
       }
     });
 
@@ -262,7 +255,6 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   }
   public void close(ActionEvent e) throws IOException {
-    System.out.println("close window");
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
     mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
@@ -292,9 +284,6 @@ public class AdminPageCtrl implements Controller, Initializable {
         passLengthField.setText(oldValue);
       }
     });
-  }
-  public void stop () {
-    server.stop2();
   }
 
   public Pair<Controller, Parent> getPair() {
