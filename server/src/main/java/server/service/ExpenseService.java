@@ -63,7 +63,7 @@ public class ExpenseService {
         {
           //we revert the amount that should have been given
           debtService.saveDebtToEvent(eventId,new Debt(split,
-                  expense.getCurrency(),expense.getAuthor().getParticipantID(),p.getParticipantID()));
+                  expense.getCurrency(),expense.getAuthor().getParticipantID(),p.getParticipantID()),expense.getDate());
         }
       }
     }
@@ -74,7 +74,7 @@ public class ExpenseService {
       {
           //we revert the amount that should have been given
           debtService.saveDebtToEvent(eventId,new Debt(split,
-                  expense.getCurrency(),expense.getAuthor().getParticipantID(),p.getParticipantID()));
+                  expense.getCurrency(),expense.getAuthor().getParticipantID(),p.getParticipantID()),expense.getDate());
       }
     }
   }

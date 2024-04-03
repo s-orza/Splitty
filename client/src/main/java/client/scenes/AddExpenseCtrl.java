@@ -435,10 +435,13 @@ public class AddExpenseCtrl implements Controller{
                 //update debs from p to author
                 if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
                 {
-                    System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                            +expense.getAuthor().getName());
+                    //System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                     //       +expense.getAuthor().getName());
+                    //we need the date because in case there is already a debt between these 2 persons we need to
+                    //update and maybe to convert money
                     server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
+                            getParticipantID()),expense.getDate());
                 }
             }
         }
@@ -449,11 +452,12 @@ public class AddExpenseCtrl implements Controller{
             for(Participant p:expense.getParticipants())
             {
                 //update debs from p to author
-                System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                        +expense.getAuthor().getName());
 
+                //we need the date because in case there is already a debt between these 2 persons we need to
+                //update and maybe to convert money
                 server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
+                        getParticipantID()),expense.getDate());
             }
 
         }

@@ -3,6 +3,7 @@ package server.service;
 import commons.Debt;
 import commons.Event;
 import org.springframework.stereotype.Service;
+import server.api.ForeignCurrenciesController;
 import server.database.DebtRepository;
 import server.database.EventRepository;
 
@@ -13,10 +14,13 @@ public class DebtService {
     private final EventRepository eventRepository;
 
     private final DebtRepository debtRepository;
+    private final ForeignCurrenciesController foreignCurrenciesController;
 
-    public DebtService(EventRepository eventRepository, DebtRepository debtRepository) {
+    public DebtService(EventRepository eventRepository, DebtRepository debtRepository,
+                       ForeignCurrenciesController foreignCurrenciesController) {
         this.eventRepository = eventRepository;
         this.debtRepository = debtRepository;
+        this.foreignCurrenciesController = foreignCurrenciesController;
     }
 
     /**
@@ -26,7 +30,7 @@ public class DebtService {
      * @param eventId id of the event
      * @param d the debt
      */
-    public void saveDebtToEvent(long eventId,Debt d)
+    public void saveDebtToEvent(long eventId,Debt d,String date)
     {
         Optional<Event> eventOp=eventRepository.findById(eventId);
         //We need to update the debt between 2 persons in the event with values from debt.
@@ -43,6 +47,10 @@ public class DebtService {
         {
             if(d.getDebtor()==debt.getDebtor() && d.getCreditor()==debt.getCreditor())
             {
+                //convert from our d currency to the debt currency that is already there
+                double rate=foreignCurrenciesController.getExchangeRateDouble(date,
+                        d.getCurrency(),debt.getCurrency());
+                money=money*rate;
                 debt.setAmount(debt.getAmount() + money);
                 debtRepository.save(debt);
                 eventRepository.save(event);
@@ -51,6 +59,10 @@ public class DebtService {
             else
             if(d.getDebtor()==debt.getCreditor() && d.getCreditor()==debt.getDebtor())
             {
+                //convert from our d currency to the debt currency that is already there
+                double rate=foreignCurrenciesController.getExchangeRateDouble(date,
+                        d.getCurrency(),debt.getCurrency());
+                money=money*rate;
                 debt.setAmount(debt.getAmount() - money);
                 if(debt.getAmount()==0)
                 {

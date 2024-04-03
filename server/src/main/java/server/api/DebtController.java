@@ -91,13 +91,15 @@ public class DebtController {
      */
     @PostMapping("")
     public ResponseEntity<Debt> addDebt(@RequestParam("eventId") long eventId,
+                                        @RequestParam("date") String date,
                                         @RequestBody Debt debt) {
-        // Check if debt is null or exists on DB
-        if(Objects.isNull(debt) || getDebtById(debt.getDebtID()).getStatusCode().is2xxSuccessful()){
+        // Check if debt is null (this debt has the id 0)
+        if(Objects.isNull(debt)){
             return ResponseEntity.badRequest().build();
         }
         //post or put the values of the debt, (this debt usually has the debtId 0)
-        debtService.saveDebtToEvent(eventId,debt);
+        //we need the date in case of a debt update
+        debtService.saveDebtToEvent(eventId,debt, date);
         return ResponseEntity.ok(debt);
     }
 

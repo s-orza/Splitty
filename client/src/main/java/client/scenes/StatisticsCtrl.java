@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 
 public class StatisticsCtrl implements Controller, Initializable {
@@ -156,22 +157,23 @@ public class StatisticsCtrl implements Controller, Initializable {
      */
     private Map<String, Double> getTagsWithValuesFromExpenses(List<Expense> expensesList)
     {
+
+        String myCurrency="RON";
         Map<String, Double> tagsWithValues=new HashMap<>();
         for(Expense e:expensesList)
         {
-            //System.out.println(e.getType()+"  "+e.getMoney());
             String type=e.getType();
             if(type==null || type.equals(""))
                 type="other";
             if(tagsWithValues.containsKey(type))
             {
                 double k=tagsWithValues.get(type);
-                //in case the currency is not in EUR, we would change it here.
-                k=k+e.getMoney();
+                //we need to convert the money
+                k=k+server.convertCurrency(e.getDate(),e.getCurrency(),myCurrency,e.getMoney());
                 tagsWithValues.put(type,k);
             }
             else
-                tagsWithValues.put(type,e.getMoney());
+                tagsWithValues.put(type,server.convertCurrency(e.getDate(),e.getCurrency(),myCurrency,e.getMoney()));
         }
         return tagsWithValues;
     }
@@ -187,7 +189,15 @@ public class StatisticsCtrl implements Controller, Initializable {
         ObservableList<PieChart.Data> pieChartData =FXCollections.observableArrayList();
         //calculate the total amount of money
         totalAmount=0;
-        totalAmount=expenses.stream().mapToDouble(x->x.getMoney()).sum();
+        String myCurrency="RON";
+        //we need to use the exchange rate from the day the expense was made
+        for(Expense ex:expenses)
+        {
+            double val=server.convertCurrency(ex.getDate(),ex.getCurrency(),myCurrency,ex.getMoney());
+            totalAmount+=val;
+        }
+        //old way
+        //totalAmount=expenses.stream().mapToDouble(x->x.getMoney()).sum();
         long eventId=server.getCurrentId();
         //a map with the name (including percentages) and the color of a tag
         tagColors = new HashMap<>();
@@ -199,7 +209,7 @@ public class StatisticsCtrl implements Controller, Initializable {
             //the tag name + %
             String name=tag+ " ("+String.format("%.2f", percentage)+"%)";
             //name for the legend.
-            String legendName=tag+"  "+amount+" EUR";
+            String legendName=tag+"  "+amount+" "+myCurrency;
 
             PieChart.Data data=new PieChart.Data(name,amount);
             pieChartData.add(data);
@@ -254,6 +264,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     }
     private void createSharePerPersonTable(List<Expense> expenses)
     {
+        String myCurrency="RON";
         List<Participant> participants=server.getParticipantsOfEvent(server.getCurrentId());
         //I used a List of maps to map each attribute to its column
         ObservableList<Map<String, String>> data = FXCollections.observableArrayList();
@@ -267,8 +278,10 @@ public class StatisticsCtrl implements Controller, Initializable {
         //calculate share per person
         for(Expense e:expenses)
         {
+            //convert money
+            double converted=server.convertCurrency(e.getDate(),e.getCurrency(),myCurrency,e.getMoney());
             //share per participant in each expense
-            double amount=e.getMoney()/e.getParticipants().size();
+            double amount=converted/e.getParticipants().size();
             for(Participant p:e.getParticipants())
             {
                 double k=idToShare.get(p.getParticipantID());
@@ -276,6 +289,7 @@ public class StatisticsCtrl implements Controller, Initializable {
             }
         }
         Event event=server.getEvent(server.getCurrentId());
+        String today=LocalDate.now()+"";
         //calculate the amount of money that each person needs to receive or to give
         for(Debt d:event.getDebts())
         {
@@ -283,18 +297,22 @@ public class StatisticsCtrl implements Controller, Initializable {
             if(idToReceive.containsKey(d.getCreditor()))
             {
                 double k=idToReceive.get(d.getCreditor());
-                idToReceive.put(d.getCreditor(),k+d.getAmount());
+                idToReceive.put(d.getCreditor(),k+server.convertCurrency(today,d.getCurrency(),
+                        myCurrency,d.getAmount()));
             }
             else
-                idToReceive.put(d.getCreditor(),d.getAmount());
+                idToReceive.put(d.getCreditor(),server.convertCurrency(today,d.getCurrency(),
+                        myCurrency,d.getAmount()));
             //give
             if(idToGive.containsKey(d.getDebtor()))
             {
                 double k=idToGive.get(d.getDebtor());
-                idToGive.put(d.getDebtor(),k+d.getAmount());
+                idToGive.put(d.getDebtor(),k+server.convertCurrency(today,d.getCurrency(),
+                        myCurrency,d.getAmount()));
             }
             else
-                idToGive.put(d.getDebtor(),d.getAmount());
+                idToGive.put(d.getDebtor(),server.convertCurrency(today,d.getCurrency(),
+                        myCurrency,d.getAmount()));
         }
         for(Participant p:participants)
         {
@@ -309,6 +327,7 @@ public class StatisticsCtrl implements Controller, Initializable {
             Map<String, String> row = new HashMap<>();
             row.put("name", p.getName());
             //I also approximate to 2 decimals
+            //here the conversion has already been done
             row.put("share", String.format("%.2f",idToShare.get(p.getParticipantID())));
             row.put("receive", String.format("%.2f",idToReceive.get(p.getParticipantID())));
             row.put("give", String.format("%.2f",idToGive.get(p.getParticipantID())));
@@ -338,6 +357,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void updateTextsOnTheScreen()
     {
         //update the name of the event
+        String myCurrency="RON";
         long eventId=server.getCurrentId();
         Event event=server.getEvent(eventId);
         if(event==null)
@@ -345,7 +365,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         else
             titleId.setText("Statistics for event "+event.getName());
         //in case we don't have the total amount in EUR, we need to change it to EUR
-        totalSpentText.setText("Total sum spent: "+String.format("%.2f",totalAmount)+ " EUR");
+        totalSpentText.setText("Total sum spent: "+String.format("%.2f",totalAmount)+ " "+myCurrency);
     }
 
     /**

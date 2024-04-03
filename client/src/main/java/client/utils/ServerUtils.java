@@ -101,15 +101,21 @@ public class ServerUtils {
 		Expense ex=getExpenseById(expenseIdToModify);
 		return ex;
 	}
+	public double convertCurrency(String date,String from,String to,double amount)
+	{
+		return amount*getExchangeRate(date,from,to);
+	}
 	public double getExchangeRate(String date,String from,String to)
 	{
+		if(from.equals(to))
+			return 1.0;
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER+"api/foreignCurrencies/"+date+"?from="+from+"&to="+to)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
-		System.out.println(response);
 		if(response.getStatus()<300)
 			return response.readEntity(Double.class);
+		//there has been a problem
 		return 1.0;
 	}
 
@@ -230,18 +236,16 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
-
-
-	 public void addDebtToEvent(long eventId,Debt debt)
+	 public void addDebtToEvent(long eventId,Debt debt,String date)
 	 {
 		 //this post is a "put" if the debt is already there
 		 Response response=ClientBuilder.newClient(new ClientConfig())
-				 .target(SERVER+"api/events/debts?eventId="+eventId)
+				 .target(SERVER+"api/events/debts?eventId="+eventId+"&date="+date)
 				 .request(APPLICATION_JSON)
 				 .accept(APPLICATION_JSON)
 				 .post(Entity.entity(debt, APPLICATION_JSON));
 
-		 System.out.println(response);
+		 System.out.println(response.getStatus());
 	 }
 
 	public Participant getParticipant(long participantId){

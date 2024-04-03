@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -183,8 +184,11 @@ public class AdminPageCtrl implements Controller, Initializable {
             }
 
             List<Debt> debts = newEvent.getDebts();
+            //here I used LocalDate.now() as the date because the date doesn't matter as every debt is a new debt and
+            //we do not update anything
             for(Debt d : debts){
-              server.addDebtToEvent(id, new Debt(d.getAmount(), d.getCurrency(), d.getDebtor(), d.getCreditor()));
+              server.addDebtToEvent(id, new Debt(d.getAmount(), d.getCurrency(), d.getDebtor(),
+                      d.getCreditor()), LocalDate.now()+"");
             }
 
           }
