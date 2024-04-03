@@ -121,7 +121,7 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success");
+        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success", "OK");
       }
     catch(Exception exception){
       exception.printStackTrace();
@@ -140,7 +140,7 @@ public class AdminPageCtrl implements Controller, Initializable {
             Event newEvent = mapper.readValue(selectedFile, Event.class);
             for(Event event : server.getEvents()) {
               if (event.getName().equals(newEvent.getName())) {
-                mainCtrl.popup("Event with that name already exists!", "Warning!");
+                mainCtrl.popup("Event with that name already exists!", "Warning!", "OK");
                 return;
               }
             }
@@ -184,7 +184,7 @@ public class AdminPageCtrl implements Controller, Initializable {
           }
         }
         else{
-          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning");
+          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning", "Ok");
           return;
         }
     }
@@ -203,7 +203,7 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   public void deleteEvent(ActionEvent e){
     if(selectedEvent == null){
-      mainCtrl.popup("Please select an event", "Warning");
+      mainCtrl.popup("Please select an event", "Warning", "Okgit ");
       return;
     }
 

@@ -59,29 +59,6 @@ public class MainCtrl {
         });
     }
 
-    public void popup(String text, String title) {
-        VBox layout = new VBox(10);
-        Label label = new Label(text);
-        Button cancelButton = new Button("Cancel");
-
-        // Set up the stage
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle(title);
-
-        cancelButton.setOnAction(e -> {
-            popupStage.close();
-        });
-
-        // Set up the layout
-        layout.getChildren().addAll(label, cancelButton);
-        layout.setAlignment(Pos.CENTER);
-
-        // Set the scene and show the stage
-        Scene scene = new Scene(layout, 370, 150);
-        popupStage.setScene(scene);
-        popupStage.showAndWait();
-    }
 
     public ArrayList<Long> getRecents() {
         return recents;
@@ -118,13 +95,13 @@ public class MainCtrl {
 
     public void closeApp() {
         lang = MainPageCtrl.getCurrentLocale();
-        ArrayList<Event> serverEvents= (ArrayList<Event>) server.getEvents();
+        ArrayList<Event> serverEvents = (ArrayList<Event>) server.getEvents();
         serverEvents.sort(new EventActivitySort());
-        ArrayList <Long> exported = new ArrayList<>();
+        ArrayList<Long> exported = new ArrayList<>();
         int i = recents.size();
         while (i > 0 && !serverEvents.isEmpty()) {
             Long current = serverEvents.removeFirst().getEventId();
-            if(recents.contains(current)){
+            if (recents.contains(current)) {
                 exported.add(current);
                 i--;
             }
@@ -151,6 +128,30 @@ public class MainCtrl {
             exception.printStackTrace();
         }
         server.stop();
+
+    }
+    public void popup(String text, String title,String buttonText){
+        VBox layout = new VBox(10);
+        Label label = new Label(text);
+        Button button = new Button(buttonText);
+
+        // Set up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle(title);
+
+        button.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, button);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 300, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
     }
 }
 
