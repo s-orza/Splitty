@@ -228,7 +228,7 @@ public class AddExpenseCtrl implements Controller{
         moneyTypeSelector.getItems().clear();
         moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
         moneyTypeSelector.setValue("EUR");//setting EUR as the default value
-        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
+        //moneyTypeSelector.setOnAction(this::handleCurrencySelection);
         ///date
         date.setValue(null);
         //reset the checkBoxes
@@ -632,15 +632,6 @@ public class AddExpenseCtrl implements Controller{
             //hide the list because we don't need to select
             namesList.setVisible(false);
         }
-    }
-    /**
-     * This is a basic handler that checks when you change the currency type
-     * @param event an event
-     */
-    @FXML
-    private void handleCurrencySelection(ActionEvent event) {
-        String selectedMoneyType=moneyTypeSelector.getValue();
-        System.out.println(selectedMoneyType);
     }
     /**
      * This is a basic handler that checks when you check the box for

@@ -453,7 +453,6 @@ public class ServerUtils {
 		if(response.getStatus()==200)
 		{
 			Tag tag=response.readEntity(Tag.class);
-			System.out.println(tag);
 			return tag;
 		}
 		return null;
@@ -479,7 +478,6 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response + "addExpensetoEvent response");
 		if(response.getStatus()==200)
 			return true;
 		return false;
@@ -493,28 +491,23 @@ public class ServerUtils {
 	 */
 	public boolean addExpense(Expense expense)
 	{
-		System.out.println("In server");
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER+"api/expenses/s")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(expense,APPLICATION_JSON));
 		System.out.println(response.readEntity(String.class));
-		System.out.println(response);
 		if(response.getStatus()<300)
 			return true;
 		return false;
 	}
 	public boolean addTag(Tag tag)
 	{
-		System.out.println(tag);
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(SERVER+"api/expenses/tags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(tag,APPLICATION_JSON));
-		System.out.println(response.readEntity(String.class));
-		System.out.println(response);
 		if(response.getStatus()==200)
 			return true;
 		return false;
@@ -590,7 +583,6 @@ public class ServerUtils {
 				.target(SERVER+"api/expenses/?expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).put(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response + "Update expense response");
 		if(response.getStatus()!=200)
 			return null;
 		return response.readEntity(Expense.class);
@@ -604,8 +596,6 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newtag,APPLICATION_JSON));
-		System.out.println(response.readEntity(String.class));
-		System.out.println(response);
 		if(response.getStatus()==200)
 			return true;
 		return false;

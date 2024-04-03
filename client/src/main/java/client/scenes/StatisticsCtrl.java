@@ -80,10 +80,13 @@ public class StatisticsCtrl implements Controller, Initializable {
     @FXML
     private Text totalSpentText;
     @FXML
+    private ComboBox<String> moneyTypeSelector;
+    @FXML
     private ListView<String> tagsListView;
     @FXML
     private ListView<String> legendListView;
     private double totalAmount;
+    private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<Expense> expenses;
     private Map<String, String> tagColors;
     private Map<String, String> namesForLegend;
@@ -113,13 +116,11 @@ public class StatisticsCtrl implements Controller, Initializable {
             server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
 
         server.registerForMessages("/topic/expenses", Tag.class, t -> {
-            //System.out.printf("workrkrkrkkrkkdkskssksks");
             tagsListView.getItems().add(t.getId().getName());
         });
 
         String destination = "/topic/expenses/tag/" + server.getCurrentId();
         server.registerForMessages(destination, Expense.class, t -> {
-            //System.out.println("also works");
 //            Map<String, Double> tagsWithValues=getTagsWithValuesFromExpenses(expenses);
 //            createPieChart(tagsWithValues);
         });
@@ -147,6 +148,15 @@ public class StatisticsCtrl implements Controller, Initializable {
         createSharePerPersonTable(expenses);
         //to be sure it is not opened
         closeEditPane();
+        //initialise the expenseTypesAvailable
+        expenseTypesAvailable.clear();
+        expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
+
+        moneyTypeSelector.getItems().clear();
+        moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
+        //here to change with the value from the config file
+        moneyTypeSelector.setValue("EUR");
+        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
     }
 
     /**
@@ -232,7 +242,6 @@ public class StatisticsCtrl implements Controller, Initializable {
             data.getNode().setStyle("-fx-pie-color: " + color + ";");
         });
 
-        //System.out.println(tagColors);
 
         // create the legend
         legendListView.setCellFactory(null);
@@ -466,7 +475,6 @@ public class StatisticsCtrl implements Controller, Initializable {
                     //calculate the luminance (I searched on the internet and this is the formula)
                     //luminance= 0.2126*Red + 0.7152*Green + 0.0722*Blue
                     double luminance=0.2126*c.getRed() + 0.7152*c.getGreen() + 0.0722*c.getBlue();
-                    //System.out.println("luminance is "+luminance);
                     //set the text color to white or black, depending on which one has the greatest contrast
                     if(luminance>0.5)
                         tagLabel.setStyle(textForBackgroundColor+"-fx-text-fill: black;");
@@ -594,6 +602,16 @@ public class StatisticsCtrl implements Controller, Initializable {
         colorPicker.setValue(Color.WHITE);
         selectedTagForEditing=null;
         editNameField.setStyle("-fx-border-radius: 5px;");
+    }
+    /**
+     * This is a basic handler that checks when you change the currency type
+     * @param event an event
+     */
+    @FXML
+    private void handleCurrencySelection(ActionEvent event) {
+        String selectedMoneyType=moneyTypeSelector.getValue();
+        //update in the config file
+        System.out.println(selectedMoneyType);
     }
     /**
      * This is like a back button
