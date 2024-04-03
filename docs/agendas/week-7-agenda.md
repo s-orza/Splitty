@@ -30,11 +30,8 @@ Functionality to be implemented, task splitting (5 min):
 - Start making it all bombastically pretty.
 
 Bugs: 10 min
-<<<<<<< HEAD
+
 - We plagued by some devious bugs, thus we might consider exterminating them.
-=======
-- We are plagued by some devious bugs, thus we might consider exterminating them.
->>>>>>> main
 - Participant bug - fixed/not fixed?
 - Expenses bug
 - Everything else that you noticed is not alright.
@@ -54,7 +51,22 @@ Summary
   - What are you having for lunch today?
 - Recap on what happened today and what is there to come.
 
+Sprint planning 
+- more websockets
+- more longpolling 
+- doing more tests
+- template for language switching 
+- hci must be done
 
+Spring review
+- we have statistics 
+- we have some websockets and long polling
+- more checkstyle rules
+- we have some language switching capabilities
+
+Spring retrospective
+- We struggled with some of the basic requirements, but we also have some of the extension implemented
+- We are doing good
 
 Notes:
 

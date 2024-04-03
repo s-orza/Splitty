@@ -1,18 +1,11 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Event;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
 import javafx.fxml.Initializable;
-
-
 import javafx.geometry.Pos;
-
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,23 +16,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
 import javax.inject.Inject;
-
-
-
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-
-import static com.google.inject.Guice.createInjector;
-
 public class CreateEventCtrl implements Controller, Initializable {
     //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
 
     //Gets the different FXML page components
     @FXML

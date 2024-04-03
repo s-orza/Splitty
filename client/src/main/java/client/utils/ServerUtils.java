@@ -15,21 +15,15 @@
  */
 package client.utils;
 
+import static client.scenes.Controller.mainCtrl;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-
 import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
@@ -72,11 +66,18 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
-	private static final String SERVER = "http://localhost:8080/";
+	private static String serverUrl;
+	//= "http://localhost:8080/";
 	public static long currentId = -1;
 	private static long expenseIdToModify=-1;
 
-
+	public static void setServerUrl(String url){
+		serverUrl = url;
+		session = connectWebSocket("ws" + url.substring(4) + "websocket");
+	}
+	public static String getServerUrl(){
+		return serverUrl;
+	}
 	public long getCurrentId(){
 		return currentId;
 	}
@@ -86,7 +87,6 @@ public class ServerUtils {
 		updated.activity();
 		createEvent(updated);
 		expenseIdToModify=-1;
-		System.out.println("Äctivity on event " + updated.getName());
 	}
 	public void setExpenseToBeModified(long expenseId)
 	{
@@ -102,26 +102,17 @@ public class ServerUtils {
 		return ex;
 	}
 
-	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-		var url = new URI("http://localhost:8080/api/quotes").toURL();
-		var is = url.openConnection().getInputStream();
-		var br = new BufferedReader(new InputStreamReader(is));
-		String line;
-		while ((line = br.readLine()) != null) {
-			System.out.println(line);
-		}
-	}
 	//connects to the database through the endpoint to give all events
 	public List<Event> getEvents() {
 		return ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/events")
+				.target(serverUrl).path("api/events")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.get(new GenericType<List<Event>>() {});
 	}
 	public List<Quote> getQuotes() {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/quotes") //
+				.target(serverUrl).path("api/quotes") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Quote>>() {});
@@ -129,7 +120,7 @@ public class ServerUtils {
 
 	public Quote addQuote(Quote quote) {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/") //
+				.target(serverUrl).path("/") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
@@ -138,16 +129,17 @@ public class ServerUtils {
 	//connects to the database through the endpoint to add event
 	public void createEvent(Event event) {
 		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events") //
+				.target(serverUrl).path("api/events") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
+		mainCtrl.addRecent(event.getEventId());
 	}
 
 	//connects to the database through the endpoint to delete an event
 	public void deleteEvent (long id) throws Exception {
 		Response response = ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/" + id) //
+				.target(serverUrl).path("api/events/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
@@ -177,7 +169,7 @@ public class ServerUtils {
 	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events/" + id) //
+				.target(serverUrl).path("api/events/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.get(new GenericType<Event>() {});
@@ -189,7 +181,7 @@ public class ServerUtils {
 		EXEC2.submit(() -> {
 			while(!Thread.interrupted()) {
 				var res = ClientBuilder.newClient(new ClientConfig())
-						.target(SERVER+"api/events/updates")
+						.target(serverUrl +"api/events/updates")
 						.request(APPLICATION_JSON)
 						.accept(APPLICATION_JSON)
 						.get(Response.class);
@@ -202,10 +194,6 @@ public class ServerUtils {
 		});
 	}
 
-	public void stop2 () {
-		EXEC2.shutdown();
-	}
-
 	//connects to the database through the endpoint to change name of an event with an id
 	// needs a bit of tweaking
 	public void changeEventName(long id, String newName) {
@@ -213,7 +201,7 @@ public class ServerUtils {
 		event.setName(newName);
 
 		ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER)
+				.target(serverUrl)
 				.path("api/events/" + id)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
@@ -225,7 +213,7 @@ public class ServerUtils {
 	 {
 		 //this post is a "put" if the debt is already there
 		 Response response=ClientBuilder.newClient(new ClientConfig())
-				 .target(SERVER+"api/events/debts?eventId="+eventId)
+				 .target(serverUrl +"api/events/debts?eventId="+eventId)
 				 .request(APPLICATION_JSON)
 				 .accept(APPLICATION_JSON)
 				 .post(Entity.entity(debt, APPLICATION_JSON));
@@ -235,7 +223,7 @@ public class ServerUtils {
 
 	public Participant getParticipant(long participantId){
         Response response =ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant/" + participantId) //
+				.target(serverUrl).path("/api/participant/" + participantId) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.get();
@@ -253,9 +241,8 @@ public class ServerUtils {
 	 * @return the list of participants
 	 */
 	public List<Participant> getParticipantsOfEvent(long eventId){
-		System.out.println("in server");
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("/api/participant/event/"+eventId+"/allParticipants")
+				.target(serverUrl).path("/api/participant/event/"+eventId+"/allParticipants")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		System.out.println(response);
@@ -270,7 +257,7 @@ public class ServerUtils {
 	public List<Event> getEventsOfParticipant(long participantId){
 		System.out.println("in servero");
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("/api/participant/event/getEvents/" + participantId)
+				.target(serverUrl).path("/api/participant/event/getEvents/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		System.out.println("out servero");
@@ -284,7 +271,7 @@ public class ServerUtils {
 
 	public boolean deleteParticipantEvent(long eventId, long participantId) {
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("api/participant/event/" + eventId + "/" + participantId)
+				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
 
@@ -304,7 +291,7 @@ public class ServerUtils {
 	public void addParticipantEvent(Participant participant, long eventId){
 		System.out.println("In server");
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER).path("/api/participant/event/" + eventId)
+				.target(serverUrl).path("/api/participant/event/" + eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(participant,APPLICATION_JSON));
@@ -318,7 +305,7 @@ public class ServerUtils {
 	public void addParticipantEvent(ParticipantEventDto participantEventDto) {
 		System.out.println("In server");
 		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant/event/") //
+				.target(serverUrl).path("/api/participant/event/") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(participantEventDto, APPLICATION_JSON), ParticipantEventDto.class);
@@ -329,7 +316,7 @@ public class ServerUtils {
 	public Expense getExpenseById(long id)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/?expenseId="+id)
+				.target(serverUrl +"api/expenses/?expenseId="+id)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()<300)
@@ -339,7 +326,7 @@ public class ServerUtils {
 	public boolean resetDebtsFromExpense(long eventId,long expenseId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/deletedDebts?eventId="+eventId+"&expenseId="+expenseId)
+				.target(serverUrl +"api/expenses/deletedDebts?eventId="+eventId+"&expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		System.out.println(response);
@@ -350,7 +337,7 @@ public class ServerUtils {
 	public List<Expense> getAllExpensesOfEvent(long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/allFromEvent?eventId="+eventId)
+				.target(serverUrl +"api/expenses/allFromEvent?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
@@ -361,7 +348,7 @@ public class ServerUtils {
 	public List<Expense> getAllExpensesFromXOfEvent(long eventId,long authorId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/author?eventId="+eventId+"&authorId="+authorId)
+				.target(serverUrl +"api/expenses/author?eventId="+eventId+"&authorId="+authorId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
@@ -372,7 +359,7 @@ public class ServerUtils {
 	public List<Expense> getAllExpensesIncludingXOfEvent(long eventId,long authorId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/participantIncluded?eventId="+eventId+
+				.target(serverUrl +"api/expenses/participantIncluded?eventId="+eventId+
 						"&authorId="+authorId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
@@ -389,7 +376,7 @@ public class ServerUtils {
 		EXEC.submit(() -> {
 			while(!Thread.interrupted()) {
 				var res = ClientBuilder.newClient(new ClientConfig())
-						.target(SERVER+"api/expenses/allFromEvent/updates?eventId="+eventId)
+						.target(serverUrl +"api/expenses/allFromEvent/updates?eventId="+eventId)
 						.request(APPLICATION_JSON)
 						.accept(APPLICATION_JSON)
 						.get(Response.class);
@@ -404,12 +391,13 @@ public class ServerUtils {
 
 	public void stop () {
 		EXEC.shutdown();
+		EXEC2.shutdown();
 	}
 
 	public List<Expense> getAllExpensesFromDatabase()
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/all")
+				.target(serverUrl +"api/expenses/all")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
@@ -420,7 +408,7 @@ public class ServerUtils {
 	public List<Tag> getAllTagsFromEvent(long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/allTags?eventId="+eventId)
+				.target(serverUrl +"api/expenses/allTags?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		List<Tag> tags=new ArrayList<>();
@@ -432,7 +420,10 @@ public class ServerUtils {
 	public Tag getTagByIdOfEvent(String tagName,long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tag="+tagName.replace(" ","%20")+"&eventId="+eventId)
+				.target(serverUrl +
+								"api/expenses/tags?tag=" +
+								tagName.replace(" ","%20") +
+								"&eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()==200)
@@ -460,7 +451,7 @@ public class ServerUtils {
 	public boolean addExpenseToEvent(long eventId, Expense expense)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/saved?eventId="+eventId)
+				.target(serverUrl +"api/expenses/saved?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(expense,APPLICATION_JSON));
@@ -480,7 +471,7 @@ public class ServerUtils {
 	{
 		System.out.println("In server");
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/s")
+				.target(serverUrl +"api/expenses/s")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(expense,APPLICATION_JSON));
@@ -494,7 +485,7 @@ public class ServerUtils {
 	{
 		System.out.println(tag);
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags")
+				.target(serverUrl +"api/expenses/tags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(tag,APPLICATION_JSON));
@@ -504,8 +495,7 @@ public class ServerUtils {
 			return true;
 		return false;
 	}
-
-	private StompSession session = connectWebSocket("ws://localhost:8080/websocket");
+	private static StompSession session;
 
 	/**
 	 * Stomp session is the connection to the websocket with an ip and port. To get to this session
@@ -516,7 +506,7 @@ public class ServerUtils {
 	 * @param url
 	 * @return
 	 */
-	private StompSession connectWebSocket(String url) {
+	private static StompSession connectWebSocket(String url) {
 		var client = new StandardWebSocketClient();
 		var stomp = new WebSocketStompClient(client);
 		stomp.setMessageConverter(new MappingJackson2MessageConverter());
@@ -572,7 +562,7 @@ public class ServerUtils {
 	public Expense updateExpense(long expenseId,Expense expense)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/?expenseId="+expenseId)
+				.target(serverUrl +"api/expenses/?expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).put(Entity.entity(expense,APPLICATION_JSON));
 		System.out.println(response + "Update expense response");
@@ -584,7 +574,7 @@ public class ServerUtils {
 	public boolean updateTag(String tagName,long eventId,Tag newtag)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+				.target(serverUrl +"api/expenses/tags?tagName="+tagName.replace(" ","%20")
 						+"&eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
@@ -599,7 +589,7 @@ public class ServerUtils {
 	public boolean deleteExpenseFromEvent(long eventId, long expenseId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/?eventId="+eventId+"&expenseId="+expenseId)
+				.target(serverUrl +"api/expenses/?eventId="+eventId+"&expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
 		//200->successful
@@ -612,7 +602,7 @@ public class ServerUtils {
 	public Integer deleteAllExpensesFromEvent(long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/allFromEvent?eventId="+eventId)
+				.target(serverUrl +"api/expenses/allFromEvent?eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
 		if(response.getStatus()==200)
@@ -630,7 +620,7 @@ public class ServerUtils {
 	public boolean deleteTagFromEvent(String tagName,long eventId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(SERVER+"api/expenses/tags?tagName="+tagName.replace(" ","%20")
+				.target(serverUrl +"api/expenses/tags?tagName="+tagName.replace(" ","%20")
 						+"&eventId="+eventId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
@@ -645,7 +635,7 @@ public class ServerUtils {
 	 */
 	public void addPassword(Password password) {
 		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/password") //
+				.target(serverUrl).path("api/password") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(password, APPLICATION_JSON), Password.class);
@@ -657,7 +647,7 @@ public class ServerUtils {
 	 */
 	public Password getPass() {
 		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/password") //
+				.target(serverUrl).path("api/password") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.get(new GenericType<Password>() {});
@@ -670,7 +660,7 @@ public class ServerUtils {
 	 */
 	public void deletePass (long id) throws Exception {
 		Response response = ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/password/" + id) //
+				.target(serverUrl).path("api/password/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();
@@ -688,7 +678,7 @@ public class ServerUtils {
 	 */
 	public void deleteAllPass () throws Exception {
 		Response response = ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/password/") //
+				.target(serverUrl).path("api/password/") //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.delete();

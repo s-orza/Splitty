@@ -116,7 +116,6 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     public void initialize() {
         //load resources
-        System.out.println(server.getExIdToModify());
         loadFromDatabase();
         toggleLanguage();
         //it contains the positions of the selected participants (the position in participantObjectList
@@ -128,13 +127,11 @@ public class AddExpenseCtrl implements Controller{
         if(server.getExIdToModify()!=-1)
         {
             expenseToBeModified=server.getExpenseToBeModified();
-            System.out.println("We edit");
             reloadExpense();
         }
         //in add page
         else
         {
-            System.out.println("We add");
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
@@ -160,7 +157,7 @@ public class AddExpenseCtrl implements Controller{
             authorSelector.setPromptText(resourceBundle.getString("selectPersonText"));
             typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
         }catch (Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -316,7 +313,6 @@ public class AddExpenseCtrl implements Controller{
         try{
             LocalDate time = LocalDate.parse(expenseToBeModified.getDate());
 
-            System.out.println(time);
            date.setValue(time);
         }catch (Exception e)
         {
@@ -342,7 +338,6 @@ public class AddExpenseCtrl implements Controller{
             namesList.setItems(null);
             namesList.setItems(names);
             namesList.setCellFactory(param -> new CheckBoxListCell(true));
-            System.out.println("list e "+selectedNamesList);
         }
 
     }
@@ -362,7 +357,6 @@ public class AddExpenseCtrl implements Controller{
         Expense expense=takeExpenseFromFields();
 
         System.out.println(expense);
-        System.out.println("Adding to event id" + server.getCurrentId());
 
 //        boolean b=
 //        server.addExpenseToEvent(server.getCurrentId(),expense);
@@ -451,7 +445,6 @@ public class AddExpenseCtrl implements Controller{
         {
             //the author need to receive all the money
             authorNeedsToReceive=expense.getMoney();
-            System.out.println("ev: "+currentEvent);
             for(Participant p:expense.getParticipants())
             {
                 //update debs from p to author
@@ -530,19 +523,16 @@ public class AddExpenseCtrl implements Controller{
     {
         if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
         {
-            System.out.println("The author cannot be empty.");
             warningText.setText(resourceBundle.getString("authorWarning"));
             return false;
         }
         if(contentBox.getText()==null || contentBox.getText().isEmpty())
         {
-            System.out.println("What is the money for?");
             warningText.setText(resourceBundle.getString("forWhatWarning"));
             return false;
         }
         if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
         {
-            System.out.println(moneyPaid.getText());
             warningText.setText(resourceBundle.getString("amountWarning"));
             return false;
         }
@@ -557,25 +547,21 @@ public class AddExpenseCtrl implements Controller{
             return false;
         }
         if(date.getValue()==null) {
-            System.out.println("You need to select a date!");
             warningText.setText(resourceBundle.getString("dateWarning"));
             return false;
         }
         if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
         {
-            System.out.println("You need to enter the type");
             warningText.setText(resourceBundle.getString("typeWarning"));
             return false;
         }
         if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
         {
-            System.out.println("Select how to split the expense.");
             warningText.setText(resourceBundle.getString("splitWarning"));
             return false;
         }
         if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
         {
-            System.out.println("Select the participants.");
             warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
             return false;
         }
@@ -588,7 +574,6 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     void cancelAddExpense(MouseEvent e) {
         resetElements();
-        System.out.println("Expense canceled");
         server.setExpenseToBeModified(-1);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
@@ -624,9 +609,8 @@ public class AddExpenseCtrl implements Controller{
     }
     void handleSelectAuthor(ActionEvent event)
     {
-        System.out.println(authorSelector.getValue());
         //the position->good to get the author object
-        System.out.println(authorSelector.getSelectionModel().getSelectedIndex());
+        //System.out.println(authorSelector.getSelectionModel().getSelectedIndex());
     }
 
 
@@ -638,15 +622,10 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     void handleCheckBoxAllPeople(ActionEvent event) {
         if(checkBoxAllPeople.isSelected()) {
-            System.out.println("Everyone is selected!");
             //in case the user already selected the "some people" option
             checkBoxSomePeople.setSelected(false);
             //hide the list because we don't need to select
             namesList.setVisible(false);
-        }
-        else {
-            System.out.println("everyone options is NOT selected!");
-            //show the list of people available
         }
     }
     /**
@@ -667,14 +646,11 @@ public class AddExpenseCtrl implements Controller{
     void handleCheckBoxSomePeople(ActionEvent event) {
         if(checkBoxSomePeople.isSelected()) {
             namesList.setVisible(true);
-            System.out.println("some people will be selected!");
             //in case the user already selected the "everyone" option
             checkBoxAllPeople.setSelected(false);
         }
         else {
             namesList.setVisible(false);
-            System.out.println("Only some people option is NOT selected!");
-            //show the list of people available
         }
     }
     /**
@@ -683,7 +659,7 @@ public class AddExpenseCtrl implements Controller{
      */
     void handleCheckBoxSelectName(CheckBox checkBox,Integer index){
         String name=checkBox.getText();
-        System.out.println(index+", "+name);
+        //System.out.println(index+", "+name);
         if(checkBox.isSelected()){
             //if this is not already there (this is just to make sure everything is ok!
             //double safe measurement!

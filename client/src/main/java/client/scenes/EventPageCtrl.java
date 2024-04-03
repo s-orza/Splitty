@@ -1,16 +1,11 @@
 package client.scenes;
 
-import client.MyFXML;
-import client.MyModule;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.*;
-
 import javafx.animation.Interpolator;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,17 +18,14 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-
 import javax.inject.Inject;
 import java.util.*;
-
-
 import static client.scenes.MainPageCtrl.currentLocale;
-import static com.google.inject.Guice.createInjector;
 
 public class EventPageCtrl implements Controller{
     ServerUtils server;
@@ -125,12 +117,6 @@ public class EventPageCtrl implements Controller{
 
     private ResourceBundle resourceBundle;
 
-    //Imports used to swap scenes
-    private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
-
-    private static final MainCtrl mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-
     private Stage stage;
 
     /**
@@ -164,21 +150,13 @@ public class EventPageCtrl implements Controller{
      */
     @FXML
     public void initialize() {
-
-        //TODO
-        // a method that fetches the data for the participants
-        // and saves it into participantsData
-
-
-        System.out.println("Event Page initialize method");
-
-        //initializes flags and loads from database
         initializePage();
     }
 
 
     //set event page title and event code
     private void initializePage() {
+        System.out.println("Currency we want to use " + mainCtrl.getCurrency());
         //load from database:
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
@@ -261,7 +239,6 @@ public class EventPageCtrl implements Controller{
         prepareAnimation();
 
         comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("Selected item: " + newValue);
             if(newValue.equals("English")) changeFlag("en");
             if(newValue.equals("Dutch")) changeFlag("nl");
             if(newValue.equals("Spanish")) changeFlag("es");
@@ -279,9 +256,6 @@ public class EventPageCtrl implements Controller{
         eventName.setText(server.getEvent(server.getCurrentId()).getName());
         eventCode.setText("Event Code: " + server.getEvent(server.getCurrentId()).getEventId());
 
-
-
-        // System.out.println(server.getEvent(server.getCurrentId()));
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
@@ -358,7 +332,7 @@ public class EventPageCtrl implements Controller{
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
            cancelButton.setText(resourceBundle.getString("cancelText"));
        }catch (Exception e){
-           System.out.println(e);
+           e.printStackTrace();
        }
     }
 
@@ -389,17 +363,6 @@ public class EventPageCtrl implements Controller{
 
         flagButton.setOnMouseClicked(event -> seqTransition.play());
     }
-    ////////////////////////////////////////
-
-//    public void connectEvent(Event event){
-//        currentEvent = event;
-//        System.out.println("Connecting to " + currentEvent);
-//
-//        System.out.println(server.getCurrentId());
-//        eventName.setText(server.getEvent(server.getCurrentId()).getName());
-//        eventCode.setText("Event Code: " + server.getCurrentId());
-//
-//    }
 
     public long findEventId(String name) throws Exception {
         for (Event e : server.getEvents()){
@@ -452,14 +415,14 @@ public class EventPageCtrl implements Controller{
         ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
         if(selectedItems.isEmpty())
         {
-            System.out.println("Please select only one expense.");
+            mainCtrl.popup("Please select at least one expense.", "Warning", "Ok");
             //WARNING
             return;
         }
         List<Expense> itemsToEdit = new ArrayList<>(selectedItems);
         if(itemsToEdit.size()>1)
         {
-            System.out.println("Please select only one expense.");
+            mainCtrl.popup("Please select only one expense.", "Warning", "Ok");
             //WARNING
             return;
         }
@@ -470,7 +433,6 @@ public class EventPageCtrl implements Controller{
     }
 
     private void addExpenseHandler(ActionEvent e) {
-        System.out.println("This will lead to another page to add expense");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AddExpenseCtrl addExpenseCtrl = new AddExpenseCtrl(server);
         mainCtrl.initialize(stage, addExpenseCtrl.getPair(), addExpenseCtrl.getTitle());
@@ -488,7 +450,7 @@ public class EventPageCtrl implements Controller{
             participantsColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
             participantsTable.setItems(participantsData);
         }catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
@@ -499,6 +461,44 @@ public class EventPageCtrl implements Controller{
      */
     private void renderExpenseColumns(ObservableList<Expense> model){
         try{
+            //add background color to the tags
+            typeColumn.setCellFactory(param ->{
+                return new TableCell<Expense,String>(){
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty)
+                        {
+                            setText(null);
+                            setStyle("");
+                        }
+                        else
+                        {
+                            setText(item);
+                            Tag tag=server.getTagByIdOfEvent(item,server.getCurrentId());
+                            if(tag==null)
+                                setStyle("");
+                            else
+                            {
+                                //set background color
+                                String textForBackgroundColor="-fx-background-color: "+tag.getColor()+";";
+                                //set the text white or black (It depends on the contrast with the background)
+                                Color c=Color.web(tag.getColor());
+                                //calculate the luminance (I searched on the internet and this is the formula)
+                                //luminance= 0.2126*Red + 0.7152*Green + 0.0722*Blue
+                                double luminance=0.2126*c.getRed() + 0.7152*c.getGreen() + 0.0722*c.getBlue();
+                                //System.out.println("luminance is "+luminance);
+                                //set the text color to white or black, depending on which one has the greatest contrast
+                                if(luminance>0.5)
+                                    setStyle(textForBackgroundColor+"-fx-text-fill: black;");
+                                else
+                                    setStyle(textForBackgroundColor+"-fx-text-fill: white;");
+                            }
+                        }
+                    }
+                };
+            });
+
             authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("content"));
             amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
@@ -509,14 +509,12 @@ public class EventPageCtrl implements Controller{
 
             expensesTable.setItems(model);
         }catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
     @FXML
     void personWasSelected()
     {
-        System.out.println("///");
-        System.out.println(searchByComboBox.getValue());
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         Participant x;
         x=server.getParticipant(id);
@@ -532,9 +530,7 @@ public class EventPageCtrl implements Controller{
     }
     @FXML
     void searchAll(ActionEvent event) {
-
         //show all expenses
-        System.out.println("all");
         renderExpenseColumns(expenseData);
     }
 
@@ -542,7 +538,7 @@ public class EventPageCtrl implements Controller{
     void searchFromX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            System.out.println("You must select a person!");
+            mainCtrl.popup("You must select a person", "Warning", "Ok");
             //popUpWarningText("Please select the person!");
             return;
         }
@@ -551,10 +547,8 @@ public class EventPageCtrl implements Controller{
         x=server.getParticipant(id);
         if(x==null)//there has been a problem
         {
-            System.out.println("Problem with getParticipant with id "+id);
             return;
         }
-        System.out.println(x);
         //show all expenses from x in this event
         List<Expense> listFromServer=server.getAllExpensesFromXOfEvent(server.getCurrentId(),x.getParticipantID());
         if(listFromServer==null)
@@ -570,9 +564,7 @@ public class EventPageCtrl implements Controller{
     void searchIncludingX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            System.out.println("You must select the included person!");
-            //popUpWarningText("Please select the person!");
-
+            mainCtrl.popup("You must select the included person!", "Warning", "Ok");
             return;
         }
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
@@ -580,10 +572,8 @@ public class EventPageCtrl implements Controller{
         x=server.getParticipant(id);
         if(x==null)//there has been a problem
         {
-            System.out.println("Problem with getParticipant with id "+id);
             return;
         }
-        System.out.println(x);
         //show all expenses that includes x in this event
         List<Expense> listFromServer=server.getAllExpensesIncludingXOfEvent(server.getCurrentId(),x.getParticipantID());
         if(listFromServer==null)
@@ -648,7 +638,6 @@ public class EventPageCtrl implements Controller{
         // this method will remove the expenses from the database
     }
     public void close(ActionEvent e){
-        System.out.println("close window");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         MainPageCtrl mainPageCtrl = new MainPageCtrl(server);
         mainCtrl.initialize(stage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
@@ -669,27 +658,6 @@ public class EventPageCtrl implements Controller{
      * method that will lead to a new stage, specifically for adding participants
      */
     public void addParticipantHandler(ActionEvent event) {
-        try {
-
-            //server.deleteParticipantEvent(52752,92757);
-//            server.getParticipantsOfEvent(52752);
-//            System.out.println(server.getEventsOfParticipant(92755));
-
-//            var la = server.getEventsOfParticipant(92755);
-//            for(Event a : la){
-//                System.out.println(a);
-//            }
-            var la = server.getParticipantsOfEvent(server.getCurrentId());
-            for(Participant a : la){
-                System.out.println(a);
-            }
-
-//            System.out.println("about to execute participantEvent");
-//            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
         mainCtrl.initialize(stage, addParticipantCtrl.getPair(), addParticipantCtrl.getTitle());
@@ -700,21 +668,16 @@ public class EventPageCtrl implements Controller{
      * Method to switch to debts page
      */
     public void viewDebtsHandler(ActionEvent event) {
-        System.out.println("switching to debts");
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         DebtsCtrl debtsCtrl = new DebtsCtrl(server);
         mainCtrl.initialize(stage, debtsCtrl.getPair(), debtsCtrl.getTitle());
     }
     public void viewStatisticsHandler(ActionEvent event) {
-        System.out.println("switching to Statistics");
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         StatisticsCtrl statisticsCtrl = new StatisticsCtrl(server);
         mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
     }
 
-    public void stop () {
-        server.stop();
-    }
 
     //getter for swapping scenes
     public Pair<Controller, Parent> getPair() {
