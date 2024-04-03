@@ -3,7 +3,6 @@ package server.service;
 import commons.Debt;
 import commons.Event;
 import org.springframework.stereotype.Service;
-import server.api.ForeignCurrenciesController;
 import server.database.DebtRepository;
 import server.database.EventRepository;
 
@@ -14,13 +13,13 @@ public class DebtService {
     private final EventRepository eventRepository;
 
     private final DebtRepository debtRepository;
-    private final ForeignCurrenciesController foreignCurrenciesController;
+    private final CurrencyService currencyService;
 
     public DebtService(EventRepository eventRepository, DebtRepository debtRepository,
-                       ForeignCurrenciesController foreignCurrenciesController) {
+                       CurrencyService currencyService) {
         this.eventRepository = eventRepository;
         this.debtRepository = debtRepository;
-        this.foreignCurrenciesController = foreignCurrenciesController;
+        this.currencyService = currencyService;
     }
 
     /**
@@ -48,7 +47,7 @@ public class DebtService {
             if(d.getDebtor()==debt.getDebtor() && d.getCreditor()==debt.getCreditor())
             {
                 //convert from our d currency to the debt currency that is already there
-                double rate=foreignCurrenciesController.getExchangeRateDouble(date,
+                double rate=currencyService.getExchangeRate(date,
                         d.getCurrency(),debt.getCurrency());
                 money=money*rate;
                 debt.setAmount(debt.getAmount() + money);
@@ -60,7 +59,7 @@ public class DebtService {
             if(d.getDebtor()==debt.getCreditor() && d.getCreditor()==debt.getDebtor())
             {
                 //convert from our d currency to the debt currency that is already there
-                double rate=foreignCurrenciesController.getExchangeRateDouble(date,
+                double rate=currencyService.getExchangeRate(date,
                         d.getCurrency(),debt.getCurrency());
                 money=money*rate;
                 debt.setAmount(debt.getAmount() - money);

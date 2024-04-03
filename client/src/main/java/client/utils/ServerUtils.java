@@ -179,18 +179,6 @@ public class ServerUtils {
 		response.close();
 	}
 
-	//connects to the database through the endpoint to get participants from specific event
-//	public List<Participant> getParticipants(long eventId) {
-//		Response response=ClientBuilder.newClient(new ClientConfig())
-//				.target(SERVER).path("api/events/" + eventId + "/participants")
-//				.request(APPLICATION_JSON)
-//				.accept(APPLICATION_JSON).get();
-//		if(response.getStatus()<300)
-//			return response.readEntity(List.class);
-//		return null;
-//	}
-
-
 	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {
 		return ClientBuilder.newClient(new ClientConfig()) //
@@ -324,20 +312,6 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(participant,APPLICATION_JSON));
 		System.out.println(response);
-	}
-
-	/**
-	 * This method will add just an entry to the participant_event table
-	 * @param participantEventDto an object that contains participantId and eventId
-	 */
-	public void addParticipantEvent(ParticipantEventDto participantEventDto) {
-		System.out.println("In server");
-		ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("/api/participant/event/") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participantEventDto, APPLICATION_JSON), ParticipantEventDto.class);
-		System.out.println("Out server");
 	}
 	//EXPENSE functions
 	//GET functions
