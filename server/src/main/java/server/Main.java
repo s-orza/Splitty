@@ -30,6 +30,7 @@ public class Main {
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
         genPass();
+        loadExchangeRates();
     }
 
     private static void genPass()
@@ -43,6 +44,15 @@ public class Main {
 
         // post new password
         ResponseEntity<Password> response = restTemplate.postForEntity(uri, password, Password.class);
+    }
+    private static void loadExchangeRates()
+    {
+        //load cached exchange rates
+        final String url = "http://localhost:8080/api/foreignCurrencies/preparationsToLoad";
+        RestTemplate restTemplate = new RestTemplate();
 
+        //This method is useful when you already have some exchange rates in the file.
+        //If not, it will start from an empty file (most of the time)
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     }
 }
