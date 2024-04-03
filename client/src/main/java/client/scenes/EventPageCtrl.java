@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -499,6 +500,44 @@ public class EventPageCtrl implements Controller{
      */
     private void renderExpenseColumns(ObservableList<Expense> model){
         try{
+            //add background color to the tags
+            typeColumn.setCellFactory(param ->{
+                return new TableCell<Expense,String>(){
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty)
+                        {
+                            setText(null);
+                            setStyle("");
+                        }
+                        else
+                        {
+                            setText(item);
+                            Tag tag=server.getTagByIdOfEvent(item,server.getCurrentId());
+                            if(tag==null)
+                                setStyle("");
+                            else
+                            {
+                                //set background color
+                                String textForBackgroundColor="-fx-background-color: "+tag.getColor()+";";
+                                //set the text white or black (It depends on the contrast with the background)
+                                Color c=Color.web(tag.getColor());
+                                //calculate the luminance (I searched on the internet and this is the formula)
+                                //luminance= 0.2126*Red + 0.7152*Green + 0.0722*Blue
+                                double luminance=0.2126*c.getRed() + 0.7152*c.getGreen() + 0.0722*c.getBlue();
+                                //System.out.println("luminance is "+luminance);
+                                //set the text color to white or black, depending on which one has the greatest contrast
+                                if(luminance>0.5)
+                                    setStyle(textForBackgroundColor+"-fx-text-fill: black;");
+                                else
+                                    setStyle(textForBackgroundColor+"-fx-text-fill: white;");
+                            }
+                        }
+                    }
+                };
+            });
+
             authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("content"));
             amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
@@ -671,21 +710,12 @@ public class EventPageCtrl implements Controller{
     public void addParticipantHandler(ActionEvent event) {
         try {
 
-            //server.deleteParticipantEvent(52752,92757);
-//            server.getParticipantsOfEvent(52752);
-//            System.out.println(server.getEventsOfParticipant(92755));
 
-//            var la = server.getEventsOfParticipant(92755);
-//            for(Event a : la){
-//                System.out.println(a);
-//            }
             var la = server.getParticipantsOfEvent(server.getCurrentId());
             for(Participant a : la){
                 System.out.println(a);
             }
 
-//            System.out.println("about to execute participantEvent");
-//            server.addParticipantEvent(new ParticipantEventDTO(67152, 54352));
         } catch (Exception e) {
             System.out.println(e);
         }

@@ -1,9 +1,8 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import commons.Expense;
-import commons.Tag;
-import commons.TagId;
+import commons.*;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -56,6 +55,20 @@ public class StatisticsCtrl implements Controller, Initializable {
 
     @FXML
     private Button okButton;
+    @FXML
+    private TableView<Map<String, String>> participantsShareTable;
+
+    @FXML
+    private TableColumn<Map<String, String>, String> personColumn;
+
+    @FXML
+    private TableColumn<Map<String, String>, String> shareColumn;
+
+    @FXML
+    private TableColumn<Map<String, String>, String> owesColumn;
+
+    @FXML
+    private TableColumn<Map<String, String>, String> isOwedColumn;
 
     @FXML
     private PieChart pieChart;
@@ -73,6 +86,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     private List<Expense> expenses;
     private Map<String, String> tagColors;
     private Map<String, String> namesForLegend;
+    private Map<String,String> tagsToColors;
     private String selectedTagForEditing;//it also helps at deleting (from tag list)
 
     @Inject
@@ -98,13 +112,13 @@ public class StatisticsCtrl implements Controller, Initializable {
             server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
 
         server.registerForMessages("/topic/expenses", Tag.class, t -> {
-            System.out.printf("workrkrkrkkrkkdkskssksks");
+            //System.out.printf("workrkrkrkkrkkdkskssksks");
             tagsListView.getItems().add(t.getId().getName());
         });
 
         String destination = "/topic/expenses/tag/" + server.getCurrentId();
         server.registerForMessages(destination, Expense.class, t -> {
-            System.out.println("also works");
+            //System.out.println("also works");
 //            Map<String, Double> tagsWithValues=getTagsWithValuesFromExpenses(expenses);
 //            createPieChart(tagsWithValues);
         });
@@ -128,6 +142,8 @@ public class StatisticsCtrl implements Controller, Initializable {
         updateTextsOnTheScreen();
         //create the list of tags used in this event
         createTagsUsedInThisEventList(server.getAllTagsFromEvent(server.getCurrentId()));
+        //creates statistics for share per person
+        createSharePerPersonTable(expenses);
         //to be sure it is not opened
         closeEditPane();
     }
@@ -143,7 +159,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         Map<String, Double> tagsWithValues=new HashMap<>();
         for(Expense e:expensesList)
         {
-            System.out.println(e.getType()+"  "+e.getMoney());
+            //System.out.println(e.getType()+"  "+e.getMoney());
             String type=e.getType();
             if(type==null || type.equals(""))
                 type="other";
@@ -206,7 +222,7 @@ public class StatisticsCtrl implements Controller, Initializable {
             data.getNode().setStyle("-fx-pie-color: " + color + ";");
         });
 
-        System.out.println(tagColors);
+        //System.out.println(tagColors);
 
         // create the legend
         legendListView.setCellFactory(null);
@@ -216,9 +232,15 @@ public class StatisticsCtrl implements Controller, Initializable {
         // put data in the legend
         legendListView.getItems().clear();
         legendListView.getItems().addAll(tagColors.keySet());
+
+        legendListView.setSelectionModel(null);
+        legendListView.setFocusTraversable(false);
     }
     private void createTagsUsedInThisEventList(List<Tag> tags)
     {
+        tagsToColors=new HashMap<>();
+        for(Tag t:tags)
+            tagsToColors.put(t.getId().getName(),t.getColor());
         tagsListView.getItems().clear();
         tagsListView.getItems().addAll(tags.stream().map(x->x.getId().getName()).sorted().toList());
 
@@ -230,6 +252,85 @@ public class StatisticsCtrl implements Controller, Initializable {
         selectedTagForEditing=null;
 
     }
+    private void createSharePerPersonTable(List<Expense> expenses)
+    {
+        List<Participant> participants=server.getParticipantsOfEvent(server.getCurrentId());
+        //I used a List of maps to map each attribute to its column
+        ObservableList<Map<String, String>> data = FXCollections.observableArrayList();
+        Map<Long,Double> idToShare=new HashMap<>();
+        Map<Long,Double> idToReceive=new HashMap<>();
+        Map<Long,Double> idToGive=new HashMap<>();
+
+        //first let's set every share to 0
+        for(Participant p:participants)
+            idToShare.put(p.getParticipantID(),0.0);
+        //calculate share per person
+        for(Expense e:expenses)
+        {
+            //share per participant in each expense
+            double amount=e.getMoney()/e.getParticipants().size();
+            for(Participant p:e.getParticipants())
+            {
+                double k=idToShare.get(p.getParticipantID());
+                idToShare.put(p.getParticipantID(),k+amount);
+            }
+        }
+        Event event=server.getEvent(server.getCurrentId());
+        //calculate the amount of money that each person needs to receive or to give
+        for(Debt d:event.getDebts())
+        {
+            //receive
+            if(idToReceive.containsKey(d.getCreditor()))
+            {
+                double k=idToReceive.get(d.getCreditor());
+                idToReceive.put(d.getCreditor(),k+d.getAmount());
+            }
+            else
+                idToReceive.put(d.getCreditor(),d.getAmount());
+            //give
+            if(idToGive.containsKey(d.getDebtor()))
+            {
+                double k=idToGive.get(d.getDebtor());
+                idToGive.put(d.getDebtor(),k+d.getAmount());
+            }
+            else
+                idToGive.put(d.getDebtor(),d.getAmount());
+        }
+        for(Participant p:participants)
+        {
+            //just to be sure we don't get a null
+            if(!idToShare.containsKey(p.getParticipantID()))
+                idToShare.put(p.getParticipantID(),0.0);
+            if(!idToReceive.containsKey(p.getParticipantID()))
+                idToReceive.put(p.getParticipantID(),0.0);
+            if(!idToGive.containsKey(p.getParticipantID()))
+                idToGive.put(p.getParticipantID(),0.0);
+            //create cell (for the table)
+            Map<String, String> row = new HashMap<>();
+            row.put("name", p.getName());
+            //I also approximate to 2 decimals
+            row.put("share", String.format("%.2f",idToShare.get(p.getParticipantID())));
+            row.put("receive", String.format("%.2f",idToReceive.get(p.getParticipantID())));
+            row.put("give", String.format("%.2f",idToGive.get(p.getParticipantID())));
+            data.add(row);
+        }
+
+        try{
+            //This helps us to map the attributes to the columns (as a filter)
+            personColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
+                    .get("name")));
+            shareColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
+                    .get("share")));
+            isOwedColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
+                    .get("receive")));
+            owesColumn.setCellValueFactory(d -> new SimpleStringProperty((String) d.getValue()
+                    .get("give")));
+
+            participantsShareTable.setItems(data);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
 
     /**
      * Here it updates the total amount text and the title
@@ -237,11 +338,14 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void updateTextsOnTheScreen()
     {
         //update the name of the event
-        long eventId=7952;
-        eventId = server.getCurrentId();
-        titleId.setText("Statistics for event "+eventId);
+        long eventId=server.getCurrentId();
+        Event event=server.getEvent(eventId);
+        if(event==null)
+            titleId.setText("Statistics for event "+eventId);//just in case
+        else
+            titleId.setText("Statistics for event "+event.getName());
         //in case we don't have the total amount in EUR, we need to change it to EUR
-        totalSpentText.setText("Total sum spent: "+totalAmount+ " EUR");
+        totalSpentText.setText("Total sum spent: "+String.format("%.2f",totalAmount)+ " EUR");
     }
 
     /**
@@ -267,6 +371,7 @@ public class StatisticsCtrl implements Controller, Initializable {
                 //for setting the size of the text (by default it is 12)
                 Label label=new Label(namesForLegend.get(item));
                 label.setFont(new Font(13));
+
                 //we need to align the circle and the text
                 HBox hbox=new HBox(circle, label);
                 hbox.setAlignment(Pos.CENTER_LEFT);
@@ -333,7 +438,25 @@ public class StatisticsCtrl implements Controller, Initializable {
                 setGraphic(null);
             } else {
                 tagLabel.setText(item);
-                if(item.equals("other")) {
+                try {
+                    //set background color
+                    String textForBackgroundColor="-fx-background-color: "+tagsToColors.get(item)+";";
+                    //set the text white or black (It depends on the contrast with the background)
+                    Color c=Color.web(tagsToColors.get(item));
+                    //calculate the luminance (I searched on the internet and this is the formula)
+                    //luminance= 0.2126*Red + 0.7152*Green + 0.0722*Blue
+                    double luminance=0.2126*c.getRed() + 0.7152*c.getGreen() + 0.0722*c.getBlue();
+                    //System.out.println("luminance is "+luminance);
+                    //set the text color to white or black, depending on which one has the greatest contrast
+                    if(luminance>0.5)
+                        tagLabel.setStyle(textForBackgroundColor+"-fx-text-fill: black;");
+                    else
+                        tagLabel.setStyle(textForBackgroundColor+"-fx-text-fill: white;");
+                }
+                catch (Exception e){}
+
+                if(item.equals("other"))
+                {
                     try {
 
                         container.getChildren().get(0).setStyle("-fx-opacity: 0.5;");
@@ -355,14 +478,12 @@ public class StatisticsCtrl implements Controller, Initializable {
         // Here we would edit the tag
 
         selectedTagForEditing=tag;
-        System.out.println("Edit: " + tag);
         showEditOrDeletePane(tag,true);
     }
 
     // Method to handle delete button click
     private void handleDelete(String tag) {
         // Here we would delete the tag
-        System.out.println("Delete: "+tag);
         if(!tag.equals("other"))
         {
             //open are you sure menu
@@ -370,7 +491,8 @@ public class StatisticsCtrl implements Controller, Initializable {
             //false is for are you sure menu
             showEditOrDeletePane(tag,false);
         }
-        System.out.println("You cannot delete this tag.");
+        else
+            mainCtrl.popup("You cannot delete this tag.","Warning","Ok");
     }
     @FXML
     void saveEditTag(ActionEvent event) {
@@ -390,6 +512,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         {
             //Problem!! We cannot change this tag's name.
             editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
+            mainCtrl.popup("You cannot change this tag's name.","Warning","Ok");
             return;
         }
         //verify if there is no other tag with this name and eventId
@@ -405,7 +528,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         }
 
         editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
-        System.out.println("There is already a tag with this name.");
+        mainCtrl.popup("There is already a tag with this name.","Warning","Ok");
     }
     @FXML
     void deleteTagButton(ActionEvent event) {
