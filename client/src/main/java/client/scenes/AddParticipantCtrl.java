@@ -1,7 +1,10 @@
 package client.scenes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import client.utils.ServerUtils;
+import commons.Expense;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -91,7 +94,8 @@ public class AddParticipantCtrl implements Controller{
     void addParticipant(ActionEvent event) {
         checkFieldsCondition();
 
-        Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
+        // read all text from fields and create a new participant
+        Participant newParticipant = takeParticipantFromFields();
         try {
             String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);
@@ -105,7 +109,8 @@ public class AddParticipantCtrl implements Controller{
     void updateParticipant(ActionEvent event) {
         if(!checkFieldsCondition())
             return;
-        //reload again the participant to be sure that it is the newest participant
+        // reload again the participant to be sure that it is the newest participant
+        // can also prevent a bug where another user has deleted the participant you are already working on
         participantToBeModified=server.getParticipantToBeModified();
         if(participantToBeModified==null)
         {
@@ -137,14 +142,23 @@ public class AddParticipantCtrl implements Controller{
             popupStage.showAndWait();
             return;
         }
+        Participant participant = takeParticipantFromFields();
+        System.out.println(participant);
         //get participant to be modified
-        Participant participant = server.getParticipant(participantToBeModified.getParticipantID());
+//        participant = server.getParticipant(participantToBeModified.getParticipantID());
         //modify the participant and save it in the database
+        System.out.println(participantToBeModified.getParticipantID());
         server.updateParticipant(participantToBeModified.getParticipantID(), participant);
         participantToBeModified=null;
         server.setParticipantToBeModified(-1);
 
         close(event);
+    }
+
+    private Participant takeParticipantFromFields()
+    {
+        // get and return a new participant from the text fields
+        return new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
     }
 
     /**

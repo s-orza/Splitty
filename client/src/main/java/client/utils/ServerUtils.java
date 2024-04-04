@@ -600,6 +600,7 @@ public class ServerUtils {
 				.target(serverUrl + "api/participant/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).put(Entity.entity(participant, APPLICATION_JSON));
+		System.out.println(response + "Update participant response");
 		if (response.getStatus() < 300){
 			return response.readEntity(Participant.class);
 		}

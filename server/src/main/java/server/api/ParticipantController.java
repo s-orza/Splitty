@@ -85,8 +85,10 @@ public class ParticipantController {
     @PutMapping("/{participantId}")
     public ResponseEntity<Participant> updateParticipant(@PathVariable Long participantId,
                                                          @RequestBody Participant p) {
-            if (repo.findById(participantId).isPresent())
-                return ResponseEntity.ok(p);
+            if (repo.findById(participantId).isPresent()) {
+                p.setParticipantID(participantId);
+                return ResponseEntity.ok(repo.save(p));
+            }
             return ResponseEntity.notFound().build();
         }
 
