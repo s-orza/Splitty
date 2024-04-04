@@ -14,6 +14,7 @@ import java.util.*;
 
 @Service
 public class CurrencyService {
+    //This is the service that will interact with the exchange API and would locally store the exchange rates.
     /**
      * This variable is a map that maps every date to a map of "from/to" with its exchange rate.
      * It is efficient.
@@ -29,17 +30,17 @@ public class CurrencyService {
      */
     public double getExchangeRateAndUpdateCacheFile(String date,String from,String to)
     {
+        //the url for the exchange api.
+        String url="http://localhost:8080/api/fakeRateConverter/"+date+"?base="+from+"&symbol="+to;
         try {
-            System.out.println(currenciesMap);
             if(from.equals(to))
                 return 1.0;
+            RestTemplate restTemplate=new RestTemplate();
             //in case there is no rate cached on that date.
             if(!currenciesMap.containsKey(date))
             {
-                //put
-                Random random = new Random();
-                double rate = random.nextDouble();
-                if (rate == 0) rate = 1;
+                double rate=restTemplate.getForObject(url, Double.class);
+                if(rate==0) rate=1;
                 //This entry contains:
                 //    from/to -> rate
                 //    to/from -> 1/rate
@@ -55,9 +56,8 @@ public class CurrencyService {
             //in case the exchange we want doesn't exist
             if(!ratesFromDate.containsKey(from+"/"+to))
             {
-                Random random = new Random();
-                double rate = random.nextDouble();
-                if (rate == 0) rate = 1;
+                double rate=restTemplate.getForObject(url, Double.class);
+                if(rate==0) rate=1;
                 ratesFromDate.put(from+"/"+to,rate);
                 ratesFromDate.put(to+"/"+from,1.0/rate);
                 saveRateAndItsInverse(date,from,to,rate);
@@ -70,22 +70,6 @@ public class CurrencyService {
         }
 //        2024-04-01/EUR/RON/3
 //        2024-04-02/EUR/RON/5
-    }
-    public double getRate(String date,String from,String to)
-    {
-        String url="http://data.fixer.io/api/"+date+"?access_key=8a4c4b4c66115b967715be81b50deff9&base=";
-        double inEur=1;
-        double inRon=1;
-        double inUsd=1;
-        double inChf=1;
-        if(from.equals("EUR"))
-        {
-            url=url+"EUR";
-            RestTemplate restTemplate=new RestTemplate();
-            //we take the json response
-            //String response=restTemplate.getForObject(url, String.class);
-        }
-        return 1;
     }
     /**
      * This method save the exchange rate from a date and its "inverse"
