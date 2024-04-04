@@ -39,7 +39,7 @@ public class ExpenseService {
     }
 
     expense.setParticipants(participantList);
-    System.out.println("Participants of expense set to " + participantList);
+    //System.out.println("Participants of expense set to " + participantList);
   }
 
   /**

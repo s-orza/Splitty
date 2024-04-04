@@ -145,6 +145,8 @@ public class EventPageCtrl implements Controller{
                     new ParticipantTest("Oliwer")
                      */
     private ObservableList<String> participantsToSelectFrom;
+    private int selectionMod;//0->all, 1->by author,2->including
+    private long personId;
     /**
      * just the initialize method
      */
@@ -156,16 +158,54 @@ public class EventPageCtrl implements Controller{
 
     //set event page title and event code
     private void initializePage() {
-        System.out.println("Currency we want to use " + mainCtrl.getCurrency());
+        selectionMod=0;
         //load from database:
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
             expenseData.add(e);
+            System.out.println(selectionMod);
+            switch (selectionMod)
+            {
+                //if we want to see all expenses
+                case 0:
+                    ObservableList<Expense> list=
+                            FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
+                    renderExpenseColumns(list);
+                break;
+                case 1:
+                    //if the person is an author
+                    if(e.getAuthor().getParticipantID()==personId)
+                    {
+                        Expense convertedEx=new Expense(e.getAuthor(),e.getContent(),
+                                server.convertCurrency(e.getDate(),e.getCurrency(),MainCtrl.getCurrency(),e.getMoney()),
+                                MainCtrl.getCurrency(),e.getDate(),e.getParticipants(),e.getType());
+                        //DON'T FORGET THE ID
+                        convertedEx.setExpenseId(e.getExpenseId());
+                        expensesTable.getItems().add(convertedEx);
+                    }
+                    break;
+                case 2:
+                    //if the person is included
+                    List<Long> pList=e.getParticipants().stream().map(x->x.getParticipantID()).toList();
+                    if(pList.contains(personId) || e.getAuthor().getParticipantID()==personId)
+                    {
+                        Expense convertedEx=new Expense(e.getAuthor(),e.getContent(),
+                                server.convertCurrency(e.getDate(),e.getCurrency(),MainCtrl.getCurrency(),e.getMoney()),
+                                MainCtrl.getCurrency(),e.getDate(),e.getParticipants(),e.getType());
+                        //DON'T FORGET THE ID
+                        convertedEx.setExpenseId(e.getExpenseId());
+                        expensesTable.getItems().add(convertedEx);
+                    }
+                    break;
+                default:
+                    break;
+            }
         });
 
         String destination = "/topic/expenses/" + String.valueOf(server.getCurrentId());
         server.registerForMessages(destination, Expense.class, t -> {
             expenseData.remove(t);
+            //renderExpenseColumns(expenseData);
         });
 
         //we need this to get the id of the selected person
@@ -412,6 +452,7 @@ public class EventPageCtrl implements Controller{
     }
     private void editExpenseHandler(ActionEvent e)
     {
+        //here we do not care if the items are converted or not because we only use the ids.
         ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
         if(selectedItems.isEmpty())
         {
@@ -455,12 +496,23 @@ public class EventPageCtrl implements Controller{
     }
 
     /**
-     * initializes the columns of the expense table from the database
+     * initializes the columns of the expense table from the database and convert them
      * @param model this is the observable list that should be created with
      *              the data from the database
      */
     private void renderExpenseColumns(ObservableList<Expense> model){
         try{
+            ObservableList<Expense> newModel=FXCollections.observableArrayList();
+            //to convert money
+            List<Expense> expenseList=model.stream().map(x->{
+                Expense ex=new Expense(x.getAuthor(),x.getContent(),
+                        server.convertCurrency(x.getDate(),x.getCurrency(),MainCtrl.getCurrency(),x.getMoney()),
+                        MainCtrl.getCurrency(),x.getDate(),x.getParticipants(),x.getType());
+                //DON'T FORGET THE ID
+                ex.setExpenseId(x.getExpenseId());
+                return ex;
+            }).toList();
+            newModel.addAll(expenseList);
             //add background color to the tags
             typeColumn.setCellFactory(param ->{
                 return new TableCell<Expense,String>(){
@@ -498,7 +550,6 @@ public class EventPageCtrl implements Controller{
                     }
                 };
             });
-
             authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("content"));
             amountColumn.setCellValueFactory(new PropertyValueFactory<>("money"));
@@ -507,7 +558,7 @@ public class EventPageCtrl implements Controller{
             participantsColumn2.setCellValueFactory(new PropertyValueFactory<>("participants"));
             typeColumn.setCellValueFactory(new PropertyValueFactory<>("Type"));
 
-            expensesTable.setItems(model);
+            expensesTable.setItems(newModel);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -531,6 +582,8 @@ public class EventPageCtrl implements Controller{
     @FXML
     void searchAll(ActionEvent event) {
         //show all expenses
+        selectionMod=0;
+        personId=0;
         renderExpenseColumns(expenseData);
     }
 
@@ -556,6 +609,8 @@ public class EventPageCtrl implements Controller{
         ObservableList<Expense> expensesFromX=FXCollections.observableArrayList();
 
         expensesFromX.addAll(listFromServer);
+        selectionMod=1;
+        personId=id;
         renderExpenseColumns(expensesFromX);
 
     }
@@ -579,7 +634,8 @@ public class EventPageCtrl implements Controller{
         if(listFromServer==null)
             return;
         ObservableList<Expense> expensesFromX=FXCollections.observableArrayList();
-
+        selectionMod=2;
+        personId=id;
         expensesFromX.addAll(listFromServer);
         renderExpenseColumns(expensesFromX);
 
@@ -607,9 +663,17 @@ public class EventPageCtrl implements Controller{
 
             ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
             List<Expense> itemsToRemove = new ArrayList<>(selectedItems);
+            //items with money uncoverted
+            List<Expense> originalItems=new ArrayList<>();
+            for(Expense ex:itemsToRemove) {
+                if(ex.getExpenseId()==0)
+                    System.out.println("ID of expense is null!!!!!!!");
+                originalItems.add(server.getExpenseById(ex.getExpenseId()));
+            }
+            System.out.println(itemsToRemove);
             expenseData.removeAll(itemsToRemove);
-
-            removeExpensesFromDatabase(itemsToRemove);
+            //I did this to be sure I don't create any problems to the websocket
+            removeExpensesFromDatabase(originalItems);
         });
 
         cancelButton.setOnAction(e -> {
