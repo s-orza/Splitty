@@ -8,19 +8,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import server.database.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,10 +52,17 @@ public class DebtControllerTest {
 
     @BeforeEach
     public void setup() {
-        testEvent = eventRepository.save(new Event("Sample Event"));
-        testParticipant = participantRepository.save(new Participant("Debtor Participant", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        testCreditor = participantRepository.save(new Participant("Creditor Participant", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
-        testDebt = debtRepository.save(new Debt(100, "USD", testParticipant.getParticipantID(), testCreditor.getParticipantID()));
+        testEvent =
+                eventRepository.save(new Event("Sample Event"));
+        testParticipant =
+                participantRepository.save(new Participant("Debtor Participant",
+                        "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
+        testCreditor =
+                participantRepository.save(new Participant("Creditor Participant",
+                        "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
+        testDebt =
+                debtRepository.save(new Debt(100, "USD", testParticipant.getParticipantID(),
+                        testCreditor.getParticipantID()));
     }
 
     @AfterEach
@@ -98,8 +104,10 @@ public class DebtControllerTest {
 
     @Test
     public void getListOfDebts_Success() throws Exception {
-        Participant debtor = participantRepository.save(new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        Participant creditor = participantRepository.save(new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
+        Participant debtor = participantRepository.save(
+                new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
+        Participant creditor = participantRepository.save(
+                new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
         Debt debt1 = debtRepository.save(new Debt(100, "USD", debtor.getParticipantID(), creditor.getParticipantID()));
         Debt debt2 = debtRepository.save(new Debt(200, "EUR", debtor.getParticipantID(), creditor.getParticipantID()));
 
@@ -126,8 +134,10 @@ public class DebtControllerTest {
 
     @Test
     public void addListOfDebts_Success() throws Exception {
-        Participant debtor = participantRepository.save(new Participant("Debtor Participant", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        Participant creditor = participantRepository.save(new Participant("Creditor Participant", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
+        Participant debtor = participantRepository.save(
+                new Participant("Debtor Participant", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
+        Participant creditor = participantRepository.save(
+                new Participant("Creditor Participant", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
 
         List<Debt> debts = Arrays.asList(
                 new Debt(100, "USD", debtor.getParticipantID(), creditor.getParticipantID()),
@@ -157,8 +167,10 @@ public class DebtControllerTest {
     @Test
     public void testSettleDebtNotFound() throws Exception {
 
-        Participant debtor = participantRepository.save(new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        Participant creditor = participantRepository.save(new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
+        Participant debtor = participantRepository.save(
+                new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
+        Participant creditor = participantRepository.save(
+                new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
 
 
         Debt testDebt = new Debt(100.0, "USD", debtor.getParticipantID(), creditor.getParticipantID());

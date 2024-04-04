@@ -55,7 +55,9 @@ public class ExpenseControllerTest {
     @BeforeEach
     public void setup() {
         testEvent = eventRepository.save(new Event("Sample Event"));
-        testParticipant = participantRepository.save(new Participant("Sample Participant", "sample@example.com", "SAMPLEIBAN", "SAMPLEBIC"));
+        testParticipant = participantRepository.save(
+                new Participant("Sample Participant", "sample@example.com",
+                        "SAMPLEIBAN", "SAMPLEBIC"));
         TagId tagId = new TagId("Lunch", testEvent.getEventId());
         testTag = tagRepository.save(new Tag(tagId, "#000000"));
 
@@ -71,7 +73,9 @@ public class ExpenseControllerTest {
 
     @Test
     public void testAddExpenseToEvent() throws Exception {
-        Expense testExpense = new Expense(testParticipant, "Lunch", 15.0, "USD", "2023-04-01", new ArrayList<>(), "Food");
+        Expense testExpense =
+                new Expense(testParticipant, "Lunch", 15.0, "USD",
+                "2023-04-01", new ArrayList<>(), "Food");
         mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testExpense)))
@@ -84,9 +88,13 @@ public class ExpenseControllerTest {
     @Test
     public void testUpdateExpense() throws Exception {
         Expense savedExpense =
-                expenseRepository.save(new Expense(testParticipant, "Original", 20.0, "EUR", "2023-04-02", null, "Misc"));
+                expenseRepository.save(
+                        new Expense(testParticipant, "Original",
+                        20.0, "EUR", "2023-04-02", null, "Misc"));
 
-        Expense updateInfo = new Expense(testParticipant, "Updated", 25.0, "USD", "2023-04-03", null, "UpdatedCategory");
+        Expense updateInfo = new Expense(
+                testParticipant, "Updated", 25.0, "USD",
+                "2023-04-03", null, "UpdatedCategory");
         mockMvc.perform(put("/api/expenses/?expenseId=" + savedExpense.getExpenseId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateInfo)))
@@ -100,7 +108,9 @@ public class ExpenseControllerTest {
 
     @Test
     public void testDeleteExpense() throws Exception {
-        Expense expense = new Expense(testParticipant, "To be deleted", 10.0, "EUR", "2023-04-02", null, "DeleteTest");
+        Expense expense = new Expense(
+                testParticipant, "To be deleted", 10.0,
+                "EUR", "2023-04-02", null, "DeleteTest");
         expenseRepository.save(expense);
         mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +119,8 @@ public class ExpenseControllerTest {
                 .andExpect(jsonPath("$.content").value("To be deleted"));
 
         System.out.println(expense.getExpenseId() + " " + testEvent.getEventId());
-        mockMvc.perform(delete("/api/expenses/?eventId=" + testEvent.getEventId() + "&expenseId=" + expense.getExpenseId()))
+        mockMvc.perform(delete("/api/expenses/?eventId=" + testEvent.getEventId()
+                        + "&expenseId=" + expense.getExpenseId()))
                 .andExpect(status().isOk());
 
         assertThat(expenseRepository.existsById(expense.getExpenseId())).isFalse();
@@ -129,7 +140,9 @@ public class ExpenseControllerTest {
 
     @Test
     public void testGetExpenseById() throws Exception {
-        Expense savedExpense = expenseRepository.save(new Expense(testParticipant, "Dinner", 30.0, "EUR", "2024-02-01", null, "Food"));
+        Expense savedExpense = expenseRepository.save(
+                new Expense(testParticipant, "Dinner", 30.0,
+                        "EUR", "2024-02-01", null, "Food"));
 
         mockMvc.perform(get("/api/expenses/?expenseId=" + savedExpense.getExpenseId()))
                 .andExpect(status().isOk())
@@ -193,14 +206,18 @@ public class ExpenseControllerTest {
 
     @Test
     public void getAllExpenses_Success() throws Exception {
-        Expense expense1 = new Expense(testParticipant, "Lunch for Team", 50.0, "USD", "2024-04-03", Arrays.asList(testParticipant), "Food");
-        Expense expense2 = new Expense(testParticipant, "Team Coffee Break", 20.0, "USD", "2024-04-03", Arrays.asList(testParticipant), "Beverage");
+        Expense expense1 = new Expense(
+                testParticipant, "Lunch for Team", 50.0,
+                "USD", "2024-04-03", Arrays.asList(testParticipant), "Food");
+        Expense expense2 = new Expense(
+                testParticipant, "Team Coffee Break", 20.0,
+                "USD", "2024-04-03", Arrays.asList(testParticipant), "Beverage");
         expenseRepository.save(expense1);
         expenseRepository.save(expense2);
 
         mockMvc.perform(get("/api/expenses/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2)) // Expecting 2 expenses in the response
+                .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].content").exists())
                 .andExpect(jsonPath("$[1].content").exists())
                 .andExpect(jsonPath("$[0].money").exists())
@@ -228,7 +245,9 @@ public class ExpenseControllerTest {
 
     @Test
     public void deleteAllExpensesFromEvent_Success() throws Exception {
-        Expense additionalExpense = new Expense(testParticipant, "Additional Expense", 20.0, "USD", "2023-05-01", new ArrayList<>(), "Additional");
+        Expense additionalExpense = new Expense(
+                testParticipant, "Additional Expense", 20.0, "USD",
+                "2023-05-01", new ArrayList<>(), "Additional");
         mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(additionalExpense)))
@@ -250,6 +269,4 @@ public class ExpenseControllerTest {
                         .param("eventId", String.valueOf(-1)))
                 .andExpect(status().isBadRequest());
     }
-
-
 }

@@ -46,7 +46,9 @@ public class ParticipantEventControllerTest {
     @BeforeEach
     public void setup() {
         testEvent = eventRepository.save(new Event("Test Event"));
-        testParticipant = participantRepository.save(new Participant("Test Participant", "test@participant.com", "TESTIBAN123", "TESTBIC123"));
+        testParticipant = participantRepository.save(
+                new Participant("Test Participant", "test@participant.com",
+                        "TESTIBAN123", "TESTBIC123"));
     }
 
     @AfterEach
@@ -77,7 +79,8 @@ public class ParticipantEventControllerTest {
     public void testGetParticipantsOfEvent() throws Exception {
         testCreateParticipantEvent();
 
-        mockMvc.perform(get("/api/participant/event/" + testEvent.getEventId() + "/allParticipants"))
+        mockMvc.perform(get("/api/participant/event/" +
+                        testEvent.getEventId() + "/allParticipants"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Test Participant"))
                 .andExpect(jsonPath("$.[0].email").value("test@participant.com"));
@@ -87,11 +90,12 @@ public class ParticipantEventControllerTest {
     public void testDeleteParticipantEvent() throws Exception {
         testCreateParticipantEvent();
 
-        mockMvc.perform(delete("/api/participant/event/" + testEvent.getEventId() + "/" + testParticipant.getParticipantID()))
+        mockMvc.perform(delete("/api/participant/event/" +
+                        testEvent.getEventId() + "/" + testParticipant.getParticipantID()))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/api/participant/event/" + testEvent.getEventId() + "/allParticipants"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("[]")); // Expect an empty array
+                .andExpect(content().string("[]"));
     }
 
     @Test
@@ -101,14 +105,16 @@ public class ParticipantEventControllerTest {
 
         mockMvc.perform(get("/api/participant/event/getEvents/" + testParticipant.getParticipantID()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1))) // Expecting one event associated with the participant
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.[0].name").value("Test Event"));
     }
 
     @Test
     public void testGetEventsOfParticipantWithNoEvents() throws Exception {
 
-        Participant newParticipant = participantRepository.save(new Participant("Another Participant", "another@participant.com", "IBAN", "BIC"));
+        Participant newParticipant = participantRepository.save(
+                new Participant("Another Participant", "another@participant.com",
+                        "IBAN", "BIC"));
 
         mockMvc.perform(get("/api/participant/event/getEvents/" + newParticipant.getParticipantID()))
                 .andExpect(status().isOk())
