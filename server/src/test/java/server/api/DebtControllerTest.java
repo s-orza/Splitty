@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,14 +48,15 @@ public class DebtControllerTest {
     private Participant testParticipant;
     private Participant testCreditor;
 
+    private Debt testDebt;
+
+
     @BeforeEach
     public void setup() {
         testEvent = eventRepository.save(new Event("Sample Event"));
         testParticipant = participantRepository.save(new Participant("Debtor Participant", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
         testCreditor = participantRepository.save(new Participant("Creditor Participant", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
-
-        Debt testDebt = new Debt(100, "USD", testParticipant.getParticipantID(), testCreditor.getParticipantID());
-        debtRepository.save(testDebt);
+        testDebt = debtRepository.save(new Debt(100, "USD", testParticipant.getParticipantID(), testCreditor.getParticipantID()));
     }
 
     @AfterEach
@@ -139,6 +141,59 @@ public class DebtControllerTest {
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].amount").value(100))
                 .andExpect(jsonPath("$[1].amount").value(200));
+    }
+
+    @Test
+    public void testSettleDebtSuccess() throws Exception {
+        System.out.println(testDebt.getDebtID());
+        mockMvc.perform(delete("/api/events/debts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testDebt)))
+                .andExpect(status().isOk());
+
+        assertThat(debtRepository.existsById(testDebt.getDebtID())).isFalse();
+    }
+
+    @Test
+    public void testSettleDebtNotFound() throws Exception {
+
+        Participant debtor = participantRepository.save(new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
+        Participant creditor = participantRepository.save(new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
+
+
+        Debt testDebt = new Debt(100.0, "USD", debtor.getParticipantID(), creditor.getParticipantID());
+        testDebt.setDebtID(9999L);
+
+        mockMvc.perform(delete("/api/events/debts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testDebt)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testSettleDebtBadRequest() throws Exception {
+        mockMvc.perform(delete("/api/events/debts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void settleAllDebts_Success() throws Exception {
+        mockMvc.perform(delete("/api/events/debts/all"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].debtID").value(testDebt.getDebtID()));
+
+        List<Debt> remainingDebts = debtRepository.findAll();
+        assertThat(remainingDebts).isEmpty();
+    }
+
+    @Test
+    public void settleAllDebts_NotFound() throws Exception {
+        debtRepository.deleteAll();
+        mockMvc.perform(delete("/api/events/debts/all"))
+                .andExpect(status().isNotFound());
     }
 
 

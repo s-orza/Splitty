@@ -32,7 +32,6 @@ public class ParticipantControllerTest {
 
     @BeforeEach
     public void setup() {
-        // Given
         Participant participant = new Participant("Test Participant", "test@example.com", "IBAN", "BIC");
         savedParticipant = participantRepository.save(participant);
     }
@@ -44,7 +43,6 @@ public class ParticipantControllerTest {
 
     @Test
     public void getParticipantById_whenParticipantExists() throws Exception {
-        // When & Then
         mockMvc.perform(get("/api/participant/{id}", savedParticipant.getParticipantID())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

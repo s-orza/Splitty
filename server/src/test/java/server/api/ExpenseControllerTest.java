@@ -208,4 +208,48 @@ public class ExpenseControllerTest {
                 .andExpect(jsonPath("$[0].type").value("Food"))
                 .andExpect(jsonPath("$[1].type").value("Beverage"));
     }
+
+    @Test
+    public void getTag_Success() throws Exception {
+        mockMvc.perform(get("/api/expenses/tags")
+                        .param("tag", testTag.getId().getName())
+                        .param("eventId", String.valueOf(testTag.getId().getEventId())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.color").value(testTag.getColor()));
+    }
+
+    @Test
+    public void getTag_NotFound() throws Exception {
+        mockMvc.perform(get("/api/expenses/tags")
+                        .param("tag", "NonExistentTag")
+                        .param("eventId", String.valueOf(testEvent.getEventId())))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteAllExpensesFromEvent_Success() throws Exception {
+        Expense additionalExpense = new Expense(testParticipant, "Additional Expense", 20.0, "USD", "2023-05-01", new ArrayList<>(), "Additional");
+        mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(additionalExpense)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/expenses/allFromEvent")
+                        .param("eventId", String.valueOf(testEvent.getEventId())))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/expenses/allFromEvent?eventId=" + testEvent.getEventId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(0));
+    }
+
+    @Test
+    public void deleteAllExpensesFromEvent_BadRequest() throws Exception {
+
+        mockMvc.perform(delete("/api/expenses/allFromEvent")
+                        .param("eventId", String.valueOf(-1)))
+                .andExpect(status().isBadRequest());
+    }
+
+
 }
