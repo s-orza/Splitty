@@ -1,10 +1,7 @@
 package client.scenes;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import client.utils.ServerUtils;
-import commons.Expense;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
