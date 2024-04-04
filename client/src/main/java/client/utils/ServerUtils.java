@@ -448,24 +448,6 @@ public class ServerUtils {
 		return false;
 	}
 
-	/**
-	 * To use if you don't care about storing ExpenseEvent connection
-	 * Not good for database, but good for testing
-	 * @param expense the expense
-	 * @return true if it was successful
-	 */
-	public boolean addExpense(Expense expense)
-	{
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl +"api/expenses/s")
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON)
-				.post(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response.readEntity(String.class));
-		if(response.getStatus()<300)
-			return true;
-		return false;
-	}
 	public boolean addTag(Tag tag)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
