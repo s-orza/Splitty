@@ -66,17 +66,16 @@ public class Main extends Application {
     }catch (Exception e){
       e.printStackTrace();
     }
-    try{
-      ServerUtils.setServerUrl("http://" + config.getIp() + ":" + config.getPort() + "/");
-    }catch (Exception exception){
-      exception.printStackTrace();
-    }
     mainPageCtrl= new MainPageCtrl(new ServerUtils());
     mainCtrl.setRecents(config.getRecentEvents());
     mainCtrl.setCurrency(config.getCurrency());
     mainCtrl.setUrl(config.getIp(), config.getPort());
+    mainCtrl.setConfig(config);
     mainPageCtrl.setLang(config.getLang());
-    mainCtrl.initialize(primaryStage, mainPageCtrl.getPair(), mainPageCtrl.getTitle());
+    ServerSelectCtrl serverSelectCtrl = new ServerSelectCtrl(new ServerUtils());
+    mainCtrl.initialize(primaryStage, serverSelectCtrl.getPair(), serverSelectCtrl.getTitle());
+    primaryStage.setOnCloseRequest(e ->{});
+    primaryStage.setTitle("Server select");
   }
   private AppConfig readConfig() throws Exception {
     File selectedFile = new File("App-Config.json");

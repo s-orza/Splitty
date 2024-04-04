@@ -36,6 +36,7 @@ import java.util.Locale;
 public class MainCtrl {
 
     private Stage primaryStage;
+    private static AppConfig config;
     private static ArrayList<Long> recents;
     private static String currency;
     private static String url;
@@ -51,7 +52,7 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
         this.ctrl = dummy.getKey();
         this.scene = new Scene(dummy.getValue());
-        primaryStage.setTitle(url + " " + title);
+        primaryStage.setTitle(ServerUtils.getServerUrl() + " " + title);
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest(windowEvent -> {
@@ -91,6 +92,13 @@ public class MainCtrl {
 
     public void setUrl(String ip, String port) {
         this.url = "http://" + ip + ":" + port + "/";
+    }
+    public static AppConfig getConfig() {
+        return config;
+    }
+
+    public static void setConfig(AppConfig config) {
+        MainCtrl.config = config;
     }
 
     public void closeApp() {
