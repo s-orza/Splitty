@@ -1,5 +1,6 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import commons.Participant;
@@ -52,20 +53,20 @@ public class ParticipantController {
      * @return OK - 200 response if all participants were found, BAD REQUEST - 400 response if at least one participant
      * is not in the list
      */
-//    @GetMapping("/{eventId}/list")
-//    public ResponseEntity<List<Participant>> getParticipantsByIds(@RequestBody List<Long> ids){
-//        List<Participant> participantList = new ArrayList<>();
-//        for (Long id: ids){
-//            if (repo.existsById(id)){
-//                participantList.add(getParticipantById(id).getBody());
-//            }
-//            else return ResponseEntity.badRequest().build();
-//        }
-//
-//        return ResponseEntity.ok(participantList);
-//    }
+    @GetMapping("/{eventId}/list")
+    public ResponseEntity<List<Participant>> getParticipantsByIds(@RequestBody List<Long> ids){
+        List<Participant> participantList = new ArrayList<>();
+        for (Long id: ids){
+            if (repo.existsById(id)){
+                participantList.add(getParticipantById(id).getBody());
+            }
+            else return ResponseEntity.badRequest().build();
+        }
 
-    // The above method is useless and doesn't even work
+        return ResponseEntity.ok(participantList);
+    }
+
+    // The above method is redundant
 
     /**
      * Put request to update a participants name through their id
