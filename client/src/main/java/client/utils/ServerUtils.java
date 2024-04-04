@@ -690,7 +690,7 @@ public class ServerUtils {
 				.target(serverUrl+"api/participant/"+participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
-		if (response.getStatus()==200)
+		if (response.getStatus() < 300)
 			return true;
 		return false;
 	}

@@ -838,7 +838,7 @@ public class EventPageCtrl implements Controller{
      */
     private void removeParticipantsFromDatabase(List<Participant> toRemove){
         for (Participant p: toRemove){
-            server.deleteParticipantEvent(p.getParticipantID(), server.getCurrentId());
+            server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
             server.deleteParticipant(p.getParticipantID());
         }
     }
