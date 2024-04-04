@@ -15,6 +15,7 @@
         <Label layoutX="28.0" layoutY="149.0" text="BIC" />
         <TextField fx:id="bic" layoutX="109.0" layoutY="144.0" prefHeight="26.0" prefWidth="200.0" />
 
-        <Button fx:id="addButton" layoutX="193.0" layoutY="203.0" mnemonicParsing="false" styleClass="addButton" onAction="#addParticipantToEvent" text="Add"/>
+        <Button fx:id="addButton" layoutX="193.0" layoutY="203.0" mnemonicParsing="false" styleClass="addButton" onAction="#addParticipant" text="Add"/>
+        <Button fx:id="saveButton" layoutX="193.0" layoutY="203.0" mnemonicParsing="false" styleClass="addButton" onAction="#updateParticipant" text="Save"/>
         <Button fx:id="cancelButton" layoutX="257.0" layoutY="203.0" mnemonicParsing="false" styleClass="cancelButton" onAction="#close" text="Cancel"/>
 </AnchorPane>

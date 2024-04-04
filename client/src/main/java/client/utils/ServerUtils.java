@@ -70,6 +70,7 @@ public class ServerUtils {
 	//= "http://localhost:8080/";
 	public static long currentId = -1;
 	private static long expenseIdToModify=-1;
+	private static long participantIdToModify=-1;
 
 	public static void setServerUrl(String url){
 		serverUrl = url;
@@ -87,19 +88,31 @@ public class ServerUtils {
 		updated.activity();
 		createEvent(updated);
 		expenseIdToModify=-1;
+		participantIdToModify=-1;
 	}
 	public void setExpenseToBeModified(long expenseId)
 	{
 		expenseIdToModify=expenseId;
 	}
+	public void setParticipantToBeModified(long participantId){
+		participantIdToModify = participantId;
+	}
 	public long getExIdToModify()
 	{
 		return expenseIdToModify;
+	}
+	public long getParticipantIdToModify(){
+		return participantIdToModify;
 	}
 	public Expense getExpenseToBeModified()
 	{
 		Expense ex=getExpenseById(expenseIdToModify);
 		return ex;
+	}
+
+	public Participant getParticipantToBeModified(){
+		Participant p = getParticipantById(participantIdToModify);
+		return p;
 	}
 
 	//connects to the database through the endpoint to give all events
@@ -321,6 +334,16 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON).get();
 		if(response.getStatus()<300)
 			return response.readEntity(Expense.class);
+		return null;
+	}
+
+	public Participant getParticipantById(long id){
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl + "api/participant/" + id)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if (response.getStatus() == 200)
+			return response.readEntity(Participant.class);
 		return null;
 	}
 	public boolean resetDebtsFromExpense(long eventId,long expenseId)

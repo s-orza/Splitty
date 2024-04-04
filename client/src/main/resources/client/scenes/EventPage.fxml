@@ -14,6 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.chart.BubbleChart?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="513.0" prefWidth="722.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
 
    <children>
@@ -49,7 +50,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="addParticipant" layoutX="430.0" layoutY="27.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
+      <Button fx:id="addParticipant" layoutX="447.0" layoutY="13.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
       <graphic>
          <ImageView fitHeight="20" fitWidth="20">
             <Image url="@/add.png" />
@@ -114,6 +115,15 @@
             <Font size="13.0" />
          </font></Text>
       <Button fx:id="editExpense" layoutX="422.0" layoutY="141.0" maxWidth="180" mnemonicParsing="false" prefHeight="35.0" prefWidth="147.0" styleClass="button-styled" text="Edit/View Expense">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <image>
+                  <Image url="@/pencil.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button fx:id="editParticipant" layoutX="473.0" layoutY="43.0" mnemonicParsing="false" styleClass="button-styled" text="Edit Participant" >
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <image>
