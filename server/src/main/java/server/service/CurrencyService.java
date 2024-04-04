@@ -27,7 +27,7 @@ public class CurrencyService {
      * @param to to currency
      * @return the exchange rate
      */
-    public double getExchangeRate(String date,String from,String to)
+    public double getExchangeRateAndUpdateCacheFile(String date,String from,String to)
     {
         try {
             System.out.println(currenciesMap);

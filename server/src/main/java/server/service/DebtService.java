@@ -47,7 +47,7 @@ public class DebtService {
             if(d.getDebtor()==debt.getDebtor() && d.getCreditor()==debt.getCreditor())
             {
                 //convert from our d currency to the debt currency that is already there
-                double rate=currencyService.getExchangeRate(date,
+                double rate=currencyService.getExchangeRateAndUpdateCacheFile(date,
                         d.getCurrency(),debt.getCurrency());
                 money=money*rate;
                 debt.setAmount(debt.getAmount() + money);
@@ -59,7 +59,7 @@ public class DebtService {
             if(d.getDebtor()==debt.getCreditor() && d.getCreditor()==debt.getDebtor())
             {
                 //convert from our d currency to the debt currency that is already there
-                double rate=currencyService.getExchangeRate(date,
+                double rate=currencyService.getExchangeRateAndUpdateCacheFile(date,
                         d.getCurrency(),debt.getCurrency());
                 money=money*rate;
                 debt.setAmount(debt.getAmount() - money);

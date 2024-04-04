@@ -25,7 +25,7 @@ public class ForeignCurrenciesController {
                                                   @RequestParam("from") String from,
                                                   @RequestParam("to") String to)
     {
-        double rate=currencyService.getExchangeRate(date,from,to);
+        double rate=currencyService.getExchangeRateAndUpdateCacheFile(date,from,to);
         if(rate==-1)
             return ResponseEntity.internalServerError().build();
         return ResponseEntity.ok(rate);
