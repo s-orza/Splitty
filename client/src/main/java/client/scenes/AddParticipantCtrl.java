@@ -40,8 +40,6 @@ public class AddParticipantCtrl implements Controller{
     private TextField iban;
     @FXML
     private TextField bic;
-    @FXML
-    private Text warningText;
     private static Alert errorAlert;
     private Participant participantToBeModified;
     ResourceBundle resourceBundle;
@@ -53,33 +51,30 @@ public class AddParticipantCtrl implements Controller{
 
     @FXML
     public void initialize(){
-        System.out.println("Initializing AddParticipantCtrl...");
+        System.out.println(server.getParticipantIdToModify());
         initializeVariables();
         toggleLanguage();
         resetElements();
-
         // check if we are editing or adding a participant
         if (server.getParticipantIdToModify() != -1) {
             // if we are editing a participant
+            System.out.println("Entered with participant code: " + server.getParticipantToBeModified());
             participantToBeModified = server.getParticipantToBeModified();
             reloadParticipant();
         }
         else {
             // if we are adding a participant
+            System.out.println(server.getParticipantIdToModify());
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
     }
 
     private void initializeVariables() {
-        name = new TextField("");
-        email = new TextField("");
-        iban = new TextField("");
-        bic = new TextField("");
-        warningText = new Text("");
-        saveButton = new Button();
-        addButton = new Button();
-        cancelButton = new Button();
+        name.setText("");
+        email.setText("");
+        iban.setText("");
+        bic.setText("");
     }
 
     private void toggleLanguage(){
@@ -141,7 +136,6 @@ public class AddParticipantCtrl implements Controller{
     }
 
     public void resetElements(){
-        warningText.setText("");
         name.clear();
         email.clear();
         iban.clear();
@@ -151,6 +145,7 @@ public class AddParticipantCtrl implements Controller{
     @FXML
     public void close(ActionEvent e){
         System.out.println("Closing Addparticipants window...");
+        server.setParticipantToBeModified(-1);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
