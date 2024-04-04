@@ -159,11 +159,12 @@ public class EventPageCtrl implements Controller{
     //set event page title and event code
     private void initializePage() {
         selectionMod=0;
+        personId=0;
         //load from database:
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
-            expenseData.add(e);
             System.out.println(selectionMod);
+            //This is for live updating the expense table
             switch (selectionMod)
             {
                 //if we want to see all expenses
@@ -203,9 +204,45 @@ public class EventPageCtrl implements Controller{
         });
 
         String destination = "/topic/expenses/" + String.valueOf(server.getCurrentId());
-        server.registerForMessages(destination, Expense.class, t -> {
-            expenseData.remove(t);
-            //renderExpenseColumns(expenseData);
+        server.registerForMessages(destination, Expense.class, e -> {
+            //remove from table live
+            switch (selectionMod)
+            {
+                //if we want to see all expenses
+                case 0:
+                    //reload them
+                    ObservableList<Expense> list=
+                            FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
+                    renderExpenseColumns(list);
+                    break;
+                case 1:
+                    //if the person is an author
+                    if(e.getAuthor().getParticipantID()==personId)
+                    {
+                        Expense convertedEx=new Expense(e.getAuthor(),e.getContent(),
+                                server.convertCurrency(e.getDate(),e.getCurrency(),MainCtrl.getCurrency(),e.getMoney()),
+                                MainCtrl.getCurrency(),e.getDate(),e.getParticipants(),e.getType());
+                        //DON'T FORGET THE ID
+                        convertedEx.setExpenseId(e.getExpenseId());
+                        expensesTable.getItems().remove(convertedEx);
+                    }
+                    break;
+                case 2:
+                    //if the person is included
+                    List<Long> pList=e.getParticipants().stream().map(x->x.getParticipantID()).toList();
+                    if(pList.contains(personId) || e.getAuthor().getParticipantID()==personId)
+                    {
+                        Expense convertedEx=new Expense(e.getAuthor(),e.getContent(),
+                                server.convertCurrency(e.getDate(),e.getCurrency(),MainCtrl.getCurrency(),e.getMoney()),
+                                MainCtrl.getCurrency(),e.getDate(),e.getParticipants(),e.getType());
+                        //DON'T FORGET THE ID
+                        convertedEx.setExpenseId(e.getExpenseId());
+                        expensesTable.getItems().remove(convertedEx);
+                    }
+                    break;
+                default:
+                    break;
+            }
         });
 
         //we need this to get the id of the selected person
@@ -584,6 +621,7 @@ public class EventPageCtrl implements Controller{
         //show all expenses
         selectionMod=0;
         personId=0;
+        expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         renderExpenseColumns(expenseData);
     }
 
