@@ -3,6 +3,7 @@ package server.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import commons.Participant;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,14 @@ public class ParticipantController {
             return ResponseEntity.ok(repo.save(p));
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{participantId}")
+    public ResponseEntity<Participant> updateParticipant(@PathVariable Long participantId,
+                                                         @RequestBody Participant p) {
+            if (repo.findById(participantId).isPresent())
+                return ResponseEntity.ok(p);
+            return ResponseEntity.notFound().build();
+        }
 
     /**
      * Put request to update participants email after finding them by id

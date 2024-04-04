@@ -594,6 +594,17 @@ public class ServerUtils {
 		return response.readEntity(Expense.class);
 
 	}
+
+	public Participant updateParticipant(long participantId, Participant participant){
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl + "api/participant/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).put(Entity.entity(participant, APPLICATION_JSON));
+		if (response.getStatus() < 300){
+			return response.readEntity(Participant.class);
+		}
+		return null;
+	}
 	public boolean updateTag(String tagName,long eventId,Tag newtag)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
