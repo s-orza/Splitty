@@ -226,8 +226,8 @@ public class AddExpenseCtrl implements Controller{
         //for handling money type
         moneyTypeSelector.getItems().clear();
         moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
-        moneyTypeSelector.setValue("EUR");//setting EUR as the default value
-        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
+        moneyTypeSelector.setValue(MainCtrl.getCurrency());
+        //moneyTypeSelector.setOnAction(this::handleCurrencySelection);
         ///date
         date.setValue(null);
         //reset the checkBoxes
@@ -434,10 +434,13 @@ public class AddExpenseCtrl implements Controller{
                 //update debs from p to author
                 if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
                 {
-                    System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                            +expense.getAuthor().getName());
+                    //System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
+                     //       +expense.getAuthor().getName());
+                    //we need the date because in case there is already a debt between these 2 persons we need to
+                    //update and maybe to convert money
                     server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
+                            getParticipantID()),expense.getDate());
                 }
             }
         }
@@ -448,11 +451,12 @@ public class AddExpenseCtrl implements Controller{
             for(Participant p:expense.getParticipants())
             {
                 //update debs from p to author
-                System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                        +expense.getAuthor().getName());
 
+                //we need the date because in case there is already a debt between these 2 persons we need to
+                //update and maybe to convert money
                 server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().getParticipantID()));
+                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
+                        getParticipantID()),expense.getDate());
             }
 
         }
@@ -627,15 +631,6 @@ public class AddExpenseCtrl implements Controller{
             //hide the list because we don't need to select
             namesList.setVisible(false);
         }
-    }
-    /**
-     * This is a basic handler that checks when you change the currency type
-     * @param event an event
-     */
-    @FXML
-    private void handleCurrencySelection(ActionEvent event) {
-        String selectedMoneyType=moneyTypeSelector.getValue();
-        System.out.println(selectedMoneyType);
     }
     /**
      * This is a basic handler that checks when you check the box for

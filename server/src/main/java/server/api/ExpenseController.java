@@ -53,12 +53,11 @@ public class ExpenseController {
             System.out.println("is null");
             return ResponseEntity.badRequest().build();
         }
-        listeners.forEach((k, l) -> l.accept(expense));
         List<Participant> participants = expense.getParticipants();
         //for storing it in the database
         expense.setParticipants(null);
         Expense saved=repoExp.save(expense);
-        System.out.println("expense saved");
+        System.out.println("expense saved old:"+expense);
         //save participant-expense stuff
         //PARTICIPANTS NEED TO HAVE IDs
         if(participants!=null && !participants.isEmpty()) {
@@ -72,55 +71,30 @@ public class ExpenseController {
         repoExpEv.save(new ExpenseEvent(saved.getExpenseId(),eventId));
         //we need this line because if someone is still playing with this expense, we need it to be complete.
         expense.setParticipants(participants);
-        System.out.println("expenseEvent saved");
+        expense.setExpenseId(saved.getExpenseId());
+        saved.setParticipants(participants);
+        //to save with id
+        listeners.forEach((k, l) -> l.accept(saved));
         return ResponseEntity.ok(saved);
     }
 
     @Transactional
     @MessageMapping("expenses/tag/{eventId}")
     public Expense addExpenseMessage(@DestinationVariable @NonNull Long eventId, @Payload Expense expense) {
-            addExpenseToEvent(eventId, expense);
-            return expense;
+            return addExpenseToEvent(eventId, expense).getBody();
     }
 
-
-    @PostMapping(path = { "/s"})
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense)
-    {
-        if (expense==null) {
-            System.out.println("expense is null");
-            return ResponseEntity.badRequest().build();
-        }
-        List<Participant> participants=expense.getParticipants();
-        //in order to be able to store it in the database
-        expense.setParticipants(null);
-        Expense saved=repoExp.save(expense);
-        System.out.println("saved");
-        if(participants!=null && !participants.isEmpty()) {
-            //now we need to create connections between the expense and the participants
-            for (Participant p : participants) {
-                ParticipantExpense pe = new ParticipantExpense(saved.getExpenseId(), p.getParticipantID());
-                repoPaExp.save(pe);
-            }
-        }
-        return ResponseEntity.ok(saved);
-    }
     @PostMapping(path = { "/tags"})
     public ResponseEntity<Tag> addTag(@RequestBody Tag tag) {
-        System.out.println(tag);
-        //tag=new Tag("other",7952,"#e0e0e0");
         if (tag==null) {
-            System.out.println("tag is null");
             return ResponseEntity.badRequest().build();
         }
         if(tag.getId()==null)
         {
-            System.out.println("tag id is null");
             return ResponseEntity.notFound().build();
         }
         if(repoTag.existsById(new TagId(tag.getId().getName(),tag.getId().getEventId())))
         {
-            System.out.println("Already in the database");
             return ResponseEntity.notFound().build();
         }
 
@@ -135,25 +109,6 @@ public class ExpenseController {
         return tag;
     }
 
-
-
-
-
-
-    //WE DO NOT NEED IT ANYMORE
-//    /**
-//     * This gets the expenses of an author from the entire database
-//     * @param authorId author id
-//     * @return their expenses
-//     */
-//    @GetMapping(path={"/authorInAllEvents"})
-//    public ResponseEntity<List<Expense>> getExpenseByAuthorName(@RequestParam("authorId") long authorId)
-//    {
-//        List<Expense> ans=repoExp.findByAuthor(authorId);
-//        for(Expense e:ans)
-//            service.putParticipants(e);
-//        return ResponseEntity.ok(ans);
-//    }
     @GetMapping(path={"/"})
     public ResponseEntity<Expense> getExpenseById(@RequestParam("expenseId") long expenseId)
     {

@@ -109,7 +109,7 @@ public class Expense {
 
     @Override
     public String toString() {
-        return "Expense{" +
+        return "Expense{"+expenseId+", "+
                 "author='" + author + '\'' +
                 ", content='" + content + '\'' +
                 ", money=" + money +

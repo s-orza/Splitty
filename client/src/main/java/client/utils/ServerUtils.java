@@ -109,6 +109,23 @@ public class ServerUtils {
 		Expense ex=getExpenseById(expenseIdToModify);
 		return ex;
 	}
+	public double convertCurrency(String date,String from,String to,double amount)
+	{
+		return amount*getExchangeRate(date,from,to);
+	}
+	public double getExchangeRate(String date,String from,String to)
+	{
+		if(from.equals(to))
+			return 1.0;
+		Response response=ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl+"api/foreignCurrencies/"+date+"?from="+from+"&to="+to)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if(response.getStatus()<300)
+			return response.readEntity(Double.class);
+		//there has been a problem
+		return 1.0;
+	}
 
 	public Participant getParticipantToBeModified(){
 		Participant p = getParticipantById(participantIdToModify);
@@ -167,18 +184,6 @@ public class ServerUtils {
 		response.close();
 	}
 
-	//connects to the database through the endpoint to get participants from specific event
-//	public List<Participant> getParticipants(long eventId) {
-//		Response response=ClientBuilder.newClient(new ClientConfig())
-//				.target(SERVER).path("api/events/" + eventId + "/participants")
-//				.request(APPLICATION_JSON)
-//				.accept(APPLICATION_JSON).get();
-//		if(response.getStatus()<300)
-//			return response.readEntity(List.class);
-//		return null;
-//	}
-
-
 	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {
 		return ClientBuilder.newClient(new ClientConfig()) //
@@ -220,18 +225,16 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newName, APPLICATION_JSON));
 	}
-
-
-	 public void addDebtToEvent(long eventId,Debt debt)
+	 public void addDebtToEvent(long eventId,Debt debt,String date)
 	 {
 		 //this post is a "put" if the debt is already there
 		 Response response=ClientBuilder.newClient(new ClientConfig())
-				 .target(serverUrl +"api/events/debts?eventId="+eventId)
+				 .target(serverUrl+"api/events/debts?eventId="+eventId+"&date="+date)
 				 .request(APPLICATION_JSON)
 				 .accept(APPLICATION_JSON)
 				 .post(Entity.entity(debt, APPLICATION_JSON));
 
-		 System.out.println(response);
+		 System.out.println(response.getStatus());
 	 }
 
 	public Participant getParticipant(long participantId){
@@ -309,20 +312,6 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(participant,APPLICATION_JSON));
 		System.out.println(response);
-	}
-
-	/**
-	 * This method will add just an entry to the participant_event table
-	 * @param participantEventDto an object that contains participantId and eventId
-	 */
-	public void addParticipantEvent(ParticipantEventDto participantEventDto) {
-		System.out.println("In server");
-		ClientBuilder.newClient(new ClientConfig()) //
-				.target(serverUrl).path("/api/participant/event/") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(participantEventDto, APPLICATION_JSON), ParticipantEventDto.class);
-		System.out.println("Out server");
 	}
 	//EXPENSE functions
 	//GET functions
@@ -452,7 +441,6 @@ public class ServerUtils {
 		if(response.getStatus()==200)
 		{
 			Tag tag=response.readEntity(Tag.class);
-			System.out.println(tag);
 			return tag;
 		}
 		return null;
@@ -478,42 +466,18 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response + "addExpensetoEvent response");
 		if(response.getStatus()==200)
 			return true;
 		return false;
 	}
 
-	/**
-	 * To use if you don't care about storing ExpenseEvent connection
-	 * Not good for database, but good for testing
-	 * @param expense the expense
-	 * @return true if it was successful
-	 */
-	public boolean addExpense(Expense expense)
-	{
-		System.out.println("In server");
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl +"api/expenses/s")
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON)
-				.post(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response.readEntity(String.class));
-		System.out.println(response);
-		if(response.getStatus()<300)
-			return true;
-		return false;
-	}
 	public boolean addTag(Tag tag)
 	{
-		System.out.println(tag);
 		Response response=ClientBuilder.newClient(new ClientConfig())
 				.target(serverUrl +"api/expenses/tags")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(tag,APPLICATION_JSON));
-		System.out.println(response.readEntity(String.class));
-		System.out.println(response);
 		if(response.getStatus()==200)
 			return true;
 		return false;
@@ -588,7 +552,6 @@ public class ServerUtils {
 				.target(serverUrl +"api/expenses/?expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).put(Entity.entity(expense,APPLICATION_JSON));
-		System.out.println(response + "Update expense response");
 		if(response.getStatus()!=200)
 			return null;
 		return response.readEntity(Expense.class);
@@ -614,8 +577,6 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.put(Entity.entity(newtag,APPLICATION_JSON));
-		System.out.println(response.readEntity(String.class));
-		System.out.println(response);
 		if(response.getStatus()==200)
 			return true;
 		return false;
