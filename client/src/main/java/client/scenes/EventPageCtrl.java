@@ -111,6 +111,8 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     ComboBox comboBox;
+    @FXML
+    private AnchorPane backGround;
     //here we map every index from the selection comboBox to the id of its participant
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
@@ -157,6 +159,7 @@ public class EventPageCtrl implements Controller{
     //set event page title and event code
     private void initializePage() {
         System.out.println("Currency we want to use " + mainCtrl.getCurrency());
+        backgroundImage();
         //load from database:
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
@@ -326,7 +329,7 @@ public class EventPageCtrl implements Controller{
            participantsColumn2.setText(resourceBundle.getString("participantsText"));
            typeColumn.setText(resourceBundle.getString("typeText"));
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
-           editEventName.setText(resourceBundle.getString("editEventNameText"));
+//           editEventName.setText(resourceBundle.getString("editEventNameText"));
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
 
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
@@ -347,6 +350,17 @@ public class EventPageCtrl implements Controller{
         Background background = new Background(backgroundImage);
 
         flagButton.setBackground(background);
+    }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
     }
 
     public void prepareAnimation(){

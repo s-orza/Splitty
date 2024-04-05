@@ -12,29 +12,28 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.cell.PropertyValueFactory?>
-<AnchorPane prefHeight="650.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
+<AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
     <children>
-        <Button fx:id="okButton" layoutX="584.0" layoutY="580.0" mnemonicParsing="false" onAction="#exitPage" prefHeight="25.0" prefWidth="49.0" text="OK" />
-        <Text fx:id="titleId" layoutX="222.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Statistics for " textAlignment="CENTER" wrappingWidth="255.31292724609375">
+        <Button fx:id="okButton" layoutX="639.0" layoutY="414.0" mnemonicParsing="false" onAction="#exitPage" prefHeight="25.0" prefWidth="49.0" text="OK" />
+        <Text fx:id="titleId" fill="#712929" layoutX="209.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Statistics for " textAlignment="CENTER" wrappingWidth="255.31292724609375">
             <font>
-                <Font size="17.0" />
+                <Font size="38.0" />
             </font>
         </Text>
-        <Text fx:id="totalSpentText" layoutX="450.0" layoutY="420.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " textAlignment="CENTER" wrappingWidth="212.0836181640625">
+        <Text fx:id="totalSpentText" layoutX="14.0" layoutY="432.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Total sum spent: " textAlignment="CENTER" wrappingWidth="112.08358764648438">
          <font>
             <Font size="14.0" />
          </font></Text>
-        <ListView fx:id="tagsListView" layoutX="450.0" layoutY="79.0" prefHeight="139.0" prefWidth="220.0" />
-        <Text fx:id="tagsText" layoutX="450.0" layoutY="67.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
+        <ListView fx:id="tagsListView" layoutX="495.0" layoutY="71.0" prefHeight="139.0" prefWidth="206.0" />
+        <Text fx:id="tagsText" layoutX="494.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tags available:">
          <font>
             <Font size="14.0" />
          </font></Text>
 
-      <PieChart fx:id="pieChart" layoutX="14.0" layoutY="52.0" legendVisible="false" prefHeight="373.0" prefWidth="376.0" title="Costs:" />
+      <PieChart fx:id="pieChart" layoutX="14.0" layoutY="52.0" legendVisible="false" prefHeight="187.0" prefWidth="307.0" title="Costs:" />
      
-      <ListView fx:id="legendListView" layoutX="450.0" layoutY="249.0" prefHeight="148.0" prefWidth="220.0" />
-      <Pane fx:id="editPanel" layoutX="467.0" layoutY="68.0" prefHeight="139.0" prefWidth="178.0">
+      <ListView fx:id="legendListView" layoutX="496.0" layoutY="253.0" prefHeight="148.0" prefWidth="205.0" />
+      <Pane fx:id="editPanel" layoutX="511.0" layoutY="70.0" prefHeight="139.0" prefWidth="178.0">
          <children>
             <ColorPicker fx:id="colorPicker" layoutX="14.0" layoutY="60.0" />
             <TextField fx:id="editNameField" layoutX="13.0" layoutY="28.0" prefHeight="25.0" prefWidth="124.0" />
@@ -44,23 +43,23 @@
             <Text fx:id="editOrAreYouSureText" layoutX="12.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edit tag" textAlignment="CENTER" wrappingWidth="153.96817016601562" />
          </children>
       </Pane>
-      <Text layoutX="450.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
+      <Text layoutX="496.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <TableView fx:id="participantsShareTable" layoutX="26.0" layoutY="442.0" prefHeight="194.0" prefWidth="469.0">
+      <TableView fx:id="participantsShareTable" layoutX="14.0" layoutY="254.0" prefHeight="148.0" prefWidth="470.0">
         <columns>
-          <TableColumn fx:id="personColumn" prefWidth="81.33331108093262" text="Person" >
+          <TableColumn fx:id="personColumn" prefWidth="81.33331108093262" text="Person">
 
             </TableColumn>
-          <TableColumn fx:id="shareColumn" prefWidth="118.00000762939453" text="Share per person" >
+          <TableColumn fx:id="shareColumn" prefWidth="118.00000762939453" text="Share per person">
 
           </TableColumn>
-            <TableColumn fx:id="owesColumn" prefWidth="117.33329772949219" text="Needs to give" >
+            <TableColumn fx:id="owesColumn" prefWidth="117.33329772949219" text="Needs to give">
 
             </TableColumn>
-            <TableColumn fx:id="isOwedColumn" prefWidth="152.0" text="Needs to receive" >
+            <TableColumn fx:id="isOwedColumn" prefWidth="152.0" text="Needs to receive">
 
             </TableColumn>
         </columns>

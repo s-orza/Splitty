@@ -11,8 +11,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -98,6 +99,8 @@ public class AddExpenseCtrl implements Controller{
     private ListView<Pair2> namesList;//names showed on screen from which we select
     @FXML
     private Text warningText;
+    @FXML
+    private AnchorPane backGround;
     //in this list are the persons that have their checkbox checked.
     private List<Integer> selectedNamesList=new ArrayList<>();
     private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
@@ -115,6 +118,7 @@ public class AddExpenseCtrl implements Controller{
     }
     @FXML
     public void initialize() {
+        backgroundImage();
         //load resources
         loadFromDatabase();
         toggleLanguage();
@@ -197,6 +201,18 @@ public class AddExpenseCtrl implements Controller{
         for(Tag t:temp)
             tagsAvailable.add(t.getId().getName());
     }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
+
     /**
      * This is a function that resets and prepare the scene.
      * This resets the elements on screen with what we have from the database

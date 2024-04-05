@@ -20,7 +20,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -56,6 +57,9 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
   private Label showEvent;
+
+  @FXML
+  private AnchorPane backGround;
 
   private EventHelper selectedEvent;
   private Stage stage;
@@ -253,6 +257,7 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    backgroundImage();
     fillList();
     tableTitle.setCellValueFactory(new PropertyValueFactory<EventHelper, String>("title"));
     tableActivity.setCellValueFactory(new PropertyValueFactory<EventHelper, Date>("lastActivity"));
@@ -275,6 +280,18 @@ public class AdminPageCtrl implements Controller, Initializable {
         passLengthField.setText(oldValue);
       }
     });
+  }
+
+
+  private void backgroundImage() {
+    Image image = new Image("Background_Photo.jpg");
+    BackgroundSize backgroundSize =
+            new BackgroundSize(720, 450, true, true, true, false);
+    BackgroundImage backgroundImage = new BackgroundImage(image,
+            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+            backgroundSize);
+    Background background = new Background(backgroundImage);
+    backGround.setBackground(background);
   }
 
   public Pair<Controller, Parent> getPair() {

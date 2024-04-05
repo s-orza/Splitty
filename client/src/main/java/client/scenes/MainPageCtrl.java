@@ -54,6 +54,8 @@ public class MainPageCtrl implements Controller, Initializable {
   private ComboBox comboBox;
   @FXML
   private Button addLanguageButton;
+  @FXML
+  private AnchorPane backGround;
 
   private Event selectedEv;
   //Imports used to swap scenes
@@ -128,6 +130,8 @@ public class MainPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+
+    backgroundImage();
 
     ArrayList<Event> contents = new ArrayList<>();
     ArrayList<Long> ids = new ArrayList<>();
@@ -232,6 +236,18 @@ public class MainPageCtrl implements Controller, Initializable {
       mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
     });
   }
+
+  private void backgroundImage() {
+    Image image = new Image("Background_Photo.jpg");
+    BackgroundSize backgroundSize =
+            new BackgroundSize(720, 450, true, true, true, false);
+    BackgroundImage backgroundImage = new BackgroundImage(image,
+            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+            backgroundSize);
+    Background background = new Background(backgroundImage);
+    backGround.setBackground(background);
+  }
+
   public void changeFlag(String toChange){
     seqTransition.play();
     if(toChange.equals("es")){

@@ -17,6 +17,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.text.Text;
@@ -37,6 +39,8 @@ public class AddParticipantCtrl implements Controller{
     private TextField bic;
     @FXML
     private Text warningText;
+    @FXML
+    private AnchorPane backGround;
     private static Injector injector;
     private static MyFXML FXML;
     private static MainCtrl mainCtrl;
@@ -52,16 +56,28 @@ public class AddParticipantCtrl implements Controller{
     @FXML
     public void initialize(){
         System.out.println("Initializing AddParticipantCtrl...");
+
         // Nothing needs to be initialized from the database so nothing will be done about that
         // Initializing everything that might be needed for this controller
         injector = createInjector(new MyModule());
         FXML = new MyFXML(injector);
         mainCtrl = injector.getInstance(MainCtrl.class);
 
+//        backgroundImage();
         // initializing warning Text for whether an error is encountered and alerts for any case
         warningText = new Text();
     }
 
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
     /**
      * Will return a participant if all the fields have been filled up and no rules were broken
      */

@@ -16,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
@@ -45,6 +47,9 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     private Button cancelButton;
 
+    @FXML
+    private AnchorPane backGround;
+
     private Stage stage;
     private ServerUtils server;
     private String test;
@@ -58,7 +63,7 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("DebtsCtrl initializing");
-
+        backgroundImage();
         refresh();
 
         // initialize close button
@@ -71,6 +76,18 @@ public class DebtsCtrl implements Controller, Initializable {
 
         System.out.println("DebtsCtrl finished initializing");
     }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
+
 
     private void renderCols(){
 //        debtorCol.setCellValueFactory(

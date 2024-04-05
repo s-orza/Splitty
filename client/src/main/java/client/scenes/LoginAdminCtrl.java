@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -32,6 +34,8 @@ public class LoginAdminCtrl implements Controller, Initializable {
 
     @FXML
     private Text passwordText;
+    @FXML
+    private AnchorPane backGround;
     //Imports used to swap scenes
     private Stage stage;
     private ServerUtils server;
@@ -75,9 +79,20 @@ public class LoginAdminCtrl implements Controller, Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        backgroundImage();
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         loginButton.setText(resourceBundle.getString("loginText"));
         cancelButton.setText(resourceBundle.getString("cancelText"));
         passwordText.setText(resourceBundle.getString("passwordText"));
+    }
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
     }
 }

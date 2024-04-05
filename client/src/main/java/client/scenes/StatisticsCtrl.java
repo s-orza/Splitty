@@ -14,9 +14,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -25,6 +23,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.geometry.Pos;
+import javassist.bytecode.analysis.Analyzer;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -82,6 +81,8 @@ public class StatisticsCtrl implements Controller, Initializable {
     private ListView<String> tagsListView;
     @FXML
     private ListView<String> legendListView;
+    @FXML
+    private AnchorPane backGround;
     private double totalAmount;
     private List<Expense> expenses;
     private Map<String, String> tagColors;
@@ -96,7 +97,7 @@ public class StatisticsCtrl implements Controller, Initializable {
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
-
+        backgroundImage();
         selectedTagForEditing=null;
         long eventId= server.getCurrentId();
         if(!server.checkIfTagExists("other", eventId))
@@ -126,6 +127,16 @@ public class StatisticsCtrl implements Controller, Initializable {
 
     }
 
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
     /**
      * This function refreshes everything on this page.
      */

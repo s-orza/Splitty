@@ -8,12 +8,12 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminPageCtrl">
+<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminPageCtrl">
     <children>
-        <Button layoutX="527.0" layoutY="14.0" mnemonicParsing="false" onAction="#importEvent" text="Import" />
+        <Button layoutX="581.0" layoutY="27.0" mnemonicParsing="false" onAction="#importEvent" text="Import" />
         <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
-      <Button layoutX="460.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportEvent" text="Export" />
-      <TableView fx:id="table" layoutX="25.0" layoutY="67.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="268.0" prefWidth="550.0">
+      <Button layoutX="641.0" layoutY="27.0" mnemonicParsing="false" onAction="#exportEvent" text="Export" />
+      <TableView fx:id="table" layoutX="26.0" layoutY="91.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="286.0" prefWidth="666.0">
         <columns>
           <TableColumn fx:id="tableTitle" prefWidth="75.0" text="Title" />
           <TableColumn fx:id="tableDate" prefWidth="102.4000244140625" text="Creation Date" />
@@ -23,22 +23,22 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Label alignment="CENTER" layoutY="40.0" prefHeight="18.0" prefWidth="600.0" text="Event List">
+      <Label alignment="CENTER" layoutX="249.0" layoutY="27.0" prefHeight="55.0" prefWidth="222.0" text="Event List" textFill="#712929">
          <font>
-            <Font size="18.0" />
+            <Font size="38.0" />
          </font>
       </Label>
-      <Button fx:id="editButton" layoutX="467.0" layoutY="346.0" mnemonicParsing="false" onAction="#editEvent" text="Edit" />
-      <Button fx:id="deleteButton" layoutX="528.0" layoutY="346.0" mnemonicParsing="false" onAction="#deleteEvent" text="Delete" />
+      <Button fx:id="editButton" layoutX="563.0" layoutY="390.0" mnemonicParsing="false" onAction="#editEvent" text="Edit" />
+      <Button fx:id="deleteButton" layoutX="630.0" layoutY="390.0" mnemonicParsing="false" onAction="#deleteEvent" text="Delete" />
       <Label text="" />
       <Label fx:id="showEvent" layoutX="25.0" layoutY="346.0" prefHeight="26.0" prefWidth="438.0">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <Button fx:id="generatePassButton" layoutX="25.0" layoutY="346.0" mnemonicParsing="false" onAction="#generatePassword" text="Generate Admin Password" />
-      <TextField fx:id="passLengthField" layoutX="191.0" layoutY="346.0" prefHeight="26.0" prefWidth="35.0" />
-      <Label fx:id="passLengthText" alignment="CENTER" layoutX="183.0" layoutY="372.0" prefHeight="18.0" prefWidth="50.0" text="Length">
+      <Button fx:id="generatePassButton" layoutX="25.0" layoutY="390.0" mnemonicParsing="false" onAction="#generatePassword" text="Generate Admin Password" />
+      <TextField fx:id="passLengthField" layoutX="190.0" layoutY="389.0" prefHeight="26.0" prefWidth="35.0" />
+      <Label fx:id="passLengthText" alignment="CENTER" layoutX="182.0" layoutY="416.0" prefHeight="18.0" prefWidth="50.0" text="Length">
          <font>
             <Font size="10.0" />
          </font>
