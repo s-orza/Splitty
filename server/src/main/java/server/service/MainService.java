@@ -31,15 +31,24 @@ public class MainService {
     // post new password
     ResponseEntity<Password> response = restTemplate.postForEntity(uri, password, Password.class);
   }
-  public static void loadExchangeRates()
+  public void loadExchangeRates()
   {
     //load cached exchange rates
-    final String url = "http://localhost:8080/api/foreignCurrencies/preparationsToLoad";
+    final String url = getBaseUrl()+"/api/foreignCurrencies/preparationsToLoad";
     RestTemplate restTemplate = new RestTemplate();
 
     //This method is useful when you already have some exchange rates in the file.
     //If not, it will start from an empty file (most of the time)
     ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+  }
+
+  /**
+   * It gives you the first part of the url.
+   * @return the first part of the url.
+   */
+  public String getBaseUrl()
+  {
+    return "http://"+ip+":"+port;
   }
 
   public void setAddress(SpringApplication app){

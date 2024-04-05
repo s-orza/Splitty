@@ -67,7 +67,7 @@ public class DebtService {
                 {
                     //settle the debt->delete it
                     event.settleDebt(debt);
-                    //first we delete in from here (somewhere we have a FK)
+                    //first we delete it from here (somewhere we have a FK)
                     eventRepository.save(event);
                     debtRepository.delete(debt);
                     return;
@@ -79,6 +79,20 @@ public class DebtService {
                     debt.setDebtor(debt.getCreditor());
                     debt.setCreditor(oldDebtor);
                     debt.setAmount(Math.abs(debt.getAmount()));
+                }
+                //I chose 0.005 because I think it is a good limit for a debt.
+                //Don't forget that we are only using EUR,USD,RON and CHF in this app.
+                //(The greatest rate is around 5.2 from CHF to RON so the smallest is around 1/5.2)
+                if(debt.getAmount()<0.005)
+                {
+                    //this is an error from double operations, so we can delete the debt
+                    //in reality you cannot pay less than 0.01 of something.
+                    //settle the debt->delete it
+                    event.settleDebt(debt);
+                    //first we delete it from here (somewhere we have a FK)
+                    eventRepository.save(event);
+                    debtRepository.delete(debt);
+                    return;
                 }
                 //update
                 debtRepository.save(debt);

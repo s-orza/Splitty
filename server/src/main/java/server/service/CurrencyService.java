@@ -14,6 +14,7 @@ import java.util.*;
 
 @Service
 public class CurrencyService {
+    private final MainService mainService;
     //This is the service that will interact with the exchange API and would locally store the exchange rates.
     /**
      * This variable is a map that maps every date to a map of "from/to" with its exchange rate.
@@ -21,6 +22,11 @@ public class CurrencyService {
      */
     //          date->     from/to->rate
     public Map<String, Map<String, Double>> currenciesMap=new HashMap<>();
+
+    public CurrencyService(MainService mainService) {
+        this.mainService = mainService;
+    }
+
     /**
      * This method gives you the exchange rate, and it also handles savings in the local cached file.
      * @param date the date
@@ -31,7 +37,7 @@ public class CurrencyService {
     public double getExchangeRateAndUpdateCacheFile(String date,String from,String to)
     {
         //the url for the exchange api.
-        String url="http://localhost:8080/api/fakeRateConverter/"+date+"?base="+from+"&symbol="+to;
+        String url= mainService.getBaseUrl()+"/api/fakeRateConverter/"+date+"?base="+from+"&symbol="+to;
         try {
             if(from.equals(to))
                 return 1.0;
@@ -124,7 +130,7 @@ public class CurrencyService {
                         String from=scanner.next();
                         String to=scanner.next();
                         double rate=Double.parseDouble(scanner.next());
-                        System.out.println(date+" "+from+" "+to+" "+rate);
+                        //System.out.println(date+" "+from+" "+to+" "+rate);
                         if(!currenciesMap.containsKey(date))
                         {
                             Map<String,Double> entry=new HashMap<>();
