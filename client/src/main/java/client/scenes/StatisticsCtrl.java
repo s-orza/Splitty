@@ -14,6 +14,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -98,6 +99,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         backgroundImage();
+        keyShortCuts();
         selectedTagForEditing=null;
         long eventId= server.getCurrentId();
         if(!server.checkIfTagExists("other", eventId))
@@ -125,6 +127,31 @@ public class StatisticsCtrl implements Controller, Initializable {
         });
         refresh();
 
+    }
+
+    private void keyShortCuts() {
+        okButton.requestFocus();
+
+
+        okButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) editNameField.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) okButton.fire();
+        });
+        okButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) okButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT) okButton.requestFocus();
+            if (event.getCode() == KeyCode.DOWN) okButton.requestFocus();
+        });
+        editNameField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) colorPicker.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) colorPicker.requestFocus();
+            if (event.getCode() == KeyCode.LEFT) okButton.requestFocus();
+        });
+        colorPicker.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) cancelEditButton.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) colorPicker.show();
+            if (event.getCode() == KeyCode.LEFT) editNameField.requestFocus();
+        });
     }
 
     private void backgroundImage() {

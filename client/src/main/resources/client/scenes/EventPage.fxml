@@ -17,6 +17,7 @@
 <AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
 
    <children>
+      <Button fx:id="cancelButton" layoutX="211.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="Cancel" />
       <TableView fx:id="expensesTable" layoutX="6.0" layoutY="262.0" prefHeight="182.0" prefWidth="570.0" style="-fx-background-color: #FFFFFF;">
          <columns>
             <TableColumn fx:id="authorColumn" prefWidth="107.33331298828125" text="Author" />
@@ -66,7 +67,6 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="cancelButton" layoutX="211.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="Cancel" />
       <Button fx:id="viewDebts" layoutX="405.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="View Debts" />
       <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
       <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />

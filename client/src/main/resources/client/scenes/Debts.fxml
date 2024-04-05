@@ -9,6 +9,7 @@
 
 <AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.DebtsCtrl">
    <children>
+      <Button fx:id="cancelButton" layoutX="33.0" layoutY="24.0" mnemonicParsing="false" text="Cancel" />
       <TableView fx:id="debtTable" layoutX="33.0" layoutY="112.0" prefHeight="263.0" prefWidth="646.0">
         <columns>
           <TableColumn fx:id="creditorCol" prefWidth="172.00006103515625" text="Creditor" />
@@ -17,12 +18,11 @@
             <TableColumn fx:id="settleCol" minWidth="0.0" prefWidth="95.20001220703125" text="Settle" />
         </columns>
       </TableView>
-      <Button fx:id="cancelButton" layoutX="33.0" layoutY="24.0" mnemonicParsing="false" text="Cancel" />
       <Label layoutX="307.0" layoutY="46.0" text="Debts" textFill="#712929">
          <font>
             <Font size="38.0" />
          </font>
       </Label>
-      <Button layoutX="333.0" layoutY="387.0" mnemonicParsing="false" onAction="#refresh" text="refresh" />
+      <Button fx:id="refreshButton" layoutX="333.0" layoutY="387.0" mnemonicParsing="false" onAction="#refresh" text="refresh" />
    </children>
 </AnchorPane>

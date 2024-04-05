@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -160,6 +161,7 @@ public class EventPageCtrl implements Controller{
     private void initializePage() {
         System.out.println("Currency we want to use " + mainCtrl.getCurrency());
         backgroundImage();
+        keyShortCuts();
         //load from database:
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
@@ -270,6 +272,63 @@ public class EventPageCtrl implements Controller{
         });
         viewDebts.setOnAction(e->viewDebtsHandler(e));
         viewStatistics.setOnAction(e->viewStatisticsHandler(e));
+    }
+
+    private void keyShortCuts() {
+        cancelButton.requestFocus();
+
+        editEventName.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) comboBox.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) editEventName.fire();
+        });
+        fromxButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+        });
+        includingxButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+        });
+
+        comboBox.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) comboBox.show();
+            if (event.getCode() == KeyCode.LEFT) editEventName.requestFocus();
+        });
+        cancelButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) viewStatistics.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
+            if (event.getCode() == KeyCode.LEFT) comboBox.requestFocus();
+        });
+        viewStatistics.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) viewDebts.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) viewStatistics.fire();
+            if (event.getCode() == KeyCode.LEFT) cancelButton.requestFocus();
+        });
+        viewDebts.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) addParticipant.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) viewDebts.fire();
+            if (event.getCode() == KeyCode.LEFT) viewStatistics.requestFocus();
+        });
+        addParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) addParticipant.fire();
+            if (event.getCode() == KeyCode.LEFT) viewDebts.requestFocus();
+        });
+        addExpense.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) editExpense.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) addExpense.fire();
+            if (event.getCode() == KeyCode.LEFT) addParticipant.requestFocus();
+        });
+        editExpense.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) removeExpense.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) editExpense.fire();
+            if (event.getCode() == KeyCode.LEFT) addExpense.requestFocus();
+        });
+        removeExpense.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) removeExpense.fire();
+            if (event.getCode() == KeyCode.LEFT) editExpense.requestFocus();
+        });
     }
 
     ////////////////////////////////////////

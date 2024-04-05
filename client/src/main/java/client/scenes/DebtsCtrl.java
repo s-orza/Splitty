@@ -17,6 +17,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -50,6 +51,9 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     private AnchorPane backGround;
 
+    @FXML
+    private Button refreshButton;
+
     private Stage stage;
     private ServerUtils server;
     private String test;
@@ -64,6 +68,7 @@ public class DebtsCtrl implements Controller, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("DebtsCtrl initializing");
         backgroundImage();
+        keyShortCuts();
         refresh();
 
         // initialize close button
@@ -75,6 +80,15 @@ public class DebtsCtrl implements Controller, Initializable {
         dummyTest();
 
         System.out.println("DebtsCtrl finished initializing");
+    }
+
+    private void keyShortCuts() {
+        cancelButton.requestFocus();
+
+        debtTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN) refreshButton.requestFocus();
+        });
     }
 
     private void backgroundImage() {

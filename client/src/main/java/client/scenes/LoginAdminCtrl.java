@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -80,11 +81,24 @@ public class LoginAdminCtrl implements Controller, Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         backgroundImage();
+        keyShortCuts();
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         loginButton.setText(resourceBundle.getString("loginText"));
         cancelButton.setText(resourceBundle.getString("cancelText"));
         passwordText.setText(resourceBundle.getString("passwordText"));
     }
+
+    private void keyShortCuts() {
+        loginInput.requestFocus();
+
+        loginInput.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) loginButton.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) loginButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT) cancelButton.requestFocus();
+        });
+
+    }
+
     private void backgroundImage() {
         Image image = new Image("Background_Photo.jpg");
         BackgroundSize backgroundSize =

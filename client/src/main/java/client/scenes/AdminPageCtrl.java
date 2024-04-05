@@ -21,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -60,6 +61,12 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
   private AnchorPane backGround;
+  @FXML
+  private Button exit;
+  @FXML
+  private Button exportButton;
+  @FXML
+  private Button editButton;
 
   private EventHelper selectedEvent;
   private Stage stage;
@@ -258,6 +265,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     backgroundImage();
+    keyShortCuts();
     fillList();
     tableTitle.setCellValueFactory(new PropertyValueFactory<EventHelper, String>("title"));
     tableActivity.setCellValueFactory(new PropertyValueFactory<EventHelper, Date>("lastActivity"));
@@ -280,6 +288,22 @@ public class AdminPageCtrl implements Controller, Initializable {
         passLengthField.setText(oldValue);
       }
     });
+  }
+
+  private void keyShortCuts() {
+    exit.requestFocus();
+
+    table.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT) editButton.requestFocus();
+      if (event.getCode() == KeyCode.LEFT) exportButton.requestFocus();
+    });
+
+    passLengthField.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.LEFT) generatePassButton.requestFocus();
+      if (event.getCode() == KeyCode.ENTER) generatePassButton.requestFocus();
+      if (event.getCode() == KeyCode.RIGHT) editButton.requestFocus();
+    });
+
   }
 
 

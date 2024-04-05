@@ -10,9 +10,9 @@
 
 <AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminPageCtrl">
     <children>
+        <Button fx:id="exit" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
         <Button layoutX="581.0" layoutY="27.0" mnemonicParsing="false" onAction="#importEvent" text="Import" />
-        <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
-      <Button layoutX="641.0" layoutY="27.0" mnemonicParsing="false" onAction="#exportEvent" text="Export" />
+      <Button fx:id="exportButton" layoutX="641.0" layoutY="27.0" mnemonicParsing="false" onAction="#exportEvent" text="Export" />
       <TableView fx:id="table" layoutX="26.0" layoutY="91.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="286.0" prefWidth="666.0">
         <columns>
           <TableColumn fx:id="tableTitle" prefWidth="75.0" text="Title" />

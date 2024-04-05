@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
@@ -119,6 +120,7 @@ public class AddExpenseCtrl implements Controller{
     @FXML
     public void initialize() {
         backgroundImage();
+        keyShortCuts();
         //load resources
         loadFromDatabase();
         toggleLanguage();
@@ -139,6 +141,69 @@ public class AddExpenseCtrl implements Controller{
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
+    }
+
+    //shortcuts that when specific key is pressed while focusing on a part of the page, the right thing happens
+    private void keyShortCuts() {
+        authorSelector.requestFocus();
+
+        authorSelector.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) authorSelector.show();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) contentBox.requestFocus();
+        });
+        contentBox.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) moneyPaid.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) authorSelector.requestFocus();
+        });
+        moneyPaid.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) moneyTypeSelector.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) contentBox.requestFocus();
+        });
+        moneyTypeSelector.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) date.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) moneyTypeSelector.show();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) moneyPaid.requestFocus();
+        });
+        date.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) newTypeTextField.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) {
+                newTypeTextField.requestFocus();
+                date.show();
+            }
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) {
+                moneyTypeSelector.requestFocus();
+            }
+        });
+        newTypeTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) colorPicker.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) date.requestFocus();
+        });
+        colorPicker.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) addTypeButton.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) colorPicker.show();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+        });
+        addTypeButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) typeSelector.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) createTag(null);
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+        });
+        typeSelector.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) checkBoxAllPeople.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) typeSelector.show();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+        });
+        checkBoxAllPeople.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) checkBoxSomePeople.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) typeSelector.requestFocus();
+        });
+        checkBoxSomePeople.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) namesList.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) saveButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) checkBoxAllPeople.requestFocus();
+        });
     }
 
     private void toggleLanguage() {
