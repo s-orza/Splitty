@@ -89,6 +89,8 @@ public class EventPageCtrl implements Controller{
     Button editEventName;
     @FXML
     private Button editExpense;
+    @FXML
+    Button editParticipant;
 
     @FXML
     Button viewDebts;
@@ -261,6 +263,7 @@ public class EventPageCtrl implements Controller{
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
         editExpense.setOnAction(e->editExpenseHandler(e));
+        editParticipant.setOnAction(e -> editParticipantHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         editEventName.setOnAction(e->{
             editEventNameHandler();
@@ -430,6 +433,27 @@ public class EventPageCtrl implements Controller{
         AddExpenseCtrl addExpenseCtrl = new AddExpenseCtrl(server);
         server.setExpenseToBeModified(itemsToEdit.get(0).getExpenseId());
         mainCtrl.initialize(stage, addExpenseCtrl.getPair(), "View expense");
+    }
+
+    private void editParticipantHandler(ActionEvent e){
+        ObservableList<Participant> selectedItems = participantsTable.getSelectionModel().getSelectedItems();
+        if(selectedItems.isEmpty())
+        {
+            mainCtrl.popup("Please select at least one participant.", "Warning", "Ok");
+            //WARNING
+            return;
+        }
+        List<Participant> itemsToEdit = new ArrayList<>(selectedItems);
+        if(itemsToEdit.size()>1)
+        {
+            mainCtrl.popup("Please select only one participant.", "Warning", "Ok");
+            //WARNING
+            return;
+        }
+        stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
+        server.setParticipantToBeModified(itemsToEdit.get(0).getParticipantID());
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "View Participant");
     }
 
     private void addExpenseHandler(ActionEvent e) {
