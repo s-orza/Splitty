@@ -118,7 +118,6 @@ public class ExpenseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("To be deleted"));
 
-        System.out.println(expense.getExpenseId() + " " + testEvent.getEventId());
         mockMvc.perform(delete("/api/expenses/?eventId=" + testEvent.getEventId()
                         + "&expenseId=" + expense.getExpenseId()))
                 .andExpect(status().isOk());
@@ -186,7 +185,6 @@ public class ExpenseControllerTest {
 
     @Test
     public void testDeleteTag() throws Exception {
-        System.out.println(testEvent.getEventId());
         mockMvc.perform(delete("/api/expenses/tags?tagName=Lunch&eventId=" + testEvent.getEventId()))
                 .andExpect(status().isOk());
 

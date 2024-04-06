@@ -155,7 +155,6 @@ public class DebtControllerTest {
 
     @Test
     public void testSettleDebtSuccess() throws Exception {
-        System.out.println(testDebt.getDebtID());
         mockMvc.perform(delete("/api/events/debts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDebt)))
