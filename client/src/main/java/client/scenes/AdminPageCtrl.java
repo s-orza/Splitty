@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
 
 import commons.*;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,6 +27,7 @@ import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -219,7 +221,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     }
 
     VBox layout = new VBox(10);
-    Label label = new Label("Are you sure you want to remove the selected event?");
+    Label label = new Label("This is irreversible, Are you sure you want to remove \n the selected event?");
     Button removeButton = new Button("Remove");
     Button cancelButton = new Button("Cancel");
 
@@ -255,6 +257,16 @@ public class AdminPageCtrl implements Controller, Initializable {
     popupStage.setScene(scene);
     popupStage.showAndWait();
 
+    showPopup();
+  }
+  private void showPopup() {
+    Stage popupStage = new Stage();
+    popupStage.initModality(Modality.APPLICATION_MODAL);
+    popupStage.setTitle("Deleted Event Successfully");
+    VBox layout = new VBox(10);
+    Scene scene = new Scene(layout, 350, 20);
+    popupStage.setScene(scene);
+    popupStage.show();
   }
   public void close(ActionEvent e) throws IOException {
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();

@@ -9,10 +9,12 @@ import com.google.inject.Injector;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -20,7 +22,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import javafx.scene.text.Text;
 
@@ -126,12 +130,27 @@ public class AddParticipantCtrl implements Controller{
         try {
             //TODO
             // make the eventID be specific to each event
+            PauseTransition delay = new PauseTransition(Duration.seconds(1));
+            delay.setOnFinished(e -> {
+                showPopup();
+            });
+            delay.play();
             String destination = "/app/participant/event/" + String.valueOf(server.getCurrentId());
             server.sendParticipant(destination, newParticipant);
             close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
         }
+    }
+
+    private void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Added Participant Successfully");
+        VBox layout = new VBox(10);
+        Scene scene = new Scene(layout, 350, 20);
+        popupStage.setScene(scene);
+        popupStage.show();
     }
 
     /**

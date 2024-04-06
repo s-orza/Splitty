@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.*;
+import javafx.animation.PauseTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import com.google.inject.Inject;
 import javafx.scene.text.Text;
@@ -644,10 +646,26 @@ public class AddExpenseCtrl implements Controller{
 
         resetElements();
         server.setExpenseToBeModified(-1);
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        delay.setOnFinished(e -> {
+            showPopup();
+        });
+        delay.play();
+
         //go back to the event page
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+    }
+    private void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Created Expense Successfully");
+        VBox layout = new VBox(10);
+        Scene scene = new Scene(layout, 350, 20);
+        popupStage.setScene(scene);
+        popupStage.show();
     }
     private Expense takeExpenseFromFields()
     {

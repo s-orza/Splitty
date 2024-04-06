@@ -159,11 +159,13 @@ public class EventPageCtrl implements Controller{
     }
 
 
+
     //set event page title and event code
     private void initializePage() {
         System.out.println("Currency we want to use " + mainCtrl.getCurrency());
         backgroundImage();
         keyShortCuts();
+
         //load from database:
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
         server.registerForUpdatesExpenses(server.getCurrentId(), e -> {
@@ -699,6 +701,18 @@ public class EventPageCtrl implements Controller{
         Scene scene = new Scene(layout, 370, 150);
         popupStage.setScene(scene);
         popupStage.showAndWait();
+
+        showPopup();
+    }
+
+    private void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Deleted expense Successfully");
+        VBox layout = new VBox(10);
+        Scene scene = new Scene(layout, 350, 20);
+        popupStage.setScene(scene);
+        popupStage.show();
     }
 
     /**
