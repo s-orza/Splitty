@@ -113,7 +113,9 @@ public class EventPageCtrl implements Controller{
     @FXML
     ComboBox comboBox;
     @FXML
-    private AnchorPane backGround;
+    AnchorPane backGround;
+    @FXML
+    Button undoButton;
     //here we map every index from the selection comboBox to the id of its participant
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
