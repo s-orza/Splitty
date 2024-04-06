@@ -126,6 +126,17 @@ public class ServerUtils {
 		//there has been a problem
 		return 1.0;
 	}
+	public boolean sendMail(String to, MailStructure mail)
+	{
+		Response response=ClientBuilder.newClient(new ClientConfig())
+						.target(serverUrl +"mail/send/"+to)
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.post(Entity.entity(mail,APPLICATION_JSON));
+		if(response.getStatus()==200)
+			return true;
+		return false;
+	}
 
 	public Participant getParticipantToBeModified(){
 		Participant p = getParticipantById(participantIdToModify);

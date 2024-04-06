@@ -52,7 +52,6 @@ public class MainService {
   }
 
   public void setAddress(SpringApplication app){
-
     try {
       AppConfig newConfig = readConfig();
       if (  newConfig.getIp() != null) {

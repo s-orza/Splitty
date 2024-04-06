@@ -10,6 +10,9 @@ public class AppConfig {
   String port;
   Locale lang;
 
+  String email;
+  String password;
+
   public AppConfig(String currency, ArrayList<Long> recentEvents, String ip, String port, Locale lang) {
     this.currency = currency;
     this.recentEvents = recentEvents;
@@ -24,6 +27,8 @@ public class AppConfig {
     this.ip = "127.0.0.1";
     this.port = "8080";
     this.lang = new Locale("en", "US");
+    this.email = "";
+    this.password = "";
   }
 
   @Override
@@ -37,6 +42,21 @@ public class AppConfig {
             '}';
   }
 
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
   public Locale getLang() {
     return lang;

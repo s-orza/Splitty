@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.AppConfig;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -62,6 +63,14 @@ public class Main extends Application {
       }else{
         System.out.println("Config had incorrect Language!");
       }
+      if(newConfig.getEmail() != null && newConfig.getEmail().matches(
+              "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@\" \n" +
+              "        + \"[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$")){
+        config.setEmail(newConfig.getEmail());
+      }else{
+        System.out.println("Config had incorrect Language!");
+      }
+      config.setPassword(newConfig.getPassword());
       config.setRecentEvents(newConfig.getRecentEvents());
     }catch (Exception e){
       e.printStackTrace();
@@ -77,6 +86,7 @@ public class Main extends Application {
     primaryStage.setOnCloseRequest(e ->{});
     primaryStage.setTitle("Server select");
   }
+
   private AppConfig readConfig() throws Exception {
     File selectedFile = new File("App-Config.json");
     if (selectedFile != null && selectedFile.getName().contains(".json")) {
