@@ -24,7 +24,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.geometry.Pos;
-import javassist.bytecode.analysis.Analyzer;
 
 import javax.inject.Inject;
 import java.net.URL;

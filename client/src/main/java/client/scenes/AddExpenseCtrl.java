@@ -3,8 +3,6 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.animation.PauseTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,7 +25,6 @@ import javafx.scene.text.Text;
 
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -196,7 +193,8 @@ public class AddExpenseCtrl implements Controller{
         });
         moneyTypeSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue.equals(newValue)) {
-                if (!tempMoneyType[0].equals(String.valueOf(moneyTypeSelector.getSelectionModel().getSelectedIndex()))) {
+                if (!tempMoneyType[0].equals(String.valueOf(moneyTypeSelector.getSelectionModel()
+                        .getSelectedIndex()))) {
                     Map<String, String> nameMap = new HashMap<>();
                     nameMap.put("moneyTypeSelector",tempMoneyType[0]);
                     undoStack.push(nameMap);
@@ -382,6 +380,8 @@ public class AddExpenseCtrl implements Controller{
                         } else {
                             namesList.setVisible(true);
                         }
+                        break;
+                    default:
                         break;
                 }
             }
