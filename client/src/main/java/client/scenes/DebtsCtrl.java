@@ -32,13 +32,7 @@ public class DebtsCtrl implements Controller, Initializable {
     private TableView<Debt> debtTable;
 
     @FXML
-    private TableColumn<Debt, String> debtorCol;
-
-    @FXML
-    private TableColumn<Debt, String> creditorCol;
-
-    @FXML
-    private TableColumn<Debt, String> amountCol;
+    private TableColumn<Debt, String> debtCol;
 
     @FXML
     private TableColumn<Debt, Void> settleCol;
@@ -48,7 +42,6 @@ public class DebtsCtrl implements Controller, Initializable {
 
     private Stage stage;
     private ServerUtils server;
-    private String test;
     private static Event currentEvent;
 
     @Inject
@@ -82,9 +75,10 @@ public class DebtsCtrl implements Controller, Initializable {
 //        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
 
         // set cell factories for columns, receive: (debt)
-        debtorCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Long.toString(d.getValue().getDebtor())));
-        creditorCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Long.toString(d.getValue().getCreditor())));
-        amountCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Double.toString( d.getValue().getAmount() )));
+        debtCol.setCellValueFactory(d -> new ReadOnlyStringWrapper( server.getParticipantById(d.getValue().getDebtor()).getName()
+                + " owes " + server.getParticipantById(d.getValue().getCreditor()).getName()
+                + " " + Double.toString( d.getValue().getAmount())
+                + d.getValue().getCurrency()));
         renderSettleCol();
     }
 

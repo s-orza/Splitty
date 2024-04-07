@@ -11,10 +11,8 @@
    <children>
       <TableView fx:id="debtTable" layoutX="33.0" layoutY="102.0" prefHeight="230.0" prefWidth="523.0">
         <columns>
-          <TableColumn fx:id="creditorCol" prefWidth="172.00006103515625" text="Creditor" />
-          <TableColumn fx:id="debtorCol" prefWidth="139.199951171875" text="Debtor" />
-            <TableColumn fx:id="amountCol" prefWidth="116.79998779296875" text="Amount" />
-            <TableColumn fx:id="settleCol" minWidth="0.0" prefWidth="95.20001220703125" text="Settle" />
+          <TableColumn fx:id="debtCol" prefWidth="443.20001220703125" text="Debt" />
+            <TableColumn fx:id="settleCol" minWidth="0.0" text="Settle" />
         </columns>
       </TableView>
       <Button fx:id="cancelButton" layoutX="33.0" layoutY="24.0" mnemonicParsing="false" text="Cancel" />
