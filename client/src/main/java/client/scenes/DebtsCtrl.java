@@ -12,10 +12,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -131,19 +129,46 @@ public class DebtsCtrl implements Controller, Initializable {
         String title;
         Collection<TitledPane> panes = new ArrayList<>();
         for (Debt d: filteredList) {
+            // debt title
             title = server.getParticipantById(d.getDebtor()).getName()
                             + " owes " + server.getParticipantById(d.getCreditor()).getName()
                             + " " + Double.toString( d.getAmount())
                             + d.getCurrency();
+            // settle button
             Button button = new Button("Settle");
             button.setOnAction(e-> {
                 settleAction(d.getDebtID());
             });
-            TitledPane tp = new TitledPane(title, button);
+
+            // debt Description
+            String description = descriptionBuilder(server.getParticipantById(d.getCreditor()));
+
+            VBox vbox = new VBox();
+            vbox.getChildren().addAll(new Label(description), button);
+
+            TitledPane tp = new TitledPane(title, vbox);
             panes.add(tp);
         }
 
         accordion.getPanes().setAll(panes);
+    }
+
+    public String descriptionBuilder(Participant p){
+        // null and empty checks
+        if(Objects.isNull(p.getBic()) ||
+                Objects.isNull(p.getIban())||
+                Objects.equals(p.getBic(), "") ||
+                Objects.equals(p.getIban(), ""))
+        {
+            return "Bank information unavailable! Please transfer the money in person.";
+        }
+
+        String result = "PEEPEE information available! Please transfer the money to:\r" +
+                "Account Holder: " + p.getName() + "\r" +
+                "IBAN: " + p.getIban() + "\r" +
+                "BIC: " + p.getBic() + "\r";
+
+        return result;
     }
 
     public void settleAction(long debtId){
