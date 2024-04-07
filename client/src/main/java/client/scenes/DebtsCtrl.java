@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class DebtsCtrl implements Controller, Initializable {
 
@@ -42,6 +43,7 @@ public class DebtsCtrl implements Controller, Initializable {
     private Stage stage;
     private ServerUtils server;
     private static Event currentEvent;
+    private long filterId = -1;
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -147,8 +149,26 @@ public class DebtsCtrl implements Controller, Initializable {
         var event = server.getEvent(server.getCurrentId());
         currentEvent = event;
         List<Debt> data = event.getDebts();
-        
-        debtTable.setItems(FXCollections.observableList(data));
+        FilteredList<Debt> filteredList = new FilteredList<>(FXCollections.observableList(data));
+
+        // filter: debtor ID check
+        filteredList.setPredicate(
+            new Predicate<Debt>(){
+                public boolean test(Debt debt){
+                    // check if no filter
+                    if(filterId == -1) {return true;}
+                    // else check if debtor matches filter
+                    return debt.getDebtor() == filterId;
+                }
+            }
+        );
+
+        // only set equal to new filter
+        debtTable.setItems(filteredList);
+    }
+
+    public void filter(){
+
     }
 
     public Pair<Controller, Parent> getPair() {
@@ -156,5 +176,41 @@ public class DebtsCtrl implements Controller, Initializable {
     }
     public String getTitle(){
         return "Debts Page";
+    }
+
+    /**
+     * The getter method for the currentEvent attribute
+     *
+     * @return currentEvent of this object
+     **/
+    public static Event getCurrentEvent() {
+        return currentEvent;
+    }
+
+    /**
+     * The setter method for the currentEvent attribute
+     *
+     * @param currentEvent The value to set currentEvent to
+     **/
+    public static void setCurrentEvent(Event currentEvent) {
+        DebtsCtrl.currentEvent = currentEvent;
+    }
+
+    /**
+     * The getter method for the filterId attribute
+     *
+     * @return filterId of this object
+     **/
+    public long getFilterId() {
+        return filterId;
+    }
+
+    /**
+     * The setter method for the filterId attribute
+     *
+     * @param filterId The value to set filterId to
+     **/
+    public void setFilterId(long filterId) {
+        this.filterId = filterId;
     }
 }
