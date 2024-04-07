@@ -18,6 +18,7 @@ package server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import server.service.EmailService;
 import server.service.MainService;
 
 @SpringBootApplication
@@ -26,12 +27,11 @@ public class Main {
 
     public static void main(String[] args) {
         final MainService service = new MainService();
+        final EmailService emailService = new EmailService();
         SpringApplication app = new SpringApplication(Main.class);
         service.setAddress(app);
         app.run(args);
         service.genPass();
         service.loadExchangeRates();
     }
-
-
 }

@@ -3,6 +3,11 @@ java {
 	sourceCompatibility = '21'
 }
 
+configurations.all {
+	resolutionStrategy {
+		exclude group: "com.sun.activation", module: "jakarta.activation"
+	}
+}
 
 dependencies {
 	implementation group: 'jakarta.persistence', name: 'jakarta.persistence-api', version: '3.1.0'
