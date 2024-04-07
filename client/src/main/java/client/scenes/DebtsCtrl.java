@@ -14,6 +14,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
@@ -43,6 +46,12 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     private ComboBox<String> searchByComboBox;
 
+    @FXML
+    private AnchorPane backGround;
+
+    @FXML
+    private Button refreshButton;
+
     private Stage stage;
     private ServerUtils server;
 
@@ -60,7 +69,8 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("DebtsCtrl initializing");
-
+        backgroundImage();
+        keyShortCuts();
         refresh();
 
         // initialize close button
@@ -74,6 +84,7 @@ public class DebtsCtrl implements Controller, Initializable {
 
         System.out.println("DebtsCtrl finished initializing");
     }
+
 
     private void filterSetup(){
         System.out.println("Filtering");
@@ -101,6 +112,26 @@ public class DebtsCtrl implements Controller, Initializable {
         System.out.println("done Filtering");
 
         searchByComboBox.setItems(participantNames);
+    }
+
+    private void keyShortCuts() {
+        cancelButton.requestFocus();
+
+        debtTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN) refreshButton.requestFocus();
+        });
+    }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
     }
 
     private void renderCols(){

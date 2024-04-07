@@ -9,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -27,6 +29,8 @@ public class ServerSelectCtrl implements Controller, Initializable {
     private TextField portInput;
     @FXML
     private Button loginButton;
+    @FXML
+    private AnchorPane backGround;
 
     //Imports used to swap scenes
     private Stage stage;
@@ -68,9 +72,21 @@ public class ServerSelectCtrl implements Controller, Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        backgroundImage();
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         loginButton.setText(resourceBundle.getString("loginText"));
         ipInput.setText(config.getIp());
         portInput.setText(config.getPort());
+    }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
     }
 }
