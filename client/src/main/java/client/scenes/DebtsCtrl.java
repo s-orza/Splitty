@@ -163,7 +163,7 @@ public class DebtsCtrl implements Controller, Initializable {
             return "Bank information unavailable! Please transfer the money in person.";
         }
 
-        String result = "PEEPEE information available! Please transfer the money to:\r" +
+        String result = "Bank information information available! Please transfer the money to:\r" +
                 "Account Holder: " + p.getName() + "\r" +
                 "IBAN: " + p.getIban() + "\r" +
                 "BIC: " + p.getBic() + "\r";
