@@ -70,7 +70,6 @@
       <Button fx:id="viewDebts" layoutX="405.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="View Debts" />
       <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
       <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
-
       <Button fx:id="viewStatistics" layoutX="302.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="103.0" styleClass="button-styled" text="View Statistics" />
       <BorderPane layoutX="4.0" layoutY="228.0" prefHeight="31.0" prefWidth="410.0">
          <left>
@@ -132,6 +131,7 @@
             </ImageView>
          </graphic>
       </Button>
+      <Button fx:id="Invite" layoutX="624.0" layoutY="400.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" />
 
    </children>
 </AnchorPane>
