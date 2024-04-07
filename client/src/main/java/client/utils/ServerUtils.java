@@ -15,8 +15,20 @@
  */
 package client.utils;
 
-import static client.scenes.Controller.mainCtrl;
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import commons.*;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.client.ClientConfig;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +36,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import commons.*;
-import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.client.ClientConfig;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.*;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+import static client.scenes.Controller.mainCtrl;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * Accessing parts of the page will happen as follows (please take keen eye on indentation):
@@ -246,6 +251,14 @@ public class ServerUtils {
 				 .post(Entity.entity(debt, APPLICATION_JSON));
 
 		 System.out.println(response.getStatus());
+	 }
+
+	 public void deleteDebt(long eventId, long debtId){
+		 Response response=ClientBuilder.newClient(new ClientConfig())
+				 .target(serverUrl+"api/events/debts/" + debtId + "?eventId="+eventId)
+				 .request(APPLICATION_JSON)
+				 .accept(APPLICATION_JSON)
+				 .delete();
 	 }
 
 	public Participant getParticipant(long participantId){

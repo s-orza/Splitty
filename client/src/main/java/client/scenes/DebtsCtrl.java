@@ -7,15 +7,13 @@ import commons.Participant;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -25,7 +23,11 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class DebtsCtrl implements Controller, Initializable {
 
@@ -34,19 +36,15 @@ public class DebtsCtrl implements Controller, Initializable {
     private TableView<Debt> debtTable;
 
     @FXML
-    private TableColumn<Debt, String> debtorCol;
-
-    @FXML
-    private TableColumn<Debt, String> creditorCol;
-
-    @FXML
-    private TableColumn<Debt, String> amountCol;
+    private TableColumn<Debt, String> debtCol;
 
     @FXML
     private TableColumn<Debt, Void> settleCol;
 
     @FXML
     private Button cancelButton;
+    @FXML
+    private ComboBox<String> searchByComboBox;
 
     @FXML
     private AnchorPane backGround;
@@ -56,8 +54,12 @@ public class DebtsCtrl implements Controller, Initializable {
 
     private Stage stage;
     private ServerUtils server;
-    private String test;
+
     private static Event currentEvent;
+    private long filterId = -1;
+    private ObservableList<Participant> participants;
+    private ObservableList<String> participantNames;
+    private Map<Integer,Long> indexesToIds;
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -77,9 +79,39 @@ public class DebtsCtrl implements Controller, Initializable {
         // render the columns
         renderCols();
 
-        dummyTest();
+        // setup the filter system
+        filterSetup();
 
         System.out.println("DebtsCtrl finished initializing");
+    }
+
+
+    private void filterSetup(){
+        System.out.println("Filtering");
+
+        indexesToIds = new HashMap<>();
+        List<Participant> participantList = server.getParticipantsOfEvent(server.getCurrentId());
+        participants = FXCollections.observableList(participantList);
+        participantNames=FXCollections.observableArrayList();
+
+        // add all selection
+        participantNames.add("-- All --");
+        indexesToIds.put(0,(long)-1);
+
+        int k=1;
+        for(Participant p:participantList)
+        {
+            participantNames.add(p.getName());
+            //map the position in the selection combo box to ids
+            indexesToIds.put(k,p.getParticipantID());
+            k++;
+        }
+
+
+
+        System.out.println("done Filtering");
+
+        searchByComboBox.setItems(participantNames);
     }
 
     private void keyShortCuts() {
@@ -102,7 +134,6 @@ public class DebtsCtrl implements Controller, Initializable {
         backGround.setBackground(background);
     }
 
-
     private void renderCols(){
 //        debtorCol.setCellValueFactory(
 //        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
@@ -114,9 +145,11 @@ public class DebtsCtrl implements Controller, Initializable {
 //        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
 
         // set cell factories for columns, receive: (debt)
-        debtorCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Long.toString(d.getValue().getDebtor())));
-        creditorCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Long.toString(d.getValue().getCreditor())));
-        amountCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(Double.toString( d.getValue().getAmount() )));
+        debtCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(
+                server.getParticipantById(d.getValue().getDebtor()).getName()
+                + " owes " + server.getParticipantById(d.getValue().getCreditor()).getName()
+                + " " + Double.toString( d.getValue().getAmount())
+                + d.getValue().getCurrency()));
         renderSettleCol();
     }
 
@@ -138,8 +171,8 @@ public class DebtsCtrl implements Controller, Initializable {
                             Debt debt = getTableView().getItems().get(getIndex());
                             System.out.println("selectedDebt: " + debt);
 
-                            //settle the debt (currently null since no backend)
-//                            currentDebtManager.settleDebt(debt);
+                            //settle the debt
+                            server.deleteDebt(currentEvent.getEventId(), debt.getDebtID());
 
                             //delete and refresh
                             debtTable.getItems().remove(debt);
@@ -163,40 +196,10 @@ public class DebtsCtrl implements Controller, Initializable {
 
         settleCol.setCellFactory(cellFactory);
 
+        debtTable.getColumns().removeAll(settleCol);
         debtTable.getColumns().add(settleCol);
     }
 
-    private void dummyTest(){
-
-        // add participants
-        Participant anna = new Participant("Anna", "e", "1", "2");
-        Participant elsa = new Participant("Elsa", "e", "1", "2");
-        Participant olaf = new Participant("olaf", "e", "1", "2");
-
-        anna.setParticipantID(1);
-        elsa.setParticipantID(2);
-        olaf.setParticipantID(3);
-
-        // server.addParticipant is not working
-//        server.addParticipant(anna);
-//        server.addParticipant(elsa);
-//        server.addParticipant(olaf);
-
-        // add debts
-        Debt d1 = new Debt(10.00, "EUR", anna, elsa);
-        Debt d2 = new Debt(69.00, "EUR", anna, olaf);
-        Debt d3 = new Debt(5.00, "EUR", olaf, elsa);
-
-        d1.setDebtID(10);
-        d2.setDebtID(20);
-        d3.setDebtID(30);
-
-        //put into observable array
-        ObservableList<Debt> list = FXCollections.observableArrayList();//d1,d2,d3);
-        Event ev=server.getEvent(server.getCurrentId());
-        list.addAll(ev.getDebts());
-        debtTable.setItems(list);
-    }
     public void connectEvent(Event ev){
         currentEvent = ev;
         System.out.println("Connecting to " + currentEvent);
@@ -211,12 +214,51 @@ public class DebtsCtrl implements Controller, Initializable {
 
     public void refresh() {
         System.out.println("refreshed");
-//        // refreshes the Debt Manager and resets the items in the table
-//        var dm = server.getDebtManager();
-//        currentDebtManager = dm;
-//        data = dm.getDebts();
-//        debtTable.setItems(data);
+        // refreshes the Debt Manager and resets the items in the table
+        var event = server.getEvent(server.getCurrentId());
+        currentEvent = event;
+        List<Debt> data = event.getDebts();
+        FilteredList<Debt> filteredList = new FilteredList<>(FXCollections.observableList(data));
 
+        // filter: debtor ID check
+        filteredList.setPredicate(
+            new Predicate<Debt>(){
+                public boolean test(Debt debt){
+                    // check if no filter
+                    if(filterId == -1) {return true;}
+                    // else check if debtor matches filter
+                    return debt.getDebtor() == filterId;
+                }
+            }
+        );
+
+        // only set equal to new filter
+        debtTable.setItems(filteredList);
+    }
+
+    public void filter(){
+        filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+        refresh();
+    }
+
+    @FXML
+    void personWasSelected()
+    {
+//        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+//        Participant x;
+//        x=server.getParticipant(id);
+//        if(x==null)
+//            return;
+//        fromxButton.setText("From "+x.getName());
+//        includingxButton.setText("Including "+x.getName());
+//        if(fromxButton.isSelected())
+//            searchFromX(new ActionEvent());
+//        else
+//        if(includingxButton.isSelected())
+//            searchIncludingX(new ActionEvent());
+//        else
+//            //this is useful if we deselect all options.
+//            searchAll(new ActionEvent());
     }
 
     public Pair<Controller, Parent> getPair() {
@@ -224,5 +266,41 @@ public class DebtsCtrl implements Controller, Initializable {
     }
     public String getTitle(){
         return "Debts Page";
+    }
+
+    /**
+     * The getter method for the currentEvent attribute
+     *
+     * @return currentEvent of this object
+     **/
+    public static Event getCurrentEvent() {
+        return currentEvent;
+    }
+
+    /**
+     * The setter method for the currentEvent attribute
+     *
+     * @param currentEvent The value to set currentEvent to
+     **/
+    public static void setCurrentEvent(Event currentEvent) {
+        DebtsCtrl.currentEvent = currentEvent;
+    }
+
+    /**
+     * The getter method for the filterId attribute
+     *
+     * @return filterId of this object
+     **/
+    public long getFilterId() {
+        return filterId;
+    }
+
+    /**
+     * The setter method for the filterId attribute
+     *
+     * @param filterId The value to set filterId to
+     **/
+    public void setFilterId(long filterId) {
+        this.filterId = filterId;
     }
 }
