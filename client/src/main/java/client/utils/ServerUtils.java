@@ -237,6 +237,14 @@ public class ServerUtils {
 		 System.out.println(response.getStatus());
 	 }
 
+//	 public void deleteDebt(long eventId,Debt debt){
+//		 Response response=ClientBuilder.newClient(new ClientConfig())
+//				 .target(serverUrl+"api/events/debts?eventId="+eventId+"&date="+date)
+//				 .request(APPLICATION_JSON)
+//				 .accept(APPLICATION_JSON)
+//				 .delete();
+//	 }
+
 	public Participant getParticipant(long participantId){
         Response response =ClientBuilder.newClient(new ClientConfig()) //
 				.target(serverUrl).path("/api/participant/" + participantId) //

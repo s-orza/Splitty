@@ -22,6 +22,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class DebtsCtrl implements Controller, Initializable {
@@ -67,8 +68,6 @@ public class DebtsCtrl implements Controller, Initializable {
         // render the columns
         renderCols();
 
-        dummyTest();
-
         System.out.println("DebtsCtrl finished initializing");
     }
 
@@ -108,7 +107,7 @@ public class DebtsCtrl implements Controller, Initializable {
                             System.out.println("selectedDebt: " + debt);
 
                             //settle the debt (currently null since no backend)
-//                            currentDebtManager.settleDebt(debt);
+
 
                             //delete and refresh
                             debtTable.getItems().remove(debt);
@@ -132,40 +131,10 @@ public class DebtsCtrl implements Controller, Initializable {
 
         settleCol.setCellFactory(cellFactory);
 
+        debtTable.getColumns().removeAll(settleCol);
         debtTable.getColumns().add(settleCol);
     }
 
-    private void dummyTest(){
-
-        // add participants
-        Participant anna = new Participant("Anna", "e", "1", "2");
-        Participant elsa = new Participant("Elsa", "e", "1", "2");
-        Participant olaf = new Participant("olaf", "e", "1", "2");
-
-        anna.setParticipantID(1);
-        elsa.setParticipantID(2);
-        olaf.setParticipantID(3);
-
-        // server.addParticipant is not working
-//        server.addParticipant(anna);
-//        server.addParticipant(elsa);
-//        server.addParticipant(olaf);
-
-        // add debts
-        Debt d1 = new Debt(10.00, "EUR", anna, elsa);
-        Debt d2 = new Debt(69.00, "EUR", anna, olaf);
-        Debt d3 = new Debt(5.00, "EUR", olaf, elsa);
-
-        d1.setDebtID(10);
-        d2.setDebtID(20);
-        d3.setDebtID(30);
-
-        //put into observable array
-        ObservableList<Debt> list = FXCollections.observableArrayList();//d1,d2,d3);
-        Event ev=server.getEvent(server.getCurrentId());
-        list.addAll(ev.getDebts());
-        debtTable.setItems(list);
-    }
     public void connectEvent(Event ev){
         currentEvent = ev;
         System.out.println("Connecting to " + currentEvent);
@@ -180,12 +149,11 @@ public class DebtsCtrl implements Controller, Initializable {
 
     public void refresh() {
         System.out.println("refreshed");
-//        // refreshes the Debt Manager and resets the items in the table
-//        var dm = server.getDebtManager();
-//        currentDebtManager = dm;
-//        data = dm.getDebts();
-//        debtTable.setItems(data);
-
+        // refreshes the Debt Manager and resets the items in the table
+        var event = server.getEvent(server.getCurrentId());
+        currentEvent = event;
+        List<Debt> data = event.getDebts();
+        debtTable.setItems(FXCollections.observableList(data));
     }
 
     public Pair<Controller, Parent> getPair() {
