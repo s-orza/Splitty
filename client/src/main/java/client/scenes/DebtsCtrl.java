@@ -3,25 +3,26 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.Debt;
 import commons.Event;
+import commons.Participant;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
@@ -39,11 +40,17 @@ public class DebtsCtrl implements Controller, Initializable {
 
     @FXML
     private Button cancelButton;
+    @FXML
+    private ComboBox<String> searchByComboBox;
 
     private Stage stage;
     private ServerUtils server;
+
     private static Event currentEvent;
     private long filterId = -1;
+    private ObservableList<Participant> participants;
+    private ObservableList<String> participantNames;
+    private Map<Integer,Long> indexesToIds;
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -62,7 +69,31 @@ public class DebtsCtrl implements Controller, Initializable {
         // render the columns
         renderCols();
 
+        // setup the filter system
+        filterSetup();
+
         System.out.println("DebtsCtrl finished initializing");
+    }
+
+    private void filterSetup(){
+        System.out.println("Filtering");
+        indexesToIds = new HashMap<>();
+        List<Participant> participantList = server.getParticipantsOfEvent(server.getCurrentId());
+        participants = FXCollections.observableList(participantList);
+        participantNames=FXCollections.observableArrayList();
+        int k=0;
+        for(Participant p:participantList)
+        {
+            participantNames.add(p.getName());
+            System.out.println("name:" + p.getName() + " | numbah from list: " + k);
+            //map the position in the selection combo box to ids
+            indexesToIds.put(k,p.getParticipantID());
+            k++;
+        }
+
+        System.out.println("done Filtering");
+
+        searchByComboBox.setItems(participantNames);
     }
 
     private void renderCols(){
@@ -169,6 +200,26 @@ public class DebtsCtrl implements Controller, Initializable {
 
     public void filter(){
 
+    }
+
+    @FXML
+    void personWasSelected()
+    {
+//        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+//        Participant x;
+//        x=server.getParticipant(id);
+//        if(x==null)
+//            return;
+//        fromxButton.setText("From "+x.getName());
+//        includingxButton.setText("Including "+x.getName());
+//        if(fromxButton.isSelected())
+//            searchFromX(new ActionEvent());
+//        else
+//        if(includingxButton.isSelected())
+//            searchIncludingX(new ActionEvent());
+//        else
+//            //this is useful if we deselect all options.
+//            searchAll(new ActionEvent());
     }
 
     public Pair<Controller, Parent> getPair() {
