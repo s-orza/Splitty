@@ -3,10 +3,9 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.Debt;
 import commons.Event;
-import commons.Participant;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -75,7 +74,8 @@ public class DebtsCtrl implements Controller, Initializable {
 //        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
 
         // set cell factories for columns, receive: (debt)
-        debtCol.setCellValueFactory(d -> new ReadOnlyStringWrapper( server.getParticipantById(d.getValue().getDebtor()).getName()
+        debtCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(
+                server.getParticipantById(d.getValue().getDebtor()).getName()
                 + " owes " + server.getParticipantById(d.getValue().getCreditor()).getName()
                 + " " + Double.toString( d.getValue().getAmount())
                 + d.getValue().getCurrency()));
@@ -147,6 +147,7 @@ public class DebtsCtrl implements Controller, Initializable {
         var event = server.getEvent(server.getCurrentId());
         currentEvent = event;
         List<Debt> data = event.getDebts();
+        
         debtTable.setItems(FXCollections.observableList(data));
     }
 
