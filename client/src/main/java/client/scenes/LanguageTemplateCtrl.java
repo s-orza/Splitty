@@ -10,6 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -300,6 +302,9 @@ public class LanguageTemplateCtrl implements Controller, Initializable {
     @FXML
     private TextField selectTypeInput;
 
+    @FXML
+    private AnchorPane backGround;
+
 
     private void setUpLanguage(){
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
@@ -468,8 +473,19 @@ public class LanguageTemplateCtrl implements Controller, Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         System.out.println("in template");
+//        backgroundImage();
         setUpLanguage();
         eventListenerInit();
+    }
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
     }
     @Override
     public Pair<Controller, Parent> getPair() {

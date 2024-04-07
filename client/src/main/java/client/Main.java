@@ -81,6 +81,8 @@ public class Main extends Application {
     mainCtrl.setConfig(config);
     mainPageCtrl.setLang(config.getLang());
     ServerSelectCtrl serverSelectCtrl = new ServerSelectCtrl(new ServerUtils());
+    primaryStage.setResizable(false);
+    primaryStage.centerOnScreen();
     mainCtrl.initialize(primaryStage, serverSelectCtrl.getPair(), serverSelectCtrl.getTitle());
     primaryStage.setOnCloseRequest(e ->{});
     primaryStage.setTitle("Server select");

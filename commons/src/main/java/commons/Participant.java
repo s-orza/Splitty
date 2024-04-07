@@ -57,6 +57,7 @@ public class Participant {
                 && Objects.equals(bic, that.bic);
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(name, email, iban, bic);

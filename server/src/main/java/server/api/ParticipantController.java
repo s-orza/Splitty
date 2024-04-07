@@ -32,7 +32,7 @@ public class ParticipantController {
     @GetMapping("/{id}")
     public ResponseEntity<Participant> getParticipantById(@PathVariable("id") Long id) {
         if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
     }
@@ -55,7 +55,7 @@ public class ParticipantController {
      * is not in the list
      */
     @GetMapping("/{eventId}/list")
-    public ResponseEntity<List<Participant>> getParticipantsByIds(List<Long> ids){
+    public ResponseEntity<List<Participant>> getParticipantsByIds(@RequestBody List<Long> ids){
         List<Participant> participantList = new ArrayList<>();
         for (Long id: ids){
             if (repo.existsById(id)){
@@ -66,6 +66,8 @@ public class ParticipantController {
 
         return ResponseEntity.ok(participantList);
     }
+
+    // The above method is redundant
 
     /**
      * Put request to update a participants name through their id
@@ -159,7 +161,7 @@ public class ParticipantController {
      * @param name the name of the participant to be deleted
      * @return OK - 200 if participant was found and deleted and NOT FOUND - 404 otherwise
      */
-    @DeleteMapping("/")
+    @DeleteMapping("/name/{name}")
     public ResponseEntity<?> deleteParticipantByName(@PathVariable String name) {
         List<Participant> participants = repo.findByName(name);
         if (!participants.isEmpty()) {

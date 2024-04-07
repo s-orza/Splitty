@@ -1,67 +1,67 @@
-/* Light gray body with black text */
-.root {
-    -fx-background-color: #f2f2f2;
-    -fx-color: #000000;
-}
-/* Generic button with same color as table column names */
-.generic-button {
-    -fx-background-color: #0077b6;
-    -fx-color: #ffffff;
-    -fx-border: none;
-    -fx-padding: 8px 16px;
-    -fx-text-align: center;
-    -fx-text-decoration: none;
-    -fx-display: inline-block;
-    -fx-font-size: 16px;
-    -fx-cursor: pointer;
-}
+/*!* Light gray body with black text *!*/
+/*.root {*/
+/*    -fx-background-color: #f2f2f2;*/
+/*    -fx-color: #000000;*/
+/*}*/
+/*!* Generic button with same color as table column names *!*/
+/*.generic-button {*/
+/*    -fx-background-color: #0077b6;*/
+/*    -fx-color: #ffffff;*/
+/*    -fx-border: none;*/
+/*    -fx-padding: 8px 16px;*/
+/*    -fx-text-align: center;*/
+/*    -fx-text-decoration: none;*/
+/*    -fx-display: inline-block;*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-cursor: pointer;*/
+/*}*/
 
-/* Green OK button */
-.addButton {
-    -fx-background-color: #206c24;
-    -fx-color: #000000;
-    -fx-border: none;
-    -fx-padding: 8px 16px;
-    -fx-text-align: center;
-    -fx-text-decoration: none;
-    -fx-display: inline-block;
-    -fx-font-size: 16px;
-    -fx-cursor: pointer;
-}
+/*!* Green OK button *!*/
+/*.addButton {*/
+/*    -fx-background-color: #206c24;*/
+/*    -fx-color: #000000;*/
+/*    -fx-border: none;*/
+/*    -fx-padding: 8px 16px;*/
+/*    -fx-text-align: center;*/
+/*    -fx-text-decoration: none;*/
+/*    -fx-display: inline-block;*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-cursor: pointer;*/
+/*}*/
 
-.addButton:hover {
-    -fx-background-color: #5fb962;
-    -fx-color: #ffffff;
-    -fx-border: none;
-    -fx-padding: 8px 16px;
-    -fx-text-align: center;
-    -fx-text-decoration: none;
-    -fx-display: inline-block;
-    -fx-font-size: 16px;
-    -fx-cursor: pointer;
-}
+/*.addButton:hover {*/
+/*    -fx-background-color: #5fb962;*/
+/*    -fx-color: #ffffff;*/
+/*    -fx-border: none;*/
+/*    -fx-padding: 8px 16px;*/
+/*    -fx-text-align: center;*/
+/*    -fx-text-decoration: none;*/
+/*    -fx-display: inline-block;*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-cursor: pointer;*/
+/*}*/
 
-/* Red Cancel button */
-.cancelButton {
-    -fx-background-color: #93221a;
-    -fx-color: #000000;
-    -fx-border: none;
-    -fx-padding: 8px 16px;
-    -fx-text-align: center;
-    -fx-text-decoration: none;
-    -fx-display: inline-block;
-    -fx-font-size: 16px;
-    -fx-cursor: pointer;
-}
+/*!* Red Cancel button *!*/
+/*.cancelButton {*/
+/*    -fx-background-color: #93221a;*/
+/*    -fx-color: #000000;*/
+/*    -fx-border: none;*/
+/*    -fx-padding: 8px 16px;*/
+/*    -fx-text-align: center;*/
+/*    -fx-text-decoration: none;*/
+/*    -fx-display: inline-block;*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-cursor: pointer;*/
+/*}*/
 
-.cancelButton:hover {
-    -fx-background-color: #ff1100;
-    -fx-color: #ffffff;
-    -fx-border: none;
-    -fx-padding: 8px 16px;
-    -fx-text-align: center;
-    -fx-text-decoration: none;
-    -fx-display: inline-block;
-    -fx-font-size: 16px;
-    -fx-cursor: pointer;
-}
+/*.cancelButton:hover {*/
+/*    -fx-background-color: #ff1100;*/
+/*    -fx-color: #ffffff;*/
+/*    -fx-border: none;*/
+/*    -fx-padding: 8px 16px;*/
+/*    -fx-text-align: center;*/
+/*    -fx-text-decoration: none;*/
+/*    -fx-display: inline-block;*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-cursor: pointer;*/
+/*}*/

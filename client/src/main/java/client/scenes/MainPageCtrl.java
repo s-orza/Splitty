@@ -19,6 +19,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -57,6 +59,9 @@ public class MainPageCtrl implements Controller, Initializable {
   private ComboBox comboBox;
   @FXML
   private Button addLanguageButton;
+  @FXML
+  private AnchorPane backGround;
+
   private Event selectedEv;
   //Imports used to swap scenes
   private Stage stage;
@@ -140,6 +145,8 @@ public class MainPageCtrl implements Controller, Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
+    backgroundImage();
+    keyShortCuts();
 
     ArrayList<Event> contents = new ArrayList<>();
     ArrayList<Long> ids = new ArrayList<>();
@@ -244,6 +251,98 @@ public class MainPageCtrl implements Controller, Initializable {
       mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
     });
   }
+
+  private void keyShortCuts() {
+    recentList.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {
+        joinInput.requestFocus();
+      }
+      if (event.getCode() == KeyCode.LEFT) {
+        addLanguageButton.requestFocus();
+      }
+
+    });
+    addLanguageButton.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {
+        recentList.requestFocus();
+      }
+      if (event.getCode() == KeyCode.LEFT) {
+        comboBox.requestFocus();
+      }
+
+    });
+
+    comboBox.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT) {
+        addLanguageButton.requestFocus();
+      }
+      if (event.getCode() == KeyCode.ENTER) comboBox.show();
+    });
+
+    recentList.setOnMouseClicked(event -> {
+      if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+        joinButton.fire();
+      }
+    });
+    joinInput.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {
+        joinButton.requestFocus();
+      }
+      if (event.getCode() == KeyCode.LEFT) {
+        recentList.requestFocus();
+      }
+    });
+    joinButton.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT) {
+        createInput.requestFocus();
+      }
+      if (event.getCode() == KeyCode.ENTER) {
+        joinButton.fire();
+      }
+
+      if (event.getCode() == KeyCode.LEFT) {
+        joinInput.requestFocus();
+      }
+    });
+    createInput.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {
+        createButton.requestFocus();
+      }
+      if (event.getCode() == KeyCode.LEFT) {
+        joinButton.requestFocus();
+      }
+    });
+    createButton.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT) {
+        adminButton.requestFocus();
+      }
+      if (event.getCode() == KeyCode.LEFT) {
+        createInput.requestFocus();
+      }
+      if (event.getCode() == KeyCode.ENTER) {
+        createButton.fire();
+      }
+    });
+    adminButton.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.LEFT) {
+        createButton.requestFocus();
+      }
+    });
+
+
+  }
+
+  private void backgroundImage() {
+    Image image = new Image("Background_Photo.jpg");
+    BackgroundSize backgroundSize =
+            new BackgroundSize(720, 450, true, true, true, false);
+    BackgroundImage backgroundImage = new BackgroundImage(image,
+            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+            backgroundSize);
+    Background background = new Background(backgroundImage);
+    backGround.setBackground(background);
+  }
+
   public void changeFlag(String toChange){
     seqTransition.play();
     if(toChange.equals("es")){

@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -115,6 +116,10 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     ComboBox comboBox;
+    @FXML
+    AnchorPane backGround;
+    @FXML
+    Button undoButton;
     //here we map every index from the selection comboBox to the id of its participant
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
@@ -151,8 +156,11 @@ public class EventPageCtrl implements Controller{
     }
 
 
+
     //set event page title and event code
     private void initializePage() {
+        backgroundImage();
+        keyShortCuts();
         selectionMod=0;
         personId=0;
         //load from database:
@@ -356,6 +364,63 @@ public class EventPageCtrl implements Controller{
         viewStatistics.setOnAction(e->viewStatisticsHandler(e));
     }
 
+    private void keyShortCuts() {
+        cancelButton.requestFocus();
+
+        editEventName.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) comboBox.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) editEventName.fire();
+        });
+        fromxButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+        });
+        includingxButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+        });
+
+        comboBox.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) comboBox.show();
+            if (event.getCode() == KeyCode.LEFT) editEventName.requestFocus();
+        });
+        cancelButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) viewStatistics.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
+            if (event.getCode() == KeyCode.LEFT) comboBox.requestFocus();
+        });
+        viewStatistics.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) viewDebts.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) viewStatistics.fire();
+            if (event.getCode() == KeyCode.LEFT) cancelButton.requestFocus();
+        });
+        viewDebts.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) addParticipant.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) viewDebts.fire();
+            if (event.getCode() == KeyCode.LEFT) viewStatistics.requestFocus();
+        });
+        addParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) addParticipant.fire();
+            if (event.getCode() == KeyCode.LEFT) viewDebts.requestFocus();
+        });
+        addExpense.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) editExpense.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) addExpense.fire();
+            if (event.getCode() == KeyCode.LEFT) addParticipant.requestFocus();
+        });
+        editExpense.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) removeExpense.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) editExpense.fire();
+            if (event.getCode() == KeyCode.LEFT) addExpense.requestFocus();
+        });
+        removeExpense.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) removeExpense.fire();
+            if (event.getCode() == KeyCode.LEFT) editExpense.requestFocus();
+        });
+    }
+
     ////////////////////////////////////////
     public void changeFlag(String toChange){
         seqTransition.play();
@@ -413,7 +478,7 @@ public class EventPageCtrl implements Controller{
            participantsColumn2.setText(resourceBundle.getString("participantsText"));
            typeColumn.setText(resourceBundle.getString("typeText"));
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
-           editEventName.setText(resourceBundle.getString("editEventNameText"));
+//           editEventName.setText(resourceBundle.getString("editEventNameText"));
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
 
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
@@ -434,6 +499,17 @@ public class EventPageCtrl implements Controller{
         Background background = new Background(backgroundImage);
 
         flagButton.setBackground(background);
+    }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
     }
 
     public void prepareAnimation(){
@@ -762,6 +838,18 @@ public class EventPageCtrl implements Controller{
         Scene scene = new Scene(layout, 370, 150);
         popupStage.setScene(scene);
         popupStage.showAndWait();
+
+        showPopup();
+    }
+
+    private void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Deleted expense Successfully");
+        VBox layout = new VBox(10);
+        Scene scene = new Scene(layout, 350, 20);
+        popupStage.setScene(scene);
+        popupStage.show();
     }
 
     /**

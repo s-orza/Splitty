@@ -152,9 +152,11 @@ public class ExpenseController {
     public ResponseEntity<List<Expense>> getExpensePInvolvedInEvent(@RequestParam("eventId") long eventId,
                                                                     @RequestParam("authorId") long authorId)
     {
+        System.out.println(eventId + " " + authorId);
         if(eventId<0)
             return ResponseEntity.badRequest().build();
         List<Expense> ans=repoExp.findEventsThatInvolvesParticipant(eventId,authorId);
+        System.out.println(ans);
         if(ans==null || ans.isEmpty())
             return ResponseEntity.notFound().build();
         for(Expense e:ans)
