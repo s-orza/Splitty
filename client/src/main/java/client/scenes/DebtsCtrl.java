@@ -68,7 +68,6 @@ public class DebtsCtrl implements Controller, Initializable {
 
         System.out.println("DebtsCtrl finished initializing");
     }
-
     private void keyShortCuts() {
         cancelButton.requestFocus();
 
@@ -88,7 +87,6 @@ public class DebtsCtrl implements Controller, Initializable {
         Background background = new Background(backgroundImage);
         backGround.setBackground(background);
     }
-
 
     private void filterSetup(){
         System.out.println("Filtering");
