@@ -20,10 +20,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class DebtsCtrl implements Controller, Initializable {
@@ -42,6 +39,8 @@ public class DebtsCtrl implements Controller, Initializable {
     private Button cancelButton;
     @FXML
     private ComboBox<String> searchByComboBox;
+    @FXML
+    private Accordion accordion;
 
     private Stage stage;
     private ServerUtils server;
@@ -203,31 +202,26 @@ public class DebtsCtrl implements Controller, Initializable {
 
         // only set equal to new filter
         debtTable.setItems(filteredList);
+        renderAccordion(filteredList);
+    }
+
+    public void renderAccordion(FilteredList<Debt> filteredList){
+        String title;
+        Collection<TitledPane> panes = new ArrayList<>();
+        for (Debt d: filteredList) {
+            title = server.getParticipantById(d.getDebtor()).getName()
+                            + " owes " + server.getParticipantById(d.getCreditor()).getName()
+                            + " " + Double.toString( d.getAmount())
+                            + d.getCurrency();
+            panes.add(new TitledPane(title, new Button("Settle")));
+        }
+
+        accordion.getPanes().setAll(panes);
     }
 
     public void filter(){
         filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         refresh();
-    }
-
-    @FXML
-    void personWasSelected()
-    {
-//        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
-//        Participant x;
-//        x=server.getParticipant(id);
-//        if(x==null)
-//            return;
-//        fromxButton.setText("From "+x.getName());
-//        includingxButton.setText("Including "+x.getName());
-//        if(fromxButton.isSelected())
-//            searchFromX(new ActionEvent());
-//        else
-//        if(includingxButton.isSelected())
-//            searchIncludingX(new ActionEvent());
-//        else
-//            //this is useful if we deselect all options.
-//            searchAll(new ActionEvent());
     }
 
     public Pair<Controller, Parent> getPair() {
