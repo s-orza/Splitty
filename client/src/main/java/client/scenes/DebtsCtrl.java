@@ -4,7 +4,6 @@ import client.utils.ServerUtils;
 import commons.Debt;
 import commons.Event;
 import commons.Participant;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,9 +12,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
@@ -24,16 +25,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class DebtsCtrl implements Controller, Initializable {
-
-
-    @FXML
-    private TableView<Debt> debtTable;
-
-    @FXML
-    private TableColumn<Debt, String> debtCol;
-
-    @FXML
-    private TableColumn<Debt, Void> settleCol;
 
     @FXML
     private Button cancelButton;
@@ -64,9 +55,6 @@ public class DebtsCtrl implements Controller, Initializable {
 
         // initialize close button
         cancelButton.setOnAction(this::cancelHandler);
-
-        // render the columns
-        renderCols();
 
         // setup the filter system
         filterSetup();
@@ -102,71 +90,6 @@ public class DebtsCtrl implements Controller, Initializable {
         searchByComboBox.setItems(participantNames);
     }
 
-    private void renderCols(){
-//        debtorCol.setCellValueFactory(
-//        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
-//
-//        creditorCol.setCellValueFactory(
-//        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getCreditor() ).getName()));
-//
-//        amountCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
-//        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
-
-        // set cell factories for columns, receive: (debt)
-        debtCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(
-                server.getParticipantById(d.getValue().getDebtor()).getName()
-                + " owes " + server.getParticipantById(d.getValue().getCreditor()).getName()
-                + " " + Double.toString( d.getValue().getAmount())
-                + d.getValue().getCurrency()));
-        renderSettleCol();
-    }
-
-    private void renderSettleCol(){
-
-        //make a cellFactory for the buttons in Settle Column
-        Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>> cellFactory =
-                new Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>>() {
-            @Override
-            public TableCell<Debt, Void> call(final TableColumn<Debt, Void> param) {
-                final TableCell<Debt, Void> cell = new TableCell<Debt, Void>() {
-
-                    private final Button btn = new Button("Settle");
-
-                    {
-                        //define function of settle button
-                        btn.setOnAction((ActionEvent event) -> {
-                            //retrieve selected debt
-                            Debt debt = getTableView().getItems().get(getIndex());
-                            System.out.println("selectedDebt: " + debt);
-
-                            //settle the debt
-                            server.deleteDebt(currentEvent.getEventId(), debt.getDebtID());
-
-                            //delete and refresh
-                            debtTable.getItems().remove(debt);
-                            refresh();
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(btn);
-                        }
-                    }
-                };
-                return cell;
-            }
-        };
-
-        settleCol.setCellFactory(cellFactory);
-
-        debtTable.getColumns().removeAll(settleCol);
-        debtTable.getColumns().add(settleCol);
-    }
 
     public void connectEvent(Event ev){
         currentEvent = ev;
@@ -201,7 +124,6 @@ public class DebtsCtrl implements Controller, Initializable {
         );
 
         // only set equal to new filter
-        debtTable.setItems(filteredList);
         renderAccordion(filteredList);
     }
 
@@ -213,10 +135,22 @@ public class DebtsCtrl implements Controller, Initializable {
                             + " owes " + server.getParticipantById(d.getCreditor()).getName()
                             + " " + Double.toString( d.getAmount())
                             + d.getCurrency();
-            panes.add(new TitledPane(title, new Button("Settle")));
+            Button button = new Button("Settle");
+            button.setOnAction(e-> {
+                settleAction(d.getDebtID());
+            });
+            TitledPane tp = new TitledPane(title, button);
+            panes.add(tp);
         }
 
         accordion.getPanes().setAll(panes);
+    }
+
+    public void settleAction(long debtId){
+        server.deleteDebt(currentEvent.getEventId(), debtId);
+
+        //delete and refresh
+        refresh();
     }
 
     public void filter(){
