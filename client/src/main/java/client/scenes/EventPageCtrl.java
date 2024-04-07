@@ -37,6 +37,8 @@ public class EventPageCtrl implements Controller{
     }
 
     @FXML
+    Button invite;
+    @FXML
     TableView<Participant> participantsTable;
 
     @FXML
@@ -812,6 +814,12 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         StatisticsCtrl statisticsCtrl = new StatisticsCtrl(server);
         mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
+    }
+
+    public void inviteParticipant(ActionEvent event){
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        InviteParticipantCtrl inviteParticipantCtrl = new InviteParticipantCtrl(server);
+        mainCtrl.initialize(stage, inviteParticipantCtrl.getPair(), inviteParticipantCtrl.getTitle());
     }
 
 

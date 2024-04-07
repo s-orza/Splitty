@@ -64,11 +64,10 @@ public class Main extends Application {
         System.out.println("Config had incorrect Language!");
       }
       if(newConfig.getEmail() != null && newConfig.getEmail().matches(
-              "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@\" \n" +
-              "        + \"[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$")){
+              "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")){
         config.setEmail(newConfig.getEmail());
       }else{
-        System.out.println("Config had incorrect Language!");
+        System.out.println("Config had incorrect Email!");
       }
       config.setPassword(newConfig.getPassword());
       config.setRecentEvents(newConfig.getRecentEvents());

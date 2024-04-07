@@ -117,11 +117,13 @@ public class MainCtrl {
         url = server.getServerUrl();
         String id = url.replace("/", "").split(":")[1];
         String port = url.replace("/", "").split(":")[2];
-        AppConfig config = new AppConfig(currency, exported, id, port, lang);
+        AppConfig savedConfig = new AppConfig(currency, exported, id, port, lang);
+        savedConfig.setEmail(config.getEmail());
+        savedConfig.setPassword(config.getPassword());
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         try {
-            mapper.writeValue(writer, config);
+            mapper.writeValue(writer, savedConfig);
             String json = writer.toString();
             System.out.println(json);
             String filePath = new File("").getAbsolutePath().replace("\\", "/");
