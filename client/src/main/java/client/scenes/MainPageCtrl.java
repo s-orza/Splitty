@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import commons.Event;
 
 
+import commons.MailStructure;
 import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,6 +33,8 @@ import java.util.ResourceBundle;
 
 public class MainPageCtrl implements Controller, Initializable {
 
+  @FXML
+  private Button Email;
   @FXML
   private TextField createInput;
   @FXML
@@ -79,6 +82,15 @@ public class MainPageCtrl implements Controller, Initializable {
     this.server = server;
   }
 
+  public void sendMail(){
+    if( server.sendMail("33splitty@gmail.com",
+            new MailStructure("Test mail", "It works!"))){
+      mainCtrl.popup("Email sent succesfully", "Succes", "OK");
+    }
+    else{
+      mainCtrl.popup("Email failed", "Warning", "OK");
+    }
+  }
   public void createEvent(ActionEvent e){
     if (createInput.getText().equals("")){
       mainCtrl.popup("Name can't be empty!", "Waring!", "Ok");
