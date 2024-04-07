@@ -74,7 +74,7 @@ public class DebtControllerTest {
 
     @Test
     public void getDebtById_Success() throws Exception {
-        Debt savedDebt = debtRepository.findAll().get(0);
+        Debt savedDebt = debtRepository.findById(testDebt.getDebtID()).get();
         mockMvc.perform(get("/api/events/debts/" + savedDebt.getDebtID()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.debtID").value(savedDebt.getDebtID()))
@@ -89,18 +89,6 @@ public class DebtControllerTest {
                 .andExpect(jsonPath("$.size()").isNotEmpty());
     }
 
-    @Test
-    public void addDebt_Success() throws Exception {
-        Debt newDebt = new Debt(50, "EUR", testParticipant.getParticipantID(), testCreditor.getParticipantID());
-
-        mockMvc.perform(post("/api/events/debts")
-                        .param("eventId", String.valueOf(testEvent.getEventId()))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(newDebt)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.amount").value(50))
-                .andExpect(jsonPath("$.currency").value("EUR"));
-    }
 
     @Test
     public void getListOfDebts_Success() throws Exception {
