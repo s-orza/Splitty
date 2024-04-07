@@ -77,19 +77,26 @@ public class DebtsCtrl implements Controller, Initializable {
 
     private void filterSetup(){
         System.out.println("Filtering");
+
         indexesToIds = new HashMap<>();
         List<Participant> participantList = server.getParticipantsOfEvent(server.getCurrentId());
         participants = FXCollections.observableList(participantList);
         participantNames=FXCollections.observableArrayList();
-        int k=0;
+
+        // add all selection
+        participantNames.add("-- All --");
+        indexesToIds.put(0,(long)-1);
+
+        int k=1;
         for(Participant p:participantList)
         {
             participantNames.add(p.getName());
-            System.out.println("name:" + p.getName() + " | numbah from list: " + k);
             //map the position in the selection combo box to ids
             indexesToIds.put(k,p.getParticipantID());
             k++;
         }
+
+
 
         System.out.println("done Filtering");
 
@@ -199,7 +206,8 @@ public class DebtsCtrl implements Controller, Initializable {
     }
 
     public void filter(){
-
+        filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
+        refresh();
     }
 
     @FXML
