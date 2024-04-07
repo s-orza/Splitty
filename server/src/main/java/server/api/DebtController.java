@@ -133,7 +133,7 @@ public class DebtController {
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Debt> settleDebtByID(@RequestParam long eventId, @PathVariable Long id) {
+    public ResponseEntity<Debt> settleDebtByID(@RequestParam("eventId") long eventId, @PathVariable Long id) {
         // check if id is null
         if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
 
@@ -156,7 +156,7 @@ public class DebtController {
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("")
-    public ResponseEntity<Debt> settleDebt(@RequestParam long eventId, @RequestBody Debt debt) {
+    public ResponseEntity<Debt> settleDebt(@RequestParam("eventId") long eventId, @RequestBody Debt debt) {
         // check if debt is null
         if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}
 
