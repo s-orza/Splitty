@@ -126,13 +126,14 @@ public class DebtController {
 
     /**
      * Deletes/settles a Debt by its ID
+     * @param eventId the ID of the event of the debt
      * @param id the ID of the debt to be settled
      * @return OK - 200 and the debt of the ID if it is found,
      *         else if the id is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Debt> settleDebtByID(long eventId, @PathVariable Long id) {
+    public ResponseEntity<Debt> settleDebtByID(@RequestParam long eventId, @PathVariable Long id) {
         // check if id is null
         if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
 
@@ -148,13 +149,14 @@ public class DebtController {
 
     /**
      * Deletes/settles a Debt
+     * @param eventId the ID of the event of the debt
      * @param debt the debt to be settled
      * @return OK - 200 and the debt if it is found,
      *         else if the debt is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("")
-    public ResponseEntity<Debt> settleDebt(long eventId, @RequestBody Debt debt) {
+    public ResponseEntity<Debt> settleDebt(@RequestParam long eventId, @RequestBody Debt debt) {
         // check if debt is null
         if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}
 
