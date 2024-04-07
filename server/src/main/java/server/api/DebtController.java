@@ -124,7 +124,6 @@ public class DebtController {
         return ResponseEntity.ok(debts);
     }
 
-
     /**
      * Deletes/settles a Debt by its ID
      * @param id the ID of the debt to be settled
@@ -133,6 +132,49 @@ public class DebtController {
      *         and else NOT FOUND - 404
      */
     @DeleteMapping("/{id}")
+    public ResponseEntity<Debt> settleDebtByID(long eventId, @PathVariable Long id) {
+        // check if id is null
+        if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
+
+        // check if the debt exists on the db
+        Optional<Debt> debt = repo.findById(id);
+        if (debt.isPresent()) {
+            debtService.deleteDebt(eventId, debt.get());
+            return ResponseEntity.ok(debt.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Deletes/settles a Debt
+     * @param debt the debt to be settled
+     * @return OK - 200 and the debt if it is found,
+     *         else if the debt is invalid: BAD REQUEST - 400,
+     *         and else NOT FOUND - 404
+     */
+    @DeleteMapping("")
+    public ResponseEntity<Debt> settleDebt(long eventId, @RequestBody Debt debt) {
+        // check if debt is null
+        if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}
+
+        //check if debt exists
+        if (repo.existsById(debt.getDebtID())) {
+            debtService.deleteDebt(eventId, debt);
+            return ResponseEntity.ok(debt);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Deletes/settles a Debt by its ID
+     * @param id the ID of the debt to be settled
+     * @return OK - 200 and the debt of the ID if it is found,
+     *         else if the id is invalid: BAD REQUEST - 400,
+     *         and else NOT FOUND - 404
+     */
+    @DeleteMapping("/{id}/noEvent")
     public ResponseEntity<Debt> settleDebtByID(@PathVariable Long id) {
         // check if id is null
         if(Objects.isNull(id)){return ResponseEntity.badRequest().build();}
@@ -154,7 +196,7 @@ public class DebtController {
      *         else if the debt is invalid: BAD REQUEST - 400,
      *         and else NOT FOUND - 404
      */
-    @DeleteMapping("")
+    @DeleteMapping("/noEvent")
     public ResponseEntity<Debt> settleDebt(@RequestBody Debt debt) {
         // check if debt is null
         if(Objects.isNull(debt)){return ResponseEntity.badRequest().build();}

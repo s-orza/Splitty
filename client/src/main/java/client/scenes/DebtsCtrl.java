@@ -106,8 +106,8 @@ public class DebtsCtrl implements Controller, Initializable {
                             Debt debt = getTableView().getItems().get(getIndex());
                             System.out.println("selectedDebt: " + debt);
 
-                            //settle the debt (currently null since no backend)
-
+                            //settle the debt
+                            server.deleteDebt(currentEvent.getEventId(), debt.getDebtID());
 
                             //delete and refresh
                             debtTable.getItems().remove(debt);

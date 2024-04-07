@@ -32,6 +32,7 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
@@ -237,13 +238,13 @@ public class ServerUtils {
 		 System.out.println(response.getStatus());
 	 }
 
-//	 public void deleteDebt(long eventId,Debt debt){
-//		 Response response=ClientBuilder.newClient(new ClientConfig())
-//				 .target(serverUrl+"api/events/debts?eventId="+eventId+"&date="+date)
-//				 .request(APPLICATION_JSON)
-//				 .accept(APPLICATION_JSON)
-//				 .delete();
-//	 }
+	 public void deleteDebt(long eventId, long debtId){
+		 Response response=ClientBuilder.newClient(new ClientConfig())
+				 .target(serverUrl+"api/events/debts/" + debtId + "?eventId="+eventId)
+				 .request(APPLICATION_JSON)
+				 .accept(APPLICATION_JSON)
+				 .delete();
+	 }
 
 	public Participant getParticipant(long participantId){
         Response response =ClientBuilder.newClient(new ClientConfig()) //

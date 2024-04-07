@@ -123,6 +123,12 @@ public class DebtService {
         if(!eventRepository.existsById(eventId))
             return false;
         Event event=eventRepository.findById(eventId).get();
+
+        // unlink the debt from the event
+        event.settleDebt(debt);
+        eventRepository.save(event);
+
+        // verify debt was unlinked
         if(event.getDebts().contains(debt))
         {
             System.out.println("The debt is still connected to the event so we cannot delete it");
