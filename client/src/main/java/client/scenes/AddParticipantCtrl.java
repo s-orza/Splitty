@@ -1,32 +1,31 @@
 package client.scenes;
 
-import static com.google.inject.Guice.createInjector;
-
-import client.MyFXML;
-import client.MyModule;
+import java.util.ResourceBundle;
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-import javafx.scene.text.Text;
+
+import static client.scenes.MainPageCtrl.currentLocale;
 
 public class AddParticipantCtrl implements Controller{
     private ServerUtils server;
@@ -34,6 +33,8 @@ public class AddParticipantCtrl implements Controller{
     private Button addButton;
     @FXML
     private Button cancelButton;
+    @FXML
+    private Button saveButton;
     @FXML
     private TextField name;
     @FXML
@@ -43,34 +44,54 @@ public class AddParticipantCtrl implements Controller{
     @FXML
     private TextField bic;
     @FXML
-    private Text warningText;
-    @FXML
     private AnchorPane backGround;
-    private static Injector injector;
-    private static MyFXML FXML;
-    private static MainCtrl mainCtrl;
-    private static Alert warningAlert;
     private static Alert errorAlert;
+    private Participant participantToBeModified;
+    ResourceBundle resourceBundle;
     
     @Inject
     public AddParticipantCtrl(ServerUtils server){
         this.server = server;
-        initialize();
     }
 
     @FXML
     public void initialize(){
-        System.out.println("Initializing AddParticipantCtrl...");
-        // Nothing needs to be initialized from the database so nothing will be done about that
-        // Initializing everything that might be needed for this controller
-        injector = createInjector(new MyModule());
-        FXML = new MyFXML(injector);
-        mainCtrl = injector.getInstance(MainCtrl.class);
-
-//        backgroundImage();
+        initializeVariables();
+        toggleLanguage();
+        backgroundImage();
         // initializing warning Text for whether an error is encountered and alerts for any case
-        warningText = new Text();
-//        keyShortCuts();
+        keyShortCuts();
+        resetElements();
+        // check if we are editing or adding a participant
+        if (server.getParticipantIdToModify() != -1) {
+            // if we are editing a participant
+            participantToBeModified = server.getParticipantToBeModified();
+            reloadParticipant();
+        }
+        else {
+            // if we are adding a participant
+            addButton.setVisible(true);
+            saveButton.setVisible(false);
+        }
+    }
+
+    private void initializeVariables() {
+        name.setText("");
+        email.setText("");
+        iban.setText("");
+        bic.setText("");
+    }
+
+    private void toggleLanguage(){
+        try{
+            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+            name.setText(resourceBundle.getString("nameText"));
+            addButton.setText(resourceBundle.getString("addText"));
+            saveButton.setText(resourceBundle.getString("saveText"));
+            cancelButton.setText(resourceBundle.getString("cancelText"));
+        } catch (Exception e){
+            System.out.println(e.getStackTrace());
+        }
     }
 
     private void keyShortCuts() {
@@ -119,14 +140,11 @@ public class AddParticipantCtrl implements Controller{
      * Will return a participant if all the fields have been filled up and no rules were broken
      */
     @FXML
-    void addParticipantToEvent(ActionEvent event) {
-        String checkerString = checkAnyFieldIsEmpty();
-        if(!checkerString.isEmpty()) {
-            displayError(checkerString);
-            return;
-        }
+    void addParticipant(ActionEvent event) {
+        checkFieldsCondition();
 
-        Participant newParticipant = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
+        // read all text from fields and create a new participant
+        Participant newParticipant = takeParticipantFromFields();
         try {
             //TODO
             // make the eventID be specific to each event
@@ -135,7 +153,8 @@ public class AddParticipantCtrl implements Controller{
                 showPopup();
             });
             delay.play();
-            String destination = "/app/participant/event/" + String.valueOf(server.getCurrentId());
+
+            String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);
             close(event);
         } catch (WebApplicationException e) {
@@ -152,55 +171,93 @@ public class AddParticipantCtrl implements Controller{
         popupStage.setScene(scene);
         popupStage.show();
     }
+    @FXML
+    void updateParticipant(ActionEvent event) {
+        if(!checkFieldsCondition())
+            return;
+        // reload again the participant to be sure that it is the newest participant
+        // can also prevent a bug where another user has deleted the participant you are already working on
+        participantToBeModified=server.getParticipantToBeModified();
+        if(participantToBeModified==null)
+        {
+            //this can happen if somebody else deleted this participant while you were editing it. In this case
+            //let's send a message to the user to inform him and to abort editing.
+            VBox layout = new VBox(10);
+            Label label = new Label("Somebody deleted this participant while you were editing it. \n" +
+                    "Return to the event page:(");
+            Button okButton = new Button("Ok");
+
+
+            // Set up the stage
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setTitle("Warning");
+
+
+            okButton.setOnAction(e -> {
+                popupStage.close();
+                close(event);
+            });
+
+            // Set up the layout
+            layout.getChildren().addAll(label, okButton);
+            layout.setAlignment(Pos.CENTER);
+            // Set the scene and show the stage
+            Scene scene = new Scene(layout, 450, 150);
+            popupStage.setScene(scene);
+            popupStage.showAndWait();
+            return;
+        }
+        Participant participant = takeParticipantFromFields();
+        System.out.println(participant);
+        //get participant to be modified
+//        participant = server.getParticipant(participantToBeModified.getParticipantID());
+        //modify the participant and save it in the database
+        System.out.println(participantToBeModified.getParticipantID());
+        server.updateParticipant(participantToBeModified.getParticipantID(), participant);
+        participantToBeModified=null;
+        server.setParticipantToBeModified(-1);
+
+        close(event);
+    }
+
+    private Participant takeParticipantFromFields()
+    {
+        // get and return a new participant from the text fields
+        return new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
+    }
 
     /**
      * Checks for any empty field.
      * @return Any string for an empty field or an empty string if no errors were found
      */
-    private String checkAnyFieldIsEmpty() {
+    private boolean checkFieldsCondition() {
         if (name.getText().isEmpty()) {
-            System.out.println("Name field is empty warning displayed");
-            warningText.setText("Name field is empty");
-            return "Name";
+            mainCtrl.popup(name.getText() + " field is Empty!", "Warning", "Ok");
+            return false;
         }
         if (email.getText().isEmpty()) {
-            System.out.println("Email field is empty warning displayed");
-            warningText.setText("Email field is empty");
-            return "Email";
+            mainCtrl.popup(email.getText() + " field is Empty!", "Warning", "Ok");
+            return false;
         }
         if (iban.getText().isEmpty()) {
-            System.out.println("IBAN field is empty warning displayed");
-            warningText.setText("IBAN field is empty");
-            return "IBAN";
+            mainCtrl.popup(iban.getText() + " field is Empty!", "Warning", "Ok");
+            return false;
         }
         if (bic.getText().isEmpty()) {
-            System.out.println("BIC field is empty warning displayed");
-            warningText.setText("BIC field is empty");
-            return "BIC";
+            mainCtrl.popup(bic.getText() + " field is Empty!", "Warning", "Ok");
+            return false;
         }
-        return "";
+        //TODO
+        // Check validity of email, iban and bic
+        return true;
     }
 
-    public void displayError(String cause){
-        errorAlert = new Alert(AlertType.ERROR);
-        switch(cause){
-            case "Name" -> {
-                errorAlert.setContentText("Name field cannot be empty!");
-            }
-            case "Email" -> {
-                errorAlert.setContentText("Email field cannot be empty!");
-            }
-            case "IBAN" -> {
-                errorAlert.setContentText("IBAN field cannot be empty!");
-            }
-            case "BIC" -> {
-                errorAlert.setContentText("BIC field cannot be empty!");
-            }
-            default -> {
-                errorAlert.setContentText("Unrecognized field... An Unknown error occurred");
-            }
-        }
-        errorAlert.show();
+    public void resetElements(){
+        name.clear();
+        email.clear();
+        iban.clear();
+        bic.clear();
     }
 
     @FXML
@@ -209,6 +266,20 @@ public class AddParticipantCtrl implements Controller{
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+    }
+
+    /**
+     * This method loads the participant that will be edited
+     */
+    private void reloadParticipant() {
+        // swap buttons
+        saveButton.setVisible(true);
+        addButton.setVisible(false);
+        //initialize fields
+        name.setText(participantToBeModified.getName());
+        email.setText(participantToBeModified.getEmail());
+        iban.setText(participantToBeModified.getIban());
+        bic.setText(participantToBeModified.getBic());
     }
 
 

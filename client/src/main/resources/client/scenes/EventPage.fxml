@@ -123,6 +123,15 @@
             <Font size="38.0" />
          </font>
       </Label>
+      <Button fx:id="editParticipant" layoutX="448.0" layoutY="53.0" mnemonicParsing="false" styleClass="button-styled" text="Edit Participant">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <image>
+                  <Image url="@/pencil.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
 
    </children>
 </AnchorPane>

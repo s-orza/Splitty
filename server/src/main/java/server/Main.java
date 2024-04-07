@@ -25,12 +25,13 @@ import server.service.MainService;
 public class Main {
 
     public static void main(String[] args) {
-
         final MainService service = new MainService();
         SpringApplication app = new SpringApplication(Main.class);
         service.setAddress(app);
         app.run(args);
         service.genPass();
+        service.loadExchangeRates();
     }
+
 
 }
