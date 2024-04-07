@@ -5,6 +5,7 @@ import client.utils.ServerUtils;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -15,9 +16,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -38,6 +43,8 @@ public class AddParticipantCtrl implements Controller{
     private TextField iban;
     @FXML
     private TextField bic;
+    @FXML
+    private AnchorPane backGround;
     private static Alert errorAlert;
     private Participant participantToBeModified;
     ResourceBundle resourceBundle;
@@ -51,6 +58,9 @@ public class AddParticipantCtrl implements Controller{
     public void initialize(){
         initializeVariables();
         toggleLanguage();
+        backgroundImage();
+        // initializing warning Text for whether an error is encountered and alerts for any case
+        keyShortCuts();
         resetElements();
         // check if we are editing or adding a participant
         if (server.getParticipantIdToModify() != -1) {
@@ -84,6 +94,48 @@ public class AddParticipantCtrl implements Controller{
         }
     }
 
+    private void keyShortCuts() {
+        name.requestFocus();
+
+        name.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+            event.getCode()==KeyCode.DOWN) email.requestFocus();
+        });
+        email.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) iban.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) name.requestFocus();
+        });
+        iban.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) bic.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) email.requestFocus();
+        });
+        bic.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) addButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) iban.requestFocus();
+        });
+        addButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) addButton.fire();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) bic.requestFocus();
+        });
+        cancelButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) cancelButton.fire();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) addButton.requestFocus();
+        });
+    }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
     /**
      * Will return a participant if all the fields have been filled up and no rules were broken
      */
@@ -94,6 +146,14 @@ public class AddParticipantCtrl implements Controller{
         // read all text from fields and create a new participant
         Participant newParticipant = takeParticipantFromFields();
         try {
+            //TODO
+            // make the eventID be specific to each event
+            PauseTransition delay = new PauseTransition(Duration.seconds(1));
+            delay.setOnFinished(e -> {
+                showPopup();
+            });
+            delay.play();
+
             String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);
             close(event);
@@ -102,6 +162,15 @@ public class AddParticipantCtrl implements Controller{
         }
     }
 
+    private void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Added Participant Successfully");
+        VBox layout = new VBox(10);
+        Scene scene = new Scene(layout, 350, 20);
+        popupStage.setScene(scene);
+        popupStage.show();
+    }
     @FXML
     void updateParticipant(ActionEvent event) {
         if(!checkFieldsCondition())
