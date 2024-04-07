@@ -4,7 +4,6 @@ import client.utils.ServerUtils;
 import commons.Debt;
 import commons.Event;
 import commons.Participant;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -18,33 +17,21 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class DebtsCtrl implements Controller, Initializable {
-
-
-    @FXML
-    private TableView<Debt> debtTable;
-
-    @FXML
-    private TableColumn<Debt, String> debtCol;
-
-    @FXML
-    private TableColumn<Debt, Void> settleCol;
 
     @FXML
     private Button cancelButton;
     @FXML
     private ComboBox<String> searchByComboBox;
+    @FXML
+    private Accordion accordion;
 
     @FXML
     private AnchorPane backGround;
@@ -76,19 +63,33 @@ public class DebtsCtrl implements Controller, Initializable {
         // initialize close button
         cancelButton.setOnAction(this::cancelHandler);
 
-        // render the columns
-        renderCols();
-
         // setup the filter system
         filterSetup();
 
         System.out.println("DebtsCtrl finished initializing");
     }
+    private void keyShortCuts() {
+        cancelButton.requestFocus();
 
+        accordion.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP) cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN) refreshButton.requestFocus();
+        });
+    }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
 
     private void filterSetup(){
         System.out.println("Filtering");
-
         indexesToIds = new HashMap<>();
         List<Participant> participantList = server.getParticipantsOfEvent(server.getCurrentId());
         participants = FXCollections.observableList(participantList);
@@ -114,91 +115,6 @@ public class DebtsCtrl implements Controller, Initializable {
         searchByComboBox.setItems(participantNames);
     }
 
-    private void keyShortCuts() {
-        cancelButton.requestFocus();
-
-        debtTable.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN) refreshButton.requestFocus();
-        });
-    }
-
-    private void backgroundImage() {
-        Image image = new Image("Background_Photo.jpg");
-        BackgroundSize backgroundSize =
-                new BackgroundSize(720, 450, true, true, true, false);
-        BackgroundImage backgroundImage = new BackgroundImage(image,
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                backgroundSize);
-        Background background = new Background(backgroundImage);
-        backGround.setBackground(background);
-    }
-
-    private void renderCols(){
-//        debtorCol.setCellValueFactory(
-//        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getDebtor() ).getName()));
-//
-//        creditorCol.setCellValueFactory(
-//        d -> new SimpleStringProperty(server.getParticipant( d.getValue().getCreditor() ).getName()));
-//
-//        amountCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
-//        settleCol.setCellValueFactory(d -> new SimpleStringProperty(Double.toString( d.getValue().getAmount() )));
-
-        // set cell factories for columns, receive: (debt)
-        debtCol.setCellValueFactory(d -> new ReadOnlyStringWrapper(
-                server.getParticipantById(d.getValue().getDebtor()).getName()
-                + " owes " + server.getParticipantById(d.getValue().getCreditor()).getName()
-                + " " + Double.toString( d.getValue().getAmount())
-                + d.getValue().getCurrency()));
-        renderSettleCol();
-    }
-
-    private void renderSettleCol(){
-
-        //make a cellFactory for the buttons in Settle Column
-        Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>> cellFactory =
-                new Callback<TableColumn<Debt, Void>, TableCell<Debt, Void>>() {
-            @Override
-            public TableCell<Debt, Void> call(final TableColumn<Debt, Void> param) {
-                final TableCell<Debt, Void> cell = new TableCell<Debt, Void>() {
-
-                    private final Button btn = new Button("Settle");
-
-                    {
-                        //define function of settle button
-                        btn.setOnAction((ActionEvent event) -> {
-                            //retrieve selected debt
-                            Debt debt = getTableView().getItems().get(getIndex());
-                            System.out.println("selectedDebt: " + debt);
-
-                            //settle the debt
-                            server.deleteDebt(currentEvent.getEventId(), debt.getDebtID());
-
-                            //delete and refresh
-                            debtTable.getItems().remove(debt);
-                            refresh();
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(btn);
-                        }
-                    }
-                };
-                return cell;
-            }
-        };
-
-        settleCol.setCellFactory(cellFactory);
-
-        debtTable.getColumns().removeAll(settleCol);
-        debtTable.getColumns().add(settleCol);
-    }
 
     public void connectEvent(Event ev){
         currentEvent = ev;
@@ -233,32 +149,65 @@ public class DebtsCtrl implements Controller, Initializable {
         );
 
         // only set equal to new filter
-        debtTable.setItems(filteredList);
+        renderAccordion(filteredList);
+    }
+
+    public void renderAccordion(FilteredList<Debt> filteredList){
+        String title;
+        Collection<TitledPane> panes = new ArrayList<>();
+        for (Debt d: filteredList) {
+            // debt title
+            title = server.getParticipantById(d.getDebtor()).getName()
+                            + " owes " + server.getParticipantById(d.getCreditor()).getName()
+                            + " " + Double.toString( d.getAmount())
+                            + d.getCurrency();
+            // settle button
+            Button button = new Button("Settle");
+            button.setOnAction(e-> {
+                settleAction(d.getDebtID());
+            });
+
+            // debt Description
+            String description = descriptionBuilder(server.getParticipantById(d.getCreditor()));
+
+            VBox vbox = new VBox();
+            vbox.getChildren().addAll(new Label(description), button);
+
+            TitledPane tp = new TitledPane(title, vbox);
+            panes.add(tp);
+        }
+
+        accordion.getPanes().setAll(panes);
+    }
+
+    public String descriptionBuilder(Participant p){
+        // null and empty checks
+        if(Objects.isNull(p.getBic()) ||
+                Objects.isNull(p.getIban())||
+                Objects.equals(p.getBic(), "") ||
+                Objects.equals(p.getIban(), ""))
+        {
+            return "Bank information unavailable! Please transfer the money in person.";
+        }
+
+        String result = "Bank information information available! Please transfer the money to:\r" +
+                "Account Holder: " + p.getName() + "\r" +
+                "IBAN: " + p.getIban() + "\r" +
+                "BIC: " + p.getBic() + "\r";
+
+        return result;
+    }
+
+    public void settleAction(long debtId){
+        server.deleteDebt(currentEvent.getEventId(), debtId);
+
+        //delete and refresh
+        refresh();
     }
 
     public void filter(){
         filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         refresh();
-    }
-
-    @FXML
-    void personWasSelected()
-    {
-//        long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
-//        Participant x;
-//        x=server.getParticipant(id);
-//        if(x==null)
-//            return;
-//        fromxButton.setText("From "+x.getName());
-//        includingxButton.setText("Including "+x.getName());
-//        if(fromxButton.isSelected())
-//            searchFromX(new ActionEvent());
-//        else
-//        if(includingxButton.isSelected())
-//            searchIncludingX(new ActionEvent());
-//        else
-//            //this is useful if we deselect all options.
-//            searchAll(new ActionEvent());
     }
 
     public Pair<Controller, Parent> getPair() {
