@@ -224,7 +224,7 @@ public class DebtController {
     public ResponseEntity<List<Debt>> settleAll(){  //this function is dangerous!
         ResponseEntity<List<Debt>> result = getAllDebts();
         // if no debts existed, return notFound
-        if(Objects.isNull(result)){
+        if(result.getBody() == null || result.getBody().isEmpty()){
             return ResponseEntity.notFound().build();
         }
 

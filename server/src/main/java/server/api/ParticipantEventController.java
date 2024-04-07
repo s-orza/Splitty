@@ -87,11 +87,13 @@ public class ParticipantEventController {
 
         System.out.println("in api method");
         List<Long> participantIds = repo.findParticipantIdsByEventId(eventId);
+        System.out.println(participantIds);
         List<Participant> participants = new ArrayList<>();
         for(long id : participantIds){
             Participant toAdd = participantRepository.findById(id).get();
             participants.add(toAdd);
         }
+        System.out.println("Particiapants: " + participants);
         return ResponseEntity.ok(participants);
     }
 
@@ -100,7 +102,7 @@ public class ParticipantEventController {
 
         System.out.println("in api methode");
         List<Long> eventIds = repo.findEventIdsByParticipantId(participantId);
-        System.out.println("indicies foundyy");
+        System.out.println(eventIds);
         List<Event> events = new ArrayList<>();
 
         for(long id : eventIds){
@@ -108,6 +110,7 @@ public class ParticipantEventController {
             Event toAdd = eventRepository.findById(id).get();
             events.add(toAdd);
         }
+        System.out.println("Events: " + events);
         return ResponseEntity.ok(events);
     }
 
