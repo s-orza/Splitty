@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.*;
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,19 +12,20 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import com.google.inject.Inject;
 import javafx.scene.text.Text;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -98,8 +100,13 @@ public class AddExpenseCtrl implements Controller{
     private ListView<Pair2> namesList;//names showed on screen from which we select
     @FXML
     private Text warningText;
+    @FXML
+    private AnchorPane backGround;
+    @FXML
+    private Button undoButton;
     //in this list are the persons that have their checkbox checked.
     private List<Integer> selectedNamesList=new ArrayList<>();
+    private Stack<Map<String, String>> undoStack;
     private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
             //new Pair2("Serban",0), new Pair2("David",1),
             //new Pair2("Olav",2), new Pair2("Alex",3));
@@ -107,6 +114,14 @@ public class AddExpenseCtrl implements Controller{
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
     private Expense expenseToBeModified;
+    private final String[] tempContent = {""};
+    private final String[] tempMoneyPaid = {""};
+    private final String[] tempAuthor = {"-1"};
+    private final String[] tempMoneyType = {"-1"};
+    private final String[]  tempType = {"-1"};
+    private final String[]  tempDate = {"-1"};
+    private final String[] tempAllPeople = {"false"};
+    private final String[] tempSomePeople= {"false"};
 
     ResourceBundle resourceBundle;
     @Inject
@@ -115,9 +130,12 @@ public class AddExpenseCtrl implements Controller{
     }
     @FXML
     public void initialize() {
+        backgroundImage();
+        keyShortCuts();
         //load resources
         loadFromDatabase();
         toggleLanguage();
+        undoFunction();
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
@@ -135,6 +153,240 @@ public class AddExpenseCtrl implements Controller{
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
+    }
+
+    private void undoFunction() {
+        undoStack = new Stack();
+        contentBox.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                if (!tempContent[0].equals(contentBox.getText())) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("contentBox", tempContent[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempContent[0] = contentBox.getText();
+                }
+            }
+        });
+        moneyPaid.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                if (!tempMoneyPaid[0].equals(moneyPaid.getText())) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("moneyPaid", tempMoneyPaid[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempMoneyPaid[0] = moneyPaid.getText();
+                }
+            }
+        });
+        authorSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (!tempAuthor[0].equals(String.valueOf(authorSelector.getSelectionModel().getSelectedIndex()))) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("authorSelector",tempAuthor[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempAuthor[0] = String.valueOf(authorSelector.getSelectionModel().getSelectedIndex());
+                }
+
+            }
+        });
+        moneyTypeSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (!tempMoneyType[0].equals(String.valueOf(moneyTypeSelector.getSelectionModel()
+                        .getSelectedIndex()))) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("moneyTypeSelector",tempMoneyType[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempMoneyType[0] = String.valueOf(moneyTypeSelector.getSelectionModel().getSelectedIndex());
+                }
+
+            }
+        });
+        typeSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                if (!tempType[0].equals(String.valueOf(typeSelector.getSelectionModel().getSelectedIndex()))) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("typeSelector",tempType[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempType[0] = String.valueOf(typeSelector.getSelectionModel().getSelectedIndex());
+                }
+
+            }
+        });
+        date.valueProperty().addListener((observable, oldValue, newValue) -> {
+            // Check if the new value is different from the old value
+            if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
+                if (!tempDate[0].equals(newValue.toString())) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("date", tempDate[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempDate[0] = String.valueOf(newValue.toString());
+                }
+            }
+        });
+        checkBoxAllPeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            // Check if the new value is different from the old value
+            if (!oldValue.equals(newValue)) {
+                if (!tempAllPeople[0].equals(String.valueOf(checkBoxAllPeople.isSelected()))) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("checkBoxAllPeople",tempAllPeople[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempAllPeople[0] = String.valueOf(checkBoxAllPeople.isSelected());
+                }
+            }
+        });
+        checkBoxSomePeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            // Check if the new value is different from the old value
+            if (!oldValue.equals(newValue)) {
+                if (!tempSomePeople[0].equals(String.valueOf(checkBoxSomePeople.isSelected()))) {
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put("checkBoxSomePeople",tempSomePeople[0]);
+                    undoStack.push(nameMap);
+                    System.out.println("stack is " + undoStack.toString());
+                    tempSomePeople[0] = String.valueOf(checkBoxSomePeople.isSelected());
+                }
+            }
+        });
+
+    }
+
+
+    //shortcuts that when specific key is pressed while focusing on a part of the page, the right thing happens
+    private void keyShortCuts() {
+        authorSelector.requestFocus();
+
+        authorSelector.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) authorSelector.show();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) contentBox.requestFocus();
+        });
+        contentBox.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) moneyPaid.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) authorSelector.requestFocus();
+        });
+        moneyPaid.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
+                    event.getCode()==KeyCode.DOWN) moneyTypeSelector.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) contentBox.requestFocus();
+        });
+        moneyTypeSelector.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) date.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) moneyTypeSelector.show();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) moneyPaid.requestFocus();
+        });
+        date.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) newTypeTextField.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) {
+                newTypeTextField.requestFocus();
+                date.show();
+            }
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) {
+                moneyTypeSelector.requestFocus();
+            }
+        });
+        newTypeTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) colorPicker.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) date.requestFocus();
+        });
+        colorPicker.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) addTypeButton.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) colorPicker.show();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+        });
+        addTypeButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) typeSelector.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) createTag(null);
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+        });
+        typeSelector.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) checkBoxAllPeople.requestFocus();
+            if (event.getCode() == KeyCode.ENTER) typeSelector.show();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+        });
+        checkBoxAllPeople.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) checkBoxSomePeople.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) typeSelector.requestFocus();
+        });
+        checkBoxSomePeople.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) namesList.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) saveButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) checkBoxAllPeople.requestFocus();
+        });
+
+        undoButton.setOnMouseClicked(event -> {
+            if (!undoStack.empty()) {
+                System.out.println("Stack is " + undoStack.toString());
+                Map result = undoStack.pop();
+                System.out.println("popped was " + result.toString());
+                String key = (String) result.keySet().iterator().next();
+                switch (key) {
+                    case "contentBox":
+                        contentBox.setText((String) result.get(key));
+                        tempContent[0] = "";
+                        break;
+                    case "moneyPaid":
+                        moneyPaid.setText((String) result.get(key));
+                        tempMoneyPaid[0] = "";
+                        break;
+                    case "authorSelector":
+                        if (Integer.parseInt((String)result.get(key))==-1) {
+                            authorSelector.getSelectionModel().clearSelection();
+                        } else {
+                            authorSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
+                        }
+                        tempAuthor[0]= "-1";
+                        break;
+                    case "moneyTypeSelector":
+                        if (Integer.parseInt((String)result.get(key))==-1) {
+                            moneyTypeSelector.getSelectionModel().clearSelection();
+                        } else {
+                            moneyTypeSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
+                        }
+                        tempMoneyType[0]= "-1";
+                        break;
+                    case "typeSelector":
+                        if (Integer.parseInt((String)result.get(key))==-1) {
+                            typeSelector.getSelectionModel().clearSelection();
+                        } else {
+                            typeSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
+                        }
+                        tempType[0]= "-1";
+                        break;
+                    case "date":
+                        if (((String)result.get(key)).equals("-1")) {
+                            date.setValue(null);
+                        } else {
+                            String dateString = (String)result.get(key);
+                            LocalDate localDate = LocalDate.parse(dateString);
+                            date.setValue(localDate);
+                            undoStack.pop();
+                        }
+                        tempType[0]= "-1";
+                        break;
+                    case "checkBoxAllPeople":
+                        checkBoxAllPeople.setSelected(Boolean.parseBoolean((String)result.get(key)));
+                        tempAllPeople[0] = "false";
+                        break;
+                    case "checkBoxSomePeople":
+                        checkBoxSomePeople.setSelected(Boolean.parseBoolean((String)result.get(key)));
+                        tempSomePeople[0] = "false";
+                        if (!Boolean.parseBoolean((String)result.get(key))) {
+                            namesList.setVisible(false);
+                        } else {
+                            namesList.setVisible(true);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        });
     }
 
     private void toggleLanguage() {
@@ -197,6 +449,18 @@ public class AddExpenseCtrl implements Controller{
         for(Tag t:temp)
             tagsAvailable.add(t.getId().getName());
     }
+
+    private void backgroundImage() {
+        Image image = new Image("Background_Photo.jpg");
+        BackgroundSize backgroundSize =
+                new BackgroundSize(720, 450, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
+        Background background = new Background(backgroundImage);
+        backGround.setBackground(background);
+    }
+
     /**
      * This is a function that resets and prepare the scene.
      * This resets the elements on screen with what we have from the database
@@ -360,9 +624,17 @@ public class AddExpenseCtrl implements Controller{
 
 //        boolean b=
 //        server.addExpenseToEvent(server.getCurrentId(),expense);
+
+
         String destination = "/app/expenses/tag/" + String.valueOf(server.getCurrentId());
         server.sendExpense(destination,expense);
-
+//        List<ObservableList<Expense>> commandHistoryNew = EventPageCtrl.getCommandHistory();
+//        ObservableList<Expense> newList = FXCollections
+//        .observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
+//        newList.add(expense);
+//        commandHistoryNew.add(newList);
+//        EventPageCtrl.setCommandHistory(commandHistoryNew);
+//        EventPageCtrl.increaseCommandIndex();
 //        if(!b)
 //        {
 //            //warning, connection with server lost
@@ -374,10 +646,26 @@ public class AddExpenseCtrl implements Controller{
 
         resetElements();
         server.setExpenseToBeModified(-1);
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        delay.setOnFinished(e -> {
+            showPopup();
+        });
+        delay.play();
+
         //go back to the event page
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
+    }
+    private void showPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Created Expense Successfully");
+        VBox layout = new VBox(10);
+        Scene scene = new Scene(layout, 350, 20);
+        popupStage.setScene(scene);
+        popupStage.show();
     }
     private Expense takeExpenseFromFields()
     {
