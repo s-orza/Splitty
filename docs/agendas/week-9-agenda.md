@@ -2,7 +2,7 @@
 |--------------|---------------------|
 | Date:        | 09.04.2024          |
 | Time:        | 13:45-14:45         |
-| Chair        | David               |
+| Chair        | Olav               |
 | Minute Taker | Whoever is last     |
 
 <h1>Final week!</h1>
