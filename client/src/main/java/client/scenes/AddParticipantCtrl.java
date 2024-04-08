@@ -141,7 +141,8 @@ public class AddParticipantCtrl implements Controller{
      */
     @FXML
     void addParticipant(ActionEvent event) {
-        checkFieldsCondition();
+        if(!checkFieldsCondition())
+            return;
 
         // read all text from fields and create a new participant
         Participant newParticipant = takeParticipantFromFields();
@@ -232,20 +233,9 @@ public class AddParticipantCtrl implements Controller{
      * @return Any string for an empty field or an empty string if no errors were found
      */
     private boolean checkFieldsCondition() {
-        if (name.getText().isEmpty()) {
-            mainCtrl.popup(name.getText() + " field is Empty!", "Warning", "Ok");
-            return false;
-        }
-        if (email.getText().isEmpty()) {
-            mainCtrl.popup(email.getText() + " field is Empty!", "Warning", "Ok");
-            return false;
-        }
-        if (iban.getText().isEmpty()) {
-            mainCtrl.popup(iban.getText() + " field is Empty!", "Warning", "Ok");
-            return false;
-        }
-        if (bic.getText().isEmpty()) {
-            mainCtrl.popup(bic.getText() + " field is Empty!", "Warning", "Ok");
+        // check if any fields are empty
+        if (name.getText().isEmpty() || email.getText().isEmpty() || iban.getText().isEmpty() || bic.getText().isEmpty()) {
+            mainCtrl.popup("One or more fields are empty!\nMake sure you fill all fields!", "Warning", "Ok");
             return false;
         }
         //TODO
