@@ -26,7 +26,6 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import javax.inject.Inject;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static client.scenes.MainPageCtrl.currentLocale;
 
