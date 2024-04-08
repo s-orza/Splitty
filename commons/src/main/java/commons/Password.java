@@ -61,7 +61,7 @@ public class Password {
     /**
      * The setter method for the debtID attribute
      *
-     * @param debtID The value to set debtID to
+     * @param passID The value to set debtID to
      **/
     public void setPassID(long passID) {
         this.passID = passID;

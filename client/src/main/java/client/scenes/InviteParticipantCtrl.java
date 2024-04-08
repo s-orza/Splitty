@@ -48,7 +48,8 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   }
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    List <Participant> list =server.getAllParticipantsFromDatabase();
+    //There was a bug. Before it was server.getAllParticipantsFromDatabase() but this returns a null.
+    List <Participant> list =server.getParticipantsOfEvent(server.getCurrentId());
     contents =  FXCollections.observableArrayList(
             list.stream().filter(e -> e.getEmail().matches(
                     "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") &&
