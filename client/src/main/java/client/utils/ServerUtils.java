@@ -309,17 +309,6 @@ public class ServerUtils {
 		return null;
 	}
 
-	public boolean deleteParticipantEvent(long eventId, long participantId) {
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).delete();
-
-		if(response.getStatus() < 300)
-			return true;
-		return false;
-	}
-
 
 	/**
 	 * This will go and invoke the ParticipantEvent controller
@@ -357,6 +346,20 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON).get();
 		if (response.getStatus() == 200)
 			return response.readEntity(Participant.class);
+		return null;
+	}
+
+	/**
+	 * Getter for all debts in the database
+	 * @return
+	 */
+	public List<Debt> getAllDebts() {
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl).path("/api/")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if (response.getStatus() == 200)
+			return response.readEntity(List.class);
 		return null;
 	}
 	public boolean resetDebtsFromExpense(long eventId,long expenseId)
@@ -685,14 +688,32 @@ public class ServerUtils {
 				.get(new GenericType<Password>() {});
 	}
 
-	public boolean deleteParticipant(long participantId){
+	public void deleteParticipant(long participantId){
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl+"api/participant/"+participantId)
+				.target(serverUrl + "api/participant/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
-		if (response.getStatus() < 300)
-			return true;
-		return false;
+
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			System.out.println("Participant removed successfully.");
+		} else {
+			System.out.println("Failed to remove participant. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
+
+	public void deleteParticipantEvent(long eventId, long participantId){
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).delete();
+
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			System.out.println("Password removed successfully.");
+		} else {
+			System.out.println("Failed to remove participant. Status code: " + response.getStatus());
+		}
+		response.close();
 	}
 
 	/**

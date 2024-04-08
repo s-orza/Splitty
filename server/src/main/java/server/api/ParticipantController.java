@@ -41,7 +41,7 @@ public class ParticipantController {
      * Get request for all the participants in the repository
      * @return a response with the list of all participants
      */
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<Participant>> getAllParticipants() {
         List<Participant> participants = repo.findAll();
         return ResponseEntity.ok(participants);

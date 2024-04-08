@@ -26,6 +26,8 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import static client.scenes.MainPageCtrl.currentLocale;
 
 public class EventPageCtrl implements Controller{
@@ -353,7 +355,7 @@ public class EventPageCtrl implements Controller{
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
-        removeParticipant.setOnAction(e->removeParticipantHandler(e));
+        removeParticipant.setOnAction(e->removeParticipantHandler(participantsTable.getSelectionModel().getSelectedItems()));
         editExpense.setOnAction(e->editExpenseHandler(e));
         editParticipant.setOnAction(e -> editParticipantHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -794,7 +796,7 @@ public class EventPageCtrl implements Controller{
     /**
      * This method handles the removal of participants in the database
      */
-    public void removeParticipantHandler(ActionEvent event){
+    public void removeParticipantHandler(List<Participant> participants){
         VBox layout = new VBox(10);
         Label label = new Label(resourceBundle.getString("removeParticipantQuestionText"));
         Button cancelButton = new Button(resourceBundle.getString("cancelText"));
@@ -808,11 +810,16 @@ public class EventPageCtrl implements Controller{
 
         // set action for removing
         removeButton.setOnAction(e -> {
+            if (!participantsStillHaveDebts(participants)){
+                mainCtrl.popup(
+                        resourceBundle.getString("participantsStillInDebtsText"),
+                        "ERROR", "Ok");
+                removeParticipantHandler(participants);
+                return;
+            }
             popupStage.close();
 
-            ObservableList<Participant> selectedItems = participantsTable.getSelectionModel().getSelectedItems();
-            List<Participant> itemsToRemove = new ArrayList<>(selectedItems);
-            participantsData.removeAll(itemsToRemove);
+            List<Participant> itemsToRemove = new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems());
 
             removeParticipantsFromDatabase(itemsToRemove);
         });
@@ -833,10 +840,48 @@ public class EventPageCtrl implements Controller{
     }
 
     /**
+     * Checks whether a list of participants still has any relations to debts.
+     * If so, it will return false - to represent that they still got business to do
+     * Otherwise, it will return true - that there are no debts left to pay.
+     * @param participants the list of participants that will be checked
+     * @return true if they have no debts left, false otherwise
+     */
+    private boolean participantsStillHaveDebts(List<Participant> participants) {
+        List<Debt> debts = server.getAllDebts();
+        // if there were no debts found, then you can delete the participant
+        if (debts == null)
+            return true;
+        // turn the list of participants into a list of ids of the participants - for easier checking
+        List<Long> participantsIds = participants.stream()
+                .map(participant -> Long.valueOf(participant.getParticipantID()))
+                .collect(Collectors.toList());
+        // transform our list of debts into a list of pairs of IDS of participants
+        List<Pair<Long, Long>> debtorsCreditors = debts.stream()
+                .map(debt -> new Pair<>(debt.getCreditor(), debt.getDebtor()))
+                .collect(Collectors.toList());
+        // split that list into two lists easier to parse
+        List<Long> debtorIds = debtorsCreditors.stream()
+                .map(Pair::getKey)
+                .collect(Collectors.toList());
+
+        List<Long> creditorIds = debtorsCreditors.stream()
+                .map(Pair::getValue)
+                .collect(Collectors.toList());
+        // Now we check for each participant to delete if they are in any debts
+        for (Long pId: participantsIds) {
+            // if found either as a debtor or creditor, then we cannot remove them
+            if (debtorIds.contains(pId) || creditorIds.contains(pId))
+                return false;
+        }
+        // if not then we return true
+        return true;
+    }
+
+    /**
      * This method will remove the provided list of participant from the database
      * @param toRemove List of participants to remove
      */
-    private void removeParticipantsFromDatabase(List<Participant> toRemove){
+    private void removeParticipantsFromDatabase(List<Participant> toRemove) {
         for (Participant p: toRemove){
             server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
             server.deleteParticipant(p.getParticipantID());
