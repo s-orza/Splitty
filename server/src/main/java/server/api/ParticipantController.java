@@ -148,7 +148,7 @@ public class ParticipantController {
     public ResponseEntity<?> deleteParticipantById(@PathVariable Long id) {
         Optional<Participant> participant = repo.findById(id);
         if (participant.isPresent()) {
-            repo.delete(participant.get());
+            repo.deleteById(participant.get().getParticipantID());
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

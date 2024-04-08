@@ -693,7 +693,6 @@ public class ServerUtils {
 				.target(serverUrl + "api/participant/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).delete();
-
 		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			System.out.println("Participant removed successfully.");
 		} else {
@@ -709,9 +708,9 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON).delete();
 
 		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-			System.out.println("Password removed successfully.");
+			System.out.println("Participant removed successfully.");
 		} else {
-			System.out.println("Failed to remove participant. Status code: " + response.getStatus());
+			System.out.println("Failed to remove participantEvent. Status code: " + response.getStatus());
 		}
 		response.close();
 	}

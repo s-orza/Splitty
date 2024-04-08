@@ -355,7 +355,8 @@ public class EventPageCtrl implements Controller{
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
-        removeParticipant.setOnAction(e->removeParticipantHandler(participantsTable.getSelectionModel().getSelectedItems()));
+        removeParticipant.setOnAction(e->removeParticipantHandler(
+                participantsTable.getSelectionModel().getSelectedItems()));
         editExpense.setOnAction(e->editExpenseHandler(e));
         editParticipant.setOnAction(e -> editParticipantHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -616,7 +617,7 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
         server.setParticipantToBeModified(itemsToEdit.get(0).getParticipantID());
-        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "View Participant");
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "Edit Participant");
     }
 
     private void addExpenseHandler(ActionEvent e) {
@@ -810,7 +811,7 @@ public class EventPageCtrl implements Controller{
 
         // set action for removing
         removeButton.setOnAction(e -> {
-            if (!participantsStillHaveDebts(participants)){
+            if (!participantsHaveNoDebts(participants)){
                 mainCtrl.popup(
                         resourceBundle.getString("participantsStillInDebtsText"),
                         "ERROR", "Ok");
@@ -818,10 +819,8 @@ public class EventPageCtrl implements Controller{
                 return;
             }
             popupStage.close();
-
-            List<Participant> itemsToRemove = new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems());
-
-            removeParticipantsFromDatabase(itemsToRemove);
+            // goes to remove the participants from the database, from all repositories
+            removeParticipantsFromDatabase(new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems()));
         });
 
         // set action for cancelling the removal process
@@ -846,7 +845,7 @@ public class EventPageCtrl implements Controller{
      * @param participants the list of participants that will be checked
      * @return true if they have no debts left, false otherwise
      */
-    private boolean participantsStillHaveDebts(List<Participant> participants) {
+    private boolean participantsHaveNoDebts(List<Participant> participants) {
         List<Debt> debts = server.getAllDebts();
         // if there were no debts found, then you can delete the participant
         if (debts == null)
@@ -883,7 +882,6 @@ public class EventPageCtrl implements Controller{
      */
     private void removeParticipantsFromDatabase(List<Participant> toRemove) {
         for (Participant p: toRemove){
-            server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
             server.deleteParticipant(p.getParticipantID());
         }
     }
