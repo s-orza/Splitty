@@ -131,7 +131,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="Invite" layoutX="624.0" layoutY="400.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" />
+      <Button fx:id="Invite" layoutX="624.0" layoutY="262.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" />
 
    </children>
 </AnchorPane>
