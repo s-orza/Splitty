@@ -274,6 +274,7 @@ public class StatisticsCtrl implements Controller, Initializable {
 
         }
         pieChart.setData(pieChartData);
+        pieChart.setStyle("-fx-font-size: 14px;-fx-font-weight: bold;");
         //add colors to the pie chart
         pieChartData.forEach(data -> {
             String color = tagColors.get(data.getName());
