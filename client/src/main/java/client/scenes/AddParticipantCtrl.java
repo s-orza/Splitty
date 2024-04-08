@@ -1,6 +1,9 @@
 package client.scenes;
 
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import client.utils.ServerUtils;
 import commons.Participant;
 import com.google.inject.Inject;
@@ -27,7 +30,7 @@ import javafx.util.Pair;
 
 import static client.scenes.MainPageCtrl.currentLocale;
 
-public class AddParticipantCtrl implements Controller{
+public class AddParticipantCtrl implements Controller {
     private ServerUtils server;
     @FXML
     private Button addButton;
@@ -48,14 +51,14 @@ public class AddParticipantCtrl implements Controller{
     private static Alert errorAlert;
     private Participant participantToBeModified;
     ResourceBundle resourceBundle;
-    
+
     @Inject
-    public AddParticipantCtrl(ServerUtils server){
+    public AddParticipantCtrl(ServerUtils server) {
         this.server = server;
     }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         initializeVariables();
         toggleLanguage();
         backgroundImage();
@@ -67,8 +70,7 @@ public class AddParticipantCtrl implements Controller{
             // if we are editing a participant
             participantToBeModified = server.getParticipantToBeModified();
             reloadParticipant();
-        }
-        else {
+        } else {
             // if we are adding a participant
             addButton.setVisible(true);
             saveButton.setVisible(false);
@@ -82,14 +84,14 @@ public class AddParticipantCtrl implements Controller{
         bic.setText("");
     }
 
-    private void toggleLanguage(){
-        try{
+    private void toggleLanguage() {
+        try {
             resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
             name.setText(resourceBundle.getString("nameText"));
             addButton.setText(resourceBundle.getString("addText"));
             saveButton.setText(resourceBundle.getString("saveText"));
             cancelButton.setText(resourceBundle.getString("cancelText"));
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getStackTrace());
         }
     }
@@ -98,31 +100,31 @@ public class AddParticipantCtrl implements Controller{
         name.requestFocus();
 
         name.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
-            event.getCode()==KeyCode.DOWN) email.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||
+                    event.getCode() == KeyCode.DOWN) email.requestFocus();
         });
         email.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
-                    event.getCode()==KeyCode.DOWN) iban.requestFocus();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) name.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||
+                    event.getCode() == KeyCode.DOWN) iban.requestFocus();
+            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) name.requestFocus();
         });
         iban.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
-                    event.getCode()==KeyCode.DOWN) bic.requestFocus();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) email.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||
+                    event.getCode() == KeyCode.DOWN) bic.requestFocus();
+            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) email.requestFocus();
         });
         bic.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
-                    event.getCode()==KeyCode.DOWN) addButton.requestFocus();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) iban.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||
+                    event.getCode() == KeyCode.DOWN) addButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) iban.requestFocus();
         });
         addButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT) addButton.fire();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) bic.requestFocus();
+            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) bic.requestFocus();
         });
         cancelButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT) cancelButton.fire();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) addButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) addButton.requestFocus();
         });
     }
 
@@ -136,12 +138,14 @@ public class AddParticipantCtrl implements Controller{
         Background background = new Background(backgroundImage);
         backGround.setBackground(background);
     }
+
     /**
      * Will return a participant if all the fields have been filled up and no rules were broken
      */
     @FXML
     void addParticipant(ActionEvent event) {
-        checkFieldsCondition();
+        if (!checkFieldsCondition())
+            return;
 
         // read all text from fields and create a new participant
         Participant newParticipant = takeParticipantFromFields();
@@ -171,15 +175,15 @@ public class AddParticipantCtrl implements Controller{
         popupStage.setScene(scene);
         popupStage.show();
     }
+
     @FXML
     void updateParticipant(ActionEvent event) {
-        if(!checkFieldsCondition())
+        if (!checkFieldsCondition())
             return;
         // reload again the participant to be sure that it is the newest participant
         // can also prevent a bug where another user has deleted the participant you are already working on
-        participantToBeModified=server.getParticipantToBeModified();
-        if(participantToBeModified==null)
-        {
+        participantToBeModified = server.getParticipantToBeModified();
+        if (participantToBeModified == null) {
             //this can happen if somebody else deleted this participant while you were editing it. In this case
             //let's send a message to the user to inform him and to abort editing.
             VBox layout = new VBox(10);
@@ -209,51 +213,82 @@ public class AddParticipantCtrl implements Controller{
             return;
         }
         Participant participant = takeParticipantFromFields();
-        System.out.println(participant);
-        //get participant to be modified
-//        participant = server.getParticipant(participantToBeModified.getParticipantID());
-        //modify the participant and save it in the database
-        System.out.println(participantToBeModified.getParticipantID());
+        System.out.println("Editing participant " + participant.getParticipantID());
         server.updateParticipant(participantToBeModified.getParticipantID(), participant);
-        participantToBeModified=null;
+        participantToBeModified = null;
         server.setParticipantToBeModified(-1);
 
         close(event);
     }
 
-    private Participant takeParticipantFromFields()
-    {
+    private Participant takeParticipantFromFields() {
         // get and return a new participant from the text fields
         return new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
     }
 
     /**
      * Checks for any empty field.
+     *
      * @return Any string for an empty field or an empty string if no errors were found
      */
     private boolean checkFieldsCondition() {
-        if (name.getText().isEmpty()) {
-            mainCtrl.popup(name.getText() + " field is Empty!", "Warning", "Ok");
+        // check if any fields are empty
+        if(name.getText().isEmpty()||email.getText().isEmpty()||iban.getText().isEmpty()||bic.getText().isEmpty()){
+            mainCtrl.popup("One or more fields are empty!\nMake sure you fill all fields!", "Error: empty fields",
+                    "Ok");
             return false;
         }
-        if (email.getText().isEmpty()) {
-            mainCtrl.popup(email.getText() + " field is Empty!", "Warning", "Ok");
+        if (!isValidEmail(email.getText())){
+            mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
             return false;
         }
-        if (iban.getText().isEmpty()) {
-            mainCtrl.popup(iban.getText() + " field is Empty!", "Warning", "Ok");
-            return false;
-        }
-        if (bic.getText().isEmpty()) {
-            mainCtrl.popup(bic.getText() + " field is Empty!", "Warning", "Ok");
-            return false;
-        }
+        // working, but a hassle to deal with. Re-enable before sending it!
+//        if (!isValidIBAN(iban.getText())){
+//            mainCtrl.popup("Provided IBAN is not valid!", "Error", "Ok");
+//            return false;
+//        }
+//        if(!isValidBIC(bic.getText())){
+//            mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
+//            return false;
+//        }
         //TODO
         // Check validity of email, iban and bic
         return true;
     }
 
-    public void resetElements(){
+    private static boolean isValidBIC(String bic) {
+        // Regular expression for BIC format
+        String bicRegex = "^[A-Za-z]{6}[A-Za-z0-9]{2}([A-Za-z0-9]{3})?$";
+        Pattern pattern = Pattern.compile(bicRegex);
+        Matcher matcher = pattern.matcher(bic);
+        // Return true if the BIC matches the pattern, otherwise false
+        return matcher.matches();
+    }
+    private static boolean isValidIBAN(String iban) {
+        // Regular expression for IBAN format
+        String ibanRegex = "[A-Z]{2}\\d{2}[A-Z]{4}\\d{14}";
+        Pattern pattern = Pattern.compile(ibanRegex);
+        Matcher matcher = pattern.matcher(iban);
+        // Return false if IBAN format doesn't match
+        if (!matcher.matches()) {
+            return false;
+        }
+
+        // Perform extra IBAN checks - for now it just returns true
+        // This is because IBANs can differ from country to country
+        return true;
+    }
+
+    private static boolean isValidEmail(String email) {
+        // Regular expression for email validation
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        // Return true if the email matches the pattern, otherwise false
+        return matcher.matches();
+    }
+
+    public void resetElements() {
         name.clear();
         email.clear();
         iban.clear();
@@ -261,7 +296,7 @@ public class AddParticipantCtrl implements Controller{
     }
 
     @FXML
-    public void close(ActionEvent e){
+    public void close(ActionEvent e) {
         System.out.println("Closing Addparticipants window...");
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
@@ -283,10 +318,11 @@ public class AddParticipantCtrl implements Controller{
     }
 
 
-    public Pair<Controller, Parent> getPair(){
+    public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "AddParticipant.fxml");
     }
-    public String getTitle(){
+
+    public String getTitle() {
         return "Add Participant";
     }
 }

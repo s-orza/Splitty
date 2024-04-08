@@ -36,4 +36,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     // Fetch all participants
     @Query("SELECT p FROM Participant p")
     List<Participant> findAllParticipants();
+
+    @Query("DELETE FROM Participant WHERE id=:id")
+    void deleteById(@Param("id") Long id);
 }

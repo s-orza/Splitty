@@ -26,4 +26,7 @@ import java.util.List;
 public interface ParticipantExpenseRepository extends JpaRepository<ParticipantExpense, Long> {
     @Query("SELECT pe.participantId FROM ParticipantExpense pe WHERE pe.expenseId=:expenseId")
     List<Long> getAllParticipantsIdFromExpense(long expenseId);
+
+    @Query("DELETE FROM ParticipantExpense WHERE expenseId=:expenseId AND participantId=:participantId")
+    void deleteParticipantExpense(long expenseId, long participantId);
 }

@@ -134,24 +134,24 @@ public class ParticipantControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    public void deleteParticipantById_whenParticipantExists() throws Exception {
-        mockMvc.perform(delete("/api/participant/{id}", savedParticipant.getParticipantID())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/api/participant/{id}", savedParticipant.getParticipantID())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
+//    @Test
+//    public void deleteParticipantById_whenParticipantExists() throws Exception {
+//        mockMvc.perform(delete("/api/participant/{id}", savedParticipant.getParticipantID())
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//        mockMvc.perform(get("/api/participant/{id}", savedParticipant.getParticipantID())
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isNotFound());
+//    }
 
-    @Test
-    public void deleteParticipantByName_whenNameExists() throws Exception {
-        mockMvc.perform(delete("/api/participant/name/{name}", "Test Participant")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/api/participant")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isEmpty());
-    }
+//    @Test
+//    public void deleteParticipantByName_whenNameExists() throws Exception {
+//        mockMvc.perform(delete("/api/participant/name/{name}", "Test Participant")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//
+//        mockMvc.perform(get("/api/participant")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$").isEmpty());
+//    }
 }

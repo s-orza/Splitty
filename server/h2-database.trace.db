@@ -1,0 +1,3 @@
+2024-04-08 13:43:42.831742+02:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "EPARTICIPANT_EXPENSE" not found; SQL statement:
+SELECT * FROM EPARTICIPANT_EXPENSE [42102-224]

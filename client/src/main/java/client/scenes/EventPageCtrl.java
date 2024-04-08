@@ -26,6 +26,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import javax.inject.Inject;
 import java.util.*;
+
 import static client.scenes.MainPageCtrl.currentLocale;
 
 public class EventPageCtrl implements Controller{
@@ -78,7 +79,6 @@ public class EventPageCtrl implements Controller{
     private ToggleButton includingxButton;
     private String includingxButtonText;
     private String allText;
-
     @FXML
     Button addParticipant;
 
@@ -106,8 +106,8 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     Label eventName;
-
-
+    @FXML
+    Button removeParticipant;
     @FXML
     Button flagButton;
 
@@ -354,6 +354,8 @@ public class EventPageCtrl implements Controller{
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
+        removeParticipant.setOnAction(e->removeParticipantHandler(
+                participantsTable.getSelectionModel().getSelectedItems()));
         editExpense.setOnAction(e->editExpenseHandler(e));
         editParticipant.setOnAction(e -> editParticipantHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -614,7 +616,7 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
         server.setParticipantToBeModified(itemsToEdit.get(0).getParticipantID());
-        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "View Participant");
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "Edit Participant");
     }
 
     private void addExpenseHandler(ActionEvent e) {
@@ -790,6 +792,95 @@ public class EventPageCtrl implements Controller{
         renderExpenseColumns(expensesFromX);
 
     }
+
+    /**
+     * This method handles the removal of participants in the database
+     */
+    public void removeParticipantHandler(List<Participant> participants){
+        VBox layout = new VBox(10);
+        Label label = new Label(resourceBundle.getString("removeParticipantQuestionText"));
+        Button cancelButton = new Button(resourceBundle.getString("cancelText"));
+
+        Button removeButton = new Button(resourceBundle.getString("removeText"));
+
+        // setting up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle(resourceBundle.getString("removeParticipantTitle"));
+
+        // set action for removing
+        removeButton.setOnAction(e -> {
+            if (participantsHaveDebtsLeft(participants)){
+                mainCtrl.popup(
+                        resourceBundle.getString("participantsStillInDebtsText"),
+                        "ERROR", "Ok");
+                return;
+            }
+            popupStage.close();
+            // goes to remove the participants from the database, from the ParticipantEvent repository
+            // Does not remove from all other repositories due to compatibility issues
+            removeParticipantsFromDatabase(new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems()));
+        });
+
+        // set action for cancelling the removal process
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, cancelButton, removeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
+
+    /**
+     * Checks whether a list of participants still has any relations to debts.
+     * If so, it will return false - to represent that they still got business to do
+     * Otherwise, it will return true - that there are no debts left to pay.
+     * @param participants the list of participants that will be checked
+     * @return true if they have no debts left, false otherwise
+     */
+    private boolean participantsHaveDebtsLeft(List<Participant> participants) {
+        List<Debt> debts = server.getAllDebts();
+        // if there were no debts found, then you can delete the participant
+        if (debts == null || debts.isEmpty())
+            return false;
+        // turn the list of participants into a list of ids of the participants - for easier checking
+        List<Long> participantsIds = participants.stream()
+                .map(Participant::getParticipantID)
+                .toList();
+        // split the list of debts into two lists of participants Ids easier to parse
+        List<Long> debtorIds = new ArrayList<>(debts.stream()
+                .map(Debt::getDebtor)
+                .toList());
+
+        List<Long> creditorIds = new ArrayList<>(debts.stream()
+                .map(Debt::getCreditor)
+                .toList());
+        // Now we check for each participant to delete if they are in any debts
+        for (Long pId: participantsIds) {
+            // if found either as a debtor or creditor, then we cannot remove them
+            if (debtorIds.contains(pId) || creditorIds.contains(pId))
+                return true;
+        }
+        // if not then we return true
+        return false;
+    }
+
+    /**
+     * This method will remove the provided list of participant from the database
+     * @param toRemove List of participants to remove
+     */
+    private void removeParticipantsFromDatabase(List<Participant> toRemove) {
+        for (Participant p: toRemove){
+            server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
+        }
+    }
+
 
     /**
      * this method handles the functionality of removing visual entries in the table
