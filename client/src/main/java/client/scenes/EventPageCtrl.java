@@ -815,11 +815,11 @@ public class EventPageCtrl implements Controller{
                 mainCtrl.popup(
                         resourceBundle.getString("participantsStillInDebtsText"),
                         "ERROR", "Ok");
-                removeParticipantHandler(participants);
                 return;
             }
             popupStage.close();
-            // goes to remove the participants from the database, from all repositories
+            // goes to remove the participants from the database, from the ParticipantEvent repository
+            // Does not remove from all other repositories due to compatibility issues
             removeParticipantsFromDatabase(new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems()));
         });
 
@@ -848,32 +848,28 @@ public class EventPageCtrl implements Controller{
     private boolean participantsHaveDebtsLeft(List<Participant> participants) {
         List<Debt> debts = server.getAllDebts();
         // if there were no debts found, then you can delete the participant
-        if (debts == null)
-            return true;
+        if (debts == null || debts.isEmpty())
+            return false;
         // turn the list of participants into a list of ids of the participants - for easier checking
         List<Long> participantsIds = participants.stream()
-                .map(participant -> Long.valueOf(participant.getParticipantID()))
-                .collect(Collectors.toList());
-        // transform our list of debts into a list of pairs of IDS of participants
-        List<Pair<Long, Long>> debtorsCreditors = debts.stream()
-                .map(debt -> new Pair<>(debt.getCreditor(), debt.getDebtor()))
-                .collect(Collectors.toList());
-        // split that list into two lists easier to parse
-        List<Long> debtorIds = debtorsCreditors.stream()
-                .map(Pair::getKey)
-                .collect(Collectors.toList());
+                .map(Participant::getParticipantID)
+                .toList();
+        // split the list of debts into two lists of participants Ids easier to parse
+        List<Long> debtorIds = new ArrayList<>(debts.stream()
+                .map(Debt::getDebtor)
+                .toList());
 
-        List<Long> creditorIds = debtorsCreditors.stream()
-                .map(Pair::getValue)
-                .collect(Collectors.toList());
+        List<Long> creditorIds = new ArrayList<>(debts.stream()
+                .map(Debt::getCreditor)
+                .toList());
         // Now we check for each participant to delete if they are in any debts
         for (Long pId: participantsIds) {
             // if found either as a debtor or creditor, then we cannot remove them
             if (debtorIds.contains(pId) || creditorIds.contains(pId))
-                return false;
+                return true;
         }
         // if not then we return true
-        return true;
+        return false;
     }
 
     /**

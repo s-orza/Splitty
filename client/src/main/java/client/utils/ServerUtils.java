@@ -355,11 +355,11 @@ public class ServerUtils {
 	 */
 	public List<Debt> getAllDebts() {
 		Response response = ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl).path("/api/")
+				.target(serverUrl).path("/api/events/debts")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
 		if (response.getStatus() == 200)
-			return response.readEntity(List.class);
+			return response.readEntity(new GenericType<List<Debt>>() {});
 		return null;
 	}
 	public boolean resetDebtsFromExpense(long eventId,long expenseId)
