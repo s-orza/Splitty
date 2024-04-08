@@ -17,7 +17,13 @@
 <AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
 
    <children>
-      <Button fx:id="cancelButton" layoutX="211.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="Cancel" />
+      <Button fx:id="cancelButton" layoutX="211.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="Home" >
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <Image url="@/home.png" />
+            </ImageView>
+         </graphic>
+      </Button>
       <TableView fx:id="expensesTable" layoutX="6.0" layoutY="262.0" prefHeight="182.0" prefWidth="570.0" style="-fx-background-color: #FFFFFF;">
          <columns>
             <TableColumn fx:id="authorColumn" prefWidth="107.33331298828125" text="Author" />
@@ -49,7 +55,7 @@
       <Button fx:id="addParticipant" layoutX="589.0" layoutY="175.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
       <graphic>
          <ImageView fitHeight="20" fitWidth="20">
-            <Image url="@/add.png" />
+            <Image url="@/add-user.png" />
          </ImageView>
       </graphic>
       </Button>
@@ -67,10 +73,22 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="viewDebts" layoutX="405.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="View Debts" />
+      <Button fx:id="viewDebts" layoutX="405.0" layoutY="14.0" maxWidth="180" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="View Debts" >
+      <graphic>
+         <ImageView fitHeight="20" fitWidth="20">
+            <Image url="@/debts.png" />
+         </ImageView>
+      </graphic>
+   </Button>
       <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
       <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
-      <Button fx:id="viewStatistics" layoutX="302.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="103.0" styleClass="button-styled" text="View Statistics" />
+      <Button fx:id="viewStatistics" layoutX="302.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="103.0" styleClass="button-styled" text="View Statistics" >
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <Image url="@/statistics.png" />
+            </ImageView>
+         </graphic>
+      </Button>
       <BorderPane layoutX="4.0" layoutY="228.0" prefHeight="31.0" prefWidth="410.0">
          <left>
             <ToggleButton mnemonicParsing="false" onAction="#searchAll" prefHeight="31.0" prefWidth="95.0" styleClass="button-styled" text="All" BorderPane.alignment="CENTER">
@@ -131,7 +149,13 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="Invite" layoutX="624.0" layoutY="400.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" />
+      <Button fx:id="Invite" layoutX="624.0" layoutY="400.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" >
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <Image url="@/email.png" />
+            </ImageView>
+         </graphic>
+      </Button>
 
    </children>
 </AnchorPane>

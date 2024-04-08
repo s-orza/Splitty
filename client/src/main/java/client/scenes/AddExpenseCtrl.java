@@ -218,7 +218,8 @@ public class AddExpenseCtrl implements Controller{
         });
         date.valueProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
-            if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
+            if (newValue!=null)
+                if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
                 if (!tempDate[0].equals(newValue.toString())) {
                     Map<String, String> nameMap = new HashMap<>();
                     nameMap.put("date", tempDate[0]);
@@ -230,6 +231,7 @@ public class AddExpenseCtrl implements Controller{
         });
         checkBoxAllPeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
+            if (newValue!=null)
             if (!oldValue.equals(newValue)) {
                 if (!tempAllPeople[0].equals(String.valueOf(checkBoxAllPeople.isSelected()))) {
                     Map<String, String> nameMap = new HashMap<>();
@@ -242,6 +244,7 @@ public class AddExpenseCtrl implements Controller{
         });
         checkBoxSomePeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
+            if (newValue!=null)
             if (!oldValue.equals(newValue)) {
                 if (!tempSomePeople[0].equals(String.valueOf(checkBoxSomePeople.isSelected()))) {
                     Map<String, String> nameMap = new HashMap<>();
