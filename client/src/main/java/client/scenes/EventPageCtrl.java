@@ -811,7 +811,7 @@ public class EventPageCtrl implements Controller{
 
         // set action for removing
         removeButton.setOnAction(e -> {
-            if (!participantsHaveNoDebts(participants)){
+            if (participantsHaveDebtsLeft(participants)){
                 mainCtrl.popup(
                         resourceBundle.getString("participantsStillInDebtsText"),
                         "ERROR", "Ok");
@@ -845,7 +845,7 @@ public class EventPageCtrl implements Controller{
      * @param participants the list of participants that will be checked
      * @return true if they have no debts left, false otherwise
      */
-    private boolean participantsHaveNoDebts(List<Participant> participants) {
+    private boolean participantsHaveDebtsLeft(List<Participant> participants) {
         List<Debt> debts = server.getAllDebts();
         // if there were no debts found, then you can delete the participant
         if (debts == null)
@@ -882,7 +882,7 @@ public class EventPageCtrl implements Controller{
      */
     private void removeParticipantsFromDatabase(List<Participant> toRemove) {
         for (Participant p: toRemove){
-            server.deleteParticipant(p.getParticipantID());
+            server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
         }
     }
 

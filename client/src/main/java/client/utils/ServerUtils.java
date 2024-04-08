@@ -692,7 +692,8 @@ public class ServerUtils {
 		Response response = ClientBuilder.newClient(new ClientConfig())
 				.target(serverUrl + "api/participant/" + participantId)
 				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).delete();
+				.accept(APPLICATION_JSON)
+				.delete();
 		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			System.out.println("Participant removed successfully.");
 		} else {
@@ -705,7 +706,8 @@ public class ServerUtils {
 		Response response = ClientBuilder.newClient(new ClientConfig())
 				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
 				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).delete();
+				.accept(APPLICATION_JSON)
+				.delete();
 
 		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			System.out.println("Participant removed successfully.");
