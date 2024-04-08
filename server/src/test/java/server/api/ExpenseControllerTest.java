@@ -18,6 +18,7 @@ import server.database.TagRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -73,6 +74,8 @@ public class ExpenseControllerTest {
 
     @Test
     public void testAddExpenseToEvent() throws Exception {
+
+        expenseRepository.deleteAll();
         Expense testExpense =
                 new Expense(testParticipant, "Lunch", 15.0, "USD",
                 "2023-04-01", new ArrayList<>(), "Food");
@@ -81,7 +84,6 @@ public class ExpenseControllerTest {
                         .content(objectMapper.writeValueAsString(testExpense)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("Lunch"));
-
         assertThat(expenseRepository.findAll()).hasSize(1);
     }
 
@@ -108,6 +110,7 @@ public class ExpenseControllerTest {
 
     @Test
     public void testDeleteExpense() throws Exception {
+        expenseRepository.deleteAll();
         Expense expense = new Expense(
                 testParticipant, "To be deleted", 10.0,
                 "EUR", "2023-04-02", null, "DeleteTest");
@@ -204,6 +207,7 @@ public class ExpenseControllerTest {
 
     @Test
     public void getAllExpenses_Success() throws Exception {
+        expenseRepository.deleteAll();
         Expense expense1 = new Expense(
                 testParticipant, "Lunch for Team", 50.0,
                 "USD", "2024-04-03", Arrays.asList(testParticipant), "Food");
