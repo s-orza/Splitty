@@ -27,7 +27,6 @@ import javafx.scene.text.Text;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 import static client.scenes.MainPageCtrl.currentLocale;
