@@ -38,6 +38,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   }
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+
   }
 
   public void close(ActionEvent e){

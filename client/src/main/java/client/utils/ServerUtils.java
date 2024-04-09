@@ -433,22 +433,12 @@ public class ServerUtils {
 		EXEC2.shutdown();
 	}
 
-	public List<Expense> getAllExpensesFromDatabase()
-	{
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl +"api/expenses/all")
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).get();
-		GenericType<List<Expense>> listType = new GenericType<List<Expense>>() {};
-		if(response.getStatus()<300)
-			return response.readEntity(listType);
-		return null;
-	}
+
 
 	public List<Participant> getAllParticipantsFromDatabase()
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
-						.target(serverUrl +"api/participant")
+						.target(serverUrl +"api/participant/")
 						.request(APPLICATION_JSON)
 						.accept(APPLICATION_JSON).get();
 		GenericType<List<Participant>> listType = new GenericType<List<Participant>>() {};

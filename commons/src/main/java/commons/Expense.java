@@ -22,9 +22,9 @@ public class Expense {
     private String currency;
     @Column
     private String date;
+
     @Column
     @ManyToMany
-    @Transient
     private List<Participant> participants;
     @Column
     private String type;

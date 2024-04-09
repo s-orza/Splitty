@@ -22,21 +22,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
-    // Fetch one participant by ID
-    @Query("SELECT p FROM Participant p WHERE p.id = :id")
-    Optional<Participant> findById(@Param("id") Long id);
-
     // Fetch one or more participants by name
     @Query("SELECT p FROM Participant p WHERE p.name = :name")
     List<Participant> findByName(@Param("name") String name);
-
-    // Fetch all participants
-    @Query("SELECT p FROM Participant p")
-    List<Participant> findAllParticipants();
-
-    @Query("DELETE FROM Participant WHERE id=:id")
-    void deleteById(@Param("id") Long id);
 }

@@ -130,12 +130,13 @@ public class AddExpenseCtrl implements Controller{
     }
     @FXML
     public void initialize() {
+        System.out.println("initializeeee");
         backgroundImage();
         keyShortCuts();
         //load resources
         loadFromDatabase();
         toggleLanguage();
-        undoFunction();
+        //undoFunction();
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
@@ -218,8 +219,10 @@ public class AddExpenseCtrl implements Controller{
         });
         date.valueProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
-            if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
-                if (!tempDate[0].equals(newValue.toString())) { // gives a NPE but registered expense in database
+            if (newValue!=null)
+                if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
+                if (!tempDate[0].equals(newValue.toString())) {
+
                     Map<String, String> nameMap = new HashMap<>();
                     nameMap.put("date", tempDate[0]);
                     undoStack.push(nameMap);
@@ -230,6 +233,7 @@ public class AddExpenseCtrl implements Controller{
         });
         checkBoxAllPeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
+            if (newValue!=null)
             if (!oldValue.equals(newValue)) {
                 if (!tempAllPeople[0].equals(String.valueOf(checkBoxAllPeople.isSelected()))) {
                     Map<String, String> nameMap = new HashMap<>();
@@ -242,6 +246,7 @@ public class AddExpenseCtrl implements Controller{
         });
         checkBoxSomePeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
+            if (newValue!=null)
             if (!oldValue.equals(newValue)) {
                 if (!tempSomePeople[0].equals(String.valueOf(checkBoxSomePeople.isSelected()))) {
                     Map<String, String> nameMap = new HashMap<>();
@@ -622,26 +627,11 @@ public class AddExpenseCtrl implements Controller{
 
         System.out.println(expense);
 
-//        boolean b=
-//        server.addExpenseToEvent(server.getCurrentId(),expense);
-
+        //server.addExpenseToEvent(server.getCurrentId(),expense);
 
         String destination = "/app/expenses/tag/" + String.valueOf(server.getCurrentId());
         server.sendExpense(destination,expense);
-//        List<ObservableList<Expense>> commandHistoryNew = EventPageCtrl.getCommandHistory();
-//        ObservableList<Expense> newList = FXCollections
-//        .observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
-//        newList.add(expense);
-//        commandHistoryNew.add(newList);
-//        EventPageCtrl.setCommandHistory(commandHistoryNew);
-//        EventPageCtrl.increaseCommandIndex();
-//        if(!b)
-//        {
-//            //warning, connection with server lost
-//            System.out.println("Problems with the server");
-//            return;
-//        }
-        //add debts
+
         createDebtsFromExpense(expense);
 
         resetElements();

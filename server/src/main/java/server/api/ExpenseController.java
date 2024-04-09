@@ -25,15 +25,13 @@ public class ExpenseController {
 
     private final ExpenseRepository repoExp;
     private final ExpenseEventRepository repoExpEv;
-    private final ParticipantExpenseRepository repoPaExp;
     private final TagRepository repoTag;
     private final ExpenseService service;
     public ExpenseController(ExpenseRepository repoExp, ExpenseEventRepository repoExpEv,
-                             ParticipantExpenseRepository repoPaExp, TagRepository repoTag,
-                             ParticipantRepository repoPa, ExpenseService service) {
+                             TagRepository repoTag,
+                             ExpenseService service) {
         this.repoExp = repoExp;
         this.repoExpEv = repoExpEv;
-        this.repoPaExp = repoPaExp;
         this.repoTag = repoTag;
         this.service = service;
     }
@@ -53,26 +51,14 @@ public class ExpenseController {
             System.out.println("is null");
             return ResponseEntity.badRequest().build();
         }
-        List<Participant> participants = expense.getParticipants();
         //for storing it in the database
-        expense.setParticipants(null);
         Expense saved=repoExp.save(expense);
         System.out.println("expense saved old:"+expense);
-        //save participant-expense stuff
-        //PARTICIPANTS NEED TO HAVE IDs
-        if(participants!=null && !participants.isEmpty()) {
-            //now we need to create connections between the expense and the participants
-            for (Participant p : participants) {
-                ParticipantExpense pe = new ParticipantExpense(saved.getExpenseId(), p.getParticipantID());
-                repoPaExp.save(pe);
-            }
-        }
+
         //create ExpenseEvent connection
         repoExpEv.save(new ExpenseEvent(saved.getExpenseId(),eventId));
         //we need this line because if someone is still playing with this expense, we need it to be complete.
-        expense.setParticipants(participants);
         expense.setExpenseId(saved.getExpenseId());
-        saved.setParticipants(participants);
         //to save with id
         listeners.forEach((k, l) -> l.accept(saved));
         return ResponseEntity.ok(saved);
@@ -115,7 +101,6 @@ public class ExpenseController {
         if(!repoExp.existsById(expenseId))
             return ResponseEntity.notFound().build();
         Expense ex=repoExp.findById(expenseId).get();
-        service.putParticipants(ex);
         return ResponseEntity.ok(ex);
     }
     @GetMapping(path={"/deletedDebts"})
@@ -125,7 +110,6 @@ public class ExpenseController {
         if(!repoExp.existsById(expenseId))
             return ResponseEntity.notFound().build();
         Expense ex=repoExp.findById(expenseId).get();
-        service.putParticipants(ex);
         service.resetDebtsFromThisExpense(ex,eventId);
         return ResponseEntity.ok(true);
     }
@@ -141,26 +125,45 @@ public class ExpenseController {
     {
         if(eventId<0)
             return ResponseEntity.badRequest().build();
-        List<Expense> ans=repoExp.findEventByAuthor(eventId,authorId);
-        if(ans==null || ans.isEmpty())
+        //initially take all expenses
+        List<Expense> ans=getAllFromEvent(eventId).getBody();
+        if(ans==null)
             return ResponseEntity.notFound().build();
-        for(Expense e:ans)
-            service.putParticipants(e);
+        //filter them
+        ans=ans.stream().filter(x-> {
+            //if he is the author
+            if (x.getAuthor().getParticipantID() == authorId)
+                return true;
+            return false;
+        }).toList();
+        if(ans.isEmpty())
+            return ResponseEntity.notFound().build();
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/participantIncluded"})
     public ResponseEntity<List<Expense>> getExpensePInvolvedInEvent(@RequestParam("eventId") long eventId,
                                                                     @RequestParam("authorId") long authorId)
     {
-        System.out.println(eventId + " " + authorId);
         if(eventId<0)
             return ResponseEntity.badRequest().build();
-        List<Expense> ans=repoExp.findEventsThatInvolvesParticipant(eventId,authorId);
-        System.out.println(ans);
-        if(ans==null || ans.isEmpty())
+        //initially take all expenses
+        List<Expense> ans=getAllFromEvent(eventId).getBody();
+        if(ans==null)
             return ResponseEntity.notFound().build();
-        for(Expense e:ans)
-            service.putParticipants(e);
+        //filter them
+        ans=ans.stream().filter(x->{
+            //if he is the author
+            if(x.getAuthor().getParticipantID()==authorId)
+                return true;
+            //if he is included
+            List<Long> participantIds=x.getParticipants().stream().map(y->y.getParticipantID()).toList();
+            if(participantIds.contains(authorId))
+                return true;
+            return false;
+        }).toList();
+        System.out.println(ans);
+        if(ans.isEmpty())
+            return ResponseEntity.notFound().build();
         return ResponseEntity.ok(ans);
     }
 
@@ -170,16 +173,12 @@ public class ExpenseController {
         if(eventId<0)
             return ResponseEntity.badRequest().build();
         List<Expense> ans=repoExp.findAllExpOfAnEvent(eventId);
-        for(Expense e:ans)
-            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
     @GetMapping(path={"/all"})
     public ResponseEntity<List<Expense>> getAll()
     {
         List<Expense> ans=repoExp.findAll();
-        for(Expense e:ans)
-            service.putParticipants(e);
         return ResponseEntity.ok(ans);
     }
 
@@ -249,21 +248,10 @@ public class ExpenseController {
         oldExpense.setCurrency(expense.getCurrency());
         oldExpense.setDate(expense.getDate());
         oldExpense.setType(expense.getType());
+        //updates participants
+        oldExpense.setParticipants(expense.getParticipants());
         Expense newExpense=repoExp.save(oldExpense);
 
-        //delete the connections with "old" participants
-        repoExp.deleteAllParticipantConnectionsFromExpense(expenseId);
-        //create connections with "new" participants
-        List<Participant> participants=expense.getParticipants();
-        if(participants!=null && !participants.isEmpty()) {
-            //now we need to create connections between the expense and the participants
-            for (Participant p : participants) {
-                ParticipantExpense pe = new ParticipantExpense(expenseId, p.getParticipantID());
-                repoPaExp.save(pe);
-            }
-        }
-        newExpense.setParticipants(participants);
-        //service.putParticipants(newExpense);
         return ResponseEntity.ok(newExpense);
     }
     @PutMapping(path={"/tags"})
@@ -285,7 +273,6 @@ public class ExpenseController {
             {
                 e.setType(tag.getId().getName());
                 repoExp.save(e);
-                //old version: repoExp.updateExpenseWithTag(e.getExpenseId(),tag.getId().getName());
             }
         return ResponseEntity.ok(newTag);
     }
@@ -330,12 +317,11 @@ public class ExpenseController {
         }
         //now let s change the debts
         Expense ex=repoExp.findById(expenseId).get();
-        service.putParticipants(ex);
         service.resetDebtsFromThisExpense(ex,eventId);
         //then we delete the expense
-        repoExp.deleteAllParticipantConnectionsFromExpense(expenseId);
-        Integer b=repoExp.deleteWithId(expenseId);
-        if(b==0)
+        ex.setParticipants(null);
+        repoExp.deleteById(expenseId);
+        if(repoExp.existsById(expenseId))
         {
             System.out.println("Something was not deleted, be careful");
             //417 expectation failed

@@ -26,32 +26,12 @@ import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    @Query("SELECT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
-            "WHERE ev.eventId=:eventId AND ex.author.participantID=:authorId")
-    List<Expense> findEventByAuthor(long eventId,long authorId);
-    @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
-            "JOIN ParticipantExpense pex ON pex.expenseId=ex.expenseId " +
-            "WHERE ev.eventId=:eventId AND (pex.participantId=:participantId OR " +
-            "ex.author.participantID=:participantId)")
-    List<Expense> findEventsThatInvolvesParticipant(long eventId,long participantId);
     @Query("SELECT DISTINCT ex FROM Expense ex JOIN ExpenseEvent ev ON ev.expenseId=ex.expenseId " +
             "WHERE ev.eventId=:eventId")
     List<Expense> findAllExpOfAnEvent(long eventId);
     @Transactional
     @Modifying
-    @Query("DELETE FROM Expense ex WHERE ex.expenseId=:expenseId")
-    Integer deleteWithId(long expenseId);
-
-    @Transactional
-    @Modifying
     @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId AND ev.expenseId=:expenseId")
     Integer deleteExpenseEventCon(long eventId,long expenseId);
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM ExpenseEvent ev WHERE ev.eventId=:eventId")
-    void deleteAllExpensesEventCon(long eventId);
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM ParticipantExpense pex WHERE pex.expenseId=:expenseId")
-    void deleteAllParticipantConnectionsFromExpense(long expenseId);
+
 }
