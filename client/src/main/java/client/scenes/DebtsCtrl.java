@@ -35,6 +35,8 @@ public class DebtsCtrl implements Controller, Initializable {
 
     @FXML
     private AnchorPane backGround;
+    @FXML
+    private ComboBox<String> moneyTypeSelector;
 
     @FXML
     private Button refreshButton;
@@ -47,6 +49,7 @@ public class DebtsCtrl implements Controller, Initializable {
     private ObservableList<Participant> participants;
     private ObservableList<String> participantNames;
     private Map<Integer,Long> indexesToIds;
+    private List<String> expenseTypesAvailable=new ArrayList<>();
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -56,8 +59,14 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("DebtsCtrl initializing");
+
         backgroundImage();
         keyShortCuts();
+
+        //initialise the expenseTypesAvailable
+        expenseTypesAvailable.clear();
+        expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
+
         refresh();
 
         // initialize close button
@@ -150,6 +159,12 @@ public class DebtsCtrl implements Controller, Initializable {
 
         // only set equal to new filter
         renderAccordion(filteredList);
+
+        // currency setup
+        moneyTypeSelector.getItems().clear();
+        moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
+        //here to change with the value from the config file
+        moneyTypeSelector.setValue(MainCtrl.getCurrency());
     }
 
     public void renderAccordion(FilteredList<Debt> filteredList){
