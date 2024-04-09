@@ -5,12 +5,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
     <children>
       
@@ -21,13 +21,16 @@
 
       <TextField id="createInput" fx:id="createInput" layoutX="428.0" layoutY="265.0" />
         <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="611.0" layoutY="265.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
-      <Button fx:id="adminButton" layoutX="635.0" layoutY="399.0" mnemonicParsing="false" onAction="#openAdmin" text="Admin" >
+      <Button fx:id="adminButton" layoutX="635.0" layoutY="399.0" mnemonicParsing="false" onAction="#openAdmin" text="Admin">
         <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                 <Image url="@/admin.png" />
             </ImageView>
         </graphic>
       </Button>
+
+      <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
+      <Button fx:id="email" layoutX="636.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail" text="Test email" />
         <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
       <Button fx:id="addLanguageButton" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" text="Add Language" />
       <Text fx:id="recentEventsLabel" layoutX="67.0" layoutY="189.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recent Events" wrappingWidth="149.60000000000014">
@@ -35,7 +38,6 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Text>
-      <Text layoutX="-35.0" layoutY="69.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
       <Text fx:id="createNewEventLabel" layoutX="428.0" layoutY="259.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create New Event">
          <font>
             <Font name="System Bold" size="14.0" />
@@ -51,9 +53,6 @@
             <Font name="Broadway" size="48.0" />
          </font>
       </Label>
-
-      <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
-      <Button fx:id="email" layoutX="636.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail" text="Test email" />
 
     </children>
 </AnchorPane>

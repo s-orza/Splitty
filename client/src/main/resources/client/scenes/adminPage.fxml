@@ -23,6 +23,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
+      <Button fx:id="generatePassButton" layoutX="25.0" layoutY="402.0" mnemonicParsing="false" onAction="#generatePassword" text="Generate Admin Password" />
       <Label alignment="CENTER" layoutX="249.0" layoutY="27.0" prefHeight="55.0" prefWidth="222.0" text="Event List" textFill="#712929">
          <font>
             <Font size="38.0" />
@@ -36,9 +37,8 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <Button fx:id="generatePassButton" layoutX="25.0" layoutY="390.0" mnemonicParsing="false" onAction="#generatePassword" text="Generate Admin Password" />
-      <TextField fx:id="passLengthField" layoutX="190.0" layoutY="389.0" prefHeight="26.0" prefWidth="35.0" />
-      <Label fx:id="passLengthText" alignment="CENTER" layoutX="182.0" layoutY="416.0" prefHeight="18.0" prefWidth="50.0" text="Length">
+      <TextField fx:id="passLengthField" layoutX="189.0" layoutY="402.0" prefHeight="26.0" prefWidth="35.0" />
+      <Label fx:id="passLengthText" alignment="CENTER" layoutX="181.0" layoutY="381.0" prefHeight="18.0" prefWidth="50.0" text="Length">
          <font>
             <Font size="10.0" />
          </font>
