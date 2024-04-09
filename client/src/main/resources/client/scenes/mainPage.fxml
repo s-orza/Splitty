@@ -45,6 +45,7 @@
       </Label>
 
       <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
+      <Button fx:id="email" layoutX="636.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail" text="Test email" />
 
     </children>
 </AnchorPane>

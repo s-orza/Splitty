@@ -48,7 +48,7 @@ public class Main extends Application {
       else{
         System.out.println("Config had incorrect Curency!");
       }
-      if(     newConfig.getIp() != null){
+      if(newConfig.getIp() != null){
         config.setIp(newConfig.getIp());
       }else{
         System.out.println("Config had incorrect Ip!");

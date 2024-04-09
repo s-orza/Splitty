@@ -2,20 +2,18 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
+<AnchorPane prefHeight="251.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
    <children>
-      <Button fx:id="cancel" layoutX="165.0" layoutY="333.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
-      <Button fx:id="invite" layoutX="385.0" layoutY="333.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
-      <TableView fx:id="participants" layoutX="69.0" layoutY="74.0" prefHeight="198.0" prefWidth="290.0">
-        <columns>
-          <TableColumn fx:id="name" prefWidth="103.20001220703125" text="name" />
-          <TableColumn fx:id="email" prefWidth="185.59999694824216" text="email" />
-        </columns>
-      </TableView>
-      <Label alignment="CENTER" layoutX="-1.0" layoutY="34.0" prefHeight="18.0" prefWidth="600.0" text="Select participant to invite to the event" />
+      <Button fx:id="cancel" layoutX="108.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+      <Button fx:id="invite" layoutX="305.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
+      <Label alignment="CENTER" layoutY="57.0" prefHeight="18.0" prefWidth="600.0" text="Select participant to invite to the event" />
+      <TextField fx:id="name" layoutX="59.0" layoutY="100.0" />
+      <TextField fx:id="email" layoutX="253.0" layoutY="100.0" />
+      <Text layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" />
+      <Text layoutX="253.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
    </children>
 </AnchorPane>
