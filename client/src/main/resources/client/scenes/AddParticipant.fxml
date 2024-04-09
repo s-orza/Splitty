@@ -6,22 +6,28 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" stylesheets="@/client/css/AddParticipants.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
-        <Label layoutX="220.0" layoutY="177.0" styleClass="" text="Name" />
-        <TextField fx:id="name" layoutX="301.0" layoutY="172.0" prefHeight="26.0" prefWidth="200.0" />
-        <Label layoutX="220.0" layoutY="217.0" text="Email" />
-        <TextField fx:id="email" layoutX="301.0" layoutY="212.0" prefHeight="26.0" prefWidth="200.0" />
-        <Label layoutX="220.0" layoutY="257.0" text="IBAN" />
-        <TextField fx:id="iban" layoutX="301.0" layoutY="252.0" prefHeight="26.0" prefWidth="200.0" />
-        <Label layoutX="220.0" layoutY="297.0" text="BIC" />
-        <TextField fx:id="bic" layoutX="301.0" layoutY="292.0" prefHeight="26.0" prefWidth="200.0" />
+<AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" stylesheets="@/client/css/AddParticipants.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.AddParticipantCtrl">
+    <Label layoutX="220.0" layoutY="177.0" styleClass="" text="Name"/>
+    <TextField fx:id="name" layoutX="301.0" layoutY="172.0" prefHeight="26.0" prefWidth="200.0"/>
+    <Label layoutX="220.0" layoutY="217.0" text="Email"/>
+    <TextField fx:id="email" layoutX="301.0" layoutY="212.0" prefHeight="26.0" prefWidth="200.0"/>
+    <Label layoutX="220.0" layoutY="257.0" text="IBAN"/>
+    <TextField fx:id="iban" layoutX="301.0" layoutY="252.0" prefHeight="26.0" prefWidth="200.0"/>
+    <Label layoutX="220.0" layoutY="297.0" text="BIC"/>
+    <TextField fx:id="bic" layoutX="301.0" layoutY="292.0" prefHeight="26.0" prefWidth="200.0"/>
 
-    <Label alignment="CENTER" layoutX="241.0" layoutY="75.0" prefHeight="55.0" prefWidth="287.0" text="Add Participant" textFill="#712929">
-      <font>
-         <Font size="38.0" />
-      </font>
-   </Label>
-        <Button fx:id="addButton" layoutX="381.0" layoutY="347.0" mnemonicParsing="false" onAction="#addParticipant" styleClass="addButton" text="Add" />
-        <Button fx:id="saveButton" layoutX="381.0" layoutY="347.0" mnemonicParsing="false" onAction="#updateParticipant" styleClass="addButton" text="Save" />
-        <Button fx:id="cancelButton" layoutX="449.0" layoutY="347.0" mnemonicParsing="false" onAction="#close" styleClass="cancelButton" text="Cancel" />
+    <Label alignment="CENTER" layoutX="241.0" layoutY="75.0" prefHeight="55.0" prefWidth="287.0" text="Add Participant"
+           textFill="#712929">
+        <font>
+            <Font size="38.0"/>
+        </font>
+    </Label>
+    <Button fx:id="addButton" layoutX="381.0" layoutY="347.0" mnemonicParsing="false" onAction="#addParticipant"
+            styleClass="addButton" text="Add"/>
+    <Button fx:id="saveButton" layoutX="381.0" layoutY="347.0" mnemonicParsing="false" onAction="#updateParticipant"
+            styleClass="addButton" text="Save"/>
+    <Button fx:id="cancelButton" layoutX="449.0" layoutY="347.0" mnemonicParsing="false" onAction="#close"
+            styleClass="cancelButton" text="Cancel"/>
 </AnchorPane>

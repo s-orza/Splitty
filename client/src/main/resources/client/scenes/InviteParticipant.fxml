@@ -6,14 +6,17 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="251.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
-   <children>
-      <Button fx:id="cancel" layoutX="108.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
-      <Button fx:id="invite" layoutX="305.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
-      <Label alignment="CENTER" layoutY="57.0" prefHeight="18.0" prefWidth="600.0" text="Select participant to invite to the event" />
-      <TextField fx:id="name" layoutX="59.0" layoutY="100.0" />
-      <TextField fx:id="email" layoutX="253.0" layoutY="100.0" />
-      <Text layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" />
-      <Text layoutX="253.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
-   </children>
+<AnchorPane prefHeight="251.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.InviteParticipantCtrl">
+    <children>
+        <Button fx:id="cancel" layoutX="108.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel"/>
+        <Button fx:id="invite" layoutX="305.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite"
+                text="Invite"/>
+        <Label alignment="CENTER" layoutY="57.0" prefHeight="18.0" prefWidth="600.0"
+               text="Select participant to invite to the event"/>
+        <TextField fx:id="name" layoutX="59.0" layoutY="100.0"/>
+        <TextField fx:id="email" layoutX="253.0" layoutY="100.0"/>
+        <Text layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name"/>
+        <Text layoutX="253.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email"/>
+    </children>
 </AnchorPane>
