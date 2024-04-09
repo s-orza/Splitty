@@ -13,7 +13,7 @@ public class MailController {
   private EmailService emailService;
   @PostMapping("/send/{mail}")
   public ResponseEntity<String> sendMail(@PathVariable String mail, @RequestBody MailStructure mailStructure){
-    emailService.updateMailSender();
+    //emailService.updateMailSender();
   emailService.sendEmail(mail, mailStructure);
 return  ResponseEntity.ok("Succesfuly sent");
   }

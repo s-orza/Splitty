@@ -28,9 +28,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class MainCtrl {
@@ -88,6 +91,47 @@ public class MainCtrl {
 
     public static String getCurrency() {
         return currency;
+    }
+
+    public void refresh(){
+        AppConfig config = new AppConfig();
+        try {
+            AppConfig newConfig = readConfig();
+            List<String> cur = Arrays.asList("EUR", "USD", "RON", "CHF");
+            if(newConfig.getCurrency() != null && cur.contains(newConfig.getCurrency())){
+                config.setCurrency(newConfig.getCurrency());
+            }
+            else{
+                System.out.println("Config had incorrect Curency!");
+            }
+            if(newConfig.getIp() != null){
+                config.setIp(newConfig.getIp());
+            }else{
+                System.out.println("Config had incorrect Ip!");
+            }
+            if(newConfig.getPort() != null){
+                config.setPort(newConfig.getPort());
+            }else{
+                System.out.println("Config had incorrect Port!");
+            }
+            List<String> lan = Arrays.asList("en", "nl", "es", "US", "de", "xx");
+            if(newConfig.getLang() != null && lan.contains(newConfig.getLang().getLanguage())){
+                config.setLang(newConfig.getLang());
+            }else{
+                System.out.println("Config had incorrect Language!");
+            }
+            if(newConfig.getEmail() != null && newConfig.getEmail().matches(
+                    "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")){
+                config.setEmail(newConfig.getEmail());
+            }else{
+                System.out.println("Config had incorrect Email!");
+            }
+            config.setPassword(newConfig.getPassword());
+            config.setRecentEvents(newConfig.getRecentEvents());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        this.config = config;
     }
 
     public void setUrl(String ip, String port) {
@@ -164,6 +208,22 @@ public class MainCtrl {
         Scene scene = new Scene(layout, 300, 150);
         popupStage.setScene(scene);
         popupStage.showAndWait();
+    }
+    private AppConfig readConfig() throws Exception {
+        File selectedFile = new File("App-Config.json");
+        if (selectedFile != null && selectedFile.getName().contains(".json")) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                AppConfig config = mapper.readValue(selectedFile, AppConfig.class);
+                return config;
+            } catch (FileNotFoundException e) {
+                System.out.println("No config file was found!");
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Running default settings");
+        return new AppConfig();
     }
 }
 

@@ -161,6 +161,10 @@ public class EventPageCtrl implements Controller{
     private void initializePage() {
         backgroundImage();
         keyShortCuts();
+        if(mainCtrl.getConfig().getEmail() == null ||
+                !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+            invite.setStyle("-fx-opacity: 0.5;");
+        }
         selectionMod=0;
         personId=0;
         //load from database:
@@ -996,6 +1000,12 @@ public class EventPageCtrl implements Controller{
     }
 
     public void inviteParticipant(ActionEvent event){
+        mainCtrl.refresh();
+        if(mainCtrl.getConfig().getEmail() == null ||
+                !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+            mainCtrl.popup("Inccorect email specified.\n You can modify it in AppConfig", "Warning", "Ok");
+            return;
+        }
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         InviteParticipantCtrl inviteParticipantCtrl = new InviteParticipantCtrl(server);
         mainCtrl.initialize(stage, inviteParticipantCtrl.getPair(), inviteParticipantCtrl.getTitle());

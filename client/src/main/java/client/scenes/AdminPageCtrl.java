@@ -58,9 +58,6 @@ public class AdminPageCtrl implements Controller, Initializable {
   private TextField passLengthField;
 
   @FXML
-  private Label showEvent;
-
-  @FXML
   private AnchorPane backGround;
   @FXML
   private Button exit;
@@ -287,12 +284,6 @@ public class AdminPageCtrl implements Controller, Initializable {
     table.setItems(contents);
     table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEvent = table.getSelectionModel().getSelectedItem();
-      if(selectedEvent != null){
-      showEvent.setText(selectedEvent.getTitle());
-      }
-      else{
-        showEvent.setText("");
-      }
     });
 
     // add listener for pass length

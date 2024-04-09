@@ -9,6 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -29,6 +31,8 @@ public class InviteParticipantCtrl implements Controller, Initializable {
 
   @FXML
   private Button cancel;
+  @FXML
+  private AnchorPane backGround;
 
   private Stage stage;
   ServerUtils server;
@@ -38,7 +42,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   }
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
+    backgroundImage();
   }
 
   public void close(ActionEvent e){
@@ -63,6 +67,17 @@ public class InviteParticipantCtrl implements Controller, Initializable {
     else{
       mainCtrl.popup("Email failed", "Warning", "OK");
     }
+  }
+
+  private void backgroundImage() {
+    Image image = new Image("Background_Photo.jpg");
+    BackgroundSize backgroundSize =
+            new BackgroundSize(720, 450, true, true, true, false);
+    BackgroundImage backgroundImage = new BackgroundImage(image,
+            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+            backgroundSize);
+    Background background = new Background(backgroundImage);
+    backGround.setBackground(background);
   }
   public Pair<Controller, Parent> getPair() {
     return FXML.load(Controller.class, "client", "scenes", "InviteParticipant.fxml");

@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
 public class Main extends Application {
 
   MainCtrl mainCtrl = new MainCtrl();
@@ -39,46 +38,12 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     // calls mainCtrl with the pages (change MainPageCtrl to your desired page to be shown)
-    AppConfig config = new AppConfig();
-    try {
-      AppConfig newConfig = readConfig();
-      if(newConfig.getCurrency() != null){
-        config.setCurrency(newConfig.getCurrency());
-      }
-      else{
-        System.out.println("Config had incorrect Curency!");
-      }
-      if(newConfig.getIp() != null){
-        config.setIp(newConfig.getIp());
-      }else{
-        System.out.println("Config had incorrect Ip!");
-      }
-      if(newConfig.getPort() != null){
-        config.setPort(newConfig.getPort());
-      }else{
-        System.out.println("Config had incorrect Port!");
-      }
-      if(newConfig.getLang() != null){
-        config.setLang(newConfig.getLang());
-      }else{
-        System.out.println("Config had incorrect Language!");
-      }
-      if(newConfig.getEmail() != null && newConfig.getEmail().matches(
-              "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")){
-        config.setEmail(newConfig.getEmail());
-      }else{
-        System.out.println("Config had incorrect Email!");
-      }
-      config.setPassword(newConfig.getPassword());
-      config.setRecentEvents(newConfig.getRecentEvents());
-    }catch (Exception e){
-      e.printStackTrace();
-    }
+    mainCtrl.refresh();
     mainPageCtrl= new MainPageCtrl(new ServerUtils());
+    AppConfig config = mainCtrl.getConfig();
     mainCtrl.setRecents(config.getRecentEvents());
     mainCtrl.setCurrency(config.getCurrency());
     mainCtrl.setUrl(config.getIp(), config.getPort());
-    mainCtrl.setConfig(config);
     mainPageCtrl.setLang(config.getLang());
     ServerSelectCtrl serverSelectCtrl = new ServerSelectCtrl(new ServerUtils());
     primaryStage.setResizable(false);

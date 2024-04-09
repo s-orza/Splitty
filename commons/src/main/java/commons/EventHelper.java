@@ -1,4 +1,4 @@
-package client.scenes;
+package commons;
 
 import java.util.Date;
 import java.util.Objects;

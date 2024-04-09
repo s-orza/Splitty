@@ -10,9 +10,6 @@ import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-
-
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -34,7 +31,7 @@ import java.util.ResourceBundle;
 public class MainPageCtrl implements Controller, Initializable {
 
   @FXML
-  private Button Email;
+  private Button email;
   @FXML
   private TextField createInput;
   @FXML
@@ -83,7 +80,16 @@ public class MainPageCtrl implements Controller, Initializable {
   }
 
   public void sendMail(){
-    if( server.sendMail("33splitty@gmail.com",
+    System.out.println(mainCtrl.getConfig().getEmail());
+    mainCtrl.refresh();
+    if(mainCtrl.getConfig().getEmail() == null ||
+    !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+      email.setStyle("-fx-opacity: 0.5;");
+      mainCtrl.popup("Inccorect email specified. You can modify it in AppConfig", "Warning", "Ok");
+      return;
+    }
+    email.setStyle("-fx-opacity: 1;");
+    if( server.sendMail(mainCtrl.getConfig().getEmail(),
             new MailStructure("Test mail", "It works!"))){
       mainCtrl.popup("Email sent succesfully", "Succes", "OK");
     }
@@ -144,10 +150,12 @@ public class MainPageCtrl implements Controller, Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
     backgroundImage();
     keyShortCuts();
-
+    if(mainCtrl.getConfig().getEmail() == null ||
+            !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+      email.setStyle("-fx-opacity: 0.5;");
+    }
     ArrayList<Event> contents = new ArrayList<>();
     ArrayList<Long> ids = new ArrayList<>();
     ArrayList<Long> oldIds = new ArrayList<>();

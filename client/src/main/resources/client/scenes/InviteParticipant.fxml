@@ -3,17 +3,48 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="251.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
+<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
    <children>
-      <Button fx:id="cancel" layoutX="108.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
-      <Button fx:id="invite" layoutX="305.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
-      <Label alignment="CENTER" layoutY="57.0" prefHeight="18.0" prefWidth="600.0" text="Select participant to invite to the event" />
-      <TextField fx:id="name" layoutX="59.0" layoutY="100.0" />
-      <TextField fx:id="email" layoutX="253.0" layoutY="100.0" />
-      <Text layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" />
-      <Text layoutX="253.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
+      <Button fx:id="invite" layoutX="451.0" layoutY="226.0" mnemonicParsing="false" onAction="#invite" prefHeight="28.0" prefWidth="69.6" text="Invite">
+         <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../../add-user.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <TextField id="email" fx:id="email" alignment="CENTER" layoutX="230.0" layoutY="225.0" prefHeight="26.0" prefWidth="130.0" />
+
+      <TextField fx:id="name" layoutX="360.0" layoutY="225.0" prefHeight="26.0" prefWidth="79.0" />
+      <Text fx:id="emailText" layoutX="360.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" wrappingWidth="79.19999999999982">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="emailText1" layoutX="230.0" layoutY="215.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" wrappingWidth="79.19999999999982">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Text>
+      <Label alignment="CENTER" layoutX="-2.0" layoutY="90.0" prefHeight="55.0" prefWidth="720.0" text="Invite a paticipant to your event" textFill="#712929">
+         <font>
+            <Font size="38.0" />
+         </font>
+      </Label>
+      <Button fx:id="cancel" layoutX="616.0" layoutY="397.0" mnemonicParsing="false" onAction="#close" prefHeight="28.0" prefWidth="79.0" text="Cancel">
+         <graphic>
+            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../../home.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
    </children>
 </AnchorPane>

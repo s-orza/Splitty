@@ -31,11 +31,6 @@
       <Button fx:id="editButton" layoutX="563.0" layoutY="390.0" mnemonicParsing="false" onAction="#editEvent" text="Edit" />
       <Button fx:id="deleteButton" layoutX="630.0" layoutY="390.0" mnemonicParsing="false" onAction="#deleteEvent" text="Delete" />
       <Label text="" />
-      <Label fx:id="showEvent" layoutX="25.0" layoutY="346.0" prefHeight="26.0" prefWidth="438.0">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
       <Button fx:id="generatePassButton" layoutX="25.0" layoutY="390.0" mnemonicParsing="false" onAction="#generatePassword" text="Generate Admin Password" />
       <TextField fx:id="passLengthField" layoutX="190.0" layoutY="389.0" prefHeight="26.0" prefWidth="35.0" />
       <Label fx:id="passLengthText" alignment="CENTER" layoutX="182.0" layoutY="416.0" prefHeight="18.0" prefWidth="50.0" text="Length">
