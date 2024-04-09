@@ -36,6 +36,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static client.scenes.MainPageCtrl.currentLocale;
+
 @JsonIgnoreProperties(ignoreUnknown= true)
 public class AdminPageCtrl implements Controller, Initializable {
 
@@ -68,7 +70,14 @@ public class AdminPageCtrl implements Controller, Initializable {
   private Button exportButton;
   @FXML
   private Button editButton;
-
+  @FXML
+  private Label passLengthText;
+  @FXML
+  private Button deleteButton;
+  @FXML
+  private Button importButton;
+  @FXML
+  private Label eventListText;
   private EventHelper selectedEvent;
   private Stage stage;
   ServerUtils server;
@@ -109,6 +118,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public void exportEvent(ActionEvent e) {
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     Event event = server.getEvent(selectedEvent.getId());
     List<Expense> expenses = server.getAllExpensesOfEvent(event.getEventId());
     List<Participant> participants = server.getParticipantsOfEvent(event.getEventId());
@@ -133,13 +143,14 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        mainCtrl.popup("Exported succesfully to: \n" + filePath + fileName, "Success", "OK");
+        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") + filePath + fileName, "Success", "OK");
       }
     catch(Exception exception){
       exception.printStackTrace();
     }
   }
   public void importEvent(ActionEvent actionEvent) {
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     FileChooser fc = new FileChooser();
     String filePath = new File("").getAbsolutePath().replace("\\", "/");
     filePath += ("/EventsBackup/");
@@ -152,7 +163,8 @@ public class AdminPageCtrl implements Controller, Initializable {
             Event newEvent = mapper.readValue(selectedFile, Event.class);
             for(Event event : server.getEvents()) {
               if (event.getName().equals(newEvent.getName())) {
-                mainCtrl.popup("Event with that name already exists!", "Warning!", "OK");
+                mainCtrl.popup(resourceBundle.getString("sameNameWarning"),
+                        resourceBundle.getString("warningText"), "OK");
                 return;
               }
             }
@@ -199,7 +211,8 @@ public class AdminPageCtrl implements Controller, Initializable {
           }
         }
         else{
-          mainCtrl.popup("Wrong file format! Please select a .json file", "Warning", "Ok");
+          mainCtrl.popup(resourceBundle.getString("wrongFileWarningText"),
+                  resourceBundle.getString("warningText"), "Ok");
           return;
         }
     }
@@ -217,15 +230,17 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public void deleteEvent(ActionEvent e){
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     if(selectedEvent == null){
-      mainCtrl.popup("Please select an event", "Warning", "Okgit ");
+      mainCtrl.popup(resourceBundle.getString("pleaseSelectAnEventText"),
+              resourceBundle.getString("warningText"), "Okgit ");
       return;
     }
 
     VBox layout = new VBox(10);
-    Label label = new Label("This is irreversible, Are you sure you want to remove \n the selected event?");
-    Button removeButton = new Button("Remove");
-    Button cancelButton = new Button("Cancel");
+    Label label = new Label(resourceBundle.getString("removeEventWarningText"));
+    Button removeButton = new Button(resourceBundle.getString("removeText"));
+    Button cancelButton = new Button(resourceBundle.getString("cancelText"));
 
     // Set up the stage
     Stage popupStage = new Stage();
@@ -262,9 +277,11 @@ public class AdminPageCtrl implements Controller, Initializable {
     showPopup();
   }
   private void showPopup() {
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
     Stage popupStage = new Stage();
     popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle("Deleted Event Successfully");
+    popupStage.setTitle(resourceBundle.getString("deletedEventSuccessfullyText"));
     VBox layout = new VBox(10);
     Scene scene = new Scene(layout, 350, 20);
     popupStage.setScene(scene);
@@ -281,6 +298,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     backgroundImage();
     keyShortCuts();
     fillList();
+    toggleLanguage();
     tableTitle.setCellValueFactory(new PropertyValueFactory<EventHelper, String>("title"));
     tableActivity.setCellValueFactory(new PropertyValueFactory<EventHelper, Date>("lastActivity"));
     tableDate.setCellValueFactory(new PropertyValueFactory<EventHelper, Date>("creationDate"));
@@ -320,6 +338,22 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   }
 
+
+  private void toggleLanguage(){
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
+    tableActivity.setText(resourceBundle.getString("lastActivityText"));
+    tableDate.setText(resourceBundle.getString("creationDateText"));
+    tableTitle.setText(resourceBundle.getString("titleText"));
+    generatePassButton.setText(resourceBundle.getString("generateAdminPasswordText"));
+    exit.setText(resourceBundle.getString("exitText"));
+    exportButton.setText(resourceBundle.getString("exportText"));
+    passLengthText.setText(resourceBundle.getString("lengthText"));
+    deleteButton.setText(resourceBundle.getString("deleteText"));
+    importButton.setText(resourceBundle.getString("importText"));
+    eventListText.setText(resourceBundle.getString("eventListText"));
+    editButton.setText(resourceBundle.getString("editText"));
+  }
 
   private void backgroundImage() {
     Image image = new Image("Background_Photo.jpg");

@@ -30,6 +30,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
 
+import static client.scenes.MainPageCtrl.currentLocale;
+
 public class StatisticsCtrl implements Controller, Initializable {
 
     private Stage stage;
@@ -52,6 +54,12 @@ public class StatisticsCtrl implements Controller, Initializable {
     private Text editOrAreYouSureText;
     @FXML
     private Text tagsText;
+
+    @FXML
+    private Text legendText;
+
+    @FXML
+    private Text preferredCurrencyText;
 
     @FXML
     private Button okButton;
@@ -94,6 +102,8 @@ public class StatisticsCtrl implements Controller, Initializable {
     private Map<String,String> tagsToColors;
     private String selectedTagForEditing;//it also helps at deleting (from tag list)
 
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);;
+
     @Inject
     public StatisticsCtrl(ServerUtils server) {
         this.server = server;
@@ -103,6 +113,7 @@ public class StatisticsCtrl implements Controller, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         backgroundImage();
         keyShortCuts();
+        toggleLanguage();
         selectedTagForEditing=null;
         long eventId= server.getCurrentId();
         if(!server.checkIfTagExists("other", eventId))
@@ -130,6 +141,20 @@ public class StatisticsCtrl implements Controller, Initializable {
 
     }
 
+    private void toggleLanguage(){
+        resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
+        legendText.setText(resourceBundle.getString("legendText"));
+        preferredCurrencyText.setText(resourceBundle.getString("preferredCurrencyText"));
+        tagsText.setText(resourceBundle.getString("tagsAvailableText"));
+        personColumn.setText(resourceBundle.getString("personText"));
+        shareColumn.setText(resourceBundle.getString("sharePerPersonText"));
+        isOwedColumn.setText(resourceBundle.getString("needsToReceiveText"));
+        owesColumn.setText(resourceBundle.getString("needsToGiveText"));
+        deleteButton.setText(resourceBundle.getString("deleteText"));
+        cancelEditButton.setText(resourceBundle.getString("cancelText"));
+        saveButton.setText(resourceBundle.getString("saveText"));
+    }
     private void keyShortCuts() {
         okButton.requestFocus();
 
@@ -274,6 +299,7 @@ public class StatisticsCtrl implements Controller, Initializable {
 
         }
         pieChart.setData(pieChartData);
+        pieChart.setTitle(resourceBundle.getString("costsText"));
         //add colors to the pie chart
         pieChartData.forEach(data -> {
             String color = tagColors.get(data.getName());
@@ -407,12 +433,14 @@ public class StatisticsCtrl implements Controller, Initializable {
         String myCurrency=MainCtrl.getCurrency();
         long eventId=server.getCurrentId();
         Event event=server.getEvent(eventId);
+        resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         if(event==null)
             titleId.setText("Statistics for event "+eventId);//just in case
         else
-            titleId.setText("Statistics for event "+event.getName());
+            titleId.setText(resourceBundle.getString("titleIdStatsText") + " " + event.getName());
         //in case we don't have the total amount in EUR, we need to change it to EUR
-        totalSpentText.setText("Total sum spent: "+String.format("%.2f",totalAmount)+ " "+myCurrency);
+        totalSpentText.setText(resourceBundle.getString("totalSumSpentText") + " " +
+                String.format("%.2f",totalAmount)+ " "+myCurrency);
     }
 
     /**
@@ -558,7 +586,8 @@ public class StatisticsCtrl implements Controller, Initializable {
             showEditOrDeletePane(tag,false);
         }
         else
-            mainCtrl.popup("You cannot delete this tag.","Warning","Ok");
+            mainCtrl.popup(resourceBundle.getString("cannotDeleteTagWarningText"),
+                    resourceBundle.getString("warningText"),"Ok");
     }
     @FXML
     void saveEditTag(ActionEvent event) {
@@ -578,7 +607,8 @@ public class StatisticsCtrl implements Controller, Initializable {
         {
             //Problem!! We cannot change this tag's name.
             editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
-            mainCtrl.popup("You cannot change this tag's name.","Warning","Ok");
+            mainCtrl.popup(resourceBundle.getString("cannotChangeTagWarningText"),
+                    resourceBundle.getString("warningText"),"Ok");
             return;
         }
         //verify if there is no other tag with this name and eventId
@@ -594,7 +624,8 @@ public class StatisticsCtrl implements Controller, Initializable {
         }
 
         editNameField.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius: 5px;");
-        mainCtrl.popup("There is already a tag with this name.","Warning","Ok");
+        mainCtrl.popup(resourceBundle.getString("tagNameExistsWarningText"),
+                resourceBundle.getString("warningText"),"Ok");
     }
     @FXML
     void deleteTagButton(ActionEvent event) {
@@ -606,7 +637,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         editPanel.setVisible(true);
         //if we edit
         if(editElseDelete==true) {
-            editOrAreYouSureText.setText("Edit tag "+selectedTagForEditing);
+            editOrAreYouSureText.setText(resourceBundle.getString("editTagText")+" "+selectedTagForEditing);
             editNameField.setVisible(true);
             colorPicker.setVisible(true);
             saveButton.setVisible(true);
@@ -614,7 +645,7 @@ public class StatisticsCtrl implements Controller, Initializable {
         }
         else //if we delete (are you sure?)
         {
-            editOrAreYouSureText.setText("Are you sure?");
+            editOrAreYouSureText.setText(resourceBundle.getString("areYouSureText"));
             editNameField.setVisible(false);
             colorPicker.setVisible(false);
             saveButton.setVisible(false);

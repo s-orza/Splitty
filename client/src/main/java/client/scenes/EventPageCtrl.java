@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -38,7 +39,7 @@ public class EventPageCtrl implements Controller{
     }
 
     @FXML
-    Button invite;
+    Button inviteButton;
     @FXML
     TableView<Participant> participantsTable;
 
@@ -68,6 +69,7 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     TableColumn<Expense, String> typeColumn;
+
     @FXML
     private ComboBox<String> searchByComboBox;
     @FXML
@@ -120,6 +122,14 @@ public class EventPageCtrl implements Controller{
     AnchorPane backGround;
     @FXML
     Button undoButton;
+
+    @FXML
+    private Text filterExpensesText;
+
+    @FXML
+    private ToggleButton allButton;
+
+
     //here we map every index from the selection comboBox to the id of its participant
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
@@ -282,10 +292,10 @@ public class EventPageCtrl implements Controller{
             participantsData.add(t);
         });
 
-
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         searchByComboBox.setItems(participantsToSelectFrom);
-        fromxButton.setText("From ?");
-        includingxButton.setText("Including ?");
+        fromxButton.setText(resourceBundle.getString("fromText"));
+        includingxButton.setText(resourceBundle.getString("includingText"));
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
@@ -348,7 +358,8 @@ public class EventPageCtrl implements Controller{
         });
 
         eventName.setText(server.getEvent(server.getCurrentId()).getName());
-        eventCode.setText("Event Code: " + server.getEvent(server.getCurrentId()).getEventId());
+        eventCode.setText(
+                resourceBundle.getString("eventCodeText") + ": " + server.getEvent(server.getCurrentId()).getEventId());
 
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
@@ -467,7 +478,9 @@ public class EventPageCtrl implements Controller{
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
        try{
-           eventCode.setText(resourceBundle.getString("eventCodeText"));
+           eventCode.setText(
+                   resourceBundle.getString("eventCodeText") + ": " +
+                           server.getEvent(server.getCurrentId()).getEventId());
            addExpense.setText(resourceBundle.getString("addExpenseText"));
            removeExpense.setText(resourceBundle.getString("removeExpenseText"));
            authorColumn.setText(resourceBundle.getString("authorText"));
@@ -478,6 +491,16 @@ public class EventPageCtrl implements Controller{
            participantsColumn2.setText(resourceBundle.getString("participantsText"));
            typeColumn.setText(resourceBundle.getString("typeText"));
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
+           viewStatistics.setText(resourceBundle.getString("viewStatisticsText"));
+           inviteButton.setText(resourceBundle.getString("inviteText"));
+           editExpense.setText(resourceBundle.getString("editExpenseText"));
+           filterExpensesText.setText(resourceBundle.getString("filterExpensesText"));
+           allButton.setText(resourceBundle.getString("allText"));
+           editExpense.setText(resourceBundle.getString("editExpenseText"));
+           editParticipant.setText(resourceBundle.getString("editParticipantText"));
+           fromxButton.setText(resourceBundle.getString("fromText"));
+           includingxButton.setText(resourceBundle.getString("includingText"));
+           searchByComboBox.setPromptText(resourceBundle.getString("selectPersonText"));
 //           editEventName.setText(resourceBundle.getString("editEventNameText"));
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
 
@@ -540,17 +563,18 @@ public class EventPageCtrl implements Controller{
      * database connectivity
      */
     private void editEventNameHandler() {
+
         VBox layout = new VBox(10);
-        Label label = new Label("What should be the new name of this event?");
+        Label label = new Label(resourceBundle.getString("eventNameQuestion"));
         TextField newName = new TextField();
 
-        Button changeButton = new Button("Change");
-        Button cancelButton = new Button("Cancel");
+        Button changeButton = new Button(resourceBundle.getString("changeText"));
+        Button cancelButton = new Button(resourceBundle.getString("cancelText"));
 
         // Set up the stage
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Change Event Name");
+        popupStage.setTitle(resourceBundle.getString("changeEventNameText"));
 
 
         changeButton.setOnAction(e -> {
@@ -579,14 +603,16 @@ public class EventPageCtrl implements Controller{
         ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
         if(selectedItems.isEmpty())
         {
-            mainCtrl.popup("Please select at least one expense.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("selectAtLeastOneExpenseText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
         List<Expense> itemsToEdit = new ArrayList<>(selectedItems);
         if(itemsToEdit.size()>1)
         {
-            mainCtrl.popup("Please select only one expense.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("expenseSelectWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
@@ -600,21 +626,23 @@ public class EventPageCtrl implements Controller{
         ObservableList<Participant> selectedItems = participantsTable.getSelectionModel().getSelectedItems();
         if(selectedItems.isEmpty())
         {
-            mainCtrl.popup("Please select at least one participant.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("participantSelectOneWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
         List<Participant> itemsToEdit = new ArrayList<>(selectedItems);
         if(itemsToEdit.size()>1)
         {
-            mainCtrl.popup("Please select only one participant.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("participantSelectLeastWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
         server.setParticipantToBeModified(itemsToEdit.get(0).getParticipantID());
-        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "View Participant");
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), resourceBundle.getString("viewParticipantsText"));
     }
 
     private void addExpenseHandler(ActionEvent e) {
@@ -741,7 +769,8 @@ public class EventPageCtrl implements Controller{
     void searchFromX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            mainCtrl.popup("You must select a person", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("participantsSelectExactlyWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //popUpWarningText("Please select the person!");
             return;
         }
@@ -769,7 +798,8 @@ public class EventPageCtrl implements Controller{
     void searchIncludingX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            mainCtrl.popup("You must select the included person!", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("selectIncludedPersonWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             return;
         }
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
@@ -845,7 +875,7 @@ public class EventPageCtrl implements Controller{
     private void showPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Deleted expense Successfully");
+        popupStage.setTitle(resourceBundle.getString("deleteExpenseSuccessfullyText"));
         VBox layout = new VBox(10);
         Scene scene = new Scene(layout, 350, 20);
         popupStage.setScene(scene);

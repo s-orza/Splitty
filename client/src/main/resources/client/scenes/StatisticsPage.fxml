@@ -44,7 +44,7 @@
             <Text fx:id="editOrAreYouSureText" layoutX="12.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Edit tag" textAlignment="CENTER" wrappingWidth="153.96817016601562" />
          </children>
       </Pane>
-      <Text fill="WHITE" layoutX="496.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
+      <Text fx:id="legendText" fill="WHITE" layoutX="496.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legend:">
          <font>
             <Font size="14.0" />
          </font>
@@ -66,6 +66,6 @@
         </columns>
       </TableView>
       <ComboBox fx:id="moneyTypeSelector" layoutX="535.0" layoutY="413.0" prefHeight="25.0" prefWidth="73.0" promptText="EUR" />
-      <Text fill="WHITE" layoutX="458.0" layoutY="422.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferred currency:" wrappingWidth="51.05078125" />
+      <Text fx:id="preferredCurrencyText" fill="WHITE" layoutX="458.0" layoutY="422.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferred currency:" wrappingWidth="51.05078125" />
     </children>
 </AnchorPane>

@@ -412,6 +412,7 @@ public class MainPageCtrl implements Controller, Initializable {
       adminButton.setText(resourceBundle.getString("adminText"));
       recentEventsLabel.setText(resourceBundle.getString("recentEventsText"));
       createButton.setText(resourceBundle.getString("createText"));
+      addLanguageButton.setText(resourceBundle.getString("addLanguageText"));
   }
 
   private void putFlag(String path){

@@ -386,7 +386,7 @@ public class LanguageTemplateCtrl implements Controller, Initializable {
 
         saveButton.setOnMouseClicked(e->{
             String path =
-                    "C:\\dsk\\OOPP\\GroupProject\\oopp-team-33\\client\\src\\main\\resources\\messages_xx.properties";
+                    "oopp-team-33\\client\\src\\main\\resources\\messages_xx.properties";
 
             Properties props = new Properties();
 
