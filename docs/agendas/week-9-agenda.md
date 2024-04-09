@@ -54,6 +54,7 @@ Summary (~1-2 min)
 
 <h1>Notes</h1>
 Ta Announcments:
+
 - For the self reflection add something from the teamwork lecture (even if we didnt she gave us a pass, so add!!!)
 - Wont have definitions (like what is dependancy injection) in presentation. But will ask how we used dependency injection in specific place
 - Do self reflection and buddy check
