@@ -53,4 +53,23 @@ Summary (~1-2 min)
 
 
 <h1>Notes</h1>
+Ta Announcments:
+For the self reflection add something from the teamwork lecture (even if we didnt she gave us a pass, so add!!!)
+Wont have definitions (like what is dependancy injection)
+But will ask how we used dependency injection in specific place
+Lets plan a meeting
 
+What we need to do:
+Needs to fix the adding language because its hardcoded to his computer and translate everything, and his tests from last week - Ivan
+
+Fix HCI part 2 - Shahar
+
+Email needs more work, Make the sending email look like other pages - Oliwier
+
+Participant remove, remove it from everythign (delete the expenses and then delete the player), fix buttons expense and event page - David
+
+Debts making currency conversion work with debts - Olav
+
+Optimize debts (graph), tests for client controller - Serban
+Commons tests 
+Bug testing run
