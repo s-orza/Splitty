@@ -27,6 +27,7 @@ import javafx.scene.text.Text;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -244,8 +245,18 @@ public class AddExpenseCtrl implements Controller{
         backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 Scene scene = (backGround.getScene());
+                Boolean[] zPressedOnce = new Boolean[1];
+                zPressedOnce[0] = false;
                 scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                    if (event.isControlDown() && event.getCode() ==KeyCode.Z) undo();
+                    if (event.isControlDown() && event.getCode() == KeyCode.Z && !zPressedOnce[0]) {
+                        zPressedOnce[0]=true;
+                        undo();
+                    }
+                });
+                scene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+                    if (event.getCode() == KeyCode.Z) {
+                        zPressedOnce[0]=false;
+                    }
                 });
             }
         });
@@ -261,10 +272,16 @@ public class AddExpenseCtrl implements Controller{
                     event.getCode()==KeyCode.DOWN) moneyPaid.requestFocus();
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) authorSelector.requestFocus();
         });
+        contentBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.Z) event.consume();
+        });
         moneyPaid.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
                     event.getCode()==KeyCode.DOWN) moneyTypeSelector.requestFocus();
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) contentBox.requestFocus();
+        });
+        moneyPaid.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.Z) event.consume();
         });
         moneyTypeSelector.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) date.requestFocus();
@@ -284,6 +301,9 @@ public class AddExpenseCtrl implements Controller{
         newTypeTextField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) colorPicker.requestFocus();
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) date.requestFocus();
+        });
+        newTypeTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.Z) event.consume();
         });
         colorPicker.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) addTypeButton.requestFocus();
@@ -609,7 +629,7 @@ public class AddExpenseCtrl implements Controller{
         String destination = "/app/expenses/tag/" + String.valueOf(server.getCurrentId());
         server.sendExpense(destination,expense);
 
-        createDebtsFromExpense(expense);
+        server.createDebtsFromExpense(expense);
 
         resetElements();
         server.setExpenseToBeModified(-1);
@@ -670,52 +690,6 @@ public class AddExpenseCtrl implements Controller{
                 dateString,list,typeSelector.getValue());
         return expense;
     }
-    private void createDebtsFromExpense(Expense expense)
-    {
-        //we know there is at least one participant.
-        if(expense.getParticipants().isEmpty()) //(just in case)
-            return; //but we would never arrive here
-        double split=expense.getMoney()/expense.getParticipants().size();
-//        System.out.println("The selected persons need to pay: "+split);
-        double authorNeedsToReceive=0;
-        double othersNeedsToGive=split;
-        Event currentEvent=server.getEvent(server.getCurrentId());
-        //if the author is included
-        if(expense.getParticipants().contains(expense.getAuthor()))
-        {
-            authorNeedsToReceive=expense.getMoney()-split;
-            for(Participant p:expense.getParticipants())
-            {
-                //update debs from p to author
-                if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
-                {
-                    //System.out.println(p.getName() +" gives "+othersNeedsToGive+" to "
-                    //       +expense.getAuthor().getName());
-                    //we need the date because in case there is already a debt between these 2 persons we need to
-                    //update and maybe to convert money
-                    server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                            expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
-                            getParticipantID()),expense.getDate());
-                }
-            }
-        }
-        else
-        {
-            //the author need to receive all the money
-            authorNeedsToReceive=expense.getMoney();
-            for(Participant p:expense.getParticipants())
-            {
-                //update debs from p to author
-
-                //we need the date because in case there is already a debt between these 2 persons we need to
-                //update and maybe to convert money
-                server.addDebtToEvent(server.getCurrentId(),new Debt(othersNeedsToGive,
-                        expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
-                        getParticipantID()),expense.getDate());
-            }
-
-        }
-    }
 
     @FXML
     void saveEditExpense(MouseEvent event)
@@ -763,7 +737,7 @@ public class AddExpenseCtrl implements Controller{
         //reset the debts
         server.resetDebtsFromExpense(server.getCurrentId(),expenseToBeModified.getExpenseId());
         //creates new debts
-        createDebtsFromExpense(expense);
+        server.createDebtsFromExpense(expense);
         //modify the expense and save it to tha database
         server.updateExpense(expenseToBeModified.getExpenseId(),expense);
         expenseToBeModified=null;
