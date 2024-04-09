@@ -26,13 +26,13 @@
         <CheckBox fx:id="checkBoxSomePeople" layoutX="234.0" layoutY="329.0" mnemonicParsing="false"
                   onAction="#handleCheckBoxSomePeople" text="Only between some people"/>
         <ListView fx:id="namesList" layoutX="240.0" layoutY="352.0" prefHeight="87.0" prefWidth="155.0"/>
-        <Button fx:id="addButton" layoutX="421.0" layoutY="289.0" mnemonicParsing="false"
+        <Button fx:id="addButton" layoutX="415.0" layoutY="325.0" mnemonicParsing="false"
                 onMouseClicked="#addExpenseToTheEvent" text="Save"/>
-        <Button fx:id="saveButton" layoutX="421.0" layoutY="289.0" mnemonicParsing="false"
+        <Button fx:id="saveButton" layoutX="415.0" layoutY="325.0" mnemonicParsing="false"
                 onMouseClicked="#saveEditExpense" text="Save"/>
-        <Button fx:id="cancelButton" layoutX="478.0" layoutY="289.0" mnemonicParsing="false"
+        <Button fx:id="cancelButton" layoutX="472.0" layoutY="325.0" mnemonicParsing="false"
                 onMouseClicked="#cancelAddExpense" text="Cancel"/>
-        <Button fx:id="undoButton" layoutX="479.0" layoutY="289.0" mnemonicParsing="false" text="Undo"/>
+        <Button fx:id="undoButton" layoutX="540.0" layoutY="325.0" mnemonicParsing="false" text="Undo"/>
         <TextField fx:id="newTypeTextField" layoutX="528.0" layoutY="162.0" prefHeight="25.0" prefWidth="81.0"/>
         <Button fx:id="addTypeButton" layoutX="624.0" layoutY="162.0" mnemonicParsing="false"
                 onMouseClicked="#createTag" text="+"/>
@@ -80,7 +80,7 @@
         </Text>
         <Text fx:id="cantText" layoutX="528.0" layoutY="144.0" strokeType="OUTSIDE" strokeWidth="0.0"
               text="Create a new type?"/>
-        <Text fx:id="warningText" fill="RED" layoutX="413.0" layoutY="331.0" strokeType="OUTSIDE" strokeWidth="0.0"
+        <Text fx:id="warningText" fill="RED" layoutX="430.0" layoutY="262.0" strokeType="OUTSIDE" strokeWidth="0.0"
               text="The amount of money must be specified." textAlignment="CENTER" wrappingWidth="116.80337524414062">
             <font>
                 <Font size="14.0"/>
