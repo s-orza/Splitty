@@ -219,7 +219,7 @@ public class AddExpenseCtrl implements Controller{
         date.valueProperty().addListener((observable, oldValue, newValue) -> {
             // Check if the new value is different from the old value
             if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
-                if (!tempDate[0].equals(newValue.toString())) {
+                if (!tempDate[0].equals(newValue.toString())) { // gives a NPE but registered expense in database
                     Map<String, String> nameMap = new HashMap<>();
                     nameMap.put("date", tempDate[0]);
                     undoStack.push(nameMap);

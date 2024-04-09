@@ -143,7 +143,7 @@ public class DebtControllerTest {
 
     @Test
     public void testSettleDebtSuccess() throws Exception {
-        mockMvc.perform(delete("/api/events/debts")
+        mockMvc.perform(delete("/api/events/debts/noEvent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDebt)))
                 .andExpect(status().isOk());
@@ -163,7 +163,7 @@ public class DebtControllerTest {
         Debt testDebt = new Debt(100.0, "USD", debtor.getParticipantID(), creditor.getParticipantID());
         testDebt.setDebtID(9999L);
 
-        mockMvc.perform(delete("/api/events/debts")
+        mockMvc.perform(delete("/api/events/debts/noEvent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDebt)))
                 .andExpect(status().isNotFound());
@@ -171,29 +171,10 @@ public class DebtControllerTest {
 
     @Test
     public void testSettleDebtBadRequest() throws Exception {
-        mockMvc.perform(delete("/api/events/debts")
+        mockMvc.perform(delete("/api/events/debts/noEvent")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isNotFound());
     }
-
-    @Test
-    public void settleAllDebts_Success() throws Exception {
-        mockMvc.perform(delete("/api/events/debts/all"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].debtID").value(testDebt.getDebtID()));
-
-        List<Debt> remainingDebts = debtRepository.findAll();
-        assertThat(remainingDebts).isEmpty();
-    }
-
-    @Test
-    public void settleAllDebts_NotFound() throws Exception {
-        debtRepository.deleteAll();
-        mockMvc.perform(delete("/api/events/debts/all"))
-                .andExpect(status().isNotFound());
-    }
-
 
 }

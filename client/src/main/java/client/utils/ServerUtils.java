@@ -15,8 +15,20 @@
  */
 package client.utils;
 
-import static client.scenes.Controller.mainCtrl;
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import commons.*;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.client.ClientConfig;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +36,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import commons.*;
-import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.client.ClientConfig;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.*;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+import static client.scenes.Controller.mainCtrl;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * Accessing parts of the page will happen as follows (please take keen eye on indentation):
@@ -248,6 +253,14 @@ public class ServerUtils {
 		 System.out.println(response.getStatus());
 	 }
 
+	 public void deleteDebt(long eventId, long debtId){
+		 Response response=ClientBuilder.newClient(new ClientConfig())
+				 .target(serverUrl+"api/events/debts/" + debtId + "?eventId="+eventId)
+				 .request(APPLICATION_JSON)
+				 .accept(APPLICATION_JSON)
+				 .delete();
+	 }
+
 	public Participant getParticipant(long participantId){
         Response response =ClientBuilder.newClient(new ClientConfig()) //
 				.target(serverUrl).path("/api/participant/" + participantId) //
@@ -296,17 +309,6 @@ public class ServerUtils {
 		return null;
 	}
 
-	public boolean deleteParticipantEvent(long eventId, long participantId) {
-		Response response=ClientBuilder.newClient(new ClientConfig())
-				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
-				.request(APPLICATION_JSON)
-				.accept(APPLICATION_JSON).delete();
-
-		if(response.getStatus() < 300)
-			return true;
-		return false;
-	}
-
 
 	/**
 	 * This will go and invoke the ParticipantEvent controller
@@ -344,6 +346,20 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON).get();
 		if (response.getStatus() == 200)
 			return response.readEntity(Participant.class);
+		return null;
+	}
+
+	/**
+	 * Getter for all debts in the database
+	 * @return
+	 */
+	public List<Debt> getAllDebts() {
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl).path("/api/events/debts")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON).get();
+		if (response.getStatus() == 200)
+			return response.readEntity(new GenericType<List<Debt>>() {});
 		return null;
 	}
 	public boolean resetDebtsFromExpense(long eventId,long expenseId)
@@ -670,6 +686,35 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.get(new GenericType<Password>() {});
+	}
+
+	public void deleteParticipant(long participantId){
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl + "api/participant/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.delete();
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			System.out.println("Participant removed successfully.");
+		} else {
+			System.out.println("Failed to remove participant. Status code: " + response.getStatus());
+		}
+		response.close();
+	}
+
+	public void deleteParticipantEvent(long eventId, long participantId){
+		Response response = ClientBuilder.newClient(new ClientConfig())
+				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.delete();
+
+		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+			System.out.println("Participant removed successfully.");
+		} else {
+			System.out.println("Failed to remove participantEvent. Status code: " + response.getStatus());
+		}
+		response.close();
 	}
 
 	/**
