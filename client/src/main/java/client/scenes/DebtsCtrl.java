@@ -161,10 +161,12 @@ public class DebtsCtrl implements Controller, Initializable {
         renderAccordion(filteredList);
 
         // currency setup
+        moneyTypeSelector.setOnAction(null);
         moneyTypeSelector.getItems().clear();
         moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
         //here to change with the value from the config file
         moneyTypeSelector.setValue(MainCtrl.getCurrency());
+        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
     }
 
     public void renderAccordion(FilteredList<Debt> filteredList){
@@ -223,6 +225,22 @@ public class DebtsCtrl implements Controller, Initializable {
     public void filter(){
         filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         refresh();
+    }
+
+    /**
+     * This is a basic handler that checks when you change the currency type
+     * @param event an event
+     */
+    @FXML
+    private void handleCurrencySelection(ActionEvent event) {
+        String selectedMoneyType=moneyTypeSelector.getValue();
+        //update in the config file
+        System.out.println(selectedMoneyType);
+        if(!MainCtrl.getCurrency().equals(selectedMoneyType))
+        {
+            mainCtrl.setCurrency(selectedMoneyType);
+            refresh();
+        }
     }
 
     public Pair<Controller, Parent> getPair() {
