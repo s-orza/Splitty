@@ -98,14 +98,7 @@ public class Debt {
         return debtor;
     }
 
-    /**
-     * The setter method for the debtor attribute
-     *
-     * @param debtor The value to set debtor to
-     **/
-    public void setDebtor(Participant debtor) {
-        this.debtor = debtor.getParticipantID();
-    }
+
     /**
      * The setter method for the debtor attribute
      *
@@ -122,15 +115,6 @@ public class Debt {
      **/
     public long getCreditor() {
         return creditor;
-    }
-
-    /**
-     * The setter method for the creditor attribute
-     *
-     * @param creditor The value to set creditor to
-     **/
-    public void setCreditor(Participant creditor) {
-        this.creditor = creditor.getParticipantID();
     }
 
     /**

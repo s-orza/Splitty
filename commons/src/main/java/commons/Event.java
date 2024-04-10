@@ -152,50 +152,6 @@ public class Event {
         return res;
     }
 
-    /**
-     * adds a new debt if it does not exist yet.
-     * If a debt exists between the creditor and debtor, it modifies this debt accordingly
-     * @param amount the amount of the debt
-     * @param currency the currency of the debt
-     * @param debtorID the ID of the debtor who owes
-     * @param creditorID the ID of the creditor who is owed
-     * @return the debt that was modified or created
-     */
-    public Debt addDebt(double amount, String currency, long debtorID, long creditorID){
-        // if a debt already exists, modify it
-        for (Debt debt: debts) {
-            if(debt.getDebtor()==debtorID && debt.getCreditor()==creditorID){
-                // if diff currency, return null (add currency conversion later)
-                if(!Objects.equals(currency, debt.getCurrency())){return null;}
-
-                //add debts
-                debt.setAmount(debt.getAmount() + amount);
-                return debt;
-            }
-            else if(debt.getDebtor()==creditorID && debt.getCreditor()==debtorID){
-                // if diff currency, return null (add currency conversion later)
-                if(!Objects.equals(currency, debt.getCurrency())){return null;}
-
-                //subtract debts
-                debt.setAmount(debt.getAmount() - amount);
-
-                //if cancel out
-                if(debt.getAmount() == 0){return (settleDebt(debt));}
-                //if cred & debt switch
-                if(debt.getAmount() < 0){
-                    long oldDebtor = debt.getDebtor();
-                    debt.setDebtor(debt.getCreditor());
-                    debt.setCreditor(oldDebtor);
-                    debt.setAmount(Math.abs(debt.getAmount()));
-                }
-                return debt;
-            }
-        }
-        Debt res = new Debt(amount, currency, debtorID, creditorID);
-        debts.add(res);
-        return res;
-    }
-
 
     /**
      * adds a new debt if it does not exist yet.
@@ -276,22 +232,6 @@ public class Event {
     }
 
     /**
-     * returns a list of all the debts a participant has
-     * @param debtor the participant who owes
-     * @return List of debts a participant owes
-     */
-    public ArrayList<Debt> getDebts(long debtor){
-        ArrayList<Debt> result = new ArrayList<>();
-        for (Debt debt: debts) {
-            if(debt.getDebtor()==debtor){
-                result.add(debt);
-            }
-        }
-        return result;
-    }
-
-
-    /**
      * returns a list of all the credits a participant is owed
      * @param creditor the participant who is owed
      * @return ArrayList of credits a participant is owed
@@ -301,21 +241,6 @@ public class Event {
         ArrayList<Debt> result = new ArrayList<>();
         for (Debt credit: debts) {
             if(credit.getCreditor()==c){
-                result.add(credit);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * returns a list of all the credits a participant is owed
-     * @param creditor the participant who is owed
-     * @return ArrayList of credits a participant is owed
-     */
-    public ArrayList<Debt> getCredits(long creditor){
-        ArrayList<Debt> result = new ArrayList<>();
-        for (Debt credit: debts) {
-            if(credit.getCreditor()==creditor){
                 result.add(credit);
             }
         }
@@ -339,23 +264,7 @@ public class Event {
     }
 
     /**
-     * returns a list of all the credits and debts a participant is involved in
-     * @param participantID the participant's ID
-     * @return ArrayList of debts the participant is involved in
-     */
-    public ArrayList<Debt> getDebtsAndCredits(long participantID){
-        ArrayList<Debt> result = new ArrayList<>();
-        for (Debt debt: debts) {
-            if(debt.getCreditor()==participantID || debt.getDebtor()==participantID){
-                result.add(debt);
-            }
-        }
-        return result;
-    }
-
-    /**
      * The getter method for the debts
-     *
      * @return debts of this event
      **/
     public List<Debt> getDebts() {
@@ -391,17 +300,7 @@ public class Event {
         return participants;
     }
 
-    public void addParticipant(Participant newParticipant){
-        participants.add(newParticipant);
-    }
 
-    public void removeParticipant(String participantToRemove){
-        participants.remove(participantToRemove);
-    }
-
-    public void clearParticipantsList(){
-        participants = new ArrayList<>();
-    }
 
     public void addListOfParticipants(List<Participant> participantsList) {
         participants.addAll(participantsList);
@@ -415,13 +314,7 @@ public class Event {
         expenses.add(expense);
     }
 
-    public void removeExpense(Expense expense){
-        expenses.remove(expense);
-    }
 
-    public void clearExpensesList(){
-        expenses = new ArrayList<>();
-    }
 
     public void setParticipants(List<Participant> participants) {
         this.participants = participants;
