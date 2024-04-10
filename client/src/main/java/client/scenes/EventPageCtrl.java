@@ -810,12 +810,6 @@ public class EventPageCtrl implements Controller{
 
         // set action for removing
         removeButton.setOnAction(e -> {
-            if (participantsHaveDebtsLeft(participants)){
-                mainCtrl.popup(
-                        resourceBundle.getString("participantsStillInDebtsText"),
-                        "ERROR", "Ok");
-                return;
-            }
             popupStage.close();
             // goes to remove the participants from the database, from the ParticipantEvent repository
             // Does not remove from all other repositories due to compatibility issues
@@ -824,6 +818,7 @@ public class EventPageCtrl implements Controller{
 
         // set action for cancelling the removal process
         cancelButton.setOnAction(e -> {
+            server.setParticipantToBeModified(-1);
             popupStage.close();
         });
 
@@ -837,38 +832,12 @@ public class EventPageCtrl implements Controller{
         popupStage.showAndWait();
     }
 
-    /**
-     * Checks whether a list of participants still has any relations to debts.
-     * If so, it will return false - to represent that they still got business to do
-     * Otherwise, it will return true - that there are no debts left to pay.
-     * @param participants the list of participants that will be checked
-     * @return true if they have no debts left, false otherwise
-     */
-    private boolean participantsHaveDebtsLeft(List<Participant> participants) {
+    private void deleteParticipantDebts(Participant participant) {
         List<Debt> debts = server.getAllDebts();
-        // if there were no debts found, then you can delete the participant
+        // if there were no debts found, then you can proceed with the participant deletion
         if (debts == null || debts.isEmpty())
-            return false;
-        // turn the list of participants into a list of ids of the participants - for easier checking
-        List<Long> participantsIds = participants.stream()
-                .map(Participant::getParticipantID)
-                .toList();
-        // split the list of debts into two lists of participants Ids easier to parse
-        List<Long> debtorIds = new ArrayList<>(debts.stream()
-                .map(Debt::getDebtor)
-                .toList());
-
-        List<Long> creditorIds = new ArrayList<>(debts.stream()
-                .map(Debt::getCreditor)
-                .toList());
-        // Now we check for each participant to delete if they are in any debts
-        for (Long pId: participantsIds) {
-            // if found either as a debtor or creditor, then we cannot remove them
-            if (debtorIds.contains(pId) || creditorIds.contains(pId))
-                return true;
-        }
-        // if not then we return true
-        return false;
+            return;
+        // Else, start finding all participant-debt relations
     }
 
     /**
@@ -877,7 +846,36 @@ public class EventPageCtrl implements Controller{
      */
     private void removeParticipantsFromDatabase(List<Participant> toRemove) {
         for (Participant p: toRemove){
+            updateExpensesForParticipant(server.getCurrentId(), p);
+            deleteParticipantDebts(p);
             server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
+            server.deleteParticipant(p.getParticipantID());
+        }
+    }
+
+    private void updateExpensesForParticipant(long eventId, Participant p) {
+        // get all expenses that this participant is in
+        List<Expense> expenses = server.getAllExpensesOfEvent(eventId);
+        for (Expense e: expenses){
+            // if the participant to delete was the author of an expense, delete that expense
+            if (e.getAuthor().equals(p)){
+                server.deleteExpenseFromEvent(eventId, e.getExpenseId());
+            }
+            // first check if participant is in the expense
+            if (e.getParticipants().contains(p)) {
+                // if it is the only one, delete the expense
+                if (e.getParticipants().size() == 1) {
+                    server.deleteExpenseFromEvent(eventId, e.getExpenseId());
+                }
+                //otherwise update expense's participants list and update the expense
+                else {
+                    List<Participant> pLeft = e.getParticipants();
+                    pLeft.remove(p);
+                    e.setParticipants(pLeft);
+                    // since it is the same ID, we will only change the participant that was in the database
+                    server.updateExpense(e.getExpenseId(), e);
+                }
+            }
         }
     }
 
