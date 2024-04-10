@@ -813,7 +813,7 @@ public class EventPageCtrl implements Controller{
             popupStage.close();
             // goes to remove the participants from the database, from the ParticipantEvent repository
             // Does not remove from all other repositories due to compatibility issues
-            removeParticipantsFromDatabase(new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems()));
+            removeParticipantsFromDatabase(new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems()).get(0));
         });
 
         // set action for cancelling the removal process
@@ -833,24 +833,18 @@ public class EventPageCtrl implements Controller{
     }
 
     private void deleteParticipantDebts(Participant participant) {
-        List<Debt> debts = server.getAllDebts();
-        // if there were no debts found, then you can proceed with the participant deletion
-        if (debts == null || debts.isEmpty())
-            return;
-        // Else, start finding all participant-debt relations
+
     }
 
     /**
      * This method will remove the provided list of participant from the database
-     * @param toRemove List of participants to remove
+     * @param p participant to remove
      */
-    private void removeParticipantsFromDatabase(List<Participant> toRemove) {
-        for (Participant p: toRemove){
+    private void removeParticipantsFromDatabase(Participant p) {
             updateExpensesForParticipant(server.getCurrentId(), p);
             deleteParticipantDebts(p);
             server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
             server.deleteParticipant(p.getParticipantID());
-        }
     }
 
     private void updateExpensesForParticipant(long eventId, Participant p) {
