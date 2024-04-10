@@ -811,9 +811,10 @@ public class EventPageCtrl implements Controller{
         // set action for removing
         removeButton.setOnAction(e -> {
             popupStage.close();
-            // goes to remove the participants from the database, from the ParticipantEvent repository
-            // Does not remove from all other repositories due to compatibility issues
-            removeParticipantsFromDatabase(new ArrayList<>(participantsTable.getSelectionModel().getSelectedItems()).get(0));
+            // remove participants
+            for(Participant p: participantsTable.getSelectionModel()
+                    .getSelectedItems())
+            removeParticipantsFromDatabase(p);
         });
 
         // set action for cancelling the removal process
@@ -832,8 +833,17 @@ public class EventPageCtrl implements Controller{
         popupStage.showAndWait();
     }
 
+    /**
+     * This method deletes every debt related to this participant
+     * @param participant the participant
+     */
     private void deleteParticipantDebts(Participant participant) {
-
+        Event event=server.getEvent(server.getCurrentId());
+        for(Debt d:event.getDebts())
+        {
+            if(d.getCreditor()==participant.getParticipantID() || d.getDebtor()==participant.getParticipantID())
+                server.deleteDebt(server.getCurrentId(), d.getDebtID());
+        }
     }
 
     /**
@@ -863,10 +873,15 @@ public class EventPageCtrl implements Controller{
                 }
                 //otherwise update expense's participants list and update the expense
                 else {
+                    // firstly resets old debts
+                    server.resetDebtsFromExpense(eventId, e.getExpenseId());
                     List<Participant> pLeft = e.getParticipants();
                     pLeft.remove(p);
                     e.setParticipants(pLeft);
+                    // creates new debts
+                    server.createDebtsFromExpense(e);
                     // since it is the same ID, we will only change the participant that was in the database
+                    // then update the expense, because updateExpense don t take care if debts
                     server.updateExpense(e.getExpenseId(), e);
                 }
             }
