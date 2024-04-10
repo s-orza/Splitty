@@ -22,6 +22,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -308,6 +309,17 @@ public class AdminPageCtrl implements Controller, Initializable {
   private void keyShortCuts() {
     exit.requestFocus();
 
+    backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+      if (newScene != null) {
+        Scene scene = (backGround.getScene());
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+          if (event.getCode() == KeyCode.ESCAPE) {
+            exit.fire();
+          }
+        });
+      }
+    });
+
     table.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.RIGHT) editButton.requestFocus();
       if (event.getCode() == KeyCode.LEFT) exportButton.requestFocus();
@@ -324,6 +336,9 @@ public class AdminPageCtrl implements Controller, Initializable {
       if (event.getCode() == KeyCode.ENTER) generatePassButton.requestFocus();
       if (event.getCode() == KeyCode.RIGHT) editButton.requestFocus();
     });
+    tableTitle.setResizable(false);
+    tableDate.setResizable(false);
+    tableActivity.setResizable(false);
 
   }
 

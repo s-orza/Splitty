@@ -370,6 +370,17 @@ public class EventPageCtrl implements Controller{
     private void keyShortCuts() {
         cancelButton.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+            }
+        });
+
         editEventName.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
             if (event.getCode() == KeyCode.ENTER) editEventName.fire();
@@ -416,6 +427,14 @@ public class EventPageCtrl implements Controller{
             if (event.getCode() == KeyCode.ENTER)  searchByComboBox.show();
             if (event.getCode() == KeyCode.UP)  comboBox.requestFocus();
         });
+        authorColumn.setResizable(false);
+        descriptionColumn.setResizable(false);
+        amountColumn.setResizable(false);
+        currencyColumn.setResizable(false);
+        dateColumn.setResizable(false);
+        participantsColumn2.setResizable(false);
+        typeColumn.setResizable(false);
+        participantsColumn.setResizable(false);
         viewStatistics.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
         });

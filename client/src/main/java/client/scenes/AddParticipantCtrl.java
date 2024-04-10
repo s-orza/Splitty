@@ -20,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -96,6 +97,17 @@ public class AddParticipantCtrl implements Controller {
 
     private void keyShortCuts() {
         name.requestFocus();
+
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+            }
+        });
 
         name.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||

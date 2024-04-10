@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -134,9 +135,23 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void keyShortCuts() {
         okButton.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        okButton.fire();
+                    }
+                });
+            }
+        });
         participantsShareTable.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT) moneyTypeSelector.requestFocus();
         });
+        personColumn.setResizable(false);
+        shareColumn.setResizable(false);
+        owesColumn.setResizable(false);
+        isOwedColumn.setResizable(false);
 
         moneyTypeSelector.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.DOWN) {

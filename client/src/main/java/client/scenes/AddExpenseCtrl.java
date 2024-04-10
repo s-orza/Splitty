@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import javafx.scene.text.Text;
 
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -264,6 +265,17 @@ public class AddExpenseCtrl implements Controller{
     private void keyShortCuts() {
         authorSelector.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+            }
+        });
+
         authorSelector.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) authorSelector.show();
             if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) {
@@ -271,18 +283,18 @@ public class AddExpenseCtrl implements Controller{
                 event.consume();
             }
         });
-//        cancelButton.setOnKeyPressed(event -> {
-//            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
-//        });
-//        saveButton.setOnKeyPressed(event -> {
-//            if (event.getCode() == KeyCode.ENTER) saveButton.fire();
-//        });
-//        addButton.setOnKeyPressed(event -> {
-//            if (event.getCode() == KeyCode.ENTER) {
-//                addButton.fire();
-//                event.consume();
-//            }
-//        });
+        cancelButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
+        });
+        saveButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) saveButton.fire();
+        });
+        addButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                addButton.fire();
+                event.consume();
+            }
+        });
         contentBox.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER|| event.getCode()==KeyCode.DOWN) moneyPaid.requestFocus();
             if (event.getCode() == KeyCode.RIGHT) newTypeTextField.requestFocus();
@@ -651,7 +663,7 @@ public class AddExpenseCtrl implements Controller{
      * @param event an event
      */
     @FXML
-    void addExpenseToTheEvent(MouseEvent event) {
+    void addExpenseToTheEvent(ActionEvent event) {
         //we need to verify if the expense is valid.
         if(!inputIsCorrect())
             return;
@@ -774,7 +786,7 @@ public class AddExpenseCtrl implements Controller{
     }
 
     @FXML
-    void saveEditExpense(MouseEvent event)
+    void saveEditExpense(ActionEvent event)
     {
         if(!inputIsCorrect())
             return;
@@ -887,7 +899,7 @@ public class AddExpenseCtrl implements Controller{
      * @param e an event
      */
     @FXML
-    void cancelAddExpense(MouseEvent e) {
+    void cancelAddExpense(ActionEvent e) {
         resetElements();
         server.setExpenseToBeModified(-1);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
