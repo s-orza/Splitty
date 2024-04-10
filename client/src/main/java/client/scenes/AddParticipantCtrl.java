@@ -8,7 +8,6 @@ import client.utils.ServerUtils;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -21,11 +20,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.Pair;
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -99,6 +98,17 @@ public class AddParticipantCtrl implements Controller {
     private void keyShortCuts() {
         name.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+            }
+        });
+
         name.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||
                     event.getCode() == KeyCode.DOWN) email.requestFocus();
@@ -119,7 +129,7 @@ public class AddParticipantCtrl implements Controller {
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) iban.requestFocus();
         });
         addButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addButton.fire();
+            if (event.getCode() == KeyCode.ENTER) addButton.fire();
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) bic.requestFocus();
         });
         cancelButton.setOnKeyPressed(event -> {
