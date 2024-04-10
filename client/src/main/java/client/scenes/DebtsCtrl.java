@@ -93,6 +93,7 @@ public class DebtsCtrl implements Controller, Initializable {
         filterButton.setText(resourceBundle.getString("filterText"));
         refreshButton.setText(resourceBundle.getString("refreshText"));
         debtsText.setText(resourceBundle.getString("debtsText"));
+        searchByComboBox.setPromptText(resourceBundle.getString("selectPersonText"));
     }
 
     private void backgroundImage() {

@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static client.scenes.MainPageCtrl.currentLocale;
+
 public class InviteParticipantCtrl implements Controller, Initializable {
 
   @FXML
@@ -37,6 +39,11 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   @FXML
   private Button cancel;
 
+  @FXML
+  private Label inviteSelectParticipantsText;
+
+  ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
   private Participant selectedParticipant;
 
   private Stage stage;
@@ -48,6 +55,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   }
   @Override
   public void initialize(URL location, ResourceBundle resources) {
+    toggleLanguage();
     List <Participant> list =server.getAllParticipantsFromDatabase();
     contents =  FXCollections.observableArrayList(
             list.stream().filter(e -> e.getEmail().matches(
@@ -59,6 +67,13 @@ public class InviteParticipantCtrl implements Controller, Initializable {
     participants.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedParticipant = participants.getSelectionModel().getSelectedItem();
     });
+  }
+
+  private void toggleLanguage(){
+    inviteSelectParticipantsText.setText(resourceBundle.getString("inviteSelectParticipantsText"));
+    name.setText(resourceBundle.getString("nameText"));
+    cancel.setText(resourceBundle.getString("cancelText"));
+    invite.setText(resourceBundle.getString("inviteText"));
   }
 
   public void close(ActionEvent e){
@@ -88,7 +103,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
 
   @Override
   public String getTitle() {
-    return "Invite participant page";
+    return resourceBundle.getString("inviteParticipantsTitle");
   }
 
 }

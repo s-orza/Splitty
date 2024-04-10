@@ -22,7 +22,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Text>
-      <Label alignment="CENTER" layoutX="216.0" layoutY="90.0" prefHeight="55.0" prefWidth="287.0" text="Select Server" textFill="#712929">
+      <Label fx:id="selectServerText" alignment="CENTER" layoutX="210.0" layoutY="14.0" prefHeight="200.0" prefWidth="300.0" text="Select Server" textFill="#712929" wrapText="true">
          <font>
             <Font size="38.0" />
          </font>

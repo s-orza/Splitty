@@ -118,6 +118,7 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     ComboBox comboBox;
+
     @FXML
     AnchorPane backGround;
     @FXML
@@ -134,7 +135,7 @@ public class EventPageCtrl implements Controller{
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
 
-    private ResourceBundle resourceBundle;
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
     private Stage stage;
 
@@ -307,38 +308,32 @@ public class EventPageCtrl implements Controller{
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("English");
         }
         if(currentLocale.getLanguage().equals("nl")){
             putFlag("nlFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Dutch");
         }
         if(currentLocale.getLanguage().equals("de")){
             putFlag("deFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("German");
         }
         if(currentLocale.getLanguage().equals("es")){
             putFlag("esFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Spanish");
         }
-        if(currentLocale.getLanguage().equals("xx")){
-            putFlag("xxFlag.png");
-            ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
-            comboBox.setItems(comboBoxItems);
-            comboBox.setPromptText("Extra");
-        }
+
         toggleLanguage();
         prepareAnimation();
 
@@ -347,7 +342,6 @@ public class EventPageCtrl implements Controller{
             if(newValue.equals("Dutch")) changeFlag("nl");
             if(newValue.equals("Spanish")) changeFlag("es");
             if(newValue.equals("German")) changeFlag("de");
-            if(newValue.equals("Extra")) changeFlag("xx");
             toggleLanguage();
         });
 
@@ -437,36 +431,23 @@ public class EventPageCtrl implements Controller{
         seqTransition.play();
         if(toChange.equals("es")){
             currentLocale = new Locale("es", "ES");
-            // pause for a bit so that the flag shrinks and then changes it
             PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
             pause.setOnFinished(e -> putFlag("esFlag.png"));
             pause.play();
         }
         else if(toChange.equals("nl")){
             currentLocale = new Locale("nl", "NL");
-            // pause for a bit so that the flag shrinks and then changes it
             PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
             pause.setOnFinished(e -> putFlag("nlFlag.png"));
             pause.play();
         }
         else if(toChange.equals("de")){
             currentLocale = new Locale("de", "DE");
-            // pause for a bit so that the flag shrinks and then changes it
             PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
             pause.setOnFinished(e -> putFlag("deFlag.png"));
             pause.play();
         }
-        else if(toChange.equals("xx")){
-            currentLocale = new Locale("xx", "XX");
-            // pause for a bit so that the flag shrinks and then changes it
-            PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
-            pause.setOnFinished(e -> putFlag("xxFlag.png"));
-            pause.play();
-        }
+
         else{
             currentLocale = new Locale("en", "US");
             PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -501,11 +482,11 @@ public class EventPageCtrl implements Controller{
            fromxButton.setText(resourceBundle.getString("fromText"));
            includingxButton.setText(resourceBundle.getString("includingText"));
            searchByComboBox.setPromptText(resourceBundle.getString("selectPersonText"));
-//           editEventName.setText(resourceBundle.getString("editEventNameText"));
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
 
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
-           cancelButton.setText(resourceBundle.getString("cancelText"));
+           cancelButton.setText(resourceBundle.getString("homeText"));
+
        }catch (Exception e){
            e.printStackTrace();
        }
@@ -533,6 +514,7 @@ public class EventPageCtrl implements Controller{
                 backgroundSize);
         Background background = new Background(backgroundImage);
         backGround.setBackground(background);
+
     }
 
     public void prepareAnimation(){
