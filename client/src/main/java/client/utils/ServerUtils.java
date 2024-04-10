@@ -731,16 +731,6 @@ public class ServerUtils {
 		response.close();
 	}
 
-	/**
-	 * Deletes the participant from all expenses of an Event. Consequentially updates expenses such that it has
-	 * one less participant in it which WILL mess with the debts that will need to be settled.
-	 * Will also delete the participants debts since those are generated based on the Expense
-	 * @param eventId event that contains the participant
-	 * @param participantID ID of participant to be deleted
-	 */
-	public void deleteParticipantFromExpenses(long eventId, long participantID) {
-
-	}
 
 	/**
 	 * connects to the database through the endpoint to delete an event
