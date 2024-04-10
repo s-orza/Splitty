@@ -362,6 +362,51 @@ public class ServerUtils {
 			return response.readEntity(new GenericType<List<Debt>>() {});
 		return null;
 	}
+	public void createDebtsFromExpense(Expense expense)
+	{
+		//we know there is at least one participant.
+		if(expense.getParticipants()==null) //(just in case)
+			return;
+		if(expense.getParticipants().isEmpty()) //(just in case)
+			return; //but we would never arrive here
+		double split=expense.getMoney()/expense.getParticipants().size();
+		double authorNeedsToReceive=0;
+		double othersNeedsToGive=split;
+		//if the author is included
+		if(expense.getParticipants().contains(expense.getAuthor()))
+		{
+			authorNeedsToReceive=expense.getMoney()-split;
+			for(Participant p:expense.getParticipants())
+			{
+				//update debs from p to author
+				if(p.getParticipantID()!=expense.getAuthor().getParticipantID())
+				{
+					//we need the date because in case there is already a debt between these 2
+					// persons we need to
+					//update and maybe to convert money
+					addDebtToEvent(getCurrentId(),new Debt(othersNeedsToGive,
+							expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
+							getParticipantID()),expense.getDate());
+				}
+			}
+		}
+		else
+		{
+			//the author need to receive all the money
+			authorNeedsToReceive=expense.getMoney();
+			for(Participant p:expense.getParticipants())
+			{
+				//update debs from p to author
+				//we need the date because in case there is already a debt between these
+				// 2 persons we need to
+				//update and maybe to convert money
+				addDebtToEvent(getCurrentId(),new Debt(othersNeedsToGive,
+						expense.getCurrency(),p.getParticipantID(),expense.getAuthor().
+						getParticipantID()),expense.getDate());
+			}
+
+		}
+	}
 	public boolean resetDebtsFromExpense(long eventId,long expenseId)
 	{
 		Response response=ClientBuilder.newClient(new ClientConfig())
