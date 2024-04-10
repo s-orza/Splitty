@@ -93,6 +93,11 @@ public class MainCtrl {
         return currency;
     }
 
+    /**
+     * This method reads the config, it's used to update the email provided in the config during runtime,
+     * so you don't have to restart the app if you have an incorrect email setup. Since server also checks the
+     * current email in the config when sending an email decided this is the best approach
+     */
     public void refresh(){
         AppConfig config = new AppConfig();
         try {
