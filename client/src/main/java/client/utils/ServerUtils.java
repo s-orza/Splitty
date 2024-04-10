@@ -221,7 +221,6 @@ public class ServerUtils {
 				 .accept(APPLICATION_JSON)
 				 .post(Entity.entity(debt, APPLICATION_JSON));
 
-		 System.out.println(response.getStatus());
 	 }
 
 	 public void deleteDebt(long eventId, long debtId){
@@ -256,7 +255,6 @@ public class ServerUtils {
 				.target(serverUrl).path("/api/participant/event/"+eventId+"/allParticipants")
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
-		System.out.println(response);
 		if(response.getStatus() < 300) {
 			GenericType<List<Participant>> genericType = new GenericType<List<Participant>>() {};
 			return response.readEntity(genericType);  // Use a specific type reference here
@@ -295,7 +293,6 @@ public class ServerUtils {
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.post(Entity.entity(participant,APPLICATION_JSON));
-		System.out.println(response);
 	}
 	//EXPENSE functions
 	//GET functions
@@ -384,7 +381,6 @@ public class ServerUtils {
 				.target(serverUrl +"api/expenses/deletedDebts?eventId="+eventId+"&expenseId="+expenseId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).get();
-		System.out.println(response);
 		if(response.getStatus()<300)
 			return true;
 		return false;
@@ -608,7 +604,6 @@ public class ServerUtils {
 				.target(serverUrl + "api/participant/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON).put(Entity.entity(participant, APPLICATION_JSON));
-		System.out.println(response + "Update participant response");
 		if (response.getStatus() < 300){
 			return response.readEntity(Participant.class);
 		}

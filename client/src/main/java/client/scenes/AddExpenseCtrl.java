@@ -218,7 +218,7 @@ public class AddExpenseCtrl implements Controller{
                 }
             });
             date.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue) {
+                if (!newValue && date.getValue()!=null) {
                     if (!tempDate[0].equals(date.getValue().toString())) {
 
                         Map<String, String> nameMap = new HashMap<>();
