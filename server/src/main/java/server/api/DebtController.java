@@ -72,7 +72,7 @@ public class DebtController {
 
         for (Long id: ids){
             //check if ID is null or invalid
-            if (Objects.isNull(id) ||id < 0) {return ResponseEntity.badRequest().build();}
+            if (Objects.isNull(id) || id < 0) {return ResponseEntity.badRequest().build();}
 
             if (repo.existsById(id)){
                 debts.add(getDebtById(id).getBody());

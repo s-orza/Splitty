@@ -1,180 +1,239 @@
 package server.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.*;
-import org.junit.jupiter.api.AfterEach;
+import server.service.DebtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import server.database.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 public class DebtControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock
+    private DebtRepository mockRepo;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Mock
+    private DebtService mockDebtService;
 
-    @Autowired
-    private DebtRepository debtRepository;
-
-    @Autowired
-    private ParticipantRepository participantRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    private Event testEvent;
-    private Participant testParticipant;
-    private Participant testCreditor;
-
-    private Debt testDebt;
-
+    private DebtController debtController;
 
     @BeforeEach
-    public void setup() {
-        testEvent =
-                eventRepository.save(new Event("Sample Event"));
-        testParticipant =
-                participantRepository.save(new Participant("Debtor Participant",
-                        "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        testCreditor =
-                participantRepository.save(new Participant("Creditor Participant",
-                        "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
-        testDebt =
-                debtRepository.save(new Debt(100, "USD", testParticipant.getParticipantID(),
-                        testCreditor.getParticipantID()));
-    }
-
-    @AfterEach
-    public void cleanup() {
-        debtRepository.deleteAll();
-        participantRepository.deleteAll();
-        eventRepository.deleteAll();
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        debtController = new DebtController(mockRepo, mockDebtService);
     }
 
     @Test
-    public void getDebtById_Success() throws Exception {
-        Debt savedDebt = debtRepository.findById(testDebt.getDebtID()).get();
-        mockMvc.perform(get("/api/events/debts/" + savedDebt.getDebtID()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.debtID").value(savedDebt.getDebtID()))
-                .andExpect(jsonPath("$.amount").value(100))
-                .andExpect(jsonPath("$.currency").value("USD"));
+    void getDebtById_Success() {
+        // Given
+        long validId = 1L;
+        Debt expectedDebt = new Debt();
+        when(mockRepo.findById(validId)).thenReturn(Optional.of(expectedDebt));
+        ResponseEntity<Debt> response = debtController.getDebtById(validId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedDebt, response.getBody());
+        verify(mockRepo).findById(validId);
     }
 
     @Test
-    public void getAllDebts_Success() throws Exception {
-        mockMvc.perform(get("/api/events/debts"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").isNotEmpty());
+    void getDebtById_InvalidId() {
+        long invalidId = -1L;
+        ResponseEntity<Debt> response = debtController.getDebtById(invalidId);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(mockRepo, never()).findById(anyLong());
+    }
+
+    @Test
+    void getDebtById_DoesNotExist() {
+        long validIdButNoDebt = 2L;
+        when(mockRepo.findById(validIdButNoDebt)).thenReturn(Optional.empty());
+
+
+        ResponseEntity<Debt> response = debtController.getDebtById(validIdButNoDebt);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(mockRepo).findById(validIdButNoDebt);
+    }
+
+    @Test
+    void getAllDebts_NotEmptyList() {
+
+        Debt debt1 = new Debt();
+        Debt debt2 = new Debt();
+        List<Debt> expectedDebts = Arrays.asList(debt1, debt2);
+        when(mockRepo.findAll()).thenReturn(expectedDebts);
+
+        ResponseEntity<List<Debt>> response = debtController.getAllDebts();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedDebts, response.getBody());
+        verify(mockRepo).findAll();
+    }
+
+    @Test
+    void getListOfDebts_Success() {
+        List<Long> ids = Arrays.asList(1L, 2L);
+        Debt debt1 = new Debt();
+        Debt debt2 = new Debt();
+        when(mockRepo.existsById(1L)).thenReturn(true);
+        when(mockRepo.existsById(2L)).thenReturn(true);
+        when(mockRepo.findById(1L)).thenReturn(Optional.of(debt1));
+        when(mockRepo.findById(2L)).thenReturn(Optional.of(debt2));
+
+        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(ids);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        verify(mockRepo, times(1)).existsById(1L);
+        verify(mockRepo, times(1)).existsById(2L);
+    }
+
+    @Test
+    void getListOfDebts_BadRequest() {
+        List<Long> idsWithInvalid = Arrays.asList(-1L, 1L);
+        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(idsWithInvalid);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void getListOfDebts_NotFound() {
+        List<Long> idsWithNonExistent = Arrays.asList(1L, 3L);
+        Debt debt1 = new Debt();
+        when(mockRepo.existsById(1L)).thenReturn(true);
+        when(mockRepo.existsById(3L)).thenReturn(false);
+        when(mockRepo.findById(1L)).thenReturn(Optional.of(debt1));
+
+        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(idsWithNonExistent);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(mockRepo).existsById(1L);
+        verify(mockRepo).existsById(3L);
+    }
+
+    @Test
+    void getListOfDebts_IdDoesNotExists() {
+        List<Long> ids = Arrays.asList(1L, 3L);
+        when(mockRepo.existsById(1L)).thenReturn(true);
+        when(mockRepo.existsById(3L)).thenReturn(false);
+
+        Debt debt1 = new Debt();
+        when(mockRepo.findById(1L)).thenReturn(Optional.of(debt1));
+        when(mockRepo.findById(3L)).thenReturn(Optional.empty());
+
+        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(ids);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(mockRepo, times(1)).existsById(1L);
+        verify(mockRepo, times(1)).existsById(3L);
     }
 
 
     @Test
-    public void getListOfDebts_Success() throws Exception {
-        Participant debtor = participantRepository.save(
-                new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        Participant creditor = participantRepository.save(
-                new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
-        Debt debt1 = debtRepository.save(new Debt(100, "USD", debtor.getParticipantID(), creditor.getParticipantID()));
-        Debt debt2 = debtRepository.save(new Debt(200, "EUR", debtor.getParticipantID(), creditor.getParticipantID()));
+    void addDebt_Success() {
+        long eventId = 1L;
+        String date = "2024-04-10";
+        Debt validDebt = new Debt();
+        doNothing().when(mockDebtService).saveDebtToEvent(anyLong(), any(Debt.class), anyString());
 
-        List<Long> ids = Arrays.asList(debt1.getDebtID(), debt2.getDebtID());
+        ResponseEntity<Debt> response = debtController.addDebt(eventId, date, validDebt);
 
-        mockMvc.perform(get("/api/events/debts/all")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(ids)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].debtID").value(debt1.getDebtID()))
-                .andExpect(jsonPath("$[1].debtID").value(debt2.getDebtID()));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(validDebt, response.getBody());
+        verify(mockDebtService, times(1)).saveDebtToEvent(eventId, validDebt, date);
     }
 
     @Test
-    public void getListOfDebts_InvalidId() throws Exception {
-        List<Long> ids = Arrays.asList(-1L);
+    void addDebt_ReturnsBadRequest_WhenDebtIsNull() {
+        long eventId = 1L;
+        String date = "2024-04-10";
 
-        mockMvc.perform(get("/api/events/debts/all")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(ids)))
-                .andExpect(status().isBadRequest());
+        ResponseEntity<Debt> response = debtController.addDebt(eventId, date, null);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(mockDebtService, never()).saveDebtToEvent(anyLong(), any(Debt.class), anyString());
     }
 
     @Test
-    public void addListOfDebts_Success() throws Exception {
-        Participant debtor = participantRepository.save(
-                new Participant("Debtor Participant", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        Participant creditor = participantRepository.save(
-                new Participant("Creditor Participant", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
+    void addListOfDebts_ReturnsBadRequest_WhenListIsNull() {
+        ResponseEntity<List<Debt>> response = debtController.addListOfDebts(null);
 
-        List<Debt> debts = Arrays.asList(
-                new Debt(100, "USD", debtor.getParticipantID(), creditor.getParticipantID()),
-                new Debt(200, "EUR", debtor.getParticipantID(), creditor.getParticipantID())
-        );
-
-        mockMvc.perform(post("/api/events/debts/all")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(debts)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].amount").value(100))
-                .andExpect(jsonPath("$[1].amount").value(200));
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    public void testSettleDebtSuccess() throws Exception {
-        mockMvc.perform(delete("/api/events/debts/noEvent")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testDebt)))
-                .andExpect(status().isOk());
-
-        assertThat(debtRepository.existsById(testDebt.getDebtID())).isFalse();
+    void settleDebtByID_IdNull() {
+        ResponseEntity<Debt> response = debtController.settleDebtByID(null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    public void testSettleDebtNotFound() throws Exception {
-
-        Participant debtor = participantRepository.save(
-                new Participant("Debtor", "debtor@example.com", "DEBTORIBAN", "DEBTORBIC"));
-        Participant creditor = participantRepository.save(
-                new Participant("Creditor", "creditor@example.com", "CREDITORIBAN", "CREDITORBIC"));
-
-
-        Debt testDebt = new Debt(100.0, "USD", debtor.getParticipantID(), creditor.getParticipantID());
-        testDebt.setDebtID(9999L);
-
-        mockMvc.perform(delete("/api/events/debts/noEvent")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testDebt)))
-                .andExpect(status().isNotFound());
+    void settleDebtByID_DoesNotExist() {
+        when(mockRepo.findById(anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<Debt> response = debtController.settleDebtByID(1L);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void testSettleDebtBadRequest() throws Exception {
-        mockMvc.perform(delete("/api/events/debts/noEvent")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isNotFound());
+    void settleDebtByID_Success() {
+        Debt debt = new Debt();
+        when(mockRepo.findById(anyLong())).thenReturn(Optional.of(debt));
+        ResponseEntity<Debt> response = debtController.settleDebtByID(1L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(mockRepo, times(1)).delete(debt);
+    }
+
+    @Test
+    void settleDebt_DebtIsNull() {
+        ResponseEntity<Debt> response = debtController.settleDebt(null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void settleDebt_DebtDoesNotExist() {
+        Debt debt = new Debt();
+        debt.setDebtID(1L);
+        when(mockRepo.existsById(anyLong())).thenReturn(false);
+        ResponseEntity<Debt> response = debtController.settleDebt(debt);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void settleListOfDebts_ListIsNull() {
+        ResponseEntity<List<Debt>> response = debtController.settleListOfDebts(null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void settleListOfDebts_Success() {
+        Debt debt1 = new Debt();
+        debt1.setDebtID(1L);
+        Debt debt2 = new Debt();
+        debt2.setDebtID(2L);
+        List<Debt> debts = Arrays.asList(debt1, debt2);
+        when(mockRepo.existsById(debt1.getDebtID())).thenReturn(true);
+        when(mockRepo.existsById(debt2.getDebtID())).thenReturn(true);
+        ResponseEntity<List<Debt>> response = debtController.settleListOfDebts(debts);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(mockRepo, times(1)).delete(debt1);
+        verify(mockRepo, times(1)).delete(debt2);
     }
 
 }
