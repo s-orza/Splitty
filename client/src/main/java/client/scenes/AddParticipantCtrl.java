@@ -119,7 +119,7 @@ public class AddParticipantCtrl implements Controller {
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) iban.requestFocus();
         });
         addButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addButton.fire();
+            if (event.getCode() == KeyCode.ENTER) addButton.fire();
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) bic.requestFocus();
         });
         cancelButton.setOnKeyPressed(event -> {
@@ -152,11 +152,9 @@ public class AddParticipantCtrl implements Controller {
         try {
             //TODO
             // make the eventID be specific to each event
-            PauseTransition delay = new PauseTransition(Duration.seconds(1));
-            delay.setOnFinished(e -> {
+
                 showPopup();
-            });
-            delay.play();
+
 
             String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);

@@ -59,7 +59,7 @@
         </Button>
         <BorderPane layoutX="41.0" layoutY="153.0" prefHeight="31.0" prefWidth="429.0">
             <left>
-                <ToggleButton mnemonicParsing="false" onAction="#searchAll" prefHeight="31.0" prefWidth="112.0" styleClass="button-styled" text="All" BorderPane.alignment="CENTER">
+                <ToggleButton fx:id="allButton" mnemonicParsing="false" onAction="#searchAll" prefHeight="31.0" prefWidth="112.0" styleClass="button-styled" text="All" BorderPane.alignment="CENTER">
                     <toggleGroup>
                         <ToggleGroup fx:id="searchGroup" />
                     </toggleGroup>

@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -119,7 +120,7 @@ public class EventPageCtrl implements Controller{
     @FXML
     AnchorPane backGround;
     @FXML
-    Button undoButton;
+    ToggleButton allButton;
     //here we map every index from the selection comboBox to the id of its participant
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
@@ -370,56 +371,71 @@ public class EventPageCtrl implements Controller{
         cancelButton.requestFocus();
 
         editEventName.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) comboBox.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
             if (event.getCode() == KeyCode.ENTER) editEventName.fire();
         });
         fromxButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.UP) editExpense.requestFocus();
+            if (event.getCode() == KeyCode.DOWN)  expensesTable.requestFocus();
         });
-        includingxButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+        allButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) addExpense.requestFocus();
+            if (event.getCode() == KeyCode.DOWN)  expensesTable.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  addExpense.requestFocus();
         });
-
-        comboBox.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) comboBox.show();
-            if (event.getCode() == KeyCode.LEFT) editEventName.requestFocus();
-        });
-        cancelButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) viewStatistics.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
-            if (event.getCode() == KeyCode.LEFT) comboBox.requestFocus();
-        });
-        viewStatistics.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) viewDebts.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) viewStatistics.fire();
-            if (event.getCode() == KeyCode.LEFT) cancelButton.requestFocus();
-        });
-        viewDebts.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addParticipant.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) viewDebts.fire();
-            if (event.getCode() == KeyCode.LEFT) viewStatistics.requestFocus();
-        });
-        addParticipant.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) addParticipant.fire();
-            if (event.getCode() == KeyCode.LEFT) viewDebts.requestFocus();
+        expensesTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) allButton.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT)  addParticipant.requestFocus();
         });
         addExpense.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) editExpense.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) addExpense.fire();
-            if (event.getCode() == KeyCode.LEFT) addParticipant.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  editEventName.requestFocus();
         });
-        editExpense.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) removeExpense.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) editExpense.fire();
-            if (event.getCode() == KeyCode.LEFT) addExpense.requestFocus();
+        participantsTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT)  addParticipant.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  comboBox.requestFocus();
+        });
+        comboBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN)  {
+                searchByComboBox.requestFocus();
+                event.consume();
+            }
+            if (event.getCode() == KeyCode.UP)  event.consume();
+            if (event.getCode() == KeyCode.ENTER)  comboBox.show();
+            if (event.getCode() == KeyCode.RIGHT)  searchByComboBox.requestFocus();
+        });
+        includingxButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) removeExpense.requestFocus();
+            if (event.getCode() == KeyCode.DOWN)  expensesTable.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT)  searchByComboBox.requestFocus();
+        });
+        searchByComboBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN)  {
+                expensesTable.requestFocus();
+                event.consume();
+            }
+            if (event.getCode() == KeyCode.ENTER)  searchByComboBox.show();
+            if (event.getCode() == KeyCode.UP)  comboBox.requestFocus();
+        });
+        viewStatistics.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        viewDebts.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        addParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        editParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        removeParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        invite.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
         });
         removeExpense.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) removeExpense.fire();
-            if (event.getCode() == KeyCode.LEFT) editExpense.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT) comboBox.requestFocus();
         });
     }
 

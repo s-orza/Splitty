@@ -22,6 +22,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -30,6 +31,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.security.Key;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -310,6 +312,12 @@ public class AdminPageCtrl implements Controller, Initializable {
     table.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.RIGHT) editButton.requestFocus();
       if (event.getCode() == KeyCode.LEFT) exportButton.requestFocus();
+      if (event.getCode() == KeyCode.ENTER)  editButton.fire();
+    });
+    table.setOnMouseClicked(event -> {
+      if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+        editButton.fire();
+      }
     });
 
     passLengthField.setOnKeyPressed(event -> {
