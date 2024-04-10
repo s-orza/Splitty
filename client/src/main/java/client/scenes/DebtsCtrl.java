@@ -21,6 +21,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -174,9 +175,15 @@ public class DebtsCtrl implements Controller, Initializable {
         Collection<TitledPane> panes = new ArrayList<>();
         for (Debt d: filteredList) {
             // debt title
+            double number = server.convertCurrency(LocalDate.now() + "", d.getCurrency(), moneyTypeSelector.getValue(), d.getAmount());
+            // check if amount is <0.01
+            String amount = String.format("%.2f",number);
+            if(number<0.01){
+                amount = "<0.01";
+            }
             title = server.getParticipantById(d.getDebtor()).getName()
                             + " owes " + server.getParticipantById(d.getCreditor()).getName()
-                            + " " + Double.toString( d.getAmount())
+                            + " " + amount
                             + d.getCurrency();
             // settle button
             Button button = new Button("Settle");
