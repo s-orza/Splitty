@@ -22,14 +22,14 @@
         <CheckBox fx:id="checkBoxAllPeople" layoutX="299.0" layoutY="314.0" mnemonicParsing="false" onAction="#handleCheckBoxAllPeople" text="Equally between everybody" />
         <CheckBox fx:id="checkBoxSomePeople" layoutX="299.0" layoutY="341.0" mnemonicParsing="false" onAction="#handleCheckBoxSomePeople" text="Only between some people" />
         <ListView fx:id="namesList" layoutX="305.0" layoutY="364.0" prefHeight="87.0" prefWidth="155.0" />
-        <Button fx:id="addButton" layoutX="480.0" layoutY="337.0" mnemonicParsing="false" onMouseClicked="#addExpenseToTheEvent" text="Save" />
-        <Button fx:id="saveButton" layoutX="480.0" layoutY="337.0" mnemonicParsing="false" onMouseClicked="#saveEditExpense" text="Save" />
-        <Button fx:id="cancelButton" layoutX="537.0" layoutY="337.0" mnemonicParsing="false" onMouseClicked="#cancelAddExpense" text="Cancel" />
+        <Button fx:id="addButton" layoutX="480.0" layoutY="337.0" mnemonicParsing="false" onAction="#addExpenseToTheEvent" text="Save" />
+        <Button fx:id="saveButton" layoutX="480.0" layoutY="337.0" mnemonicParsing="false" onAction="#saveEditExpense" text="Save" />
+        <Button fx:id="cancelButton" layoutX="537.0" layoutY="337.0" mnemonicParsing="false" onAction="#cancelAddExpense" text="Cancel" />
         <Button fx:id="undoButton" layoutX="605.0" layoutY="337.0" mnemonicParsing="false" text="Undo" />
         <TextField fx:id="newTypeTextField" layoutX="593.0" layoutY="174.0" prefHeight="25.0" prefWidth="81.0" />
         <Button fx:id="addTypeButton" layoutX="681.0" layoutY="174.0" mnemonicParsing="false" onMouseClicked="#createTag" text="+" />
         <ColorPicker fx:id="colorPicker" layoutX="592.0" layoutY="204.0" prefHeight="26.0" prefWidth="117.0" />
-        <Text fx:id="addEditExpenseText" fill="WHITE" layoutX="285.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add/Edit Expense">
+        <Text fx:id="addEditExpenseText" layoutX="285.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add/Edit Expense">
             <font>
                 <Font size="38.0" />
             </font>

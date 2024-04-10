@@ -10,11 +10,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -133,26 +135,34 @@ public class StatisticsCtrl implements Controller, Initializable {
     private void keyShortCuts() {
         okButton.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        okButton.fire();
+                    }
+                });
+            }
+        });
+        participantsShareTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT) moneyTypeSelector.requestFocus();
+        });
+        personColumn.setResizable(false);
+        shareColumn.setResizable(false);
+        owesColumn.setResizable(false);
+        isOwedColumn.setResizable(false);
 
-        okButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) editNameField.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) okButton.fire();
+        moneyTypeSelector.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN) {
+                participantsShareTable.requestFocus();
+                event.consume();
+            }
         });
-        okButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) okButton.requestFocus();
-            if (event.getCode() == KeyCode.LEFT) okButton.requestFocus();
-            if (event.getCode() == KeyCode.DOWN) okButton.requestFocus();
+        editOrAreYouSureText.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) deleteButton.requestFocus();
         });
-        editNameField.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) colorPicker.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) colorPicker.requestFocus();
-            if (event.getCode() == KeyCode.LEFT) okButton.requestFocus();
-        });
-        colorPicker.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) cancelEditButton.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) colorPicker.show();
-            if (event.getCode() == KeyCode.LEFT) editNameField.requestFocus();
-        });
+
     }
 
     private void backgroundImage() {

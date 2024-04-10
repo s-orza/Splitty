@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -73,10 +74,24 @@ public class ServerSelectCtrl implements Controller, Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         backgroundImage();
+        keyShortCuts();
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         loginButton.setText(resourceBundle.getString("loginText"));
         ipInput.setText(config.getIp());
         portInput.setText(config.getPort());
+    }
+
+    private void keyShortCuts() {
+        ipInput.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER) portInput.requestFocus();
+        });
+        portInput.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER) loginButton.requestFocus();
+            if (event.getCode() == KeyCode.LEFT) ipInput.requestFocus();
+        });
+        loginButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) portInput.requestFocus();
+        });
     }
 
     private void backgroundImage() {

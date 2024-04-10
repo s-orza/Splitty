@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -257,10 +258,9 @@ public class MainPageCtrl implements Controller, Initializable {
       if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {
         joinInput.requestFocus();
       }
-      if (event.getCode() == KeyCode.LEFT) {
+      if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP) {
         addLanguageButton.requestFocus();
       }
-
     });
     addLanguageButton.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {
@@ -269,12 +269,12 @@ public class MainPageCtrl implements Controller, Initializable {
       if (event.getCode() == KeyCode.LEFT) {
         comboBox.requestFocus();
       }
-
     });
 
-    comboBox.setOnKeyPressed(event -> {
-      if (event.getCode() == KeyCode.RIGHT) {
+    comboBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN) {
         addLanguageButton.requestFocus();
+        event.consume();
       }
       if (event.getCode() == KeyCode.ENTER) comboBox.show();
     });
@@ -290,6 +290,9 @@ public class MainPageCtrl implements Controller, Initializable {
       }
       if (event.getCode() == KeyCode.LEFT) {
         recentList.requestFocus();
+      }
+      if (event.getCode() == KeyCode.DOWN) {
+        createInput.requestFocus();
       }
     });
     joinButton.setOnKeyPressed(event -> {
@@ -311,9 +314,13 @@ public class MainPageCtrl implements Controller, Initializable {
       if (event.getCode() == KeyCode.LEFT) {
         joinButton.requestFocus();
       }
+      if (event.getCode() == KeyCode.UP)joinInput.requestFocus();
+      if (event.getCode() == KeyCode.DOWN) {
+        adminButton.requestFocus();
+      }
     });
     createButton.setOnKeyPressed(event -> {
-      if (event.getCode() == KeyCode.RIGHT) {
+      if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN) {
         adminButton.requestFocus();
       }
       if (event.getCode() == KeyCode.LEFT) {
