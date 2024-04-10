@@ -93,65 +93,8 @@ public class Event {
     }
 
     // for the next PUBLIC method, consider this temporary 'database' representation of events
-    @Column
-    @OneToMany
-    private List<Event> eventList = new ArrayList<>();
-    private void setUpEventList() {
-        eventList.add(new Event());
-        eventList.add(new Event());
-        eventList.add(new Event());
-        eventList.get(0).setEventId(1);
-        eventList.get(1).setEventId(2);
-        eventList.get(2).setEventId(3);
-    }
+
     // Debt Functions
-
-    /**
-     * adds a new debt if it does not exist yet.
-     * If a debt exists between the creditor and debtor, it modifies this debt accordingly
-     * @param amount the amount of the debt
-     * @param currency the currency of the debt
-     * @param debtor the debtor who owes
-     * @param creditor the creditor who is owed
-     * @return the debt that was modified or created
-     */
-    public Debt addDebt(double amount, String currency, Participant debtor, Participant creditor){
-        long d = debtor.getParticipantID();
-        long c = creditor.getParticipantID();
-        // if a debt already exists, modify it
-        for (Debt debt: debts) {
-            if(debt.getDebtor()==d && debt.getCreditor()==c){
-                // if diff currency, return null (add currency conversion later)
-                if(!Objects.equals(currency, debt.getCurrency())){return null;}
-
-                //add debts
-                debt.setAmount(debt.getAmount() + amount);
-                return debt;
-            }
-            else if(debt.getDebtor()==c && debt.getCreditor()==d){
-                // if diff currency, return null (add currency conversion later)
-                if(!Objects.equals(currency, debt.getCurrency())){return null;}
-
-                //subtract debts
-                debt.setAmount(debt.getAmount() - amount);
-
-                //if cancel out
-                if(debt.getAmount() == 0){return (settleDebt(debt));}
-                //if cred & debt switch
-                if(debt.getAmount() < 0){
-                    long oldDebtor = debt.getDebtor();
-                    debt.setDebtor(debt.getCreditor());
-                    debt.setCreditor(oldDebtor);
-                    debt.setAmount(Math.abs(debt.getAmount()));
-                }
-                return debt;
-            }
-        }
-        Debt res = new Debt(amount, currency, debtor, creditor);
-        debts.add(res);
-        return res;
-    }
-
 
     /**
      * adds a new debt if it does not exist yet.
