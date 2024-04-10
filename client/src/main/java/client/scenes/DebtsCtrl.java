@@ -23,6 +23,7 @@ import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -37,6 +38,8 @@ public class DebtsCtrl implements Controller, Initializable {
 
     @FXML
     private AnchorPane backGround;
+    @FXML
+    private ComboBox<String> moneyTypeSelector;
 
     @FXML
     private Button refreshButton;
@@ -49,6 +52,7 @@ public class DebtsCtrl implements Controller, Initializable {
     private ObservableList<Participant> participants;
     private ObservableList<String> participantNames;
     private Map<Integer,Long> indexesToIds;
+    private List<String> expenseTypesAvailable=new ArrayList<>();
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -58,8 +62,14 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("DebtsCtrl initializing");
+
         backgroundImage();
         keyShortCuts();
+
+        //initialise the expenseTypesAvailable
+        expenseTypesAvailable.clear();
+        expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
+
         refresh();
 
         // initialize close button
@@ -162,6 +172,14 @@ public class DebtsCtrl implements Controller, Initializable {
 
         // only set equal to new filter
         renderAccordion(filteredList);
+
+        // currency setup
+        moneyTypeSelector.setOnAction(null);
+        moneyTypeSelector.getItems().clear();
+        moneyTypeSelector.getItems().addAll(expenseTypesAvailable);
+        //here to change with the value from the config file
+        moneyTypeSelector.setValue(MainCtrl.getCurrency());
+        moneyTypeSelector.setOnAction(this::handleCurrencySelection);
     }
 
     public void renderAccordion(FilteredList<Debt> filteredList){
@@ -169,10 +187,18 @@ public class DebtsCtrl implements Controller, Initializable {
         Collection<TitledPane> panes = new ArrayList<>();
         for (Debt d: filteredList) {
             // debt title
+            double number =server.convertCurrency(LocalDate.now() + "", d.getCurrency(),
+                    MainCtrl.getCurrency(), d.getAmount());
+            
+            // check if amount is <0.01
+            String amount = String.format("%.2f",number);
+            if(number<0.01){
+                amount = "<0.01";
+            }
             title = server.getParticipantById(d.getDebtor()).getName()
                             + " owes " + server.getParticipantById(d.getCreditor()).getName()
-                            + " " + Double.toString( d.getAmount())
-                            + d.getCurrency();
+                            + " " + amount
+                            + MainCtrl.getCurrency();
             // settle button
             Button button = new Button("Settle");
             button.setOnAction(e-> {
@@ -220,6 +246,22 @@ public class DebtsCtrl implements Controller, Initializable {
     public void filter(){
         filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         refresh();
+    }
+
+    /**
+     * This is a basic handler that checks when you change the currency type
+     * @param event an event
+     */
+    @FXML
+    private void handleCurrencySelection(ActionEvent event) {
+        String selectedMoneyType=moneyTypeSelector.getValue();
+        //update in the config file
+        System.out.println(selectedMoneyType);
+        if(!MainCtrl.getCurrency().equals(selectedMoneyType))
+        {
+            mainCtrl.setCurrency(selectedMoneyType);
+            refresh();
+        }
     }
 
     public Pair<Controller, Parent> getPair() {
