@@ -151,7 +151,7 @@ public class DebtsCtrl implements Controller, Initializable {
     }
 
     public void refresh() {
-        System.out.println("refreshed");
+        System.out.println("Refreshing Debts...");
         // refreshes the Debt Manager and resets the items in the table
         var event = server.getEvent(server.getCurrentId());
         currentEvent = event;

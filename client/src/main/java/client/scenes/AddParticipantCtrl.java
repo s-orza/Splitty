@@ -8,6 +8,7 @@ import client.utils.ServerUtils;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -25,6 +26,7 @@ import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -141,7 +143,7 @@ public class AddParticipantCtrl implements Controller {
     private void backgroundImage() {
         Image image = new Image("Background_Photo.jpg");
         BackgroundSize backgroundSize =
-                new BackgroundSize(720, 450, true, true, true, false);
+                new BackgroundSize(864, 540, true, true, true, false);
         BackgroundImage backgroundImage = new BackgroundImage(image,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                 backgroundSize);
@@ -160,12 +162,11 @@ public class AddParticipantCtrl implements Controller {
         // read all text from fields and create a new participant
         Participant newParticipant = takeParticipantFromFields();
         try {
-            //TODO
-            // make the eventID be specific to each event
-
+            PauseTransition delay = new PauseTransition(Duration.seconds(1));
+            delay.setOnFinished(e -> {
                 showPopup();
-
-
+            });
+            delay.play();
             String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);
             close(event);
@@ -207,6 +208,10 @@ public class AddParticipantCtrl implements Controller {
 
 
             okButton.setOnAction(e -> {
+                // if we are not modifying the participant anymore, reset the values for it
+                // prevents bug that opens same update page after closing
+                participantToBeModified = null;
+                server.setParticipantToBeModified(-1);
                 popupStage.close();
                 close(event);
             });
@@ -221,7 +226,6 @@ public class AddParticipantCtrl implements Controller {
             return;
         }
         Participant participant = takeParticipantFromFields();
-        System.out.println("Editing participant " + participant.getParticipantID());
         server.updateParticipant(participantToBeModified.getParticipantID(), participant);
         participantToBeModified = null;
         server.setParticipantToBeModified(-1);
@@ -241,8 +245,8 @@ public class AddParticipantCtrl implements Controller {
      */
     private boolean checkFieldsCondition() {
         // check if any fields are empty
-        if(name.getText().isEmpty()||email.getText().isEmpty()||iban.getText().isEmpty()||bic.getText().isEmpty()){
-            mainCtrl.popup("One or more fields are empty!\nMake sure you fill all fields!", "Error: empty fields",
+        if(name.getText().isEmpty()||email.getText().isEmpty()){
+            mainCtrl.popup("Name or/and email are empty!\nMake sure you fill them!", "Error: empty fields",
                     "Ok");
             return false;
         }
@@ -259,8 +263,6 @@ public class AddParticipantCtrl implements Controller {
 //            mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
 //            return false;
 //        }
-        //TODO
-        // Check validity of email, iban and bic
         return true;
     }
 

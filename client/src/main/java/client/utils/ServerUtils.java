@@ -40,35 +40,6 @@ import java.util.function.Consumer;
 import static client.scenes.Controller.mainCtrl;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-/**
- * Accessing parts of the page will happen as follows (please take keen eye on indentation):
- * 	/api - where everything happens for the front-end (for developer access check below)
- * 	(suggest to replace api with com - commons or just skip to events/{eventId}
- * 		/events/{eventId}
- * 				/participants/{participantId}
- * 					/{name}
- * 					/{email}
- * 					/{iban}
- * 					/{bic}
- * 				/expenses/{expenseId}
- * 					/expenseType
- * 						/author/{authorId} | participantsId
- * 						/content	| 'For what?' section
- * 						/participant/{participantId} | In case of splitting with whom
- * 						/date
- * 						/payment
- * 							/{currencyType}
- * 							/{amount}
- * 				/debts
- *					/{debtId}
- *						/{DebtorId} | participantId
- *						/{currencyType} | should also have a column for such
- *						/{Amount}
- * 	/dev
- * 		/events
- *			/{eventId}
- */
-
 public class ServerUtils {
 
 	private static String serverUrl;
@@ -723,6 +694,10 @@ public class ServerUtils {
 				.get(new GenericType<Password>() {});
 	}
 
+	/**
+	 * Deletes the participant from the database based on its ID
+	 * @param participantId the ID of the participant to be deleted
+	 */
 	public void deleteParticipant(long participantId){
 		Response response = ClientBuilder.newClient(new ClientConfig())
 				.target(serverUrl + "api/participant/" + participantId)
@@ -737,13 +712,17 @@ public class ServerUtils {
 		response.close();
 	}
 
+	/**
+	 * Deletes the connection between the participant and the event it is in
+	 * @param eventId the id of the event to search the participant in
+	 * @param participantId the participant to be deleted
+	 */
 	public void deleteParticipantEvent(long eventId, long participantId){
 		Response response = ClientBuilder.newClient(new ClientConfig())
 				.target(serverUrl).path("api/participant/event/" + eventId + "/" + participantId)
 				.request(APPLICATION_JSON)
 				.accept(APPLICATION_JSON)
 				.delete();
-
 		if (response.getStatus() == Response.Status.OK.getStatusCode()) {
 			System.out.println("Participant removed successfully.");
 		} else {
@@ -751,6 +730,7 @@ public class ServerUtils {
 		}
 		response.close();
 	}
+
 
 	/**
 	 * connects to the database through the endpoint to delete an event
