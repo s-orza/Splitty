@@ -175,7 +175,9 @@ public class DebtsCtrl implements Controller, Initializable {
         Collection<TitledPane> panes = new ArrayList<>();
         for (Debt d: filteredList) {
             // debt title
-            double number = server.convertCurrency(LocalDate.now() + "", d.getCurrency(), MainCtrl.getCurrency(), d.getAmount());
+            double number =server.convertCurrency(LocalDate.now() + "", d.getCurrency(),
+                    MainCtrl.getCurrency(), d.getAmount());
+            
             // check if amount is <0.01
             String amount = String.format("%.2f",number);
             if(number<0.01){
