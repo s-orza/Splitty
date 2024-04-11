@@ -1,16 +1,15 @@
 package server.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
 import server.service.DebtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import server.database.*;
 
@@ -18,222 +17,263 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.MediaType;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+
 import static org.mockito.Mockito.*;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 public class DebtControllerTest {
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private DebtRepository mockRepo;
 
-    @Mock
+    @MockBean
     private DebtService mockDebtService;
 
-    private DebtController debtController;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        debtController = new DebtController(mockRepo, mockDebtService);
+//        MockitoAnnotations.openMocks(this);
+//        debtController = new DebtController(mockRepo, mockDebtService);
     }
 
     @Test
-    void getDebtById_Success() {
-        // Given
+    void getDebtById_InvalidId() throws Exception {
+        mockMvc.perform(get("/api/events/debts/{id}", -1))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getDebtById_NotFound() throws Exception {
+        long invalidId = 2L;
+        when(mockRepo.findById(invalidId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/events/debts/{id}", invalidId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getDebtById_Found() throws Exception {
         long validId = 1L;
-        Debt expectedDebt = new Debt();
+        Debt expectedDebt = new Debt(100, "USD", 1L, 2L);
         when(mockRepo.findById(validId)).thenReturn(Optional.of(expectedDebt));
-        ResponseEntity<Debt> response = debtController.getDebtById(validId);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedDebt, response.getBody());
-        verify(mockRepo).findById(validId);
+
+        mockMvc.perform(get("/api/events/debts/{id}", validId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.amount").value(expectedDebt.getAmount()))
+                .andExpect(jsonPath("$.currency").value(expectedDebt.getCurrency()));
     }
 
     @Test
-    void getDebtById_InvalidId() {
-        long invalidId = -1L;
-        ResponseEntity<Debt> response = debtController.getDebtById(invalidId);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verify(mockRepo, never()).findById(anyLong());
-    }
-
-    @Test
-    void getDebtById_DoesNotExist() {
-        long validIdButNoDebt = 2L;
-        when(mockRepo.findById(validIdButNoDebt)).thenReturn(Optional.empty());
-
-
-        ResponseEntity<Debt> response = debtController.getDebtById(validIdButNoDebt);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        verify(mockRepo).findById(validIdButNoDebt);
-    }
-
-    @Test
-    void getAllDebts_NotEmptyList() {
-
-        Debt debt1 = new Debt();
-        Debt debt2 = new Debt();
-        List<Debt> expectedDebts = Arrays.asList(debt1, debt2);
+    void getAllDebts_ReturnsAllDebts() throws Exception {
+        List<Debt> expectedDebts = Arrays.asList(new Debt(100, "USD", 1L, 2L), new Debt(200, "EUR", 3L, 4L));
         when(mockRepo.findAll()).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.getAllDebts();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedDebts, response.getBody());
-        verify(mockRepo).findAll();
+        mockMvc.perform(get("/api/events/debts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(expectedDebts.size()));
     }
 
     @Test
-    void getListOfDebts_Success() {
+    void getListOfDebts_NullIds() throws Exception {
+        mockMvc.perform(get("/api/events/debts/all").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getListOfDebts_InvalidIdInList() throws Exception {
+        mockMvc.perform(post("/api/events/debts/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[1, -2, 3]"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addDebt_Success() throws Exception {
+        Debt debt = new Debt(100, "USD", 1L, 2L);
+        long eventId = 1L;
+        String date = "2022-01-01";
+
+        mockMvc.perform(post("/api/events/debts")
+                        .param("eventId", String.valueOf(eventId))
+                        .param("date", date)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(debt)))
+                .andExpect(status().isOk());
+
+    }
+
+
+    @Test
+    public void addListOfDebts_Success() throws Exception {
+        List<Debt> debts = Arrays.asList(new Debt(100, "USD", 1L, 2L), new Debt(200, "EUR", 3L, 4L));
+
+        mockMvc.perform(post("/api/events/debts/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(debts)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void addListOfDebts_NullList() throws Exception {
+        mockMvc.perform(post("/api/events/debts/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void settleDebtByID_Found() throws Exception {
+        long id = 1L;
+        long eventId = 1L;
+        Debt debt = new Debt(100, "USD", 1L, 2L);
+        when(mockRepo.findById(id)).thenReturn(Optional.of(debt));
+
+        mockMvc.perform(delete("/api/events/debts/{id}", id)
+                        .param("eventId", String.valueOf(eventId)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void settleDebtByID_NotFound() throws Exception {
+        long id = 1L;
+        long eventId = 1L;
+        when(mockRepo.findById(id)).thenReturn(Optional.empty());
+
+        mockMvc.perform(delete("/api/events/debts/{id}", id)
+                        .param("eventId", String.valueOf(eventId)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void settleDebt_Success() throws Exception {
+        long eventId = 1L;
+        Debt existingDebt = new Debt(100, "USD", 1L, 2L);
+        existingDebt.setDebtID(1L);
+        when(mockRepo.existsById(existingDebt.getDebtID())).thenReturn(true);
+        when(mockRepo.findById(existingDebt.getDebtID())).thenReturn(Optional.of(existingDebt));
+        // no idea what this below is
+        doAnswer(invocation -> {
+            Debt debt = invocation.getArgument(1);
+            return true;
+        }).when(mockDebtService).deleteDebt(eq(eventId), any(Debt.class));
+
+        // When and Then
+        mockMvc.perform(delete("/api/events/debts")
+                        .param("eventId", String.valueOf(eventId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(existingDebt)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.debtID").value(existingDebt.getDebtID()))
+                .andExpect(jsonPath("$.amount").value(existingDebt.getAmount()))
+                .andExpect(jsonPath("$.currency").value(existingDebt.getCurrency()));
+    }
+
+    @Test
+    public void settleDebt_NotFound() throws Exception {
+        long eventId = 1L;
+        Debt debt = new Debt(100, "USD", 1L, 2L);
+        when(mockRepo.existsById(debt.getDebtID())).thenReturn(false);
+
+        mockMvc.perform(delete("/api/events/debts/")
+                        .param("eventId", String.valueOf(eventId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(debt)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void settleDebtByID_WithValidId() throws Exception {
+        long validId = 1L;
+        Debt expectedDebt = new Debt(100, "USD", 1L, 2L);
+        expectedDebt.setDebtID(validId); // Set the ID to match the path variable
+        when(mockRepo.findById(validId)).thenReturn(Optional.of(expectedDebt));
+
+        mockMvc.perform(delete("/api/events/debts/{id}/noEvent", validId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.debtID").value(expectedDebt.getDebtID()))
+                .andExpect(jsonPath("$.amount").value(expectedDebt.getAmount()));
+
+        verify(mockRepo).delete(expectedDebt);
+    }
+    @Test
+    void settleDebt_NoEvent() throws Exception {
+        Debt validDebt = new Debt(100, "USD", 1L, 2L);
+        validDebt.setDebtID(1L);
+        when(mockRepo.existsById(validDebt.getDebtID())).thenReturn(true);
+
+        mockMvc.perform(delete("/api/events/debts/noEvent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validDebt)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.debtID").value(validDebt.getDebtID()));
+
+        verify(mockRepo).delete(validDebt);
+    }
+
+    @Test
+    void settleDebt_BadRequest() throws Exception {
+        mockMvc.perform(delete("/api/events/debts/noEvent")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void settleDebt_NotFoundNoEvent() throws Exception {
+        Debt nonExistingDebt = new Debt(200, "EUR", 3L, 4L);
+        nonExistingDebt.setDebtID(2L);
+        when(mockRepo.existsById(nonExistingDebt.getDebtID())).thenReturn(false);
+
+        mockMvc.perform(delete("/api/events/debts/noEvent")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nonExistingDebt)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getListOfDebts_AllIdsValid_ReturnsAllDebts() throws Exception {
         List<Long> ids = Arrays.asList(1L, 2L);
-        Debt debt1 = new Debt();
-        Debt debt2 = new Debt();
+        List<Debt> expectedDebts = Arrays.asList(
+                new Debt(100, "USD", 1L, 2L),
+                new Debt(200, "EUR", 3L, 4L)
+        );
+        for (int i = 0; i < ids.size(); i++) {
+            when(mockRepo.existsById(ids.get(i))).thenReturn(true);
+            when(mockRepo.findById(ids.get(i))).thenReturn(Optional.of(expectedDebts.get(i)));
+        }
+
+        mockMvc.perform(get("/api/events/debts/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ids)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(expectedDebts.size()))
+                .andExpect(jsonPath("$[0].amount").value(expectedDebts.get(0).getAmount()))
+                .andExpect(jsonPath("$[1].amount").value(expectedDebts.get(1).getAmount()));
+    }
+
+    @Test
+    void getListOfDebts_NotFoundIdInList_ReturnsNotFound() throws Exception {
+        List<Long> ids = Arrays.asList(1L, 4L);
+        Debt existingDebt = new Debt(100, "USD", 1L, 2L);
         when(mockRepo.existsById(1L)).thenReturn(true);
-        when(mockRepo.existsById(2L)).thenReturn(true);
-        when(mockRepo.findById(1L)).thenReturn(Optional.of(debt1));
-        when(mockRepo.findById(2L)).thenReturn(Optional.of(debt2));
+        when(mockRepo.existsById(4L)).thenReturn(false);
+        when(mockRepo.findById(1L)).thenReturn(Optional.of(existingDebt));
 
-        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(ids);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
-        verify(mockRepo, times(1)).existsById(1L);
-        verify(mockRepo, times(1)).existsById(2L);
-    }
-
-    @Test
-    void getListOfDebts_BadRequest() {
-        List<Long> idsWithInvalid = Arrays.asList(-1L, 1L);
-        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(idsWithInvalid);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void getListOfDebts_NotFound() {
-        List<Long> idsWithNonExistent = Arrays.asList(1L, 3L);
-        Debt debt1 = new Debt();
-        when(mockRepo.existsById(1L)).thenReturn(true);
-        when(mockRepo.existsById(3L)).thenReturn(false);
-        when(mockRepo.findById(1L)).thenReturn(Optional.of(debt1));
-
-        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(idsWithNonExistent);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        verify(mockRepo).existsById(1L);
-        verify(mockRepo).existsById(3L);
-    }
-
-    @Test
-    void getListOfDebts_IdDoesNotExists() {
-        List<Long> ids = Arrays.asList(1L, 3L);
-        when(mockRepo.existsById(1L)).thenReturn(true);
-        when(mockRepo.existsById(3L)).thenReturn(false);
-
-        Debt debt1 = new Debt();
-        when(mockRepo.findById(1L)).thenReturn(Optional.of(debt1));
-        when(mockRepo.findById(3L)).thenReturn(Optional.empty());
-
-        ResponseEntity<List<Debt>> response = debtController.getListOfDebts(ids);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        verify(mockRepo, times(1)).existsById(1L);
-        verify(mockRepo, times(1)).existsById(3L);
-    }
-
-
-    @Test
-    void addDebt_Success() {
-        long eventId = 1L;
-        String date = "2024-04-10";
-        Debt validDebt = new Debt();
-        doNothing().when(mockDebtService).saveDebtToEvent(anyLong(), any(Debt.class), anyString());
-
-        ResponseEntity<Debt> response = debtController.addDebt(eventId, date, validDebt);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(validDebt, response.getBody());
-        verify(mockDebtService, times(1)).saveDebtToEvent(eventId, validDebt, date);
-    }
-
-    @Test
-    void addDebt_ReturnsBadRequest_WhenDebtIsNull() {
-        long eventId = 1L;
-        String date = "2024-04-10";
-
-        ResponseEntity<Debt> response = debtController.addDebt(eventId, date, null);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        verify(mockDebtService, never()).saveDebtToEvent(anyLong(), any(Debt.class), anyString());
-    }
-
-    @Test
-    void addListOfDebts_ReturnsBadRequest_WhenListIsNull() {
-        ResponseEntity<List<Debt>> response = debtController.addListOfDebts(null);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void settleDebtByID_IdNull() {
-        ResponseEntity<Debt> response = debtController.settleDebtByID(null);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void settleDebtByID_DoesNotExist() {
-        when(mockRepo.findById(anyLong())).thenReturn(Optional.empty());
-        ResponseEntity<Debt> response = debtController.settleDebtByID(1L);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
-    void settleDebtByID_Success() {
-        Debt debt = new Debt();
-        when(mockRepo.findById(anyLong())).thenReturn(Optional.of(debt));
-        ResponseEntity<Debt> response = debtController.settleDebtByID(1L);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(mockRepo, times(1)).delete(debt);
-    }
-
-    @Test
-    void settleDebt_DebtIsNull() {
-        ResponseEntity<Debt> response = debtController.settleDebt(null);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void settleDebt_DebtDoesNotExist() {
-        Debt debt = new Debt();
-        debt.setDebtID(1L);
-        when(mockRepo.existsById(anyLong())).thenReturn(false);
-        ResponseEntity<Debt> response = debtController.settleDebt(debt);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
-    void settleListOfDebts_ListIsNull() {
-        ResponseEntity<List<Debt>> response = debtController.settleListOfDebts(null);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void settleListOfDebts_Success() {
-        Debt debt1 = new Debt();
-        debt1.setDebtID(1L);
-        Debt debt2 = new Debt();
-        debt2.setDebtID(2L);
-        List<Debt> debts = Arrays.asList(debt1, debt2);
-        when(mockRepo.existsById(debt1.getDebtID())).thenReturn(true);
-        when(mockRepo.existsById(debt2.getDebtID())).thenReturn(true);
-        ResponseEntity<List<Debt>> response = debtController.settleListOfDebts(debts);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(mockRepo, times(1)).delete(debt1);
-        verify(mockRepo, times(1)).delete(debt2);
+        mockMvc.perform(get("/api/events/debts/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ids)))
+                .andExpect(status().isNotFound());
     }
 
 }
