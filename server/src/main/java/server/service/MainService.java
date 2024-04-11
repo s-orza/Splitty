@@ -14,8 +14,8 @@ import java.util.Collections;
 @Service
 public class MainService {
 
-  String ip;
-  String port;
+  static String ip;
+  static String port;
   public MainService(){}
 
   public void genPass()
@@ -48,6 +48,12 @@ public class MainService {
    */
   public String getBaseUrl()
   {
+    //this is just to be sure that they are not null
+    if(ip==null ||port==null)
+    {
+      System.out.println("Ip or port is null");
+      return "http://127.0.0.1:8080";
+    }
     return "http://"+ip+":"+port;
   }
 

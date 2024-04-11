@@ -14,22 +14,21 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="720.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
-
+<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="864.0" stylesheets="@/client/css/EventPage.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EventPageCtrl">
    <children>
-      <Button fx:id="cancelButton" layoutX="211.0" layoutY="14.0" maxWidth="220.0" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="Cancel" />
-      <TableView fx:id="expensesTable" layoutX="6.0" layoutY="262.0" prefHeight="182.0" prefWidth="570.0" style="-fx-background-color: #FFFFFF;">
+      <Button fx:id="cancelButton" layoutX="289.0" layoutY="14.0" maxWidth="220.0" mnemonicParsing="false" onAction="#close" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="Cancel" />
+      <TableView fx:id="expensesTable" layoutX="6.0" layoutY="262.0" prefHeight="199.0" prefWidth="638.0" style="-fx-background-color: #FFFFFF;">
          <columns>
             <TableColumn fx:id="authorColumn" prefWidth="107.33331298828125" text="Author" />
             <TableColumn fx:id="descriptionColumn" prefWidth="88.79997253417969" text="Description" />
             <TableColumn fx:id="amountColumn" minWidth="6.39996337890625" prefWidth="92.00006103515625" text="Amount" />
-            <TableColumn fx:id="currencyColumn" prefWidth="76.0" text="Currency" />
-            <TableColumn fx:id="dateColumn" prefWidth="64.79998779296875" text="Date" />
-            <TableColumn fx:id="participantsColumn2" minWidth="0.0" prefWidth="78.4000244140625" text="Participant" />
-            <TableColumn fx:id="typeColumn" prefWidth="75.0" text="Type" />
+            <TableColumn fx:id="currencyColumn" prefWidth="84.79998779296875" text="Currency" />
+            <TableColumn fx:id="dateColumn" prefWidth="84.0" text="Date" />
+            <TableColumn fx:id="participantsColumn2" minWidth="0.0" prefWidth="105.5999755859375" text="Participant" />
+            <TableColumn fx:id="typeColumn" prefWidth="72.79998779296875" text="Type" />
          </columns>
       </TableView>
-      <TableView fx:id="participantsTable" layoutX="584.0" layoutY="14.0" prefHeight="155.0" prefWidth="131.0" style="-fx-background-color: #FFFFFF;">
+      <TableView fx:id="participantsTable" layoutX="718.0" layoutY="20.0" prefHeight="155.0" prefWidth="131.0" style="-fx-background-color: #FFFFFF;">
         <columns>
           <TableColumn fx:id="participantsColumn" prefWidth="119.99993896484375" text="Participants" />
         </columns>
@@ -39,21 +38,21 @@
             <Font size="19.0" />
          </font></Label>
 
-      <Button fx:id="addExpense" layoutX="578.0" layoutY="304.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="138.0" styleClass="button-styled" text="Add Expense">
+      <Button fx:id="addExpense" layoutX="648.0" layoutY="300.0" maxWidth="190.0" mnemonicParsing="false" prefHeight="28.0" styleClass="button-styled" text="Add Expense">
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <Image url="@/add.png" />
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="addParticipant" layoutX="589.0" layoutY="175.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
+      <Button fx:id="addParticipant" layoutX="648.0" layoutY="176.0" maxWidth="180" mnemonicParsing="false" styleClass="button-styled" text="Add Participant">
       <graphic>
          <ImageView fitHeight="20" fitWidth="20">
             <Image url="@/add.png" />
          </ImageView>
       </graphic>
       </Button>
-      <Button fx:id="removeExpense" layoutX="578.0" layoutY="385.0" maxWidth="180" mnemonicParsing="false" prefHeight="28.0" prefWidth="138.0" styleClass="button-styled" text="Remove Expenses">
+      <Button fx:id="removeExpense" layoutX="648.0" layoutY="381.0" maxWidth="190.0" mnemonicParsing="false" prefHeight="28.0" styleClass="button-styled" text="Remove Expenses">
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <Image url="@/bin.png" />
@@ -67,10 +66,10 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="viewDebts" layoutX="405.0" layoutY="14.0" maxWidth="220.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="View Debts" />
+      <Button fx:id="viewDebts" layoutX="483.0" layoutY="14.0" maxWidth="220.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" styleClass="button-styled" text="View Debts" />
       <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
       <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
-      <Button fx:id="viewStatistics" layoutX="302.0" layoutY="14.0" maxWidth="220.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="103.0" styleClass="button-styled" text="View Statistics" />
+      <Button fx:id="viewStatistics" layoutX="380.0" layoutY="14.0" maxWidth="220.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="103.0" styleClass="button-styled" text="View Statistics" />
       <BorderPane layoutX="4.0" layoutY="228.0" prefHeight="31.0" prefWidth="410.0">
          <left>
             <ToggleButton fx:id="allButton" mnemonicParsing="false" onAction="#searchAll" prefHeight="31.0" prefWidth="95.0" styleClass="button-styled" text="All" BorderPane.alignment="CENTER">
@@ -87,9 +86,9 @@
          <center>
             <ToggleButton fx:id="fromxButton" mnemonicParsing="false" onAction="#searchFromX" prefHeight="31.0" prefWidth="145.0" styleClass="button-styled" text="From Mihai" toggleGroup="$searchGroup" BorderPane.alignment="CENTER">
             <graphic>
-               <ImageView fitHeight="20" fitWidth="20">
-                  <Image url="@/search.png" />
-               </ImageView>
+                <ImageView fitHeight="20" fitWidth="20">
+                    <Image url="@/home.png" />
+                </ImageView>
             </graphic>
             </ToggleButton>
          </center>
@@ -108,7 +107,7 @@
          <font>
             <Font size="13.0" />
          </font></Text>
-      <Button fx:id="editExpense" layoutX="578.0" layoutY="345.0" maxWidth="180" mnemonicParsing="false" prefHeight="28.0" prefWidth="138.0" styleClass="button-styled" text="Edit Expense">
+      <Button fx:id="editExpense" layoutX="648.0" layoutY="341.0" maxWidth="190.0" mnemonicParsing="false" prefHeight="28.0" styleClass="button-styled" text="Edit Expense">
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <image>
@@ -122,7 +121,7 @@
             <Font size="38.0" />
          </font>
       </Label>
-      <Button fx:id="editParticipant" layoutX="448.0" layoutY="53.0" mnemonicParsing="false" styleClass="button-styled" text="Edit Participant">
+      <Button fx:id="editParticipant" layoutX="649.0" layoutY="212.0" mnemonicParsing="false" styleClass="button-styled" text="Edit Participant">
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <image>
@@ -131,7 +130,22 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="inviteButton" layoutX="624.0" layoutY="400.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite" />
+        <Button fx:id="removeParticipant" layoutX="650.0" layoutY="424.0" maxWidth="190.0" mnemonicParsing="false" prefHeight="31.0" styleClass="button-styled" text="Remove Participant">
+            <graphic>
+                <ImageView fitHeight="20" fitWidth="20.0">
+                    <Image url="@/bin.png" />
+                </ImageView>
+            </graphic>
+        </Button>
 
-   </children>
+
+
+        <Button fx:id="invite" layoutX="749.0" layoutY="498.0" mnemonicParsing="false" onAction="#inviteParticipant" text="Invite">
+            <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                    <Image url="@/email.png" />
+                </ImageView>
+            </graphic>
+        </Button>
+    </children>
 </AnchorPane>

@@ -4,42 +4,14 @@ import commons.Debt;
 import commons.Expense;
 import commons.Participant;
 import org.springframework.stereotype.Service;
-import server.database.ExpenseRepository;
-import server.database.ParticipantExpenseRepository;
-import server.database.ParticipantRepository;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ExpenseService {
 
-  private final ExpenseRepository repo;
-  private final ParticipantExpenseRepository repoPaExp;
-  private final ParticipantRepository repoPa;
   private final DebtService debtService;
-  public ExpenseService(ExpenseRepository repo, ParticipantExpenseRepository repoPaExp,
-                        ParticipantRepository repoPa, DebtService debtService) {
-    this.repo = repo;
-    this.repoPaExp = repoPaExp;
-    this.repoPa = repoPa;
+  public ExpenseService(DebtService debtService) {
     this.debtService = debtService;
-  }
-
-  public void putParticipants(Expense expense)
-  {
-    List<Participant> participantList;
-    //this line we need to update in future when we would have the APIs for participants
-    List<Long> particpantsIds=repoPaExp.getAllParticipantsIdFromExpense(expense.getExpenseId());
-
-    participantList=new ArrayList<>();
-    for (Long id : particpantsIds){
-      Optional<Participant> newPar = repoPa.findById(id);
-      newPar.ifPresent(participantList::add);
-    }
-
-    expense.setParticipants(participantList);
-    //System.out.println("Participants of expense set to " + participantList);
   }
 
   /**
@@ -51,7 +23,7 @@ public class ExpenseService {
   {
     Participant author=expense.getAuthor();
     List<Participant> participants=expense.getParticipants();
-    if(participants.isEmpty())
+    if(participants==null || participants.isEmpty())
       return;
     double split=expense.getMoney()/participants.size();
     //if the author was a participant he needs to give (n-1)*split

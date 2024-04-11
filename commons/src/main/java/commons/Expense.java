@@ -22,6 +22,7 @@ public class Expense {
     private String currency;
     @Column
     private String date;
+
     @Column
     @ManyToMany
     private List<Participant> participants;

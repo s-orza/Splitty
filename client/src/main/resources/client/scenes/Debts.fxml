@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.DebtsCtrl">
    <children>
@@ -24,5 +25,7 @@
       <Button fx:id="filterButton" layoutX="197.0" layoutY="70.0" mnemonicParsing="false" onAction="#filter" text="filter" />
       <ComboBox fx:id="searchByComboBox" layoutX="33.0" layoutY="70.0" prefWidth="150.0" promptText="-Select Person-" />
       <Button fx:id="refreshButton" layoutX="333.0" layoutY="387.0" mnemonicParsing="false" onAction="#refresh" text="refresh" />
+      <Text fx:id="preferredCurrencyText" layoutX="490.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferred currency:" wrappingWidth="109.05078125" />
+      <ComboBox fx:id="moneyTypeSelector" layoutX="611.0" layoutY="70.0" prefHeight="25.0" prefWidth="73.0" promptText="EUR" />
    </children>
 </AnchorPane>

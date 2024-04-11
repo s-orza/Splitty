@@ -52,7 +52,7 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
         this.ctrl = dummy.getKey();
         this.scene = new Scene(dummy.getValue());
-        primaryStage.setTitle(ServerUtils.getServerUrl() + " " + title);
+        primaryStage.setTitle(ServerUtils.getServerUrl() + title);
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest(windowEvent -> {
