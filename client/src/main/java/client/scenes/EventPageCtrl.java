@@ -330,6 +330,7 @@ public class EventPageCtrl implements Controller{
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Spanish");
         }
+
         toggleLanguage();
         prepareAnimation();
 
