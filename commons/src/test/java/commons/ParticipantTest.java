@@ -1,10 +1,9 @@
 package commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class ParticipantTest {
     @Test
     public void checkConstructorAndGetters() {
@@ -14,6 +13,28 @@ public class ParticipantTest {
         assertEquals("john@gmail.com", p.getEmail());
         assertEquals("DE68500105178297336485", p.getIban());
         assertEquals("AAAABBCCDD", p.getBic());
+    }
+    @Test
+    void testNotNull()
+    {
+        Participant p =new Participant();
+        assertNotNull(p);
+    }
+    @Test
+    void testSet1()
+    {
+        Participant p=new Participant("a", "b", "c", "d");
+        p.setParticipantID(1);
+        p.setName("Matei");
+        p.setEmail("a@ddd");
+        p.setIban("1234");
+        p.setBic("abcd");
+        assertEquals(1,p.getParticipantID());
+        assertEquals("Matei",p.getName());
+        assertEquals("a@ddd",p.getEmail());
+        assertEquals("1234",p.getIban());
+        assertEquals("abcd",p.getBic());
+
     }
 
     @Test

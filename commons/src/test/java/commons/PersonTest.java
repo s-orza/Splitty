@@ -15,11 +15,9 @@
  */
 package commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PersonTest {
 
@@ -52,5 +50,11 @@ public class PersonTest {
 		assertTrue(actual.contains(Person.class.getSimpleName()));
 		assertTrue(actual.contains("\n"));
 		assertTrue(actual.contains("firstName"));
+	}
+	@Test
+	void testNotNull()
+	{
+		Person m =new Person();
+		assertNotNull(m);
 	}
 }

@@ -2,8 +2,10 @@ package commons;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DebtTest {
+    private Debt d;
     private double amount;
     private String currency;
     private Participant debtor;
@@ -15,6 +17,7 @@ public class DebtTest {
         currency = "EUR";
         debtor = new Participant("Steve", "steve@gmail.com", "123", "bic");
         creditor = new Participant("Alex", "alex@gmail.com", "ABC", "bic2");
+        d=new Debt(2.0,"EUR",1,2);
     }
 
     @Test
@@ -29,7 +32,27 @@ public class DebtTest {
         debt.setAmount(10.00);
         assertEquals(debt.getAmount(), 10.00);
     }
-
+    @Test
+    void testNotNull()
+    {
+        Debt debt =new Debt();
+        assertNotNull(debt);
+        assertNotNull(d);
+    }
+    @Test
+    void setTest()
+    {
+        d.setCreditor(3);
+        d.setDebtor(4);
+        assertEquals(3,d.getCreditor());
+        assertEquals(4,d.getDebtor());
+    }
+    @Test
+    void testToString()
+    {
+        String x=d.toString();
+        assertEquals("Debt{debtID=0, amount=2.0, currency='EUR', debtor=1, creditor=2}",d.toString());
+    }
     @Test
     public void currencyTest(){
         Debt debt = new Debt(amount, currency, debtor, creditor);
@@ -37,21 +60,11 @@ public class DebtTest {
         debt.setCurrency("USD");
         assertEquals(debt.getCurrency(), "USD");
     }
-
-//    @Test
-//    public void debtorTest(){
-//        Debt debt = new Debt(amount, currency, debtor, creditor);
-//        assertEquals(new Participant("Steve", "steve@gmail.com", "123", "bic"), debt.getDebtor());
-//        debt.setDebtor(creditor);
-//        assertEquals(new Participant("Alex", "alex@gmail.com", "ABC", "bic2"), debt.getDebtor());
-//    }
-//
-//    @Test
-//    public void creditorTest(){
-//        Debt debt = new Debt(amount, currency, debtor, creditor);
-//        assertEquals(new Participant("Alex", "alex@gmail.com", "ABC", "bic2"), debt.getCreditor());
-//        debt.setCreditor(debtor);
-//        assertEquals(new Participant("Steve", "steve@gmail.com", "123", "bic"), debt.getCreditor());
-//    }
+    @Test
+    void testHashcode()
+    {
+        Debt d2=new Debt(2.0,"EUR",1,2);
+        assertEquals(d.hashCode(),d2.hashCode());
+    }
 
 }

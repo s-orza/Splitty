@@ -1,36 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="540.0" prefWidth="864.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.ServerSelectCtrl">
+<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="864.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ServerSelectCtrl">
     <children>
-        <Button fx:id="loginButton" layoutX="538.0" layoutY="270.0" mnemonicParsing="false" onAction="#login"
-                text="Login"/>
-        <TextField id="loginInput" fx:id="ipInput" alignment="CENTER" layoutX="317.0" layoutY="269.0" prefHeight="26.0"
-                   prefWidth="130.0"/>
-        <Text fx:id="IpText" layoutX="317.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ip"
-              wrappingWidth="130.39999999999986">
+        <Button fx:id="loginButton" layoutX="538.0" layoutY="270.0" mnemonicParsing="false" onAction="#login" text="Login" />
+        <TextField id="loginInput" fx:id="ipInput" alignment="CENTER" layoutX="296.0" layoutY="269.0" prefHeight="26.0" prefWidth="130.0" />
+        <Text fx:id="IpText" layoutX="296.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ip" wrappingWidth="130.39999999999986">
             <font>
-                <Font name="System Bold" size="14.0"/>
+                <Font name="System Bold" size="14.0" />
             </font>
         </Text>
-      <TextField fx:id="portInput" layoutX="360.0" layoutY="225.0" prefHeight="26.0" prefWidth="79.0" />
-      <Text fx:id="portText" layoutX="360.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port" wrappingWidth="79.19999999999982">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Text>
-      <Label fx:id="selectServerText" alignment="CENTER" layoutX="210.0" layoutY="14.0" prefHeight="200.0" prefWidth="300.0" text="Select Server" textFill="#712929" wrapText="true">
-         <font>
-            <Font size="38.0" />
-         </font>
-      </Label>
+        <TextField fx:id="portInput" layoutX="440.0" layoutY="269.0" prefHeight="26.0" prefWidth="79.0" />
+        <Text fx:id="portText" layoutX="440.0" layoutY="259.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port" wrappingWidth="79.19999999999982">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+        </Text>
+        <Label fx:id="selectServerText" alignment="CENTER" layoutX="160.0" layoutY="105.0" prefHeight="55.0" prefWidth="561.0" text="Select Server" textFill="#712929">
+            <font>
+                <Font size="38.0" />
+            </font>
+        </Label>
     </children>
 </AnchorPane>
