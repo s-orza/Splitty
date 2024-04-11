@@ -11,8 +11,9 @@
 <AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="864.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminPageCtrl">
     <children>
         <Button fx:id="exit" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" text="Exit" />
-        <Button layoutX="739.0" layoutY="14.0" mnemonicParsing="false" onAction="#importEvent" text="Import" />
-        <Button fx:id="exportButton" layoutX="799.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportEvent" text="Export" />
+
+        <Button fx:id="importButton" layoutX="747.0" layoutY="42.0" mnemonicParsing="false" onAction="#importEvent" text="Import" />
+        <Button fx:id="exportButton" layoutX="748.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportEvent" text="Export" />
         <TableView fx:id="table" layoutX="14.0" layoutY="82.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="394.0" prefWidth="835.0">
             <columns>
                 <TableColumn fx:id="tableTitle" prefWidth="75.0" text="Title" />
@@ -37,5 +38,6 @@
                 <Font size="10.0" />
             </font>
         </Label>
+
     </children>
 </AnchorPane>

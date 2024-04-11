@@ -204,38 +204,32 @@ public class MainPageCtrl implements Controller, Initializable {
     if(currentLocale.getLanguage().equals("en")){
       putFlag("enFlag.png");
       ObservableList<String> comboBoxItems =
-              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("English");
     }
     if(currentLocale.getLanguage().equals("nl")){
       putFlag("nlFlag.png");
       ObservableList<String> comboBoxItems =
-              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Dutch");
     }
     if(currentLocale.getLanguage().equals("de")){
       putFlag("deFlag.png");
       ObservableList<String> comboBoxItems =
-              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("German");
     }
     if(currentLocale.getLanguage().equals("es")){
       putFlag("esFlag.png");
       ObservableList<String> comboBoxItems =
-              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Spanish");
     }
-    if(currentLocale.getLanguage().equals("xx")){
-      putFlag("xxFlag.png");
-      ObservableList<String> comboBoxItems =
-              FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
-      comboBox.setItems(comboBoxItems);
-      comboBox.setPromptText("xx");
-    }
+
     toggleLanguage();
     prepareAnimation();
 
@@ -244,7 +238,6 @@ public class MainPageCtrl implements Controller, Initializable {
       if(newValue.equals("Dutch")) changeFlag("nl");
       if(newValue.equals("Spanish")) changeFlag("es");
       if(newValue.equals("German")) changeFlag("de");
-      if(newValue.equals("Extra")) changeFlag("xx");
       toggleLanguage();
     });
 
@@ -384,14 +377,7 @@ public class MainPageCtrl implements Controller, Initializable {
       pause.setOnFinished(e -> putFlag("deFlag.png"));
       pause.play();
     }
-    else if(toChange.equals("xx")){
-      currentLocale = new Locale("xx", "XX");
-      // pause for a bit so that the flag shrinks and then changes it
-      PauseTransition pause = new PauseTransition(Duration.millis(150));
-      // This executes changeFlag after the pause
-      pause.setOnFinished(e -> putFlag("xxFlag.png"));
-      pause.play();
-    }
+
     else{
       currentLocale = new Locale("en", "US");
       PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -427,6 +413,7 @@ public class MainPageCtrl implements Controller, Initializable {
       adminButton.setText(resourceBundle.getString("adminText"));
       recentEventsLabel.setText(resourceBundle.getString("recentEventsText"));
       createButton.setText(resourceBundle.getString("createText"));
+      addLanguageButton.setText(resourceBundle.getString("addLanguageText"));
   }
 
   private void putFlag(String path){

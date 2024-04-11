@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -34,6 +35,9 @@ public class LoginAdminCtrl implements Controller, Initializable {
     private Button loginButton;
 
     @FXML
+    private Label loginText;
+
+    @FXML
     private Text passwordText;
     @FXML
     private AnchorPane backGround;
@@ -54,7 +58,8 @@ public class LoginAdminCtrl implements Controller, Initializable {
         if(!password.equals(passcode)){
             loginInput.setStyle("-fx-background-color: #FF999C;");
             loginInput.setText("");
-            passwordText.setText("Wrong Password");
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+            passwordText.setText(resourceBundle.getString("wrongPasswordText"));
             return;
         }
 
@@ -86,6 +91,7 @@ public class LoginAdminCtrl implements Controller, Initializable {
         loginButton.setText(resourceBundle.getString("loginText"));
         cancelButton.setText(resourceBundle.getString("cancelText"));
         passwordText.setText(resourceBundle.getString("passwordText"));
+        loginText.setText(resourceBundle.getString("loginLabelText"));
     }
 
     private void keyShortCuts() {

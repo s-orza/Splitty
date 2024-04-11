@@ -14,12 +14,15 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static client.scenes.MainPageCtrl.currentLocale;
 
 public class InviteParticipantCtrl implements Controller, Initializable {
 
@@ -37,6 +40,17 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   @FXML
   private AnchorPane backGround;
 
+  @FXML
+  private Text nameText;
+
+  @FXML
+  private Label inviteSelectParticipantsText;
+
+  ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
+  private Participant selectedParticipant;
+
+
   private Stage stage;
   ServerUtils server;
   @Inject
@@ -46,6 +60,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     backgroundImage();
+    toggleLanguage();
     keyShortCuts();
   }
 
@@ -71,6 +86,13 @@ public class InviteParticipantCtrl implements Controller, Initializable {
       if (event.getCode() == KeyCode.RIGHT)  cancel.requestFocus();
       if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP)  email.requestFocus();
     });
+  }
+
+  private void toggleLanguage(){
+    inviteSelectParticipantsText.setText(resourceBundle.getString("inviteSelectParticipantsText"));
+    nameText.setText(resourceBundle.getString("nameText"));
+    cancel.setText(resourceBundle.getString("cancelText"));
+    invite.setText(resourceBundle.getString("inviteText"));
   }
 
   public void close(ActionEvent e){
@@ -113,7 +135,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
 
   @Override
   public String getTitle() {
-    return "Invite participant page";
+    return resourceBundle.getString("inviteParticipantsTitle");
   }
 
 }
