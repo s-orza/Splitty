@@ -2,7 +2,6 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.*;
-import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,16 +13,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.Pair;
 import com.google.inject.Inject;
 import javafx.scene.text.Text;
 
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -108,8 +108,8 @@ public class AddExpenseCtrl implements Controller{
     private List<Integer> selectedNamesList=new ArrayList<>();
     private Stack<Map<String, String>> undoStack;
     private ObservableList<Pair2> names;// = FXCollections.observableArrayList(
-            //new Pair2("Serban",0), new Pair2("David",1),
-            //new Pair2("Olav",2), new Pair2("Alex",3));
+    //new Pair2("Serban",0), new Pair2("David",1),
+    //new Pair2("Olav",2), new Pair2("Alex",3));
     private List<String> expenseTypesAvailable=new ArrayList<>();
     private List<String> tagsAvailable;
     private List<Participant> participantsObjectList;
@@ -120,8 +120,6 @@ public class AddExpenseCtrl implements Controller{
     private final String[] tempMoneyType = {"-1"};
     private final String[]  tempType = {"-1"};
     private final String[]  tempDate = {"-1"};
-    private final String[] tempAllPeople = {"false"};
-    private final String[] tempSomePeople= {"false"};
 
     ResourceBundle resourceBundle;
     @Inject
@@ -130,13 +128,17 @@ public class AddExpenseCtrl implements Controller{
     }
     @FXML
     public void initialize() {
-        System.out.println("initializeeee");
+//        System.out.println("initializeeee");
         backgroundImage();
         keyShortCuts();
         //load resources
         loadFromDatabase();
         toggleLanguage();
-        //undoFunction();
+        undoButton.setVisible(true);
+        undoFunction();
+        if (server.getExIdToModify()!=-1) {
+            undoButton.setVisible(false);
+        }
         //it contains the positions of the selected participants (the position in participantObjectList
         selectedNamesList = new ArrayList<>();
 
@@ -157,107 +159,79 @@ public class AddExpenseCtrl implements Controller{
     }
 
     private void undoFunction() {
-        undoStack = new Stack();
-        contentBox.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                if (!tempContent[0].equals(contentBox.getText())) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("contentBox", tempContent[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempContent[0] = contentBox.getText();
+        try {
+            undoStack = new Stack();
+            //gives a listener checking the focusness of contentbox
+            contentBox.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                //checks if newvalue is false (focused property not focused anymore)
+                if (!newValue) {
+                    if (!tempContent[0].equals(contentBox.getText())) {
+                        Map<String, String> nameMap = new HashMap<>();
+                        nameMap.put("contentBox", tempContent[0]);
+                        undoStack.push(nameMap);
+                        tempContent[0] = contentBox.getText();
+                    }
                 }
-            }
-        });
-        moneyPaid.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                if (!tempMoneyPaid[0].equals(moneyPaid.getText())) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("moneyPaid", tempMoneyPaid[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempMoneyPaid[0] = moneyPaid.getText();
+            });
+            moneyPaid.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    if (!tempMoneyPaid[0].equals(moneyPaid.getText())) {
+                        Map<String, String> nameMap = new HashMap<>();
+                        nameMap.put("moneyPaid", tempMoneyPaid[0]);
+                        undoStack.push(nameMap);
+                        tempMoneyPaid[0] = moneyPaid.getText();
+                    }
                 }
-            }
-        });
-        authorSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if (!tempAuthor[0].equals(String.valueOf(authorSelector.getSelectionModel().getSelectedIndex()))) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("authorSelector",tempAuthor[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempAuthor[0] = String.valueOf(authorSelector.getSelectionModel().getSelectedIndex());
-                }
+            });
+            authorSelector.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    if (!tempAuthor[0].equals(String.valueOf(authorSelector.getSelectionModel().getSelectedIndex()))) {
+                        Map<String, String> nameMap = new HashMap<>();
+                        nameMap.put("authorSelector", tempAuthor[0]);
+                        undoStack.push(nameMap);
+                        tempAuthor[0] = String.valueOf(authorSelector.getSelectionModel().getSelectedIndex());
+                    }
 
-            }
-        });
-        moneyTypeSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if (!tempMoneyType[0].equals(String.valueOf(moneyTypeSelector.getSelectionModel()
-                        .getSelectedIndex()))) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("moneyTypeSelector",tempMoneyType[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempMoneyType[0] = String.valueOf(moneyTypeSelector.getSelectionModel().getSelectedIndex());
                 }
+            });
+            moneyTypeSelector.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    if (!tempMoneyType[0].equals(String.valueOf(moneyTypeSelector.getSelectionModel()
+                            .getSelectedIndex()))) {
+                        Map<String, String> nameMap = new HashMap<>();
+                        nameMap.put("moneyTypeSelector", tempMoneyType[0]);
+                        undoStack.push(nameMap);
+                        tempMoneyType[0] = String.valueOf(moneyTypeSelector.getSelectionModel().getSelectedIndex());
+                    }
 
-            }
-        });
-        typeSelector.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            if (!oldValue.equals(newValue)) {
-                if (!tempType[0].equals(String.valueOf(typeSelector.getSelectionModel().getSelectedIndex()))) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("typeSelector",tempType[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempType[0] = String.valueOf(typeSelector.getSelectionModel().getSelectedIndex());
                 }
+            });
+            typeSelector.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    if (!tempType[0].equals(String.valueOf(typeSelector.getSelectionModel().getSelectedIndex()))) {
+                        Map<String, String> nameMap = new HashMap<>();
+                        nameMap.put("typeSelector", tempType[0]);
+                        undoStack.push(nameMap);
+                        tempType[0] = String.valueOf(typeSelector.getSelectionModel().getSelectedIndex());
+                    }
 
-            }
-        });
-        date.valueProperty().addListener((observable, oldValue, newValue) -> {
-            // Check if the new value is different from the old value
-            if (newValue!=null)
-                if ((oldValue == null && newValue != null) || (oldValue != null && !oldValue.equals(newValue))) {
-                if (!tempDate[0].equals(newValue.toString())) {
+                }
+            });
+            date.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    if (!tempDate[0].equals(date.getValue().toString())) {
 
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("date", tempDate[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempDate[0] = String.valueOf(newValue.toString());
+                        Map<String, String> nameMap = new HashMap<>();
+                        nameMap.put("date", tempDate[0]);
+                        undoStack.push(nameMap);
+                        tempDate[0] = date.getValue().toString();
+                    }
                 }
-            }
-        });
-        checkBoxAllPeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            // Check if the new value is different from the old value
-            if (newValue!=null)
-            if (!oldValue.equals(newValue)) {
-                if (!tempAllPeople[0].equals(String.valueOf(checkBoxAllPeople.isSelected()))) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("checkBoxAllPeople",tempAllPeople[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempAllPeople[0] = String.valueOf(checkBoxAllPeople.isSelected());
-                }
-            }
-        });
-        checkBoxSomePeople.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            // Check if the new value is different from the old value
-            if (newValue!=null)
-            if (!oldValue.equals(newValue)) {
-                if (!tempSomePeople[0].equals(String.valueOf(checkBoxSomePeople.isSelected()))) {
-                    Map<String, String> nameMap = new HashMap<>();
-                    nameMap.put("checkBoxSomePeople",tempSomePeople[0]);
-                    undoStack.push(nameMap);
-                    System.out.println("stack is " + undoStack.toString());
-                    tempSomePeople[0] = String.valueOf(checkBoxSomePeople.isSelected());
-                }
-            }
-        });
-
+            });
+        }
+        catch (Exception e) {
+            System.out.println("Undo error" + e.getMessage());
+        }
     }
 
 
@@ -265,53 +239,115 @@ public class AddExpenseCtrl implements Controller{
     private void keyShortCuts() {
         authorSelector.requestFocus();
 
-        authorSelector.setOnKeyPressed(event -> {
+        //get the scene to allow pressing control z to be undo
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                Boolean[] zPressedOnce = new Boolean[1];
+                zPressedOnce[0] = false;
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.isControlDown() && event.getCode() == KeyCode.Z && !zPressedOnce[0]) {
+                        zPressedOnce[0]=true;
+                        undo();
+                    }
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+                scene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+                    if (event.getCode() == KeyCode.Z) {
+                        zPressedOnce[0]=false;
+                    }
+                });
+            }
+        });
+
+        authorSelector.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) authorSelector.show();
-            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) contentBox.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) {
+                contentBox.requestFocus();
+                event.consume();
+            }
+        });
+        cancelButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
+        });
+        saveButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) saveButton.fire();
+        });
+        addButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                addButton.fire();
+                event.consume();
+            }
         });
         contentBox.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
-                    event.getCode()==KeyCode.DOWN) moneyPaid.requestFocus();
+            if (event.getCode() == KeyCode.ENTER|| event.getCode()==KeyCode.DOWN) moneyPaid.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT) newTypeTextField.requestFocus();
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) authorSelector.requestFocus();
+        });
+        contentBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.Z) event.consume();
         });
         moneyPaid.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.ENTER||
                     event.getCode()==KeyCode.DOWN) moneyTypeSelector.requestFocus();
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) contentBox.requestFocus();
         });
-        moneyTypeSelector.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) date.requestFocus();
+        moneyTypeSelector.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN){
+                date.requestFocus();
+                event.consume();
+            }
             if (event.getCode() == KeyCode.ENTER) moneyTypeSelector.show();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) moneyPaid.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) {
+                moneyPaid.requestFocus();
+                event.consume();
+            }
         });
-        date.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) newTypeTextField.requestFocus();
+        date.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) {
+                typeSelector.requestFocus();
+                event.consume();
+            }
             if (event.getCode() == KeyCode.ENTER) {
-                newTypeTextField.requestFocus();
                 date.show();
             }
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) {
                 moneyTypeSelector.requestFocus();
+                event.consume();
             }
         });
         newTypeTextField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) colorPicker.requestFocus();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) date.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) contentBox.requestFocus();
         });
-        colorPicker.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) addTypeButton.requestFocus();
+        colorPicker.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) {
+                addTypeButton.requestFocus();
+                event.consume();
+            }
             if (event.getCode() == KeyCode.ENTER) colorPicker.show();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) {
+                newTypeTextField.requestFocus();
+                event.consume();
+            }
         });
         addTypeButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) typeSelector.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) contentBox.requestFocus();
             if (event.getCode() == KeyCode.ENTER) createTag(null);
             if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
         });
-        typeSelector.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) checkBoxAllPeople.requestFocus();
+        typeSelector.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) {
+                checkBoxAllPeople.requestFocus();
+                event.consume();
+            }
             if (event.getCode() == KeyCode.ENTER) typeSelector.show();
-            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) newTypeTextField.requestFocus();
+            if (event.getCode() == KeyCode.LEFT||event.getCode()==KeyCode.UP) {
+                date.requestFocus();
+                event.consume();
+            }
         });
         checkBoxAllPeople.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode()==KeyCode.DOWN) checkBoxSomePeople.requestFocus();
@@ -324,75 +360,64 @@ public class AddExpenseCtrl implements Controller{
         });
 
         undoButton.setOnMouseClicked(event -> {
-            if (!undoStack.empty()) {
-                System.out.println("Stack is " + undoStack.toString());
-                Map result = undoStack.pop();
-                System.out.println("popped was " + result.toString());
-                String key = (String) result.keySet().iterator().next();
-                switch (key) {
-                    case "contentBox":
-                        contentBox.setText((String) result.get(key));
-                        tempContent[0] = "";
-                        break;
-                    case "moneyPaid":
-                        moneyPaid.setText((String) result.get(key));
-                        tempMoneyPaid[0] = "";
-                        break;
-                    case "authorSelector":
-                        if (Integer.parseInt((String)result.get(key))==-1) {
-                            authorSelector.getSelectionModel().clearSelection();
-                        } else {
-                            authorSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
-                        }
-                        tempAuthor[0]= "-1";
-                        break;
-                    case "moneyTypeSelector":
-                        if (Integer.parseInt((String)result.get(key))==-1) {
-                            moneyTypeSelector.getSelectionModel().clearSelection();
-                        } else {
-                            moneyTypeSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
-                        }
-                        tempMoneyType[0]= "-1";
-                        break;
-                    case "typeSelector":
-                        if (Integer.parseInt((String)result.get(key))==-1) {
-                            typeSelector.getSelectionModel().clearSelection();
-                        } else {
-                            typeSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
-                        }
-                        tempType[0]= "-1";
-                        break;
-                    case "date":
-                        if (((String)result.get(key)).equals("-1")) {
-                            date.setValue(null);
-                        } else {
-                            String dateString = (String)result.get(key);
-                            LocalDate localDate = LocalDate.parse(dateString);
-                            date.setValue(localDate);
-                            undoStack.pop();
-                        }
-                        tempType[0]= "-1";
-                        break;
-                    case "checkBoxAllPeople":
-                        checkBoxAllPeople.setSelected(Boolean.parseBoolean((String)result.get(key)));
-                        tempAllPeople[0] = "false";
-                        break;
-                    case "checkBoxSomePeople":
-                        checkBoxSomePeople.setSelected(Boolean.parseBoolean((String)result.get(key)));
-                        tempSomePeople[0] = "false";
-                        if (!Boolean.parseBoolean((String)result.get(key))) {
-                            namesList.setVisible(false);
-                        } else {
-                            namesList.setVisible(true);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-
+           undo();
         });
     }
+
+    private void undo() {
+        if (!undoStack.empty()) {
+            Map result = undoStack.pop();
+            String key = (String) result.keySet().iterator().next();
+            switch (key) {
+                case "contentBox":
+                    contentBox.setText((String) result.get(key));
+                    tempContent[0] = (String) result.get(key);
+                    break;
+                case "moneyPaid":
+                    moneyPaid.setText((String) result.get(key));
+                    tempMoneyPaid[0] =(String) result.get(key);
+                    break;
+                case "authorSelector":
+                    if (Integer.parseInt((String)result.get(key))==-1) {
+                        authorSelector.getSelectionModel().clearSelection();
+                    } else {
+                        authorSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
+                    }
+                    tempAuthor[0]= (String) result.get(key);
+                    break;
+                case "moneyTypeSelector":
+                    if (Integer.parseInt((String)result.get(key))==-1) {
+                        moneyTypeSelector.getSelectionModel().select(0);
+                    } else {
+                        moneyTypeSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
+                    }
+                    tempMoneyType[0]= (String) result.get(key);
+                    break;
+                case "typeSelector":
+                    if (Integer.parseInt((String)result.get(key))==-1) {
+                        typeSelector.getSelectionModel().clearSelection();
+                    } else {
+                        typeSelector.getSelectionModel().select(Integer.parseInt((String)result.get(key)));
+                    }
+                    tempType[0]= (String) result.get(key);
+                    break;
+                case "date":
+                    if ((result.get(key)).equals("-1")) {
+                        date.setValue(null);
+                    } else {
+                        String dateString = (String)result.get(key);
+                        LocalDate localDate = LocalDate.parse(dateString);
+                        date.setValue(localDate);
+                    }
+                    tempDate[0]= (String) result.get(key);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
+
 
     private void toggleLanguage() {
         try{
@@ -420,9 +445,10 @@ public class AddExpenseCtrl implements Controller{
 
     public void loadFromDatabase()
     {
+
         //first we need to create a list with the names of the participants:
         participantsObjectList=server.getParticipantsOfEvent(server.getCurrentId());
-        System.out.println(server.getExIdToModify());
+//        System.out.println(server.getExIdToModify());
         names=FXCollections.observableArrayList();
         int k=0;
         for(Participant person:participantsObjectList)
@@ -450,7 +476,7 @@ public class AddExpenseCtrl implements Controller{
             server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
 
         List<Tag> temp=server.getAllTagsFromEvent(eventId);
-        System.out.println(temp);
+//        System.out.println(temp);
         for(Tag t:temp)
             tagsAvailable.add(t.getId().getName());
     }
@@ -559,7 +585,7 @@ public class AddExpenseCtrl implements Controller{
                 else
                     checkBox.setSelected(false);
                 setGraphic(checkBox);
-               // checkBox.setFocusTraversable(true);
+                // checkBox.setFocusTraversable(true);
             }
         }
     }
@@ -582,7 +608,7 @@ public class AddExpenseCtrl implements Controller{
         try{
             LocalDate time = LocalDate.parse(expenseToBeModified.getDate());
 
-           date.setValue(time);
+            date.setValue(time);
         }catch (Exception e)
         {
             System.out.println("The date has a problem");
@@ -616,7 +642,7 @@ public class AddExpenseCtrl implements Controller{
      * @param event an event
      */
     @FXML
-    void addExpenseToTheEvent(MouseEvent event) {
+    void addExpenseToTheEvent(ActionEvent event) {
         //we need to verify if the expense is valid.
         if(!inputIsCorrect())
             return;
@@ -625,7 +651,7 @@ public class AddExpenseCtrl implements Controller{
 
         Expense expense=takeExpenseFromFields();
 
-        System.out.println(expense);
+//        System.out.println(expense);
 
         //server.addExpenseToEvent(server.getCurrentId(),expense);
 
@@ -637,11 +663,9 @@ public class AddExpenseCtrl implements Controller{
         resetElements();
         server.setExpenseToBeModified(-1);
 
-        PauseTransition delay = new PauseTransition(Duration.seconds(1));
-        delay.setOnFinished(e -> {
-            showPopup();
-        });
-        delay.play();
+
+        showPopup();
+
 
         //go back to the event page
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
@@ -691,10 +715,11 @@ public class AddExpenseCtrl implements Controller{
             }
         Expense expense=new Expense(authorP,content,money,moneyTypeSelector.getValue(),
                 dateString,list,typeSelector.getValue());
-            return expense;
+        return expense;
     }
+
     @FXML
-    void saveEditExpense(MouseEvent event)
+    void saveEditExpense(ActionEvent event)
     {
         if(!inputIsCorrect())
             return;
@@ -807,7 +832,7 @@ public class AddExpenseCtrl implements Controller{
      * @param e an event
      */
     @FXML
-    void cancelAddExpense(MouseEvent e) {
+    void cancelAddExpense(ActionEvent e) {
         resetElements();
         server.setExpenseToBeModified(-1);
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
@@ -819,19 +844,19 @@ public class AddExpenseCtrl implements Controller{
         String tagName=newTypeTextField.getText();
         if(tagName==null || tagName.isEmpty())
         {
-            System.out.println("Write something in the tag");
+//            System.out.println("Write something in the tag");
             return;
         }
         tagName=tagName.trim();
         if(server.checkIfTagExists(tagName,server.getCurrentId()))
         {
-            System.out.println("Already in the database!");
+//            System.out.println("Already in the database!");
             return;
         }
         String color=colorPicker.getValue().toString();
         server.sendTag("/app/expenses", new Tag(new TagId(tagName,server.getCurrentId()),"#"+color.substring(2,8)));
-    //        server.addTag();
-        System.out.println("tag added");
+        //        server.addTag();
+//        System.out.println("tag added");
         tagsAvailable.add(tagName);
 
         //reset tags from the screen
@@ -894,7 +919,7 @@ public class AddExpenseCtrl implements Controller{
         }
         else
             selectedNamesList.remove(index);
-        System.out.println(selectedNamesList);
+//        System.out.println(selectedNamesList);
     }
     public Pair<Controller, Parent> getPair() {
         return FXML.load(Controller.class, "client", "scenes", "AddExpense.fxml");

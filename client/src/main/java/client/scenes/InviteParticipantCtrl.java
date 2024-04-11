@@ -8,9 +8,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -43,6 +46,31 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     backgroundImage();
+    keyShortCuts();
+  }
+
+  private void keyShortCuts() {
+    name.sceneProperty().addListener((observable, oldScene, newScene) -> {
+      if (newScene != null) {
+        Scene scene = (name.getScene());
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+          if (event.getCode() == KeyCode.ESCAPE) {
+            cancel.fire();
+          }
+        });
+      }
+    });
+    name.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN)  email.requestFocus();
+    });
+    email.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN)  invite.requestFocus();
+      if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP)  name.requestFocus();
+    });
+    invite.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT)  cancel.requestFocus();
+      if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP)  email.requestFocus();
+    });
   }
 
   public void close(ActionEvent e){

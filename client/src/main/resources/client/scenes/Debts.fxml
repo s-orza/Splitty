@@ -7,25 +7,25 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="backGround" prefHeight="540.0" prefWidth="864.0" xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.DebtsCtrl">
-    <children>
-        <ScrollPane prefHeight="410.0" prefWidth="798.0" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="110.0">
-            <content>
-                <Accordion fx:id="accordion" prefHeight="410.0" prefWidth="798.0"/>
-            </content>
-        </ScrollPane>
-        <Button fx:id="cancelButton" layoutX="35.0" layoutY="44.0" mnemonicParsing="false" text="Cancel"/>
-        <Label alignment="TOP_CENTER" layoutX="382.0" layoutY="29.0" prefHeight="55.0" prefWidth="100.0" text="Debts">
-            <font>
-                <Font size="38.0"/>
-            </font>
-        </Label>
-        <ComboBox fx:id="searchByComboBox" layoutX="623.0" layoutY="44.0" prefWidth="150.0"
-                  promptText="-Select Person-"/>
-        <Button layoutX="793.0" layoutY="44.0" mnemonicParsing="false" onAction="#filter" text="filter"/>
-        <Button fx:id="refreshButton" layoutX="112.0" layoutY="44.0" mnemonicParsing="false" onAction="#refresh"
-                text="refresh"/>
-    </children>
+<AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.DebtsCtrl">
+   <children>
+      <ScrollPane prefHeight="270.0" prefWidth="650.0" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="110.0">
+         <content>
+            <Accordion fx:id="accordion" prefHeight="270.0" prefWidth="635.0" />
+         </content>
+      </ScrollPane>
+      <Button fx:id="cancelButton" layoutX="33.0" layoutY="24.0" mnemonicParsing="false" text="Cancel" />
+      <Label alignment="TOP_CENTER" layoutX="311.0" layoutY="37.0" text="Debts">
+         <font>
+            <Font size="38.0" />
+         </font>
+      </Label>
+      <Button layoutX="197.0" layoutY="70.0" mnemonicParsing="false" onAction="#filter" text="filter" />
+      <ComboBox fx:id="searchByComboBox" layoutX="33.0" layoutY="70.0" prefWidth="150.0" promptText="-Select Person-" />
+      <Button fx:id="refreshButton" layoutX="333.0" layoutY="387.0" mnemonicParsing="false" onAction="#refresh" text="refresh" />
+      <Text layoutX="490.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preferred currency:" wrappingWidth="109.05078125" />
+      <ComboBox fx:id="moneyTypeSelector" layoutX="611.0" layoutY="70.0" prefHeight="25.0" prefWidth="73.0" promptText="EUR" />
+   </children>
 </AnchorPane>

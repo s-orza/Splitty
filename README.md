@@ -8,6 +8,20 @@ the tag will appear in the list. You can edit tags in the page with statistic.
 **You cannot delete** the tag with the name **"other"** or to change its name, but you can change its color.
 
 
+For keyboard shortcuts:
+All functions are accessable with keyboard shortcuts. You move around all pages with left, right, up and down.
+In a table you go up and down through the values and right and left to exit it.
+You can even use tab to go through the page. If you click enter it fires the function of what you are focused on.
+Escape key on all pages goes back to the previous page.
+
+Undo button:
+The undo button is kept on the add expense page, it works for all its fields. We decided to not have it for the checkboxes as it feels 
+counter-intuitive for the user. You can use control z, to also make it work
+
+Main page:
+Double-clicking on events allow you to join them.
+
+
 Icons link:
 - <a href="https://www.flaticon.com/free-icons/search" title="search icons">Search icons created by Kiranshastry - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/add" title="add icons">Add icons created by Becris - Flaticon</a>

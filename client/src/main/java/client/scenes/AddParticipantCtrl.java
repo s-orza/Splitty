@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -99,6 +100,17 @@ public class AddParticipantCtrl implements Controller {
     private void keyShortCuts() {
         name.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+            }
+        });
+
         name.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.ENTER ||
                     event.getCode() == KeyCode.DOWN) email.requestFocus();
@@ -119,7 +131,7 @@ public class AddParticipantCtrl implements Controller {
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) iban.requestFocus();
         });
         addButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addButton.fire();
+            if (event.getCode() == KeyCode.ENTER) addButton.fire();
             if (event.getCode() == KeyCode.LEFT || event.getCode() == KeyCode.UP) bic.requestFocus();
         });
         cancelButton.setOnKeyPressed(event -> {
@@ -131,7 +143,7 @@ public class AddParticipantCtrl implements Controller {
     private void backgroundImage() {
         Image image = new Image("Background_Photo.jpg");
         BackgroundSize backgroundSize =
-                new BackgroundSize(720, 450, true, true, true, false);
+                new BackgroundSize(864, 540, true, true, true, false);
         BackgroundImage backgroundImage = new BackgroundImage(image,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                 backgroundSize);
@@ -150,14 +162,11 @@ public class AddParticipantCtrl implements Controller {
         // read all text from fields and create a new participant
         Participant newParticipant = takeParticipantFromFields();
         try {
-            //TODO
-            // make the eventID be specific to each event
             PauseTransition delay = new PauseTransition(Duration.seconds(1));
             delay.setOnFinished(e -> {
                 showPopup();
             });
             delay.play();
-
             String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);
             close(event);
@@ -199,6 +208,10 @@ public class AddParticipantCtrl implements Controller {
 
 
             okButton.setOnAction(e -> {
+                // if we are not modifying the participant anymore, reset the values for it
+                // prevents bug that opens same update page after closing
+                participantToBeModified = null;
+                server.setParticipantToBeModified(-1);
                 popupStage.close();
                 close(event);
             });
@@ -213,7 +226,6 @@ public class AddParticipantCtrl implements Controller {
             return;
         }
         Participant participant = takeParticipantFromFields();
-        System.out.println("Editing participant " + participant.getParticipantID());
         server.updateParticipant(participantToBeModified.getParticipantID(), participant);
         participantToBeModified = null;
         server.setParticipantToBeModified(-1);
@@ -233,8 +245,8 @@ public class AddParticipantCtrl implements Controller {
      */
     private boolean checkFieldsCondition() {
         // check if any fields are empty
-        if(name.getText().isEmpty()||email.getText().isEmpty()||iban.getText().isEmpty()||bic.getText().isEmpty()){
-            mainCtrl.popup("One or more fields are empty!\nMake sure you fill all fields!", "Error: empty fields",
+        if(name.getText().isEmpty()||email.getText().isEmpty()){
+            mainCtrl.popup("Name or/and email are empty!\nMake sure you fill them!", "Error: empty fields",
                     "Ok");
             return false;
         }
@@ -251,8 +263,6 @@ public class AddParticipantCtrl implements Controller {
 //            mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
 //            return false;
 //        }
-        //TODO
-        // Check validity of email, iban and bic
         return true;
     }
 

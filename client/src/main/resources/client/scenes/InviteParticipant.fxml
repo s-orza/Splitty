@@ -15,7 +15,7 @@
          <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true">
                <image>
-                  <Image url="@../../add-user.png" />
+                  <Image url="@/add-user.png" />
                </image>
             </ImageView>
          </graphic></Button>
@@ -41,7 +41,7 @@
          <graphic>
             <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true">
                <image>
-                  <Image url="@../../home.png" />
+                  <Image url="@/home.png" />
                </image>
             </ImageView>
          </graphic>
