@@ -1,68 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="540" prefWidth="864.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.MainPageCtrl">
+<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540" prefWidth="864.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
     <children>
 
-        <ListView fx:id="recentList" layoutX="25.0" layoutY="192.0" prefHeight="321.0" prefWidth="345.0"/>
+        <ListView fx:id="recentList" layoutX="25.0" layoutY="192.0" prefHeight="321.0" prefWidth="345.0" />
 
-        <TextField id="joinInput" fx:id="joinInput" layoutX="593.0" layoutY="206.0"/>
-        <Button fx:id="joinButton" layoutX="776.0" layoutY="205.0" mnemonicParsing="false" onAction="#joinEvent"
-                style="-fx-alignment: 53D3D1; -fx-border-color: #53D3D1; -fx-background-color: blue;" text="Join"
-                textAlignment="CENTER"/>
+        <TextField id="joinInput" fx:id="joinInput" layoutX="593.0" layoutY="206.0" />
+        <Button fx:id="joinButton" layoutX="776.0" layoutY="205.0" mnemonicParsing="false" onAction="#joinEvent" style="-fx-alignment: 53D3D1; -fx-border-color: #53D3D1; -fx-background-color: blue;" text="Join" textAlignment="CENTER" />
 
-        <TextField id="createInput" fx:id="createInput" layoutX="593.0" layoutY="265.0"/>
-        <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="776.0" layoutY="265.0" mnemonicParsing="false"
-                onAction="#createEvent" text="Create" textAlignment="CENTER"/>
-        <Button fx:id="adminButton" layoutX="776.0" layoutY="498.0" mnemonicParsing="false" onAction="#openAdmin"
-                text="Admin">
+        <TextField id="createInput" fx:id="createInput" layoutX="593.0" layoutY="265.0" />
+        <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="776.0" layoutY="265.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
+        <Button fx:id="adminButton" layoutX="688.0" layoutY="485.0" mnemonicParsing="false" onAction="#openAdmin" prefHeight="28.0" prefWidth="136.0" text="Admin">
             <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
-                    <Image url="@/admin.png"/>
+                    <Image url="@/admin.png" />
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="email" layoutX="779.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail"
-                text="Test email"/>
+        <Button fx:id="email" layoutX="779.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail" text="Test email" />
 
-        <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0"
-                prefWidth="84.0"/>
-        <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0"/>
-        <Button fx:id="addLanguageButton" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" text="Add Language"/>
-        <Text fx:id="recentEventsLabel" layoutX="25.0" layoutY="180.0" strokeType="OUTSIDE" strokeWidth="0.0"
-              text="Recent Events" wrappingWidth="149.60000000000014">
+        <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
+        <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
+        <Button fx:id="addLanguageButton" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" text="Add Language" />
+        <Text fx:id="recentEventsLabel" layoutX="25.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recent Events" wrappingWidth="330.60000000000014">
             <font>
-                <Font name="System Bold" size="14.0"/>
+                <Font name="System Bold" size="14.0" />
             </font>
         </Text>
-        <Text fx:id="createNewEventLabel" layoutX="593.0" layoutY="259.0" strokeType="OUTSIDE" strokeWidth="0.0"
-              text="Create New Event">
+        <Text fx:id="createNewEventLabel" layoutX="593.0" layoutY="259.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create New Event">
             <font>
-                <Font name="System Bold" size="14.0"/>
+                <Font name="System Bold" size="14.0" />
             </font>
         </Text>
-        <Text fx:id="joinEventLabel" layoutX="593.0" layoutY="199.0" strokeType="OUTSIDE" strokeWidth="0.0"
-              text="Join Event">
+        <Text fx:id="joinEventLabel" layoutX="593.0" layoutY="199.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Join Event">
             <font>
-                <Font name="System Bold" size="14.0"/>
+                <Font name="System Bold" size="14.0" />
             </font>
         </Text>
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="339.0" layoutY="67.0" prefHeight="55.0"
-               prefWidth="185.0" text="Splitty" textFill="#712929">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="339.0" layoutY="67.0" prefHeight="55.0" prefWidth="185.0" text="Splitty" textFill="#712929">
             <font>
-                <Font name="Broadway" size="48.0"/>
+                <Font name="Broadway" size="48.0" />
             </font>
         </Label>
 

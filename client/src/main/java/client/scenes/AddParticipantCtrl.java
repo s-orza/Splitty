@@ -49,6 +49,10 @@ public class AddParticipantCtrl implements Controller {
     private TextField bic;
     @FXML
     private AnchorPane backGround;
+    @FXML
+    private Label addParticipantText;
+    @FXML
+    private Label nameText;
     private static Alert errorAlert;
     private Participant participantToBeModified;
     ResourceBundle resourceBundle;
@@ -92,7 +96,11 @@ public class AddParticipantCtrl implements Controller {
             addButton.setText(resourceBundle.getString("addText"));
             saveButton.setText(resourceBundle.getString("saveText"));
             cancelButton.setText(resourceBundle.getString("cancelText"));
+
+            addParticipantText.setText(resourceBundle.getString("addParticipantText"));
+            nameText.setText(resourceBundle.getString("nameText"));
         } catch (Exception e) {
+
             System.out.println(e.getStackTrace());
         }
     }
