@@ -18,6 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -26,6 +27,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
+
+import static client.scenes.MainPageCtrl.currentLocale;
 
 public class DebtsCtrl implements Controller, Initializable {
 
@@ -37,12 +40,20 @@ public class DebtsCtrl implements Controller, Initializable {
     private Accordion accordion;
 
     @FXML
+    private Text preferredCurrencyText;
+    @FXML
     private AnchorPane backGround;
     @FXML
     private ComboBox<String> moneyTypeSelector;
 
     @FXML
     private Button refreshButton;
+
+    @FXML
+    private Button filterButton;
+
+    @FXML
+    private Label debtsText;
 
     private Stage stage;
     private ServerUtils server;
@@ -53,6 +64,8 @@ public class DebtsCtrl implements Controller, Initializable {
     private ObservableList<String> participantNames;
     private Map<Integer,Long> indexesToIds;
     private List<String> expenseTypesAvailable=new ArrayList<>();
+
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
     @Inject
     public DebtsCtrl(ServerUtils server) {
@@ -71,6 +84,7 @@ public class DebtsCtrl implements Controller, Initializable {
         expenseTypesAvailable.addAll(List.of("EUR", "USD", "RON", "CHF"));
 
         refresh();
+        toggleLanguage();
 
         // initialize close button
         cancelButton.setOnAction(this::cancelHandler);
@@ -99,6 +113,15 @@ public class DebtsCtrl implements Controller, Initializable {
         });
     }
 
+    private void toggleLanguage(){
+        cancelButton.setText(resourceBundle.getString("cancelText"));
+        filterButton.setText(resourceBundle.getString("filterText"));
+        refreshButton.setText(resourceBundle.getString("refreshText"));
+        debtsText.setText(resourceBundle.getString("debtsText"));
+        preferredCurrencyText.setText(resourceBundle.getString("preferredCurrencyText"));
+        searchByComboBox.setPromptText(resourceBundle.getString("selectPersonText"));
+    }
+
     private void backgroundImage() {
         Image image = new Image("Background_Photo.jpg");
         BackgroundSize backgroundSize =
@@ -118,7 +141,7 @@ public class DebtsCtrl implements Controller, Initializable {
         participantNames=FXCollections.observableArrayList();
 
         // add all selection
-        participantNames.add("-- All --");
+        participantNames.add(resourceBundle.getString("allText"));
         indexesToIds.put(0,(long)-1);
 
         int k=1;
@@ -196,11 +219,13 @@ public class DebtsCtrl implements Controller, Initializable {
                 amount = "<0.01";
             }
             title = server.getParticipantById(d.getDebtor()).getName()
-                            + " owes " + server.getParticipantById(d.getCreditor()).getName()
+                            + resourceBundle.getString("owesText") +
+                    server.getParticipantById(d.getCreditor()).getName()
                             + " " + amount
                             + MainCtrl.getCurrency();
+
             // settle button
-            Button button = new Button("Settle");
+            Button button = new Button(resourceBundle.getString("settleText"));
             button.setOnAction(e-> {
                 settleAction(d.getDebtID());
             });
@@ -225,11 +250,11 @@ public class DebtsCtrl implements Controller, Initializable {
                 Objects.equals(p.getBic(), "") ||
                 Objects.equals(p.getIban(), ""))
         {
-            return "Bank information unavailable! Please transfer the money in person.";
+            return resourceBundle.getString("bankInfoUnavailableText");
         }
 
-        String result = "Bank information information available! Please transfer the money to:\r" +
-                "Account Holder: " + p.getName() + "\r" +
+        String result = resourceBundle.getString("bankInfoAvailable")+ "\r" +
+                resourceBundle.getString("accountHolderText")+ " " + p.getName() + "\r" +
                 "IBAN: " + p.getIban() + "\r" +
                 "BIC: " + p.getBic() + "\r";
 

@@ -433,11 +433,13 @@ public class AddExpenseCtrl implements Controller{
             checkBoxSomePeople.setText(resourceBundle.getString("obspText"));
             cancelButton.setText(resourceBundle.getString("cancelText"));
             addButton.setText(resourceBundle.getString("addText"));
+            saveButton.setText(resourceBundle.getString("saveText"));
             cantText.setText(resourceBundle.getString("cantText"));
             whoPaidText.setText(resourceBundle.getString("whoPaidText"));
             whoPaidText.setText(resourceBundle.getString("whoPaidText"));
             authorSelector.setPromptText(resourceBundle.getString("selectPersonText"));
             typeSelector.setPromptText(resourceBundle.getString("selectTypeText"));
+            undoButton.setText(resourceBundle.getString("undoText"));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -675,7 +677,7 @@ public class AddExpenseCtrl implements Controller{
     private void showPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Created Expense Successfully");
+        popupStage.setTitle(resourceBundle.getString("createdExpenseSuccessfullyText"));
         VBox layout = new VBox(10);
         Scene scene = new Scene(layout, 350, 20);
         popupStage.setScene(scene);
