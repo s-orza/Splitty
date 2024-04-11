@@ -48,7 +48,7 @@ public class ExpenseControllerTest {
 
     @MockBean
     private TagRepository mockTagRepo;
-    
+
     @Test
     void addExpenseToEvent_BadRequest() throws Exception {
         mockMvc.perform(post("/api/expenses/saved")

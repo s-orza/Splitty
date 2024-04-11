@@ -1,15 +1,22 @@
 package server.api;
 
 
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -17,56 +24,105 @@ import org.springframework.transaction.annotation.Transactional;
 import server.database.ParticipantRepository;
 import commons.Participant;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class ParticipantControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private ParticipantRepository participantRepository;
 
-    private Participant savedParticipant;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    public void setup() {
-        Participant participant = new Participant("Test Participant", "test@example.com", "IBAN", "BIC");
-        savedParticipant = participantRepository.save(participant);
-    }
+    void setUp() {
 
-    @AfterEach
-    public void cleanup() {
-        participantRepository.deleteAll();
     }
 
     @Test
-    public void getParticipantById_whenParticipantExists() throws Exception {
-        mockMvc.perform(get("/api/participant/{id}", savedParticipant.getParticipantID())
-                        .contentType(MediaType.APPLICATION_JSON))
+    public void testGetParticipantById_Found() throws Exception {
+        Participant participant = new Participant("j", "asdf@f.gg", "123", "123");
+        participant.setParticipantID(1L);
+        when(participantRepository.existsById(1L)).thenReturn(true);
+        when(participantRepository.findById(1L)).thenReturn(Optional.of(participant));
+
+        mockMvc.perform(get("/api/participant/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Test Participant"));
+                .andExpect(jsonPath("$.name").value("j"))
+                .andExpect(jsonPath("$.email").value("asdf@f.gg"));
     }
 
     @Test
-    public void getParticipantById_whenIdIsInvalid() throws Exception {
-        mockMvc.perform(get("/api/participant/{id}", -1)
-                        .contentType(MediaType.APPLICATION_JSON))
+    public void testGetParticipantById_NotFound() throws Exception {
+        when(participantRepository.existsById(1L)).thenReturn(false);
+
+        mockMvc.perform(get("/api/participant/1"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void getParticipantById_whenParticipantDoesNotExist() throws Exception {
-        mockMvc.perform(get("/api/participant/{id}", 99999)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+    public void testGetAllParticipants() throws Exception {
+        List<Participant> participants = Arrays.asList(
+                new Participant("a", "a@tudelft.com", "123", "123"),
+                new Participant("b", "b@tudelft.com", "123", "123")
+        );
+        when(participantRepository.findAll()).thenReturn(participants);
+
+        mockMvc.perform(get("/api/participant/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("a"))
+                .andExpect(jsonPath("$[1].name").value("b"));
     }
 
     @Test
-    public void updateParticipantName_whenParticipantExists() throws Exception {
-        String newName = "Updated Name";
-        mockMvc.perform(put("/api/participant/{id}/name", savedParticipant.getParticipantID())
+    public void testGetParticipantsByIds_AllFound() throws Exception {
+        List<Long> ids = Arrays.asList(1L, 2L);
+        List<Participant> participants = Arrays.asList(
+                new Participant("a", "a@tudelft.com", "123", "123"),
+                new Participant("b", "b@tudelft.com", "123", "123")
+        );
+
+        when(participantRepository.existsById(eq(1L))).thenReturn(true);
+        when(participantRepository.existsById(eq(2L))).thenReturn(true);
+        when(participantRepository.findById(1L)).thenReturn(Optional.of(participants.get(0)));
+        when(participantRepository.findById(2L)).thenReturn(Optional.of(participants.get(1)));
+
+        mockMvc.perform(get("/api/participant/{eventId}/list", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ids)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$[0].email").value("a@tudelft.com"))
+                .andExpect(jsonPath("$[1].email").value("b@tudelft.com"));
+    }
+
+
+    @Test
+    public void testGetParticipantsByIds_NotFound() throws Exception {
+        List<Long> ids = List.of(3L);
+        when(participantRepository.existsById(3L)).thenReturn(false);
+
+        mockMvc.perform(get("/api/participant/{eventId}/list", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ids)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateParticipantName_Found() throws Exception {
+        Long participantId = 1L;
+        String newName = "UpdatedName";
+        Participant participant = new Participant("a", "a@tudelft.com", "123", "123");
+        when(participantRepository.findById(participantId)).thenReturn(Optional.of(participant));
+        when(participantRepository.save(any(Participant.class))).thenReturn(participant);
+
+        mockMvc.perform(put("/api/participant/{id}/name", participantId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newName))
                 .andExpect(status().isOk())
@@ -74,84 +130,118 @@ public class ParticipantControllerTest {
     }
 
     @Test
-    public void updateParticipantName_whenParticipantDoesNotExist() throws Exception {
-        String newName = "Updated Name";
-        mockMvc.perform(put("/api/participant/{id}/name", 99999)
+    public void updateParticipantName_NotFound() throws Exception {
+        Long participantId = 1L;
+        String newName = "UpdatedName";
+
+        when(participantRepository.findById(participantId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/participant/{id}/name", participantId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newName))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void updateParticipantBic_whenParticipantExists() throws Exception {
-        String newBic = "NEWBIC123";
-        mockMvc.perform(put("/api/participant/{id}/bic", savedParticipant.getParticipantID())
+    public void updateParticipant_Success() throws Exception {
+        Long participantId = 1L;
+        Participant updatedParticipant = new Participant("b", "b@tudelft.com", "123", "123");
+
+        when(participantRepository.findById(participantId)).thenReturn(Optional.of(new Participant()));
+        when(participantRepository.save(any(Participant.class))).thenReturn(updatedParticipant);
+
+        mockMvc.perform(put("/api/participant/{participantId}", participantId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"" + newBic + "\""))
+                        .content(objectMapper.writeValueAsString(updatedParticipant)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bic").value("\"NEWBIC123\""));
+                .andExpect(jsonPath("$.name").value("b"))
+                .andExpect(jsonPath("$.email").value("b@tudelft.com"));
     }
+
     @Test
-    public void updateParticipantBic_whenParticipantDoesNotExist() throws Exception {
-        String newBic = "NEWBIC123";
-        mockMvc.perform(put("/api/participant/{id}/bic", 99999)
+    public void updateParticipant_NotFound() throws Exception {
+        Long participantId = 1L;
+        Participant updatedParticipant = new Participant("b", "b@tudelft.com", "123", "123");
+        when(participantRepository.findById(participantId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/participant/{participantId}", participantId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"" + newBic + "\""))
-                .andExpect(status().isNotFound());
-    }
-    @Test
-    public void updateParticipantIban_whenParticipantExists() throws Exception {
-        String newIban = "NEWIBAN123";
-        mockMvc.perform(put("/api/participant/{id}/iban", savedParticipant.getParticipantID())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"" + newIban + "\""))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.iban").value("\"NEWIBAN123\""));
-    }
-    @Test
-    public void updateParticipantIban_whenParticipantDoesNotExist() throws Exception {
-        String newIban = "NEWIBAN123";
-        mockMvc.perform(put("/api/participant/{id}/iban", 99999)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"" + newIban + "\""))
-                .andExpect(status().isNotFound());
-    }
-    @Test
-    public void updateParticipantEmail_whenParticipantExists() throws Exception {
-        String newEmail = "newemail@example.com";
-        mockMvc.perform(put("/api/participant/{id}/email", savedParticipant.getParticipantID())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"" + newEmail + "\""))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("\"newemail@example.com\""));
-    }
-    @Test
-    public void updateParticipantEmail_whenParticipantDoesNotExist() throws Exception {
-        String newEmail = "newemail@example.com";
-        mockMvc.perform(put("/api/participant/{id}/email", 99999)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"" + newEmail + "\""))
+                        .content(objectMapper.writeValueAsString(updatedParticipant)))
                 .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    public void deleteParticipantById_whenParticipantExists() throws Exception {
-//        mockMvc.perform(delete("/api/participant/{id}", savedParticipant.getParticipantID())
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//        mockMvc.perform(get("/api/participant/{id}", savedParticipant.getParticipantID())
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//    }
 
-//    @Test
-//    public void deleteParticipantByName_whenNameExists() throws Exception {
-//        mockMvc.perform(delete("/api/participant/name/{name}", "Test Participant")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//
-//        mockMvc.perform(get("/api/participant")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$").isEmpty());
-//    }
+    // Example test for updating Email
+    @Test
+    public void updateParticipantEmail_Found() throws Exception {
+        Long participantId = 1L;
+        String newEmail = "new.email@tudelft.nl";
+        Participant participant = new Participant("a", "a@tudelft.com", "123", "123");
+        when(participantRepository.findById(participantId)).thenReturn(Optional.of(participant));
+        when(participantRepository.save(any(Participant.class))).thenReturn(participant);
+
+        mockMvc.perform(put("/api/participant/{id}/email", participantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newEmail))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(newEmail));
+    }
+
+    @Test
+    public void updateParticipantBic_Found() throws Exception {
+        Long participantId = 1L;
+        String newBic = "45";
+        Participant participant = new Participant("a", "a@tudelft.com", "123", "123");
+        when(participantRepository.findById(participantId)).thenReturn(Optional.of(participant));
+        when(participantRepository.save(any(Participant.class))).thenReturn(participant);
+
+        mockMvc.perform(put("/api/participant/{id}/bic", participantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newBic))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bic").value(newBic));
+    }
+
+    @Test
+    public void updateParticipantBic_NotFound() throws Exception {
+        Long participantId = 1L;
+        String newBic = "45";
+
+        when(participantRepository.findById(participantId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/participant/{id}/bic", participantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newBic))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateParticipantIban_Found() throws Exception {
+        Long participantId = 1L;
+        String newIban = "45";
+        Participant participant = new Participant("b", "b@tudelft.com", "123", "123");
+        when(participantRepository.findById(participantId)).thenReturn(Optional.of(participant));
+        when(participantRepository.save(any(Participant.class))).thenReturn(participant);
+
+        mockMvc.perform(put("/api/participant/{id}/iban", participantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newIban))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.iban").value(newIban));
+    }
+
+    @Test
+    public void updateParticipantIban_NotFound() throws Exception {
+        Long participantId = 1L;
+        String newIban = "45";
+
+        when(participantRepository.findById(participantId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/participant/{id}/iban", participantId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newIban))
+                .andExpect(status().isNotFound());
+    }
+
+
 }
