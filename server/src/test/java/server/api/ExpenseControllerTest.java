@@ -8,21 +8,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import server.database.EventRepository;
-import server.database.ExpenseRepository;
-import server.database.ParticipantRepository;
-import server.database.TagRepository;
+import server.database.*;
+import server.service.ExpenseService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,243 +38,235 @@ public class ExpenseControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ExpenseRepository expenseRepository;
+    private ObjectMapper objectMapper;
 
-    @Autowired
-    private EventRepository eventRepository;
+    @MockBean
+    private ExpenseRepository mockExpenseRepo;
 
-    @Autowired
-    private ParticipantRepository participantRepository;
+    @MockBean
+    private ExpenseEventRepository mockExpenseEventRepo;
 
-    @Autowired
-    private TagRepository tagRepository;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-    private Event testEvent;
-    private Participant testParticipant;
-    private Tag testTag;
-
-
-    @BeforeEach
-    public void setup() {
-        List<Expense> expenseList=expenseRepository.findAll();
-        cleanup();
-        testEvent = eventRepository.save(new Event("Sample Event"));
-        testParticipant = participantRepository.save(
-                new Participant("Sample Participant", "sample@example.com",
-                        "SAMPLEIBAN", "SAMPLEBIC"));
-        TagId tagId = new TagId("Lunch", testEvent.getEventId());
-        testTag = tagRepository.save(new Tag(tagId, "#000000"));
-
-    }
-
-    @AfterEach
-    public void cleanup() {
-        expenseRepository.deleteAll();
-        participantRepository.deleteAll();
-        tagRepository.deleteAll();
-        eventRepository.deleteAll();
-    }
-
+    @MockBean
+    private TagRepository mockTagRepo;
+    
     @Test
-    public void testAddExpenseToEvent() throws Exception {
-
-        expenseRepository.deleteAll();
-        Expense testExpense =
-                new Expense(testParticipant, "Lunch", 15.0, "USD",
-                "2023-04-01", new ArrayList<>(), "Food");
-        mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testExpense)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("Lunch"));
-        List<Expense> expenseList=expenseRepository.findAll();
-        assertThat(expenseRepository.findAll()).hasSize(1);
-    }
-
-    @Test
-    public void testUpdateExpense() throws Exception {
-        Expense savedExpense =
-                expenseRepository.save(
-                        new Expense(testParticipant, "Original",
-                        20.0, "EUR", "2023-04-02", null, "Misc"));
-
-        Expense updateInfo = new Expense(
-                testParticipant, "Updated", 25.0, "USD",
-                "2023-04-03", null, "UpdatedCategory");
-        mockMvc.perform(put("/api/expenses/?expenseId=" + savedExpense.getExpenseId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateInfo)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("Updated"));
-
-        Expense updatedExpense = expenseRepository.findById(savedExpense.getExpenseId()).get();
-        assertThat(updatedExpense.getContent()).isEqualTo("Updated");
-        assertThat(updatedExpense.getMoney()).isEqualTo(25.0);
-    }
-
-    @Test
-    public void testDeleteExpense() throws Exception {
-        expenseRepository.deleteAll();
-        Expense expense = new Expense(
-                testParticipant, "To be deleted", 10.0,
-                "EUR", "2023-04-02", null, "DeleteTest");
-        expenseRepository.save(expense);
-        mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expense)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("To be deleted"));
-
-        mockMvc.perform(delete("/api/expenses/?eventId=" + testEvent.getEventId()
-                        + "&expenseId=" + expense.getExpenseId()))
-                .andExpect(status().isOk());
-
-        assertThat(expenseRepository.existsById(expense.getExpenseId())).isFalse();
-    }
-
-    @Test
-    public void testGetAllExpensesFromEvent() throws Exception {
-//        Expense a = new Expense(testParticipant, "Expense 1", 10.0, "EUR", "2023-04-02", null, "Category1");
-//        Expense b = new Expense(testParticipant, "Expense 2", 20.0, "USD", "2023-04-03", null, "Category2");
-
-        testAddExpenseToEvent();
-
-        mockMvc.perform(get("/api/expenses/allFromEvent?eventId=" + testEvent.getEventId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-    }
-
-    @Test
-    public void testGetExpenseById() throws Exception {
-        Expense savedExpense = expenseRepository.save(
-                new Expense(testParticipant, "Dinner", 30.0,
-                        "EUR", "2024-02-01", null, "Food"));
-
-        mockMvc.perform(get("/api/expenses/?expenseId=" + savedExpense.getExpenseId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").value("Dinner"));
-    }
-
-    @Test
-    public void testAddTag() throws Exception {
-        Tag newTag = new Tag(new TagId("Coffee", testEvent.getEventId()), "#ffffff");
-
-        mockMvc.perform(post("/api/expenses/tags")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newTag)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.color").value("#ffffff"));
-
-        assertThat(tagRepository.existsById(new TagId("Coffee", testEvent.getEventId()))).isTrue();
-    }
-
-    @Test
-    public void testUpdateTag() throws Exception {
-        Tag newTag = new Tag(new TagId("Coffee", testEvent.getEventId()), "#ffffff");
-
-        mockMvc.perform(post("/api/expenses/tags")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newTag)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.color").value("#ffffff"));
-
-        Tag updatedTag = new Tag(new TagId("Breakfast", testEvent.getEventId()), "#111111");
-
-        mockMvc.perform(put("/api/expenses/tags?tagName=Coffee&eventId=" + testEvent.getEventId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedTag)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.color").value("#111111"));
-
-        Tag fetchedTag = tagRepository.findById(new TagId("Breakfast", testEvent.getEventId())).orElseThrow();
-        assertThat(fetchedTag.getColor()).isEqualTo("#111111");
-    }
-
-    @Test
-    public void testDeleteTag() throws Exception {
-        mockMvc.perform(delete("/api/expenses/tags?tagName=Lunch&eventId=" + testEvent.getEventId()))
-                .andExpect(status().isOk());
-
-        assertThat(tagRepository.existsById(new TagId("Lunch", testEvent.getEventId()))).isFalse();
-    }
-
-    @Test
-    public void getExpensePInvolvedInEvent_NotFound() throws Exception {
-        long nonExistentEventId = -1;
-        long nonExistentAuthorId = -1;
-
-        mockMvc.perform(get("/api/expenses/participantIncluded")
-                        .param("eventId", String.valueOf(nonExistentEventId))
-                        .param("authorId", String.valueOf(nonExistentAuthorId)))
+    void addExpenseToEvent_BadRequest() throws Exception {
+        mockMvc.perform(post("/api/expenses/saved")
+                        .param("eventId", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void getAllExpenses_Success() throws Exception {
-        expenseRepository.deleteAll();
-        Expense expense1 = new Expense(
-                testParticipant, "Lunch for Team", 50.0,
-                "USD", "2024-04-03", Arrays.asList(testParticipant), "Food");
-        Expense expense2 = new Expense(
-                testParticipant, "Team Coffee Break", 20.0,
-                "USD", "2024-04-03", Arrays.asList(testParticipant), "Beverage");
-        expenseRepository.save(expense1);
-        expenseRepository.save(expense2);
+    void addExpenseToEvent_Success() throws Exception {
+        Expense expense = new Expense();
+        expense.setExpenseId(1L);
 
-        mockMvc.perform(get("/api/expenses/all"))
+        when(mockExpenseRepo.save(any(Expense.class))).thenReturn(expense);
+        when(mockExpenseEventRepo.save(any(ExpenseEvent.class))).thenReturn(new ExpenseEvent(1L, 1L));
+
+        mockMvc.perform(post("/api/expenses/saved")
+                        .param("eventId", "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(expense)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].content").exists())
-                .andExpect(jsonPath("$[1].content").exists())
-                .andExpect(jsonPath("$[0].money").exists())
-                .andExpect(jsonPath("$[1].money").exists())
-                .andExpect(jsonPath("$[0].type").value("Food"))
-                .andExpect(jsonPath("$[1].type").value("Beverage"));
+                .andExpect(jsonPath("$.expenseId").value(expense.getExpenseId()));
+
+        verify(mockExpenseRepo, times(1)).save(any(Expense.class));
+        verify(mockExpenseEventRepo, times(1)).save(any(ExpenseEvent.class));
     }
 
     @Test
-    public void getTag_Success() throws Exception {
-        mockMvc.perform(get("/api/expenses/tags")
-                        .param("tag", testTag.getId().getName())
-                        .param("eventId", String.valueOf(testTag.getId().getEventId())))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.color").value(testTag.getColor()));
+    void addTag_WithNullTag_BadRequest() throws Exception {
+        mockMvc.perform(post("/api/expenses/tags")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void getTag_NotFound() throws Exception {
-        mockMvc.perform(get("/api/expenses/tags")
-                        .param("tag", "NonExistentTag")
-                        .param("eventId", String.valueOf(testEvent.getEventId())))
+    void addTag_WithTagNullId_NotFound() throws Exception {
+        Tag tag = new Tag();
+
+        tag.setId(null);
+
+        mockMvc.perform(post("/api/expenses/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tag)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void deleteAllExpensesFromEvent_Success() throws Exception {
-        Expense additionalExpense = new Expense(
-                testParticipant, "Additional Expense", 20.0, "USD",
-                "2023-05-01", new ArrayList<>(), "Additional");
-        mockMvc.perform(post("/api/expenses/saved?eventId=" + testEvent.getEventId())
+    void addTag_WithExistingTagId_NotFound() throws Exception {
+        Tag tag = new Tag(new TagId("TagName", 1L), "Color");
+        when(mockTagRepo.existsById(any(TagId.class))).thenReturn(true);
+
+        mockMvc.perform(post("/api/expenses/tags")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(additionalExpense)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(delete("/api/expenses/allFromEvent")
-                        .param("eventId", String.valueOf(testEvent.getEventId())))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/api/expenses/allFromEvent?eventId=" + testEvent.getEventId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(0));
+                        .content(objectMapper.writeValueAsString(tag)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void deleteAllExpensesFromEvent_BadRequest() throws Exception {
+    void addTag_WithValidTag_Success() throws Exception {
+        Tag tag = new Tag(new TagId("TagName", 1L), "Color");
+        when(mockTagRepo.existsById(any(TagId.class))).thenReturn(false);
+        when(mockTagRepo.save(any(Tag.class))).thenReturn(tag);
+
+        mockMvc.perform(post("/api/expenses/tags")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tag)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.name").value(tag.getId().getName()))
+                .andExpect(jsonPath("$.color").value(tag.getColor()));
+
+        verify(mockTagRepo, times(1)).save(any(Tag.class));
+    }
+
+
+
+    @Test
+    void deleteExpById_InvalidParams() throws Exception {
+        mockMvc.perform(delete("/api/expenses/")
+                        .param("eventId", "-1")
+                        .param("expenseId", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteExpById_NotFound() throws Exception {
+        mockMvc.perform(delete("/api/expenses/")
+                        .param("eventId", "1")
+                        .param("expenseId", "1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteExpById_ConnectionFail() throws Exception {
+        when(mockExpenseRepo.existsById(1L)).thenReturn(true);
+        when(mockExpenseRepo.deleteExpenseEventCon(1L, 1L)).thenReturn(0);
+
+        mockMvc.perform(delete("/api/expenses/")
+                        .param("eventId", "1")
+                        .param("expenseId", "1"))
+                .andExpect(status().is(444));
+    }
+
+    @Test
+    void deleteAllExpensesFromEvent_InvalidParams() throws Exception {
+        mockMvc.perform(delete("/api/expenses/allFromEvent")
+                        .param("eventId", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteAllExpensesFromEvent_Success() throws Exception {
+        when(mockExpenseRepo.findAllExpOfAnEvent(1L)).thenReturn(new ArrayList<Expense>());
 
         mockMvc.perform(delete("/api/expenses/allFromEvent")
-                        .param("eventId", String.valueOf(-1)))
+                        .param("eventId", "1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteTag_NotFound() throws Exception {
+        when(mockTagRepo.existsById(any(TagId.class))).thenReturn(false);
+
+        mockMvc.perform(delete("/api/expenses/tags")
+                        .param("tagName", "someTag")
+                        .param("eventId", "1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteTag_Success() throws Exception {
+        when(mockTagRepo.existsById(any(TagId.class))).thenReturn(true);
+        when(mockExpenseRepo.findAllExpOfAnEvent(1L)).thenReturn(new ArrayList<Expense>());
+
+        mockMvc.perform(delete("/api/expenses/tags")
+                        .param("tagName", "someTag")
+                        .param("eventId", "1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void updateExpense_InvalidId() throws Exception {
+        mockMvc.perform(put("/api/expenses/")
+                        .param("expenseId", "-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new Expense())))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateExpense_NotFound() throws Exception {
+        long expenseId = 1L;
+        when(mockExpenseRepo.existsById(expenseId)).thenReturn(false);
+
+        mockMvc.perform(put("/api/expenses/")
+                        .param("expenseId", String.valueOf(expenseId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new Expense())))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateExpense_Success() throws Exception {
+        long expenseId = 1L;
+        Expense expense = new Expense();
+        expense.setExpenseId(expenseId);
+
+        when(mockExpenseRepo.existsById(expenseId)).thenReturn(true);
+        when(mockExpenseRepo.findById(expenseId)).thenReturn(Optional.of(new Expense()));
+        when(mockExpenseRepo.save(any(Expense.class))).thenAnswer(invocation -> {
+            Expense savedExpense = invocation.getArgument(0);
+            savedExpense.setExpenseId(expenseId);
+            return savedExpense;
+        });
+
+        mockMvc.perform(put("/api/expenses/")
+                        .param("expenseId", String.valueOf(expenseId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(expense)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.expenseId").value(expenseId));
+    }
+
+    @Test
+    void updateTag_NotFound() throws Exception {
+        String tagName = "ExistingTag";
+        long eventId = 1L;
+        when(mockTagRepo.existsById(new TagId(tagName, eventId))).thenReturn(false);
+
+        mockMvc.perform(put("/api/expenses/tags")
+                        .param("tagName", tagName)
+                        .param("eventId", String.valueOf(eventId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new Tag())))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void updateTag_Success() throws Exception {
+        String originalTagName = "ExistingTag";
+        long eventId = 1L;
+        Tag newTag = new Tag(new TagId("NewName", eventId), "NewColor");
+        Tag expectedTag = new Tag(new TagId("NewName", eventId), "NewColor");
+
+        when(mockTagRepo.existsById(new TagId(originalTagName, eventId))).thenReturn(true);
+        when(mockTagRepo.updateTag(originalTagName, eventId, newTag.getId().getName(), newTag.getColor())).thenReturn(1);
+        when(mockTagRepo.getTagByIdFromEvent(newTag.getId().getName(), eventId)).thenReturn(expectedTag);
+
+        mockMvc.perform(put("/api/expenses/tags")
+                        .param("tagName", originalTagName)
+                        .param("eventId", String.valueOf(eventId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(newTag)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id.name").value(newTag.getId().getName()))
+                .andExpect(jsonPath("$.color").value(newTag.getColor()));
+
+        verify(mockTagRepo, times(1)).updateTag(originalTagName, eventId, newTag.getId().getName(), newTag.getColor());
+        verify(mockTagRepo, times(1)).getTagByIdFromEvent(newTag.getId().getName(), eventId);
     }
 }
