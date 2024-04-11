@@ -7,21 +7,18 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="188.0" prefWidth="389.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.InviteParticipantCtrl">
+<AnchorPane prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
     <children>
-        <TextField fx:id="name" layoutX="103.0" layoutY="71.0"/>
-        <TextField fx:id="email" layoutX="103.0" layoutY="113.0"/>
-        <Button fx:id="invite" layoutX="277.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite"
-                text="Invite"/>
-        <Button fx:id="cancel" layoutX="328.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel"/>
-        <Label alignment="CENTER" layoutY="14.0" prefHeight="30.0" prefWidth="384.0"
-               text="Select participant to invite to the event">
+        <TextField fx:id="name" layoutX="103.0" layoutY="71.0" />
+        <TextField fx:id="email" layoutX="103.0" layoutY="113.0" />
+        <Button fx:id="invite" layoutX="253.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
+        <Button fx:id="cancel" layoutX="328.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+        <Label fx:id="inviteSelectParticipantsText" alignment="CENTER" layoutY="14.0" prefHeight="30.0" prefWidth="384.0" text="Select participant to invite to the event">
             <font>
-                <Font size="20.0"/>
+                <Font size="20.0" />
             </font>
         </Label>
-        <Text layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name"/>
-        <Text layoutX="60.0" layoutY="131.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email"/>
+        <Text fx:id="nameText" layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" />
+        <Text fx:id="emailText" layoutX="60.0" layoutY="131.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
     </children>
 </AnchorPane>

@@ -21,18 +21,16 @@
                 <Font name="System Bold" size="14.0"/>
             </font>
         </Text>
-        <TextField fx:id="portInput" layoutX="447.0" layoutY="269.0" prefHeight="26.0" prefWidth="79.0"/>
-        <Text fx:id="portText" layoutX="447.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port"
-              wrappingWidth="79.19999999999982">
-            <font>
-                <Font name="System Bold" size="14.0"/>
-            </font>
-        </Text>
-        <Label alignment="CENTER" layoutX="307.0" layoutY="90.0" prefHeight="55.0" prefWidth="287.0"
-               text="Select Server" textFill="#712929">
-            <font>
-                <Font size="38.0"/>
-            </font>
-        </Label>
+      <TextField fx:id="portInput" layoutX="360.0" layoutY="225.0" prefHeight="26.0" prefWidth="79.0" />
+      <Text fx:id="portText" layoutX="360.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Port" wrappingWidth="79.19999999999982">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Text>
+      <Label fx:id="selectServerText" alignment="CENTER" layoutX="210.0" layoutY="14.0" prefHeight="200.0" prefWidth="300.0" text="Select Server" textFill="#712929" wrapText="true">
+         <font>
+            <Font size="38.0" />
+         </font>
+      </Label>
     </children>
 </AnchorPane>

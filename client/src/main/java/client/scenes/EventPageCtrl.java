@@ -21,6 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,8 +40,7 @@ public class EventPageCtrl implements Controller{
         this.server = server;
     }
 
-    @FXML
-    Button invite;
+
     @FXML
     TableView<Participant> participantsTable;
 
@@ -70,6 +70,7 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     TableColumn<Expense, String> typeColumn;
+
     @FXML
     private ComboBox<String> searchByComboBox;
     @FXML
@@ -103,6 +104,9 @@ public class EventPageCtrl implements Controller{
     Button viewStatistics;
 
     @FXML
+    Button invite;
+
+    @FXML
     Label eventCode;
 
     @FXML
@@ -117,15 +121,25 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     ComboBox comboBox;
+
     @FXML
     AnchorPane backGround;
+
     @FXML
-    ToggleButton allButton;
+    Button undoButton;
+
+    @FXML
+    private Text filterExpensesText;
+
+    @FXML
+    private ToggleButton allButton;
+
+
     //here we map every index from the selection comboBox to the id of its participant
     //we need this for searching by author X /including X
     private Map<Integer,Long> indexesToIds;
 
-    private ResourceBundle resourceBundle;
+    private ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
     private Stage stage;
 
@@ -276,10 +290,10 @@ public class EventPageCtrl implements Controller{
             participantsData.add(t);
         });
 
-
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         searchByComboBox.setItems(participantsToSelectFrom);
-        fromxButton.setText("From ?");
-        includingxButton.setText("Including ?");
+        fromxButton.setText(resourceBundle.getString("fromText"));
+        includingxButton.setText(resourceBundle.getString("includingText"));
 
         renderExpenseColumns(expenseData);
         renderParticipants(participantsData);
@@ -291,38 +305,32 @@ public class EventPageCtrl implements Controller{
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("English");
         }else
         if(currentLocale.getLanguage().equals("nl")){
             putFlag("nlFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Dutch");
         }else
         if(currentLocale.getLanguage().equals("de")){
             putFlag("deFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("German");
         }else
         if(currentLocale.getLanguage().equals("es")){
             putFlag("esFlag.png");
             ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
+                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Spanish");
-        }else
-        if(currentLocale.getLanguage().equals("xx")){
-            putFlag("xxFlag.png");
-            ObservableList<String> comboBoxItems =
-                    FXCollections.observableArrayList("English", "Dutch", "German", "Spanish", "Extra");
-            comboBox.setItems(comboBoxItems);
-            comboBox.setPromptText("Extra");
         }
+        
         toggleLanguage();
         prepareAnimation();
 
@@ -331,7 +339,6 @@ public class EventPageCtrl implements Controller{
             if(newValue.equals("Dutch")) changeFlag("nl");
             if(newValue.equals("Spanish")) changeFlag("es");
             if(newValue.equals("German")) changeFlag("de");
-            if(newValue.equals("Extra")) changeFlag("xx");
             toggleLanguage();
         });
 
@@ -342,7 +349,8 @@ public class EventPageCtrl implements Controller{
         });
 
         eventName.setText(server.getEvent(server.getCurrentId()).getName());
-        eventCode.setText("Event Code: " + server.getEvent(server.getCurrentId()).getEventId());
+        eventCode.setText(
+                resourceBundle.getString("eventCodeText") + ": " + server.getEvent(server.getCurrentId()).getEventId());
 
         // just initializes some properties needed for the elements
         addParticipant.setOnAction(e->addParticipantHandler(e));
@@ -514,36 +522,23 @@ public class EventPageCtrl implements Controller{
         seqTransition.play();
         if(toChange.equals("es")){
             currentLocale = new Locale("es", "ES");
-            // pause for a bit so that the flag shrinks and then changes it
             PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
             pause.setOnFinished(e -> putFlag("esFlag.png"));
             pause.play();
         }
         else if(toChange.equals("nl")){
             currentLocale = new Locale("nl", "NL");
-            // pause for a bit so that the flag shrinks and then changes it
             PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
             pause.setOnFinished(e -> putFlag("nlFlag.png"));
             pause.play();
         }
         else if(toChange.equals("de")){
             currentLocale = new Locale("de", "DE");
-            // pause for a bit so that the flag shrinks and then changes it
             PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
             pause.setOnFinished(e -> putFlag("deFlag.png"));
             pause.play();
         }
-        else if(toChange.equals("xx")){
-            currentLocale = new Locale("xx", "XX");
-            // pause for a bit so that the flag shrinks and then changes it
-            PauseTransition pause = new PauseTransition(Duration.millis(150));
-            // This executes changeFlag after the pause
-            pause.setOnFinished(e -> putFlag("xxFlag.png"));
-            pause.play();
-        }
+
         else{
             currentLocale = new Locale("en", "US");
             PauseTransition pause = new PauseTransition(Duration.millis(150));
@@ -555,7 +550,9 @@ public class EventPageCtrl implements Controller{
         resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
        try{
-           eventCode.setText(resourceBundle.getString("eventCodeText"));
+           eventCode.setText(
+                   resourceBundle.getString("eventCodeText") + ": " +
+                           server.getEvent(server.getCurrentId()).getEventId());
            addExpense.setText(resourceBundle.getString("addExpenseText"));
            removeExpense.setText(resourceBundle.getString("removeExpenseText"));
            authorColumn.setText(resourceBundle.getString("authorText"));
@@ -566,11 +563,21 @@ public class EventPageCtrl implements Controller{
            participantsColumn2.setText(resourceBundle.getString("participantsText"));
            typeColumn.setText(resourceBundle.getString("typeText"));
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
-//           editEventName.setText(resourceBundle.getString("editEventNameText"));
+           viewStatistics.setText(resourceBundle.getString("viewStatisticsText"));
+           invite.setText(resourceBundle.getString("inviteText"));
+           editExpense.setText(resourceBundle.getString("editExpenseText"));
+           filterExpensesText.setText(resourceBundle.getString("filterExpensesText"));
+           allButton.setText(resourceBundle.getString("allText"));
+           editExpense.setText(resourceBundle.getString("editExpenseText"));
+           editParticipant.setText(resourceBundle.getString("editParticipantText"));
+           fromxButton.setText(resourceBundle.getString("fromText"));
+           includingxButton.setText(resourceBundle.getString("includingText"));
+           searchByComboBox.setPromptText(resourceBundle.getString("selectPersonText"));
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
-
+           removeParticipant.setText(resourceBundle.getString("removeParticipantText"));
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
-           cancelButton.setText(resourceBundle.getString("cancelText"));
+           cancelButton.setText(resourceBundle.getString("homeText"));
+
        }catch (Exception e){
            e.printStackTrace();
        }
@@ -598,6 +605,7 @@ public class EventPageCtrl implements Controller{
                 backgroundSize);
         Background background = new Background(backgroundImage);
         backGround.setBackground(background);
+
     }
 
     public void prepareAnimation(){
@@ -628,17 +636,18 @@ public class EventPageCtrl implements Controller{
      * database connectivity
      */
     private void editEventNameHandler() {
+
         VBox layout = new VBox(10);
-        Label label = new Label("What should be the new name of this event?");
+        Label label = new Label(resourceBundle.getString("eventNameQuestion"));
         TextField newName = new TextField();
 
-        Button changeButton = new Button("Change");
-        Button cancelButton = new Button("Cancel");
+        Button changeButton = new Button(resourceBundle.getString("changeText"));
+        Button cancelButton = new Button(resourceBundle.getString("cancelText"));
 
         // Set up the stage
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Change Event Name");
+        popupStage.setTitle(resourceBundle.getString("changeEventNameText"));
 
 
         changeButton.setOnAction(e -> {
@@ -667,14 +676,16 @@ public class EventPageCtrl implements Controller{
         ObservableList<Expense> selectedItems = expensesTable.getSelectionModel().getSelectedItems();
         if(selectedItems.isEmpty())
         {
-            mainCtrl.popup("Please select at least one expense.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("selectAtLeastOneExpenseText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
         List<Expense> itemsToEdit = new ArrayList<>(selectedItems);
         if(itemsToEdit.size()>1)
         {
-            mainCtrl.popup("Please select only one expense.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("expenseSelectWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
@@ -688,21 +699,24 @@ public class EventPageCtrl implements Controller{
         ObservableList<Participant> selectedItems = participantsTable.getSelectionModel().getSelectedItems();
         if(selectedItems.isEmpty())
         {
-            mainCtrl.popup("Please select at least one participant.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("participantSelectOneWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
         List<Participant> itemsToEdit = new ArrayList<>(selectedItems);
         if(itemsToEdit.size()>1)
         {
-            mainCtrl.popup("Please select only one participant.", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("participantSelectLeastWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //WARNING
             return;
         }
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
         server.setParticipantToBeModified(itemsToEdit.get(0).getParticipantID());
-        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), "Edit Participant");
+
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), resourceBundle.getString("editParticipantText"));
     }
 
     private void addExpenseHandler(ActionEvent e) {
@@ -833,7 +847,8 @@ public class EventPageCtrl implements Controller{
     void searchFromX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            mainCtrl.popup("You must select a person", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("participantsSelectExactlyWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             //popUpWarningText("Please select the person!");
             return;
         }
@@ -864,7 +879,8 @@ public class EventPageCtrl implements Controller{
     void searchIncludingX(ActionEvent event) {
         if(searchByComboBox.getValue()==null)
         {
-            mainCtrl.popup("You must select the included person!", "Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("selectIncludedPersonWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             return;
         }
 
@@ -1041,7 +1057,7 @@ public class EventPageCtrl implements Controller{
     private void showPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Deleted expense Successfully");
+        popupStage.setTitle(resourceBundle.getString("deleteExpenseSuccessfullyText"));
         VBox layout = new VBox(10);
         Scene scene = new Scene(layout, 350, 20);
         popupStage.setScene(scene);
