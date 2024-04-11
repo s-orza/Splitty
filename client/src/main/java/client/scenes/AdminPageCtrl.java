@@ -33,7 +33,6 @@ import javafx.util.Pair;
 import javax.inject.Inject;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -42,25 +41,22 @@ import java.util.ResourceBundle;
 public class AdminPageCtrl implements Controller, Initializable {
 
   @FXML
-  private TableView<EventHelper> table;
+  private TableView<Event> table;
 
   @FXML
-  private TableColumn<EventHelper, Date> tableActivity;
+  private TableColumn<Event, Date> tableActivity;
 
   @FXML
-  private TableColumn<EventHelper, Date> tableDate;
+  private TableColumn<Event, Date> tableDate;
 
   @FXML
-  private TableColumn<EventHelper, String> tableTitle;
+  private TableColumn<Event, String> tableTitle;
 
   @FXML
   private Button generatePassButton;
 
   @FXML
   private TextField passLengthField;
-
-  @FXML
-  private Label showEvent;
 
   @FXML
   private AnchorPane backGround;
@@ -71,37 +67,32 @@ public class AdminPageCtrl implements Controller, Initializable {
   @FXML
   private Button editButton;
 
-  private EventHelper selectedEvent;
+  private Event selectedEvent;
   private Stage stage;
   ServerUtils server;
-  ObservableList<EventHelper> contents;
+  ObservableList<Event> contents;
   @Inject
   public AdminPageCtrl(ServerUtils server) {
     this.server = server;
   }
 
   public void fillList(){
-    List<EventHelper> list = new ArrayList<EventHelper>();
-    for(Event e : server.getEvents()){
-      list.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
-    }
-    contents =  FXCollections.observableArrayList(
-            list);
+    contents =  FXCollections.observableArrayList(server.getEvents());
     server.registerForUpdatesEvents(server.getCurrentId(), e -> {
       boolean alreadyExists = false;
-      for (EventHelper event: contents) {
-        if (event.getTitle().equals(e.getName())){
+      for (Event event: contents) {
+        if (event.getName().equals(e.getName())){
           alreadyExists = true;
         }
       }
       if (!alreadyExists){
-        contents.add(new EventHelper(e.getEventId(), e.getName(), e.getCreationDate(), e.getActivityDate()));
+        contents.add(e);
       }
     });
 
     server.registerForMessages("/topic/events", Long.class, e -> {
       for (int i = 0; i<contents.size(); i++) {
-        if (contents.get(i).getId()==e) {
+        if (contents.get(i).getEventId()==e) {
           contents.remove(i);
           break;
         }
@@ -111,7 +102,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public void exportEvent(ActionEvent e) {
-    Event event = server.getEvent(selectedEvent.getId());
+    Event event = server.getEvent(selectedEvent.getEventId());
     List<Expense> expenses = server.getAllExpensesOfEvent(event.getEventId());
     List<Participant> participants = server.getParticipantsOfEvent(event.getEventId());
     List<Tag> tags= server.getAllTagsFromEvent(event.getEventId());
@@ -211,9 +202,12 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public void editEvent(ActionEvent e){
+    if(selectedEvent == null) {
+      return;
+    }
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
-    server.connect(selectedEvent.getId());
-    mainCtrl.addRecent(selectedEvent.getId());
+    server.connect(selectedEvent.getEventId());
+    mainCtrl.addRecent(selectedEvent.getEventId());
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
@@ -240,7 +234,7 @@ public class AdminPageCtrl implements Controller, Initializable {
 
       try {
 //        server.deleteEvent(selectedEvent.getId());
-        server.sendEvent("/app/events", selectedEvent.getId());
+        server.sendEvent("/app/events", selectedEvent.getEventId());
         contents.remove(selectedEvent);
         table.setItems(contents);
       }catch (Exception exception){
@@ -283,20 +277,13 @@ public class AdminPageCtrl implements Controller, Initializable {
     backgroundImage();
     keyShortCuts();
     fillList();
-    tableTitle.setCellValueFactory(new PropertyValueFactory<EventHelper, String>("title"));
-    tableActivity.setCellValueFactory(new PropertyValueFactory<EventHelper, Date>("lastActivity"));
-    tableDate.setCellValueFactory(new PropertyValueFactory<EventHelper, Date>("creationDate"));
+    tableTitle.setCellValueFactory(new PropertyValueFactory<Event, String>("name"));
+    tableActivity.setCellValueFactory(new PropertyValueFactory<Event, Date>("activityDate"));
+    tableDate.setCellValueFactory(new PropertyValueFactory<Event, Date>("creationDate"));
     table.setItems(contents);
     table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
       selectedEvent = table.getSelectionModel().getSelectedItem();
-      if(selectedEvent != null){
-      showEvent.setText(selectedEvent.getTitle());
-      }
-      else{
-        showEvent.setText("");
-      }
     });
-
     // add listener for pass length
     passLengthField.clear();
     passLengthField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -355,7 +342,7 @@ public class AdminPageCtrl implements Controller, Initializable {
   }
 
   public Pair<Controller, Parent> getPair() {
-    return FXML.load(Controller.class, "client", "scenes", "adminPage.fxml");
+    return FXML.load(Controller.class, "client", "scenes", "AdminPage.fxml");
   }
   public String getTitle(){
     return "Admin Page";
