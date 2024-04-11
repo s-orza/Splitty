@@ -2,20 +2,23 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
-   <children>
-      <Button fx:id="cancel" layoutX="165.0" layoutY="333.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
-      <Button fx:id="invite" layoutX="385.0" layoutY="333.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
-      <TableView fx:id="participants" layoutX="69.0" layoutY="74.0" prefHeight="198.0" prefWidth="290.0">
-        <columns>
-          <TableColumn fx:id="name" prefWidth="103.20001220703125" text="name" />
-          <TableColumn fx:id="email" prefWidth="185.59999694824216" text="email" />
-        </columns>
-      </TableView>
-      <Label fx:id="inviteSelectParticipantsText" alignment="CENTER" layoutX="-1.0" layoutY="34.0" prefHeight="18.0" prefWidth="600.0"  />
-   </children>
+<AnchorPane prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteParticipantCtrl">
+    <children>
+        <TextField fx:id="name" layoutX="103.0" layoutY="71.0" />
+        <TextField fx:id="email" layoutX="103.0" layoutY="113.0" />
+        <Button fx:id="invite" layoutX="253.0" layoutY="148.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
+        <Button fx:id="cancel" layoutX="328.0" layoutY="148.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
+        <Label fx:id="inviteSelectParticipantsText" alignment="CENTER" layoutY="14.0" prefHeight="30.0" prefWidth="384.0" text="Select participant to invite to the event">
+            <font>
+                <Font size="20.0" />
+            </font>
+        </Label>
+        <Text fx:id="nameText" layoutX="59.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" />
+        <Text fx:id="emailText" layoutX="60.0" layoutY="131.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email" />
+    </children>
 </AnchorPane>

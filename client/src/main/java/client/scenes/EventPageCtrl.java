@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -27,6 +28,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import javax.inject.Inject;
 import java.util.*;
+
 import static client.scenes.MainPageCtrl.currentLocale;
 
 public class EventPageCtrl implements Controller{
@@ -38,8 +40,7 @@ public class EventPageCtrl implements Controller{
         this.server = server;
     }
 
-    @FXML
-    Button inviteButton;
+
     @FXML
     TableView<Participant> participantsTable;
 
@@ -80,7 +81,6 @@ public class EventPageCtrl implements Controller{
     private ToggleButton includingxButton;
     private String includingxButtonText;
     private String allText;
-
     @FXML
     Button addParticipant;
 
@@ -104,12 +104,15 @@ public class EventPageCtrl implements Controller{
     Button viewStatistics;
 
     @FXML
+    Button invite;
+
+    @FXML
     Label eventCode;
 
     @FXML
     Label eventName;
-
-
+    @FXML
+    Button removeParticipant;
     @FXML
     Button flagButton;
 
@@ -121,6 +124,7 @@ public class EventPageCtrl implements Controller{
 
     @FXML
     AnchorPane backGround;
+
     @FXML
     Button undoButton;
 
@@ -359,6 +363,8 @@ public class EventPageCtrl implements Controller{
         addParticipant.setOnAction(e->addParticipantHandler(e));
         addExpense.setOnAction(e->addExpenseHandler(e));
         removeExpense.setOnAction(e->removeExpenseHandler());
+        removeParticipant.setOnAction(e->removeParticipantHandler(
+                participantsTable.getSelectionModel().getSelectedItems()));
         editExpense.setOnAction(e->editExpenseHandler(e));
         editParticipant.setOnAction(e -> editParticipantHandler(e));
         expensesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -372,57 +378,91 @@ public class EventPageCtrl implements Controller{
     private void keyShortCuts() {
         cancelButton.requestFocus();
 
+        backGround.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Scene scene = (backGround.getScene());
+                scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                    if (event.getCode() == KeyCode.ESCAPE) {
+                        cancelButton.fire();
+                    }
+                });
+            }
+        });
+
         editEventName.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) comboBox.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
             if (event.getCode() == KeyCode.ENTER) editEventName.fire();
         });
         fromxButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+            if (event.getCode() == KeyCode.UP) editExpense.requestFocus();
+            if (event.getCode() == KeyCode.DOWN)  expensesTable.requestFocus();
         });
-        includingxButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.UP) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.LEFT)  cancelButton.requestFocus();
+        allButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) addExpense.requestFocus();
+            if (event.getCode() == KeyCode.DOWN)  expensesTable.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  addExpense.requestFocus();
         });
-
-        comboBox.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) cancelButton.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) comboBox.show();
-            if (event.getCode() == KeyCode.LEFT) editEventName.requestFocus();
-        });
-        cancelButton.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) viewStatistics.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) cancelButton.fire();
-            if (event.getCode() == KeyCode.LEFT) comboBox.requestFocus();
-        });
-        viewStatistics.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) viewDebts.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) viewStatistics.fire();
-            if (event.getCode() == KeyCode.LEFT) cancelButton.requestFocus();
-        });
-        viewDebts.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addParticipant.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) viewDebts.fire();
-            if (event.getCode() == KeyCode.LEFT) viewStatistics.requestFocus();
-        });
-        addParticipant.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) addExpense.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) addParticipant.fire();
-            if (event.getCode() == KeyCode.LEFT) viewDebts.requestFocus();
+        expensesTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) allButton.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT)  addParticipant.requestFocus();
         });
         addExpense.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) editExpense.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) addExpense.fire();
-            if (event.getCode() == KeyCode.LEFT) addParticipant.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  editEventName.requestFocus();
         });
-        editExpense.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.RIGHT) removeExpense.requestFocus();
-            if (event.getCode() == KeyCode.ENTER) editExpense.fire();
-            if (event.getCode() == KeyCode.LEFT) addExpense.requestFocus();
+        participantsTable.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.RIGHT)  addParticipant.requestFocus();
+            if (event.getCode() == KeyCode.LEFT)  comboBox.requestFocus();
+        });
+        comboBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN)  {
+                searchByComboBox.requestFocus();
+                event.consume();
+            }
+            if (event.getCode() == KeyCode.UP)  event.consume();
+            if (event.getCode() == KeyCode.ENTER)  comboBox.show();
+            if (event.getCode() == KeyCode.RIGHT)  searchByComboBox.requestFocus();
+        });
+        includingxButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) removeExpense.requestFocus();
+            if (event.getCode() == KeyCode.DOWN)  expensesTable.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT)  searchByComboBox.requestFocus();
+        });
+        searchByComboBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DOWN)  {
+                expensesTable.requestFocus();
+                event.consume();
+            }
+            if (event.getCode() == KeyCode.ENTER)  searchByComboBox.show();
+            if (event.getCode() == KeyCode.UP)  comboBox.requestFocus();
+        });
+        authorColumn.setResizable(false);
+        descriptionColumn.setResizable(false);
+        amountColumn.setResizable(false);
+        currencyColumn.setResizable(false);
+        dateColumn.setResizable(false);
+        participantsColumn2.setResizable(false);
+        typeColumn.setResizable(false);
+        participantsColumn.setResizable(false);
+        viewStatistics.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        viewDebts.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        addParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        editParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        removeParticipant.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
+        });
+        invite.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.LEFT) expensesTable.requestFocus();
         });
         removeExpense.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) removeExpense.fire();
-            if (event.getCode() == KeyCode.LEFT) editExpense.requestFocus();
+            if (event.getCode() == KeyCode.RIGHT) comboBox.requestFocus();
         });
     }
 
@@ -473,7 +513,7 @@ public class EventPageCtrl implements Controller{
            typeColumn.setText(resourceBundle.getString("typeText"));
            addParticipant.setText(resourceBundle.getString("addParticipantText"));
            viewStatistics.setText(resourceBundle.getString("viewStatisticsText"));
-           inviteButton.setText(resourceBundle.getString("inviteText"));
+           invite.setText(resourceBundle.getString("inviteText"));
            editExpense.setText(resourceBundle.getString("editExpenseText"));
            filterExpensesText.setText(resourceBundle.getString("filterExpensesText"));
            allButton.setText(resourceBundle.getString("allText"));
@@ -483,7 +523,7 @@ public class EventPageCtrl implements Controller{
            includingxButton.setText(resourceBundle.getString("includingText"));
            searchByComboBox.setPromptText(resourceBundle.getString("selectPersonText"));
            participantsTable.getColumns().get(0).setText(resourceBundle.getString("participantsText"));
-
+           removeParticipant.setText(resourceBundle.getString("removeParticipantText"));
            viewDebts.setText(resourceBundle.getString("viewDebtsText"));
            cancelButton.setText(resourceBundle.getString("homeText"));
 
@@ -508,7 +548,7 @@ public class EventPageCtrl implements Controller{
     private void backgroundImage() {
         Image image = new Image("Background_Photo.jpg");
         BackgroundSize backgroundSize =
-                new BackgroundSize(720, 450, true, true, true, false);
+                new BackgroundSize(864, 540, true, true, true, false);
         BackgroundImage backgroundImage = new BackgroundImage(image,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                 backgroundSize);
@@ -624,7 +664,8 @@ public class EventPageCtrl implements Controller{
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         AddParticipantCtrl addParticipantCtrl = new AddParticipantCtrl(server);
         server.setParticipantToBeModified(itemsToEdit.get(0).getParticipantID());
-        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), resourceBundle.getString("viewParticipantsText"));
+
+        mainCtrl.initialize(stage, addParticipantCtrl.getPair(), resourceBundle.getString("editParticipantText"));
     }
 
     private void addExpenseHandler(ActionEvent e) {
@@ -802,6 +843,102 @@ public class EventPageCtrl implements Controller{
         renderExpenseColumns(expensesFromX);
 
     }
+
+    /**
+     * This method handles the removal of participants in the database
+     */
+    public void removeParticipantHandler(List<Participant> participants){
+        VBox layout = new VBox(10);
+        Label label = new Label(resourceBundle.getString("removeParticipantQuestionText"));
+        Button cancelButton = new Button(resourceBundle.getString("cancelText"));
+
+        Button removeButton = new Button(resourceBundle.getString("removeText"));
+
+        // setting up the stage
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle(resourceBundle.getString("removeParticipantTitle"));
+
+        // set action for removing
+        removeButton.setOnAction(e -> {
+            popupStage.close();
+            // remove participants
+            for(Participant p: participantsTable.getSelectionModel()
+                    .getSelectedItems())
+            removeParticipantsFromDatabase(p);
+        });
+
+        // set action for cancelling the removal process
+        cancelButton.setOnAction(e -> {
+            server.setParticipantToBeModified(-1);
+            popupStage.close();
+        });
+
+        // Set up the layout
+        layout.getChildren().addAll(label, cancelButton, removeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(layout, 370, 150);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
+
+    /**
+     * This method deletes every debt related to this participant
+     * @param participant the participant
+     */
+    private void deleteParticipantDebts(Participant participant) {
+        Event event=server.getEvent(server.getCurrentId());
+        for(Debt d:event.getDebts())
+        {
+            if(d.getCreditor()==participant.getParticipantID() || d.getDebtor()==participant.getParticipantID())
+                server.deleteDebt(server.getCurrentId(), d.getDebtID());
+        }
+    }
+
+    /**
+     * This method will remove the provided list of participant from the database
+     * @param p participant to remove
+     */
+    private void removeParticipantsFromDatabase(Participant p) {
+            updateExpensesForParticipant(server.getCurrentId(), p);
+            deleteParticipantDebts(p);
+            server.deleteParticipantEvent(server.getCurrentId(), p.getParticipantID());
+            server.deleteParticipant(p.getParticipantID());
+    }
+
+    private void updateExpensesForParticipant(long eventId, Participant p) {
+        // get all expenses that this participant is in
+        List<Expense> expenses = server.getAllExpensesOfEvent(eventId);
+        for (Expense e: expenses){
+            // if the participant to delete was the author of an expense, delete that expense
+            if (e.getAuthor().equals(p)){
+                server.deleteExpenseFromEvent(eventId, e.getExpenseId());
+            }
+            // first check if participant is in the expense
+            if (e.getParticipants().contains(p)) {
+                // if it is the only one, delete the expense
+                if (e.getParticipants().size() == 1) {
+                    server.deleteExpenseFromEvent(eventId, e.getExpenseId());
+                }
+                //otherwise update expense's participants list and update the expense
+                else {
+                    // firstly resets old debts
+                    server.resetDebtsFromExpense(eventId, e.getExpenseId());
+                    List<Participant> pLeft = e.getParticipants();
+                    pLeft.remove(p);
+                    e.setParticipants(pLeft);
+                    // creates new debts
+                    server.createDebtsFromExpense(e);
+                    // since it is the same ID, we will only change the participant that was in the database
+                    // then update the expense, because updateExpense don t take care if debts
+                    server.updateExpense(e.getExpenseId(), e);
+                }
+            }
+        }
+    }
+
 
     /**
      * this method handles the functionality of removing visual entries in the table

@@ -16,19 +16,16 @@ public class MainDatabaseController {
 
     ParticipantEventRepository participantEventRepository;
     ExpenseRepository expenseRepository;
-    ParticipantExpenseRepository participantExpenseRepository;
     ExpenseEventRepository expenseEventRepository;
     public MainDatabaseController(EventRepository eventRepository,
                                   ParticipantRepository participantRepository,
                                   ParticipantEventRepository participantEventRepository,
                                   ExpenseRepository expenseRepository,
-                                  ExpenseEventRepository expenseEventRepository,
-                                  ParticipantExpenseRepository participantExpenseRepository){
+                                  ExpenseEventRepository expenseEventRepository){
         this.participantRepository = participantRepository;
         this.eventRepository = eventRepository;
         this.participantEventRepository = participantEventRepository;
         this.expenseRepository = expenseRepository;
-        this.participantExpenseRepository = participantExpenseRepository;
         this.expenseEventRepository = expenseEventRepository;
 
     }

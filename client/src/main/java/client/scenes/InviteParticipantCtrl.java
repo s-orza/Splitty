@@ -3,21 +3,21 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.MailStructure;
 import commons.Participant;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -25,13 +25,10 @@ import static client.scenes.MainPageCtrl.currentLocale;
 public class InviteParticipantCtrl implements Controller, Initializable {
 
   @FXML
-  private TableView<Participant> participants;
+  private TextField name;
 
   @FXML
-  private TableColumn<Participant, String> name;
-
-  @FXML
-  private TableColumn<Participant, String> email;
+  private TextField email;
 
   @FXML
   private Button invite;
@@ -40,15 +37,18 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   private Button cancel;
 
   @FXML
+  private Text nameText;
+
+  @FXML
   private Label inviteSelectParticipantsText;
 
   ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
   private Participant selectedParticipant;
 
+
   private Stage stage;
   ServerUtils server;
-  ObservableList<Participant> contents;
   @Inject
   public InviteParticipantCtrl(ServerUtils server) {
     this.server = server;
@@ -56,22 +56,36 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     toggleLanguage();
-    List <Participant> list =server.getAllParticipantsFromDatabase();
-    contents =  FXCollections.observableArrayList(
-            list.stream().filter(e -> e.getEmail().matches(
-                    "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") &&
-            !server.getParticipantsOfEvent(server.getCurrentId()).contains(e)).toList());
-    name.setCellValueFactory(new PropertyValueFactory<Participant, String>("name"));
-    email.setCellValueFactory(new PropertyValueFactory<Participant, String>("email"));
-    participants.setItems(contents);
-    participants.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-      selectedParticipant = participants.getSelectionModel().getSelectedItem();
+    keyShortCuts();
+  }
+
+  private void keyShortCuts() {
+    name.sceneProperty().addListener((observable, oldScene, newScene) -> {
+      if (newScene != null) {
+        Scene scene = (name.getScene());
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+          if (event.getCode() == KeyCode.ESCAPE) {
+            cancel.fire();
+          }
+        });
+      }
+    });
+    name.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN)  email.requestFocus();
+    });
+    email.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT||event.getCode() == KeyCode.DOWN)  invite.requestFocus();
+      if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP)  name.requestFocus();
+    });
+    invite.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.RIGHT)  cancel.requestFocus();
+      if (event.getCode() == KeyCode.LEFT||event.getCode() == KeyCode.UP)  email.requestFocus();
     });
   }
 
   private void toggleLanguage(){
     inviteSelectParticipantsText.setText(resourceBundle.getString("inviteSelectParticipantsText"));
-    name.setText(resourceBundle.getString("nameText"));
+    nameText.setText(resourceBundle.getString("nameText"));
     cancel.setText(resourceBundle.getString("cancelText"));
     invite.setText(resourceBundle.getString("inviteText"));
   }
@@ -82,16 +96,18 @@ public class InviteParticipantCtrl implements Controller, Initializable {
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
   public void invite(ActionEvent e){
-    if(server.sendMail(selectedParticipant.email,
+    if(!email.getText().matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")){
+      mainCtrl.popup("Incorrect email", "Warning", "OK");
+      return;
+    }
+    if(server.sendMail(email.getText(),
             new MailStructure("Please join my event!",
                     "I invite you to join my event at " +
                             server.getServerUrl() +
                             ".\n Use this code to join: " +
                             server.getCurrentId()))){
       mainCtrl.popup("Email sent succesfully", "Succes", "OK");
-      server.addParticipantEvent(selectedParticipant, server.getCurrentId());
-      contents.remove(selectedParticipant);
-      participants.setItems(contents);
+      server.addParticipantEvent(new Participant(name.getText(), email.getText(), "", ""), server.getCurrentId());
     }
     else{
       mainCtrl.popup("Email failed", "Warning", "OK");

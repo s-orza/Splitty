@@ -41,7 +41,7 @@ public class ParticipantController {
      * Get request for all the participants in the repository
      * @return a response with the list of all participants
      */
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<Participant>> getAllParticipants() {
         List<Participant> participants = repo.findAll();
         return ResponseEntity.ok(participants);
@@ -148,7 +148,7 @@ public class ParticipantController {
     public ResponseEntity<?> deleteParticipantById(@PathVariable Long id) {
         Optional<Participant> participant = repo.findById(id);
         if (participant.isPresent()) {
-            repo.delete(participant.get());
+            repo.deleteById(participant.get().getParticipantID());
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

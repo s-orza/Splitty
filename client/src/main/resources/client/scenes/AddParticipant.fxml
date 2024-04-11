@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
+
 <AnchorPane fx:id="backGround" prefHeight="450.0" prefWidth="720.0" stylesheets="@/client/css/AddParticipants.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantCtrl">
         <Label fx:id="nameText" layoutX="220.0" layoutY="177.0" styleClass="" text="Name" />
         <TextField fx:id="name" layoutX="301.0" layoutY="172.0" prefHeight="26.0" prefWidth="200.0" />
