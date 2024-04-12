@@ -12,10 +12,12 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -200,6 +202,10 @@ public class MainPageCtrl implements Controller, Initializable {
         e.printStackTrace();
       }
     });
+    //add flags to near the text
+    comboBox.setCellFactory(param -> new TextFlagCell());
+
+
 
     if(currentLocale.getLanguage().equals("en")){
       putFlag("enFlag.png");
@@ -207,21 +213,21 @@ public class MainPageCtrl implements Controller, Initializable {
               FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("English");
-    }
+    }else
     if(currentLocale.getLanguage().equals("nl")){
       putFlag("nlFlag.png");
       ObservableList<String> comboBoxItems =
               FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Dutch");
-    }
+    }else
     if(currentLocale.getLanguage().equals("de")){
       putFlag("deFlag.png");
       ObservableList<String> comboBoxItems =
               FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("German");
-    }
+    }else
     if(currentLocale.getLanguage().equals("es")){
       putFlag("esFlag.png");
       ObservableList<String> comboBoxItems =
@@ -253,7 +259,62 @@ public class MainPageCtrl implements Controller, Initializable {
       mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
     });
   }
+  protected static class TextFlagCell extends ListCell<String> {
+    private HBox container;
+    private Label textLabel;
+    private ImageView flag;
+    public TextFlagCell() {
+      container=new HBox();
+      textLabel=new Label();
+      //default flag.
+      Image editIcon = new Image(getClass().getResourceAsStream("/enFlag.png"));
+      flag=new ImageView(editIcon);
+      flag.setFitWidth(19);
+      flag.setFitHeight(14);
+      container.getChildren().addAll(textLabel,flag);
+      container.setHgrow(textLabel, Priority.ALWAYS);
+      container.setAlignment(Pos.CENTER_LEFT);
+      container.setSpacing(4);
+    }
+    @Override
+    protected void updateItem(String item, boolean empty) {
+      super.updateItem(item, empty);
 
+      if (empty || item == null) {
+        setText(null);
+        setGraphic(null);
+      } else
+      {
+        textLabel.setText(item);
+        try {
+          Image editIcon;
+          switch (item) {
+            case "Dutch":
+              editIcon = new Image(getClass().getResourceAsStream("/nlFlag.png"));
+              break;
+            case "German":
+              editIcon = new Image(getClass().getResourceAsStream("/deFlag.png"));
+              break;
+            case "Spanish":
+              editIcon = new Image(getClass().getResourceAsStream("/esFlag.png"));
+              break;
+            default:
+              editIcon = new Image(getClass().getResourceAsStream("/enFlag.png"));
+              break;
+          }
+          flag = new ImageView(editIcon);
+          flag.setFitWidth(19);
+          flag.setFitHeight(14);
+          container.getChildren().clear();
+          container.getChildren().addAll(textLabel, flag);
+          container.setHgrow(textLabel, Priority.ALWAYS);
+          container.setAlignment(Pos.CENTER_LEFT);
+          container.setSpacing(8);
+        }catch (Exception e){}
+        setGraphic(container);
+      }
+      }
+  }
   private void keyShortCuts() {
     recentList.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {

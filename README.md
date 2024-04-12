@@ -27,3 +27,4 @@ Icons link:
 - <a href="https://www.flaticon.com/free-icons/add" title="add icons">Add icons created by Becris - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/recycle-bin" title="recycle bin icons">Recycle bin icons created by Uniconlabs - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/write" title="write icons">Write icons created by Arkinasi - Flaticon</a>
+- And other icons from https://www.flaticon.com/free-icons/
