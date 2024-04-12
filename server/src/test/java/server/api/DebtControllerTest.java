@@ -163,13 +163,13 @@ public class DebtControllerTest {
         existingDebt.setDebtID(1L);
         when(mockRepo.existsById(existingDebt.getDebtID())).thenReturn(true);
         when(mockRepo.findById(existingDebt.getDebtID())).thenReturn(Optional.of(existingDebt));
-        // no idea what this below is
+
         doAnswer(invocation -> {
             Debt debt = invocation.getArgument(1);
             return true;
         }).when(mockDebtService).deleteDebt(eq(eventId), any(Debt.class));
 
-        // When and Then
+
         mockMvc.perform(delete("/api/events/debts")
                         .param("eventId", String.valueOf(eventId))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -197,7 +197,7 @@ public class DebtControllerTest {
     void settleDebtByID_WithValidId() throws Exception {
         long validId = 1L;
         Debt expectedDebt = new Debt(100, "USD", 1L, 2L);
-        expectedDebt.setDebtID(validId); // Set the ID to match the path variable
+        expectedDebt.setDebtID(validId);
         when(mockRepo.findById(validId)).thenReturn(Optional.of(expectedDebt));
 
         mockMvc.perform(delete("/api/events/debts/{id}/noEvent", validId))

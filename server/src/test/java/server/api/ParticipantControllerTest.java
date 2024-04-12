@@ -170,8 +170,6 @@ public class ParticipantControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-
-    // Example test for updating Email
     @Test
     public void updateParticipantEmail_Found() throws Exception {
         Long participantId = 1L;
