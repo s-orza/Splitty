@@ -249,7 +249,8 @@ public class ExpenseControllerTest {
         Tag expectedTag = new Tag(new TagId("NewName", eventId), "NewColor");
 
         when(mockTagRepo.existsById(new TagId(originalTagName, eventId))).thenReturn(true);
-        when(mockTagRepo.updateTag(originalTagName, eventId, newTag.getId().getName(), newTag.getColor())).thenReturn(1);
+        when(mockTagRepo.updateTag(originalTagName, eventId, newTag.getId().getName(), newTag.getColor()))
+                .thenReturn(1);
         when(mockTagRepo.getTagByIdFromEvent(newTag.getId().getName(), eventId)).thenReturn(expectedTag);
 
         mockMvc.perform(put("/api/expenses/tags")
