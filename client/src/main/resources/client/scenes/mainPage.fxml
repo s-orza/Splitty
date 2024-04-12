@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540" prefWidth="864.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
+<AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540" prefWidth="864.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
+
     <children>
 
         <ListView fx:id="recentList" layoutX="25.0" layoutY="192.0" prefHeight="321.0" prefWidth="345.0" />
@@ -22,11 +23,10 @@
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="email" layoutX="779.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail" text="Test email" />
-
         <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
         <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
         <Button fx:id="addLanguageButton" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" text="Add Language" />
+
         <Text fx:id="recentEventsLabel" layoutX="25.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recent Events" wrappingWidth="330.60000000000014">
             <font>
                 <Font name="System Bold" size="14.0" />
@@ -47,6 +47,15 @@
                 <Font name="Broadway" size="48.0" />
             </font>
         </Label>
+      <Button fx:id="email" layoutX="757.0" layoutY="20.0" mnemonicParsing="false" onAction="#sendMail" text="Test mail">
+         <graphic>
+            <ImageView fitHeight="20" fitWidth="20">
+               <image>
+                  <Image url="@/email.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
 
     </children>
 </AnchorPane>

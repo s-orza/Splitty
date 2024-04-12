@@ -1,7 +1,6 @@
 package server.service;
 
 import commons.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
@@ -12,18 +11,18 @@ import java.util.Properties;
 @Service
 public class EmailService {
   private JavaMailSender mailSender;
+  private String username;
 
-  @Value("$(spring.mail.username)")
-  private String fromMail;
   public void sendEmail(String mail, MailStructure mailStructure){
     mailSender = updateMailSender();
     SimpleMailMessage message = new SimpleMailMessage();
-    message.setFrom(fromMail);
+    message.setFrom(username);
     message.setSubject(mailStructure.getSubject());
     message.setText(mailStructure.getMessage());
     message.setTo(mail);
+    message.setCc(username);
     mailSender.send(message);
-    System.out.println("Sent email");
+    System.out.println("Sent email" + username + " -> " + mail);
   }
 
   public JavaMailSender updateMailSender(){
@@ -36,6 +35,7 @@ public class EmailService {
       String regex = "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$";
       if (newConfig.getEmail() != null && newConfig.getEmail().matches(regex)) {
         mailSender.setUsername(newConfig.getEmail());
+        username = newConfig.getEmail();
       }
       if (newConfig.getPassword() != null) {
         mailSender.setPassword(newConfig.getPassword());

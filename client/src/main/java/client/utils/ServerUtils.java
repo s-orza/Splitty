@@ -180,7 +180,8 @@ public class ServerUtils {
 				.get(new GenericType<Event>() {});
 	}
 
-	private static final ExecutorService EXEC2 = Executors.newSingleThreadExecutor();
+	private static final int THREAD_POOL_SIZE = 10;
+	private static final ExecutorService EXEC2 = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 	public void registerForUpdatesEvents(long eventId, Consumer<Event> consumer)
 	{
 		EXEC2.submit(() -> {
@@ -420,7 +421,6 @@ public class ServerUtils {
 		return new ArrayList<>();
 	}
 
-	private static final int THREAD_POOL_SIZE = 10;
 	private static final ExecutorService EXEC = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 	public void registerForUpdatesExpenses(long eventId, Consumer<Expense> consumer)
 	{

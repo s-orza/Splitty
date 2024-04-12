@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.ServerUtils;
 import commons.Debt;
 import commons.Event;
+import commons.MailStructure;
 import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,7 +50,7 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     private Button refreshButton;
 
-    @FXML
+    @javafx.fxml.FXML
     private Button filterButton;
 
     @FXML
@@ -85,7 +86,6 @@ public class DebtsCtrl implements Controller, Initializable {
 
         refresh();
         toggleLanguage();
-
         // initialize close button
         cancelButton.setOnAction(this::cancelHandler);
 
@@ -230,11 +230,26 @@ public class DebtsCtrl implements Controller, Initializable {
                 settleAction(d.getDebtID());
             });
 
+            Button inviteButton = new Button("Invite");
+            inviteButton.setOnAction(e-> {
+                invite(d);
+            });
+            mainCtrl.refresh();
+            if(mainCtrl.getConfig().getEmail() == null ||
+                    server.getParticipant(d.getDebtor()) == null ||
+                    !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$") ||
+                            !server.getParticipant(d.getDebtor()).getEmail().matches(
+                                    "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+                inviteButton.setStyle("-fx-opacity: 0.5;");
+                inviteButton.setDisable(true);
+                return;
+            }
+
             // debt Description
             String description = descriptionBuilder(server.getParticipantById(d.getCreditor()));
 
             VBox vbox = new VBox();
-            vbox.getChildren().addAll(new Label(description), button);
+            vbox.getChildren().addAll(new Label(description), button, inviteButton);
 
             TitledPane tp = new TitledPane(title, vbox);
             panes.add(tp);
@@ -243,6 +258,27 @@ public class DebtsCtrl implements Controller, Initializable {
         accordion.getPanes().setAll(panes);
     }
 
+
+    public void invite(Debt debt){
+        Participant debtor = server.getParticipant(debt.getDebtor());
+        Participant creditor = server.getParticipant(debt.getCreditor());
+
+        if(server.sendMail(debtor.email,
+                new MailStructure("Please settle your debt!",
+                        "You owe " + debt.getAmount() + " " +  debt.getCurrency() +
+                                " to " + creditor.getName() + ".\n" +
+                                "Please settle your debt with them as soon as possible!\n" +
+                                descriptionBuilder(creditor)+
+                                "\nSee your debt using the Splitty app and join your friends!\nIp: " +
+                                server.getServerUrl() +
+                                ".\nUse this code to join: " +
+                                server.getCurrentId()))){
+            mainCtrl.popup("Email sent succesfully", "Succes", "OK");
+        }
+        else{
+            mainCtrl.popup("Email failed", "Warning", "OK");
+        }
+    }
     public String descriptionBuilder(Participant p){
         // null and empty checks
         if(Objects.isNull(p.getBic()) ||

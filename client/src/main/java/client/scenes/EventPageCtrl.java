@@ -75,12 +75,10 @@ public class EventPageCtrl implements Controller{
     private ComboBox<String> searchByComboBox;
     @FXML
     private ToggleButton fromxButton;
-    private String fromxButtonText;
 
     @FXML
     private ToggleButton includingxButton;
-    private String includingxButtonText;
-    private String allText;
+
     @FXML
     Button addParticipant;
 
@@ -169,6 +167,10 @@ public class EventPageCtrl implements Controller{
     private void initializePage() {
         backgroundImage();
         keyShortCuts();
+        if(mainCtrl.getConfig().getEmail() == null ||
+                !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+            invite.setStyle("-fx-opacity: 0.5;");
+        }
         selectionMod=0;
         personId=0;
         //load from database:
@@ -1116,15 +1118,19 @@ public class EventPageCtrl implements Controller{
         mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
     }
 
-    public void inviteParticipant(ActionEvent event){
+    public void inviteParticipant(ActionEvent event) {
+        mainCtrl.refresh();
+        if (mainCtrl.getConfig().getEmail() == null ||
+                !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            mainCtrl.popup("Inccorect email specified.\n You can modify it in AppConfig", "Warning", "Ok");
+            return;
+        }
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         InviteParticipantCtrl inviteParticipantCtrl = new InviteParticipantCtrl(server);
         mainCtrl.initialize(stage, inviteParticipantCtrl.getPair(), inviteParticipantCtrl.getTitle());
     }
-
-
     //getter for swapping scenes
-    public Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair () {
         return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
     }
     public String getTitle(){
