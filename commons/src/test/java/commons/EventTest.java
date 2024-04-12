@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EventTest {
@@ -71,7 +72,6 @@ public class EventTest {
         d3.setDebtID(6);
         d4.setDebtID(6);
     }
-
     @Test
     public void eventConstructorTest(){
         assertNotNull(event);
@@ -120,11 +120,100 @@ public class EventTest {
 
         assertEquals(debts3,dm2.getDebts());
     }
+    @Test
+    void testNotNull()
+    {
+        Event ev =new Event();
+        assertNotNull(ev);
+    }
+    @Test
+    void getTest()
+    {
+        Event event1=new Event("Party");
+        assertEquals("Party",event1.getName());
+    }
+    @Test
+    void setTest()
+    {
+        Event event1=new Event("Party");
+        List<Tag> tags=new ArrayList<>();
+        tags.add(new Tag(new TagId("a",1),"red"));
+        event1.setEventId(1);
+        event1.setCreationDate(null);
+        event1.setParticipants(null);
+        event1.setActivityDate(null);
+        event1.setExpenses(null);
+        event1.setTags(tags);
+        event1.setName("ara");
+        assertNull(event1.getCreationDate());
+        assertNull(event1.getParticipants());
+        assertNull(event1.getActivityDate());
+        assertNull(event1.getExpenses());
+        assertEquals(1,event1.getEventId());
+        assertEquals("ara",event1.getName());
+        assertEquals("red",event1.getTags().get(0).getColor());
+
+    }
+    @Test
+    void addDebt1()
+    {
+        Event event1=new Event("Party");
+        Debt debt1=new Debt(1,"EUR",2,3);
+        Debt debt2=new Debt(1,"RON",2,3);
+        event1.addDebt(debt1);
+        assertNull(event1.addDebt(debt2));
+    }
+    @Test
+    void addDebt2()
+    {
+        Event event1=new Event("Party");
+        Debt debt1=new Debt(1,"EUR",2,3);
+        Debt debt2=new Debt(1,"EUR",2,3);
+        event1.addDebt(debt1);
+        assertEquals(2.0,event1.addDebt(debt2).getAmount());
+    }
+    @Test
+    void settleDebt1()
+    {
+        Event event1=new Event("Party");
+        Debt debt1=new Debt(1,"EUR",2,3);
+        assertNull(event1.settleDebt(debt1));
+    }
+    @Test
+    void toStringTest()
+    {
+        Event event1=new Event("Party");
+        //the date is a live date so we cannot test this in the usual way like
+        //Event{eventID=0, name='Party', participants=[], debts=[], expenses=[],
+        // creationDate=Thu Apr 11 00:40:47 CEST 2024, activityDate=Thu Apr 11 00:40:47 CEST 2024}
+        assertTrue(event1.toString().length()>20);
+    }
+    @Test
+    void activityTest()
+    {
+        Event event1=new Event("Party");
+        event1.activity();
+        assertNotNull(event1.getActivityDate());
+    }
+    @Test
+    void equalsTest()
+    {
+        Event event1=new Event("Party");
+        Event event2=new Event("Party");
+        assertEquals(event1,event2);
+    }
+    @Test
+    void hashCodeTest()
+    {
+        Event event1=new Event("Party");
+        Event event2=new Event("Party");
+        assertEquals(event1.hashCode(),event2.hashCode());
+    }
 
     @Test
     public void addNewDebtTest(){
         Event dm = new Event("name");
-        dm.addDebt(1.33,"EUR",c,a);
+        dm.addDebt(new Debt(1.33,"EUR",c,a));
 
 
         List<Debt> debts2 = new ArrayList<>();

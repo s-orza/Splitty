@@ -125,8 +125,8 @@ public class AdminPageCtrl implements Controller, Initializable {
     try{
         mapper.writeValue(writer, event);
         String json  = writer.toString();
-        String filePath = new File("").getAbsolutePath().replace("\\", "/");
-        filePath += ("/EventsBackup/");
+        String filePath = new File("").getAbsolutePath();
+        filePath += ("\\EventsBackup\\");
         String fileName = event.getName() + ".json";
         //Open file
         // FileOutputStream Class Used
@@ -145,8 +145,8 @@ public class AdminPageCtrl implements Controller, Initializable {
   public void importEvent(ActionEvent actionEvent) {
     ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     FileChooser fc = new FileChooser();
-    String filePath = new File("").getAbsolutePath().replace("\\", "/");
-    filePath += ("/EventsBackup/");
+    String filePath = new File("").getAbsolutePath();
+    filePath += ("\\EventsBackup\\");
     fc.setInitialDirectory(new File(filePath));
     File selectedFile = fc.showOpenDialog(null);
     if(selectedFile !=null){

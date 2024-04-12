@@ -37,7 +37,7 @@ public class TagId implements Serializable {
     @Override
     public String toString() {
         return "TagId{" +
-                "name='"+name+", eventId="+eventId +'}';
+                "name='"+name+"', eventId="+eventId +'}';
     }
 
     @Override

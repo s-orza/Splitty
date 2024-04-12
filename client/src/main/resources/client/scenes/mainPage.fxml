@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
 <AnchorPane fx:id="backGround" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540" prefWidth="864.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MainPageCtrl">
+
     <children>
 
         <ListView fx:id="recentList" layoutX="25.0" layoutY="192.0" prefHeight="321.0" prefWidth="345.0" />
@@ -21,18 +16,18 @@
 
         <TextField id="createInput" fx:id="createInput" layoutX="593.0" layoutY="265.0" />
         <Button fx:id="createButton" alignment="CENTER_RIGHT" layoutX="776.0" layoutY="265.0" mnemonicParsing="false" onAction="#createEvent" text="Create" textAlignment="CENTER" />
-        <Button fx:id="adminButton" layoutX="776.0" layoutY="498.0" mnemonicParsing="false" onAction="#openAdmin" text="Admin">
+        <Button fx:id="adminButton" layoutX="688.0" layoutY="485.0" mnemonicParsing="false" onAction="#openAdmin" prefHeight="28.0" prefWidth="136.0" text="Admin">
             <graphic>
                 <ImageView fitHeight="20" fitWidth="20">
                     <Image url="@/admin.png" />
                 </ImageView>
             </graphic>
         </Button>
-
         <Button fx:id="flagButton" layoutX="14.0" layoutY="20.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="84.0" />
         <ComboBox fx:id="comboBox" layoutX="14.0" layoutY="82.0" prefWidth="150.0" />
         <Button fx:id="addLanguageButton" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" text="Add Language" />
-        <Text fx:id="recentEventsLabel" layoutX="25.0" layoutY="180.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recent Events" wrappingWidth="149.60000000000014">
+
+        <Text fx:id="recentEventsLabel" layoutX="25.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recent Events" wrappingWidth="330.60000000000014">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -56,7 +51,7 @@
          <graphic>
             <ImageView fitHeight="20" fitWidth="20">
                <image>
-                  <Image url="@email.png" />
+                  <Image url="@/email.png" />
                </image>
             </ImageView>
          </graphic>

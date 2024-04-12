@@ -175,8 +175,8 @@ public class MainCtrl {
             mapper.writeValue(writer, savedConfig);
             String json = writer.toString();
             System.out.println(json);
-            String filePath = new File("").getAbsolutePath().replace("\\", "/");
-            filePath += "/";
+            String filePath = new File("").getAbsolutePath();
+            filePath += "\\";
             //Open file
             // FileOutputStream Class Used
             FileOutputStream fileOutputStream = new FileOutputStream(filePath + "App-Config.json");

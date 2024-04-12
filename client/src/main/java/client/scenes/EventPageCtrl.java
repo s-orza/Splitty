@@ -9,6 +9,7 @@ import javafx.animation.SequentialTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -21,6 +22,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -75,12 +77,10 @@ public class EventPageCtrl implements Controller{
     private ComboBox<String> searchByComboBox;
     @FXML
     private ToggleButton fromxButton;
-    private String fromxButtonText;
 
     @FXML
     private ToggleButton includingxButton;
-    private String includingxButtonText;
-    private String allText;
+
     @FXML
     Button addParticipant;
 
@@ -151,14 +151,7 @@ public class EventPageCtrl implements Controller{
      * again this will be removed and will stay just for having something in the tables
      */
     private ObservableList<Participant> participantsData;
-                    /*
-                    new ParticipantTest("Ivan"),
-                    new ParticipantTest("David"),
-                    new ParticipantTest("Serban"),
-                    new ParticipantTest("Shahar"),
-                    new ParticipantTest("Olav"),
-                    new ParticipantTest("Oliwer")
-                     */
+
     private ObservableList<String> participantsToSelectFrom;
     private int selectionMod;//0->all, 1->by author,2->including
     private long personId;
@@ -319,21 +312,21 @@ public class EventPageCtrl implements Controller{
                     FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("English");
-        }
+        }else
         if(currentLocale.getLanguage().equals("nl")){
             putFlag("nlFlag.png");
             ObservableList<String> comboBoxItems =
                     FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("Dutch");
-        }
+        }else
         if(currentLocale.getLanguage().equals("de")){
             putFlag("deFlag.png");
             ObservableList<String> comboBoxItems =
                     FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
             comboBox.setItems(comboBoxItems);
             comboBox.setPromptText("German");
-        }
+        }else
         if(currentLocale.getLanguage().equals("es")){
             putFlag("esFlag.png");
             ObservableList<String> comboBoxItems =
@@ -378,7 +371,65 @@ public class EventPageCtrl implements Controller{
         viewDebts.setOnAction(e->viewDebtsHandler(e));
         viewStatistics.setOnAction(e->viewStatisticsHandler(e));
     }
+    private void refreshParticipantsAfterDelete(Participant deletedP)
+    {
+        participantsData.remove(deletedP);
+        //regarding searching options...
+        //update the indexes for searching
+        participantsToSelectFrom=FXCollections.observableArrayList();
+        indexesToIds=new HashMap<>();
+        int k=0;
+        for(Participant p:participantsData)
+        {
+            participantsToSelectFrom.add(p.getName());
+            //map the position in the selection combo box to ids
+            indexesToIds.put(k,p.getParticipantID());
+            k++;
+        }
 
+        //in this way, the personWasSelected() won t be call when we set the new items to the searchByComboBox
+        searchByComboBox.setOnAction(actionEvent->{});
+        String oldValue=searchByComboBox.getValue();
+        searchByComboBox.setItems(participantsToSelectFrom);
+        //if we deleted the selected person
+        if(personId==deletedP.getParticipantID())
+        {
+            fromxButton.setText("From ?");
+            fromxButton.setSelected(false);
+            includingxButton.setText("Including ?");
+            includingxButton.setSelected(false);
+            searchByComboBox.setValue(null);
+
+            //reset to "select all"
+            personId=0;
+            selectionMod=0;
+            allButton.fire();
+            allButton.setSelected(true);
+            //restore
+            searchByComboBox.setOnAction(actionEvent->personWasSelected());
+        }
+        else
+        {
+            //restore
+            searchByComboBox.setValue(oldValue);
+            //I did this because we need to refresh the table (maybe we deleted an participant that were
+            //in an expense
+            switch (selectionMod)
+            {
+                case 1:
+                    searchFromX(new ActionEvent());
+                    break;
+                case 2:
+                    searchIncludingX(new ActionEvent());
+                    break;
+                default:
+                    searchAll(new ActionEvent());
+                    break;
+            }
+            //this line is very important to be executed
+            searchByComboBox.setOnAction(actionEvent->personWasSelected());
+        }
+    }
     private void keyShortCuts() {
         cancelButton.requestFocus();
 
@@ -767,6 +818,9 @@ public class EventPageCtrl implements Controller{
     @FXML
     void personWasSelected()
     {
+        //extra safe measurement
+        if(indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex())==null)
+            return;
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         Participant x;
         x=server.getParticipant(id);
@@ -786,6 +840,7 @@ public class EventPageCtrl implements Controller{
     @FXML
     void searchAll(ActionEvent event) {
         //show all expenses
+        System.out.println("all");
         selectionMod=0;
         personId=0;
         expenseData = FXCollections.observableArrayList(server.getAllExpensesOfEvent(server.getCurrentId()));
@@ -801,6 +856,9 @@ public class EventPageCtrl implements Controller{
             //popUpWarningText("Please select the person!");
             return;
         }
+        //extra safe measurement
+        if(indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex())==null)
+            return;
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         Participant x;
         x=server.getParticipant(id);
@@ -829,6 +887,10 @@ public class EventPageCtrl implements Controller{
                     resourceBundle.getString("warningText"), "Ok");
             return;
         }
+
+        //extra safe measurement
+        if(indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex())==null)
+            return;
         long id=indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         Participant x;
         x=server.getParticipant(id);
@@ -867,9 +929,10 @@ public class EventPageCtrl implements Controller{
         removeButton.setOnAction(e -> {
             popupStage.close();
             // remove participants
-            for(Participant p: participantsTable.getSelectionModel()
-                    .getSelectedItems())
-            removeParticipantsFromDatabase(p);
+           // for(Participant p: participantsTable.getSelectionModel()
+             //       .getSelectedItems())
+            removeParticipantsFromDatabase(participantsTable.getSelectionModel().getSelectedItems().get(0));
+            refreshParticipantsAfterDelete(participantsTable.getSelectionModel().getSelectedItems().get(0));
         });
 
         // set action for cancelling the removal process
@@ -1057,10 +1120,10 @@ public class EventPageCtrl implements Controller{
         mainCtrl.initialize(stage, statisticsCtrl.getPair(), statisticsCtrl.getTitle());
     }
 
-    public void inviteParticipant(ActionEvent event){
+    public void inviteParticipant(ActionEvent event) {
         mainCtrl.refresh();
-        if(mainCtrl.getConfig().getEmail() == null ||
-                !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+        if (mainCtrl.getConfig().getEmail() == null ||
+                !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
             mainCtrl.popup("Inccorect email specified.\n You can modify it in AppConfig", "Warning", "Ok");
             return;
         }
@@ -1068,10 +1131,8 @@ public class EventPageCtrl implements Controller{
         InviteParticipantCtrl inviteParticipantCtrl = new InviteParticipantCtrl(server);
         mainCtrl.initialize(stage, inviteParticipantCtrl.getPair(), inviteParticipantCtrl.getTitle());
     }
-
-
     //getter for swapping scenes
-    public Pair<Controller, Parent> getPair() {
+    public Pair<Controller, Parent> getPair () {
         return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
     }
     public String getTitle(){

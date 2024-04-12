@@ -47,6 +47,17 @@ class TagTest {
         assertEquals(s,"Tag{food, 1, #001234}");
     }
     @Test
+    void testToString2() {
+        a1.setId(null);
+        String s=a1.toString();
+        assertEquals(s,"Tag->null+#001234");
+    }
+    @Test
+    void testToString3() {
+        String s=a1.getId().toString();
+        assertEquals(s,"TagId{name='food', eventId=1}");
+    }
+    @Test
     void testEquals() {
         Tag a2=new Tag(new TagId("food",1),"#001234");
         assertEquals(a1,a2);
@@ -56,5 +67,18 @@ class TagTest {
     void testHashCode() {
         Tag a2=new Tag(new TagId("food",1),"#001234");
         assertEquals(a1.hashCode(),a2.hashCode());
+    }
+    @Test
+    void testNotNull()
+    {
+        TagId id =new TagId();
+        assertNotNull(id);
+    }
+    @Test
+    void testSetName()
+    {
+        TagId id =new TagId("aur",2);
+        id.setName("iron");
+        assertEquals("iron",id.getName());
     }
 }

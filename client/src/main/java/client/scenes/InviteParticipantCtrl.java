@@ -122,7 +122,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   private void backgroundImage() {
     Image image = new Image("Background_Photo.jpg");
     BackgroundSize backgroundSize =
-            new BackgroundSize(720, 450, true, true, true, false);
+            new BackgroundSize(360, 275, true, true, true, false);
     BackgroundImage backgroundImage = new BackgroundImage(image,
             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
             backgroundSize);

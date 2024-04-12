@@ -24,10 +24,6 @@ public class ParticipantEvent {
     public ParticipantEvent() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getId() {
         return id;
     }

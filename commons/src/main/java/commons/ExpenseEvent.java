@@ -43,7 +43,7 @@ public class ExpenseEvent {
         return eventId;
     }
 
-    public void setParticipantId(long eventId) {
+    public void setEventId(long eventId) {
         this.eventId = eventId;
     }
 

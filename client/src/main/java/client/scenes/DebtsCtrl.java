@@ -50,6 +50,7 @@ public class DebtsCtrl implements Controller, Initializable {
     @FXML
     private Button refreshButton;
 
+    @javafx.fxml.FXML
     private Button filterButton;
 
     @FXML
