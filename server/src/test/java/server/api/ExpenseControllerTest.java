@@ -261,7 +261,8 @@ public class ExpenseControllerTest {
                 .andExpect(jsonPath("$.id.name").value(newTag.getId().getName()))
                 .andExpect(jsonPath("$.color").value(newTag.getColor()));
 
-        verify(mockTagRepo, times(1)).updateTag(originalTagName, eventId, newTag.getId().getName(), newTag.getColor());
+        verify(mockTagRepo, times(1)).updateTag(originalTagName, eventId, newTag.getId().getName(),
+                newTag.getColor());
         verify(mockTagRepo, times(1)).getTagByIdFromEvent(newTag.getId().getName(), eventId);
     }
 }

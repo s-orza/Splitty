@@ -34,7 +34,8 @@ public class ForeignCurrencyControllerTest {
         String to = "EUR";
         double expectedRate = 0.85;
 
-        when(currencyService.getExchangeRateAndUpdateCacheFile(anyString(), anyString(), anyString())).thenReturn(expectedRate);
+        when(currencyService.getExchangeRateAndUpdateCacheFile(anyString(), anyString(), anyString()))
+                .thenReturn(expectedRate);
 
         mockMvc.perform(get("/api/foreignCurrencies/{date}?from={from}&to={to}", date, from, to))
                 .andExpect(status().isOk())
@@ -48,7 +49,8 @@ public class ForeignCurrencyControllerTest {
         String from = "USD";
         String to = "EUR";
 
-        when(currencyService.getExchangeRateAndUpdateCacheFile(anyString(), anyString(), anyString())).thenReturn(-1.0);
+        when(currencyService.getExchangeRateAndUpdateCacheFile(anyString(), anyString(),
+                anyString())).thenReturn(-1.0);
 
         mockMvc.perform(get("/api/foreignCurrencies/{date}?from={from}&to={to}", date, from, to))
                 .andExpect(status().isInternalServerError());
