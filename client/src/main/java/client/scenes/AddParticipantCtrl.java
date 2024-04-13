@@ -54,6 +54,8 @@ public class AddParticipantCtrl implements Controller {
     @FXML
     private Label addParticipantText;
     @FXML
+    private Label editParticipantText;
+    @FXML
     private Label nameText;
     private static Alert errorAlert;
     private Participant participantToBeModified;
@@ -76,9 +78,14 @@ public class AddParticipantCtrl implements Controller {
         if (server.getParticipantIdToModify() != -1) {
             // if we are editing a participant
             participantToBeModified = server.getParticipantToBeModified();
+            // switch texts
+            addParticipantText.setVisible(false);
+            editParticipantText.setVisible(true);
             reloadParticipant();
         } else {
             // if we are adding a participant
+            editParticipantText.setVisible(false);
+            addParticipantText.setVisible(true);
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
