@@ -7,9 +7,14 @@ In the add/edit page you can add tags with a name and a color. After you click t
 the tag will appear in the list. You can edit tags in the page with statistic.
 **You cannot delete** the tag with the name **"other"** or to change its name, but you can change its color.
 
+For foreign currencies:
+- We created our fake exchange rates API converter that uses the hashcode of a date as a seed for a Random to create random exchange rates. (In this way we make sure that our API gives the same rate if you call it twice with the same parameters). It also ensures that rate(A, B)=1/rate(B, A). The rates are based on real exchange rates from 04-04-2024 but with a  +/-10% adjustment.
+- Our application interacts with this API as if it is a real one taken from the internet. We created a local cache file in the server (stored in the server/build/resources) that caches the exchange rates that it gets from the API. When the rate from A/B is asked for a specific date, after we obtain it we cache it together with the rate B/A for that day. In this way, we increase the CACHE HIT ratio and we reduce the calls for this API.
+- Fun fact: our API can give exchange rates for any date, so it can "predict" rates from the future.
+
 
 For keyboard shortcuts:
-All functions are accessable with keyboard shortcuts. You move around all pages with left, right, up and down.
+All functions are accessible with keyboard shortcuts. You move around all pages with left, right, up and down.
 In a table you go up and down through the values and right and left to exit it.
 You can even use tab to go through the page. If you click enter it fires the function of what you are focused on.
 Escape key on all pages goes back to the previous page.

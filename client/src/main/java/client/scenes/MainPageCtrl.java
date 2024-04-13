@@ -6,6 +6,8 @@ import commons.Event;
 
 
 import commons.MailStructure;
+import commons.Tag;
+import commons.TagId;
 import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -117,6 +119,20 @@ public class MainPageCtrl implements Controller, Initializable {
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
     server.connect(newEvent.getEventId());
     mainCtrl.addRecent(server.getCurrentId());
+    //adding the 4 tags that always need to be
+
+    if(!server.checkIfTagExists("other", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("other",server.getCurrentId()),"#e0e0e0"));
+
+    if(!server.checkIfTagExists("food", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("food",server.getCurrentId()),"#00ff00"));
+
+    if(!server.checkIfTagExists("entrance fees", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("entrance fees",server.getCurrentId()),"#0000ff"));
+
+    if(!server.checkIfTagExists("travel", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("travel",server.getCurrentId()),"#ff0000"));
+
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
@@ -124,7 +140,21 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void joinEvent(ActionEvent event) {
     try {
-      server.connect(Long.parseLong(joinInput.getText()));
+      //avoid connecting if there are problems
+      if(joinInput.getText()==null || joinInput.getText().isEmpty())
+      {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+        mainCtrl.popup(resourceBundle.getString("eventNotFound"),"Error","Ok");
+        return;
+      }
+      long id=Long.parseLong(joinInput.getText());
+      if(server.getEvent(id)==null)
+      {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+        mainCtrl.popup(resourceBundle.getString("eventNotFound"),"Error","Ok");
+        return;
+      }
+      server.connect(id);
     }catch (Exception e){
       e.printStackTrace();
       return;
@@ -257,6 +287,12 @@ public class MainPageCtrl implements Controller, Initializable {
       stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
       LanguageTemplateCtrl languageTemplateCtrl = new LanguageTemplateCtrl(server);
       mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
+    });
+    //to accept only numbers.
+    joinInput.textProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue.matches("\\d*(\\d*)?")) {
+        joinInput.setText(oldValue);
+      }
     });
   }
   protected static class TextFlagCell extends ListCell<String> {

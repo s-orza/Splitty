@@ -117,18 +117,6 @@ public class StatisticsCtrl implements Controller, Initializable {
         keyShortCuts();
         toggleLanguage();
         selectedTagForEditing=null;
-        long eventId= server.getCurrentId();
-        if(!server.checkIfTagExists("other", eventId))
-            server.addTag(new Tag(new TagId("other",eventId),"#e0e0e0"));
-
-        if(!server.checkIfTagExists("food", eventId))
-            server.addTag(new Tag(new TagId("food",eventId),"#00ff00"));
-
-        if(!server.checkIfTagExists("entrance fees", eventId))
-            server.addTag(new Tag(new TagId("entrance fees",eventId),"#0000ff"));
-
-        if(!server.checkIfTagExists("travel", eventId))
-            server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
 
         server.registerForMessages("/topic/expenses", Tag.class, t -> {
             tagsListView.getItems().add(t.getId().getName());
