@@ -160,12 +160,6 @@ public class DebtsCtrl implements Controller, Initializable {
         searchByComboBox.setItems(participantNames);
     }
 
-
-    public void connectEvent(Event ev){
-        currentEvent = ev;
-        System.out.println("Connecting to " + currentEvent);
-    }
-
     private void cancelHandler(ActionEvent e){
         System.out.println("closed DebtsCtrl");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
@@ -242,7 +236,6 @@ public class DebtsCtrl implements Controller, Initializable {
                                     "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
                 inviteButton.setStyle("-fx-opacity: 0.5;");
                 inviteButton.setDisable(true);
-                return;
             }
 
             // debt Description
