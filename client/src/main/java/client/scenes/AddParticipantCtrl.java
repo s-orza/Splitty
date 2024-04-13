@@ -51,12 +51,6 @@ public class AddParticipantCtrl implements Controller {
     @FXML
     private Label nameLabel;
     @FXML
-    private Label emailLabel;
-    @FXML
-    private Label ibanLabel;
-    @FXML
-    private Label bicLabel;
-    @FXML
     private AnchorPane backGround;
     @FXML
     private Label addParticipantTitle;
