@@ -136,7 +136,8 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") + filePath + fileName,resourceBundle.getString("Success"), "OK");
+        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") +
+                filePath + fileName,resourceBundle.getString("Success"), "OK");
       }
     catch(Exception exception){
       exception.printStackTrace();

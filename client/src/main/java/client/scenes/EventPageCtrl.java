@@ -1012,7 +1012,8 @@ public class EventPageCtrl implements Controller{
 
     private void removeExpenseHandler(){
         if(expensesTable.getSelectionModel().getSelectedItems().isEmpty()){
-            mainCtrl.popup(resourceBundle.getString("expenseSelectWarningText"),resourceBundle.getString("warningText"), "Ok");
+            mainCtrl.popup(resourceBundle.getString("expenseSelectWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
             return;
         }
         VBox layout = new VBox(10);
@@ -1043,7 +1044,8 @@ public class EventPageCtrl implements Controller{
             expenseData.removeAll(itemsToRemove);
             //I did this to be sure I don't create any problems to the websocket
             removeExpensesFromDatabase(originalItems);
-            mainCtrl.popup(resourceBundle.getString("deleteExpenseSuccessfullyText"), resourceBundle.getString("success"), "ok");
+            mainCtrl.popup(resourceBundle.getString("deleteExpenseSuccessfullyText"),
+                    resourceBundle.getString("success"), "ok");
         });
 
         cancelButton.setOnAction(e -> {

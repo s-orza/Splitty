@@ -666,7 +666,8 @@ public class AddExpenseCtrl implements Controller{
         server.setExpenseToBeModified(-1);
 
 
-        mainCtrl.popup(resourceBundle.getString("createdExpenseSuccessfullyText"), resourceBundle.getString("success"), "Ok");
+        mainCtrl.popup(resourceBundle.getString("createdExpenseSuccessfullyText"),
+                resourceBundle.getString("success"), "Ok");
 
 
         //go back to the event page
