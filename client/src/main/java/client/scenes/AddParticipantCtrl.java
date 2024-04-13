@@ -262,15 +262,18 @@ public class AddParticipantCtrl implements Controller {
             mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
             return false;
         }
-        // working, but a hassle to deal with. Re-enable before sending it!
-//        if (!isValidIBAN(iban.getText())){
-//            mainCtrl.popup("Provided IBAN is not valid!", "Error", "Ok");
-//            return false;
-//        }
-//        if(!isValidBIC(bic.getText())){
-//            mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
-//            return false;
-//        }
+        if (!iban.getText().isEmpty()) {
+            if (!isValidIBAN(iban.getText())) {
+                mainCtrl.popup("Provided IBAN is not valid!", "Error", "Ok");
+                return false;
+            }
+        }
+        if (!bic.getText().isEmpty()) {
+            if (!isValidBIC(bic.getText())) {
+                mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
+                return false;
+            }
+        }
         return true;
     }
 
