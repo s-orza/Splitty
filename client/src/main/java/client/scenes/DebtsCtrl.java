@@ -242,7 +242,6 @@ public class DebtsCtrl implements Controller, Initializable {
                                     "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
                 inviteButton.setStyle("-fx-opacity: 0.5;");
                 inviteButton.setDisable(true);
-                return;
             }
 
             // debt Description
@@ -329,7 +328,7 @@ public class DebtsCtrl implements Controller, Initializable {
         return FXML.load(Controller.class, "client", "scenes", "Debts.fxml");
     }
     public String getTitle(){
-        return "Debts Page";
+        return resourceBundle.getString("debtsText");
     }
 
     /**

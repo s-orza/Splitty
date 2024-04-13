@@ -172,7 +172,7 @@ public class AddParticipantCtrl implements Controller {
         try {
             PauseTransition delay = new PauseTransition(Duration.seconds(1));
             delay.setOnFinished(e -> {
-                showPopup();
+                mainCtrl.popup(resourceBundle.getString("participantAdded"), resourceBundle.getString("success"), "OK");
             });
             delay.play();
             String destination = "/app/participant/event/" + server.getCurrentId();
@@ -181,16 +181,6 @@ public class AddParticipantCtrl implements Controller {
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
         }
-    }
-
-    private void showPopup() {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Added Participant Successfully");
-        VBox layout = new VBox(10);
-        Scene scene = new Scene(layout, 350, 20);
-        popupStage.setScene(scene);
-        popupStage.show();
     }
 
     @FXML
@@ -212,7 +202,7 @@ public class AddParticipantCtrl implements Controller {
             // Set up the stage
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setTitle("Warning");
+            popupStage.setTitle(resourceBundle.getString("warningText"));
 
 
             okButton.setOnAction(e -> {
@@ -254,23 +244,23 @@ public class AddParticipantCtrl implements Controller {
     private boolean checkFieldsCondition() {
         // check if any fields are empty
         if(name.getText().isEmpty()||email.getText().isEmpty()){
-            mainCtrl.popup("Name or/and email are empty!\nMake sure you fill them!", "Error: empty fields",
+            mainCtrl.popup(resourceBundle.getString("notValidEmail"), resourceBundle.getString("warningText"),
                     "Ok");
             return false;
         }
         if (!isValidEmail(email.getText())){
-            mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
+            mainCtrl.popup(resourceBundle.getString("notValidEmail"), resourceBundle.getString("warningText"), "Ok");
             return false;
         }
         // working, but a hassle to deal with. Re-enable before sending it!
-//        if (!isValidIBAN(iban.getText())){
-//            mainCtrl.popup("Provided IBAN is not valid!", "Error", "Ok");
-//            return false;
-//        }
-//        if(!isValidBIC(bic.getText())){
-//            mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
-//            return false;
-//        }
+        if (!isValidIBAN(iban.getText())){
+            mainCtrl.popup(resourceBundle.getString("notValidIBAN"), resourceBundle.getString("warningText"), "Ok");
+            return false;
+        }
+      if(!isValidBIC(bic.getText())){
+            mainCtrl.popup(resourceBundle.getString("notValidBIC"), resourceBundle.getString("warningText"), "Ok");
+            return false;
+      }
         return true;
     }
 
@@ -341,7 +331,7 @@ public class AddParticipantCtrl implements Controller {
     }
 
     public String getTitle() {
-        return "Add Participant";
+        return resourceBundle.getString("addParticipantText");
     }
 }
 

@@ -136,7 +136,7 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") + filePath + fileName, "Success", "OK");
+        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") + filePath + fileName,resourceBundle.getString("Success"), "OK");
       }
     catch(Exception exception){
       exception.printStackTrace();
@@ -241,7 +241,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     // Set up the stage
     Stage popupStage = new Stage();
     popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle("Remove Event");
+    popupStage.setTitle(resourceBundle.getString("removeEventText"));
 
     // This removes the entries from the file if pressed
     removeButton.setOnAction(event -> {
@@ -350,7 +350,6 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   private void toggleLanguage(){
     ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
-
     tableActivity.setText(resourceBundle.getString("lastActivityText"));
     tableDate.setText(resourceBundle.getString("creationDateText"));
     tableTitle.setText(resourceBundle.getString("titleText"));

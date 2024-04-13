@@ -86,7 +86,7 @@ public class MainPageCtrl implements Controller, Initializable {
     if(mainCtrl.getConfig().getEmail() == null ||
     !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
       email.setStyle("-fx-opacity: 0.5;");
-      mainCtrl.popup("Inccorect email specified. You can modify it in AppConfig", "Warning", "Ok");
+      mainCtrl.popup("Inccorect email specified.\n You can modify it in AppConfig", "Warning", "Ok");
       return;
     }
     email.setStyle("-fx-opacity: 1;");
@@ -406,7 +406,6 @@ public class MainPageCtrl implements Controller, Initializable {
     };
     ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale, control);
     ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
-
       createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
       joinEventLabel.setText(resourceBundle.getString("joinEventText"));
       joinButton.setText(resourceBundle.getString("joinText"));
@@ -414,6 +413,7 @@ public class MainPageCtrl implements Controller, Initializable {
       recentEventsLabel.setText(resourceBundle.getString("recentEventsText"));
       createButton.setText(resourceBundle.getString("createText"));
       addLanguageButton.setText(resourceBundle.getString("addLanguageText"));
+      email.setText(resourceBundle.getString("testMail"));
   }
 
   private void putFlag(String path){

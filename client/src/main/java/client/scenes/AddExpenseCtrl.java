@@ -666,22 +666,13 @@ public class AddExpenseCtrl implements Controller{
         server.setExpenseToBeModified(-1);
 
 
-        showPopup();
+        mainCtrl.popup(resourceBundle.getString("createdExpenseSuccessfullyText"), resourceBundle.getString("success"), "Ok");
 
 
         //go back to the event page
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
-    }
-    private void showPopup() {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle(resourceBundle.getString("createdExpenseSuccessfullyText"));
-        VBox layout = new VBox(10);
-        Scene scene = new Scene(layout, 350, 20);
-        popupStage.setScene(scene);
-        popupStage.show();
     }
     private Expense takeExpenseFromFields()
     {
@@ -740,7 +731,7 @@ public class AddExpenseCtrl implements Controller{
             // Set up the stage
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setTitle("Warning");
+            popupStage.setTitle(resourceBundle.getString("WarningText"));
 
 
             okButton.setOnAction(e -> {
@@ -927,6 +918,6 @@ public class AddExpenseCtrl implements Controller{
         return FXML.load(Controller.class, "client", "scenes", "AddExpense.fxml");
     }
     public String getTitle(){
-        return "Add Expense";
+        return resourceBundle.getString("addExpenseText");
     }
 }
