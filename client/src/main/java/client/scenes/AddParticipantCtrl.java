@@ -253,14 +253,16 @@ public class AddParticipantCtrl implements Controller {
      */
     private boolean checkFieldsCondition() {
         // check if any fields are empty
-        if(name.getText().isEmpty()||email.getText().isEmpty()){
-            mainCtrl.popup("Name or/and email are empty!\nMake sure you fill them!", "Error: empty fields",
+        if(name.getText().isEmpty()){
+            mainCtrl.popup("Name cannot be empty!", "Error: empty fields",
                     "Ok");
             return false;
         }
-        if (!isValidEmail(email.getText())){
-            mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
-            return false;
+        if (!email.getText().isEmpty()) {
+            if (!isValidEmail(email.getText())) {
+                mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
+                return false;
+            }
         }
         if (!iban.getText().isEmpty()) {
             if (!isValidIBAN(iban.getText())) {
