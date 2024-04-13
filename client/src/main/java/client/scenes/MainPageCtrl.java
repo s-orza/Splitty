@@ -104,12 +104,6 @@ public class MainPageCtrl implements Controller, Initializable {
       return;
     }
     Event newEvent = new Event(createInput.getText());
-    for(Event event : server.getEvents()) {
-      if (event.getName().equals(newEvent.getName())) {
-        mainCtrl.popup("Event already exists!", "Warning!", "OK");
-        return;
-      }
-    }
     server.createEvent(newEvent);
     newEvent = server.getEvents().getLast();
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);

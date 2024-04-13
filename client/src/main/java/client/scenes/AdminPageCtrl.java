@@ -137,7 +137,7 @@ public class AdminPageCtrl implements Controller, Initializable {
         fileOutputStream.close();
 
         mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") +
-                filePath + fileName,resourceBundle.getString("Success"), "OK");
+                filePath + fileName,resourceBundle.getString("success"), "OK");
       }
     catch(Exception exception){
       exception.printStackTrace();
@@ -156,8 +156,8 @@ public class AdminPageCtrl implements Controller, Initializable {
           try{
             Event newEvent = mapper.readValue(selectedFile, Event.class);
             for(Event event : server.getEvents()) {
-              if (event.getName().equals(newEvent.getName())) {
-                mainCtrl.popup(resourceBundle.getString("sameNameWarning"),
+              if (event.getName().equals(newEvent.getName()) && event.getEventId() == newEvent.getEventId()) {
+                mainCtrl.popup(resourceBundle.getString("sameEventWarning"),
                         resourceBundle.getString("warningText"), "OK");
                 return;
               }
