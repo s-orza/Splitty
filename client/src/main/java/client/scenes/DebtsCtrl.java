@@ -204,6 +204,8 @@ public class DebtsCtrl implements Controller, Initializable {
     public void renderAccordion(FilteredList<Debt> filteredList){
         String title;
         Collection<TitledPane> panes = new ArrayList<>();
+        boolean emailAvailable = true;
+        boolean paymentAvailable = true;
         for (Debt d: filteredList) {
             // debt title
             double number =server.convertCurrency(LocalDate.now() + "", d.getCurrency(),
@@ -238,10 +240,18 @@ public class DebtsCtrl implements Controller, Initializable {
                                     "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
                 remindButton.setStyle("-fx-opacity: 0.5;");
                 remindButton.setDisable(true);
+                emailAvailable = false;
+            }
+            Participant p = server.getParticipantById(d.getCreditor());
+            if(Objects.isNull(p.getBic()) ||
+                    Objects.isNull(p.getIban())||
+                    Objects.equals(p.getBic(), "") ||
+                    Objects.equals(p.getIban(), "")){
+                paymentAvailable = false;
             }
 
             // debt Info:
-            String description = descriptionBuilder(server.getParticipantById(d.getCreditor()));
+            String description = descriptionBuilder(p);
 
             // settle and reminder buttons
             HBox buttons = new HBox();
@@ -267,6 +277,11 @@ public class DebtsCtrl implements Controller, Initializable {
                 bankView.setFitHeight(15);
                 emailView.setFitWidth(15);
                 emailView.setFitHeight(15);
+
+                // grey out if unavailable
+                if(!paymentAvailable){bankView.setStyle("-fx-opacity: 0.5;");}
+                if(!emailAvailable){emailView.setStyle("-fx-opacity: 0.5;");}
+
 
                 icons.getChildren().addAll(bankView, emailView);
                 tp.setGraphic(icons);
