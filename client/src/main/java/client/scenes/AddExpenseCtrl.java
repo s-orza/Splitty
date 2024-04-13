@@ -464,18 +464,7 @@ public class AddExpenseCtrl implements Controller{
         //initialise the tags
         tagsAvailable=new ArrayList<>();
         long eventId= server.getCurrentId();
-        //adding the 4 tags that always need to be
-        if(!server.checkIfTagExists("other", eventId))
-            server.addTag(new Tag(new TagId("other",eventId),"#e0e0e0"));
 
-        if(!server.checkIfTagExists("food", eventId))
-            server.addTag(new Tag(new TagId("food",eventId),"#00ff00"));
-
-        if(!server.checkIfTagExists("entrance fees", eventId))
-            server.addTag(new Tag(new TagId("entrance fees",eventId),"#0000ff"));
-
-        if(!server.checkIfTagExists("travel", eventId))
-            server.addTag(new Tag(new TagId("travel",eventId),"#ff0000"));
 
         List<Tag> temp=server.getAllTagsFromEvent(eventId);
 //        System.out.println(temp);
@@ -777,46 +766,64 @@ public class AddExpenseCtrl implements Controller{
     {
         if(authorSelector.getValue()==null || authorSelector.getValue().isEmpty())
         {
-            warningText.setText(resourceBundle.getString("authorWarning"));
+            //warningText.setText(resourceBundle.getString("authorWarning"));
+            mainCtrl.popup(resourceBundle.getString("authorWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(contentBox.getText()==null || contentBox.getText().isEmpty())
         {
-            warningText.setText(resourceBundle.getString("forWhatWarning"));
+            //warningText.setText(resourceBundle.getString("forWhatWarning"));
+            mainCtrl.popup(resourceBundle.getString("forWhatWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(moneyPaid.getText()==null || moneyPaid.getText().isEmpty())
         {
-            warningText.setText(resourceBundle.getString("amountWarning"));
+            //warningText.setText(resourceBundle.getString("amountWarning"));
+            mainCtrl.popup(resourceBundle.getString("amountWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(moneyPaid.getText().contains("-") || moneyPaid.getText().equals("0"))
         {
-            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            //warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            mainCtrl.popup(resourceBundle.getString("negativeAmountWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(Double.parseDouble(moneyPaid.getText())==0.0)
         {
-            warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            //warningText.setText(resourceBundle.getString("negativeAmountWarning"));
+            mainCtrl.popup(resourceBundle.getString("negativeAmountWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(date.getValue()==null) {
-            warningText.setText(resourceBundle.getString("dateWarning"));
+            //warningText.setText(resourceBundle.getString("dateWarning"));
+            mainCtrl.popup(resourceBundle.getString("dateWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(typeSelector.getValue()==null || typeSelector.getValue().isEmpty())
         {
-            warningText.setText(resourceBundle.getString("typeWarning"));
+            //warningText.setText(resourceBundle.getString("typeWarning"));
+            mainCtrl.popup(resourceBundle.getString("typeWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(!checkBoxAllPeople.isSelected() && !checkBoxSomePeople.isSelected())
         {
-            warningText.setText(resourceBundle.getString("splitWarning"));
+            //warningText.setText(resourceBundle.getString("splitWarning"));
+            mainCtrl.popup(resourceBundle.getString("splitWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         if(checkBoxSomePeople.isSelected() && selectedNamesList.isEmpty())
         {
-            warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
+            //warningText.setText(resourceBundle.getString("selectParticipantsWarning"));
+            mainCtrl.popup(resourceBundle.getString("selectParticipantsWarning"),
+                    resourceBundle.getString("warning"),"Ok");
             return false;
         }
         return true;

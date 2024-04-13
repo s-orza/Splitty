@@ -17,15 +17,9 @@ public class Event {
     String name;
     // Don't know how to set up the connections, need a database anyway
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "ParticipantEventRepository",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "participant_id")
-    )
-    @Column
+    @Transient
     public List<Participant> participants;
-
+    //this is the single table that is created as it should and doesn't need connection repositories
     @OneToMany
     @JoinTable(
             name = "DebtEvent",
@@ -35,8 +29,7 @@ public class Event {
     @Column
     public List<Debt> debts;
 
-//    @Column
-    @OneToMany
+    @Transient
     public List<Expense> expenses;
     @Transient
     private List<Tag> tags;

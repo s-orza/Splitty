@@ -6,16 +6,20 @@ import commons.Event;
 
 
 import commons.MailStructure;
+import commons.Tag;
+import commons.TagId;
 import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -109,6 +113,20 @@ public class MainPageCtrl implements Controller, Initializable {
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
     server.connect(newEvent.getEventId());
     mainCtrl.addRecent(server.getCurrentId());
+    //adding the 4 tags that always need to be
+
+    if(!server.checkIfTagExists("other", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("other",server.getCurrentId()),"#e0e0e0"));
+
+    if(!server.checkIfTagExists("food", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("food",server.getCurrentId()),"#00ff00"));
+
+    if(!server.checkIfTagExists("entrance fees", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("entrance fees",server.getCurrentId()),"#0000ff"));
+
+    if(!server.checkIfTagExists("travel", server.getCurrentId()))
+      server.addTag(new Tag(new TagId("travel",server.getCurrentId()),"#ff0000"));
+
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
     mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
   }
@@ -116,7 +134,21 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void joinEvent(ActionEvent event) {
     try {
-      server.connect(Long.parseLong(joinInput.getText()));
+      //avoid connecting if there are problems
+      if(joinInput.getText()==null || joinInput.getText().isEmpty())
+      {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+        mainCtrl.popup(resourceBundle.getString("eventNotFound"),"Error","Ok");
+        return;
+      }
+      long id=Long.parseLong(joinInput.getText());
+      if(server.getEvent(id)==null)
+      {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+        mainCtrl.popup(resourceBundle.getString("eventNotFound"),"Error","Ok");
+        return;
+      }
+      server.connect(id);
     }catch (Exception e){
       e.printStackTrace();
       return;
@@ -194,6 +226,10 @@ public class MainPageCtrl implements Controller, Initializable {
         e.printStackTrace();
       }
     });
+    //add flags to near the text
+    comboBox.setCellFactory(param -> new TextFlagCell());
+
+
 
     if(currentLocale.getLanguage().equals("en")){
       putFlag("enFlag.png");
@@ -201,21 +237,21 @@ public class MainPageCtrl implements Controller, Initializable {
               FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("English");
-    }
+    }else
     if(currentLocale.getLanguage().equals("nl")){
       putFlag("nlFlag.png");
       ObservableList<String> comboBoxItems =
               FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("Dutch");
-    }
+    }else
     if(currentLocale.getLanguage().equals("de")){
       putFlag("deFlag.png");
       ObservableList<String> comboBoxItems =
               FXCollections.observableArrayList("English", "Dutch", "German", "Spanish");
       comboBox.setItems(comboBoxItems);
       comboBox.setPromptText("German");
-    }
+    }else
     if(currentLocale.getLanguage().equals("es")){
       putFlag("esFlag.png");
       ObservableList<String> comboBoxItems =
@@ -246,8 +282,69 @@ public class MainPageCtrl implements Controller, Initializable {
       LanguageTemplateCtrl languageTemplateCtrl = new LanguageTemplateCtrl(server);
       mainCtrl.initialize(stage, languageTemplateCtrl.getPair(), languageTemplateCtrl.getTitle());
     });
+    //to accept only numbers.
+    joinInput.textProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue.matches("\\d*(\\d*)?")) {
+        joinInput.setText(oldValue);
+      }
+    });
   }
+  protected static class TextFlagCell extends ListCell<String> {
+    private HBox container;
+    private Label textLabel;
+    private ImageView flag;
+    public TextFlagCell() {
+      container=new HBox();
+      textLabel=new Label();
+      //default flag.
+      Image editIcon = new Image(getClass().getResourceAsStream("/enFlag.png"));
+      flag=new ImageView(editIcon);
+      flag.setFitWidth(19);
+      flag.setFitHeight(14);
+      container.getChildren().addAll(textLabel,flag);
+      container.setHgrow(textLabel, Priority.ALWAYS);
+      container.setAlignment(Pos.CENTER_LEFT);
+      container.setSpacing(4);
+    }
+    @Override
+    protected void updateItem(String item, boolean empty) {
+      super.updateItem(item, empty);
 
+      if (empty || item == null) {
+        setText(null);
+        setGraphic(null);
+      } else
+      {
+        textLabel.setText(item);
+        try {
+          Image editIcon;
+          switch (item) {
+            case "Dutch":
+              editIcon = new Image(getClass().getResourceAsStream("/nlFlag.png"));
+              break;
+            case "German":
+              editIcon = new Image(getClass().getResourceAsStream("/deFlag.png"));
+              break;
+            case "Spanish":
+              editIcon = new Image(getClass().getResourceAsStream("/esFlag.png"));
+              break;
+            default:
+              editIcon = new Image(getClass().getResourceAsStream("/enFlag.png"));
+              break;
+          }
+          flag = new ImageView(editIcon);
+          flag.setFitWidth(19);
+          flag.setFitHeight(14);
+          container.getChildren().clear();
+          container.getChildren().addAll(textLabel, flag);
+          container.setHgrow(textLabel, Priority.ALWAYS);
+          container.setAlignment(Pos.CENTER_LEFT);
+          container.setSpacing(8);
+        }catch (Exception e){}
+        setGraphic(container);
+      }
+      }
+  }
   private void keyShortCuts() {
     recentList.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ENTER||event.getCode() == KeyCode.RIGHT) {

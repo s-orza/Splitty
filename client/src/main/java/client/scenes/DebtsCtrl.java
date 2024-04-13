@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -160,12 +161,6 @@ public class DebtsCtrl implements Controller, Initializable {
         searchByComboBox.setItems(participantNames);
     }
 
-
-    public void connectEvent(Event ev){
-        currentEvent = ev;
-        System.out.println("Connecting to " + currentEvent);
-    }
-
     private void cancelHandler(ActionEvent e){
         System.out.println("closed DebtsCtrl");
         stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
@@ -208,6 +203,8 @@ public class DebtsCtrl implements Controller, Initializable {
     public void renderAccordion(FilteredList<Debt> filteredList){
         String title;
         Collection<TitledPane> panes = new ArrayList<>();
+        boolean emailAvailable = true;
+        boolean paymentAvailable = true;
         for (Debt d: filteredList) {
             // debt title
             double number =server.convertCurrency(LocalDate.now() + "", d.getCurrency(),
@@ -219,7 +216,7 @@ public class DebtsCtrl implements Controller, Initializable {
                 amount = "<0.01";
             }
             title = server.getParticipantById(d.getDebtor()).getName()
-                            + resourceBundle.getString("owesText") +
+                            + " " + resourceBundle.getString("owesText") + " " +
                     server.getParticipantById(d.getCreditor()).getName()
                             + " " + amount
                             + MainCtrl.getCurrency();
@@ -230,8 +227,8 @@ public class DebtsCtrl implements Controller, Initializable {
                 settleAction(d.getDebtID());
             });
 
-            Button inviteButton = new Button("Invite");
-            inviteButton.setOnAction(e-> {
+            Button remindButton = new Button(resourceBundle.getString("reminderText"));
+            remindButton.setOnAction(e-> {
                 invite(d);
             });
             mainCtrl.refresh();
@@ -240,17 +237,55 @@ public class DebtsCtrl implements Controller, Initializable {
                     !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$") ||
                             !server.getParticipant(d.getDebtor()).getEmail().matches(
                                     "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                inviteButton.setStyle("-fx-opacity: 0.5;");
-                inviteButton.setDisable(true);
+                remindButton.setStyle("-fx-opacity: 0.5;");
+                remindButton.setDisable(true);
+                emailAvailable = false;
+            }
+            Participant p = server.getParticipantById(d.getCreditor());
+            if(Objects.isNull(p.getBic()) ||
+                    Objects.isNull(p.getIban())||
+                    Objects.equals(p.getBic(), "") ||
+                    Objects.equals(p.getIban(), "")){
+                paymentAvailable = false;
             }
 
-            // debt Description
-            String description = descriptionBuilder(server.getParticipantById(d.getCreditor()));
+            // debt Info:
+            String description = descriptionBuilder(p);
 
+            // settle and reminder buttons
+            HBox buttons = new HBox();
+            buttons.getChildren().addAll(button, remindButton);
+            buttons.setSpacing(10);
+
+            // description + buttons
             VBox vbox = new VBox();
-            vbox.getChildren().addAll(new Label(description), button, inviteButton);
+            vbox.getChildren().addAll(new Label(description), buttons);
+            buttons.setSpacing(5);
+
+            HBox icons = new HBox();
+            icons.setSpacing(5);
 
             TitledPane tp = new TitledPane(title, vbox);
+            try {
+                //load the icons
+                Image bankIcon=new Image(getClass().getResourceAsStream("/balance.png"));
+                Image emailIcon=new Image(getClass().getResourceAsStream("/email.png"));
+                ImageView bankView=new ImageView(bankIcon);
+                ImageView emailView=new ImageView(emailIcon);
+                bankView.setFitWidth(15);
+                bankView.setFitHeight(15);
+                emailView.setFitWidth(15);
+                emailView.setFitHeight(15);
+
+                // grey out if unavailable
+                if(!paymentAvailable){bankView.setStyle("-fx-opacity: 0.5;");}
+                if(!emailAvailable){emailView.setStyle("-fx-opacity: 0.5;");}
+
+
+                icons.getChildren().addAll(bankView, emailView);
+                tp.setGraphic(icons);
+            }
+            catch (Exception ignored) {}
             panes.add(tp);
         }
 
