@@ -213,7 +213,7 @@ public class DebtsCtrl implements Controller, Initializable {
                 amount = "<0.01";
             }
             title = server.getParticipantById(d.getDebtor()).getName()
-                            + resourceBundle.getString("owesText") +
+                            + " " + resourceBundle.getString("owesText") + " " +
                     server.getParticipantById(d.getCreditor()).getName()
                             + " " + amount
                             + MainCtrl.getCurrency();
