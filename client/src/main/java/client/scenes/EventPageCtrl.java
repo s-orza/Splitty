@@ -303,6 +303,9 @@ public class EventPageCtrl implements Controller{
         server.registerForMessages("/topic/events/name/" + String.valueOf(server.getCurrentId()), String.class, t -> {
             eventName.setText(t);
         });
+//add flags to near the text
+        comboBox.setCellFactory(param -> new MainPageCtrl.TextFlagCell());
+
 
         if(currentLocale.getLanguage().equals("en")){
             putFlag("enFlag.png");
