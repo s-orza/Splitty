@@ -1,5 +1,7 @@
 package client.scenes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -288,13 +290,16 @@ public class AddParticipantCtrl implements Controller {
         return matcher.matches();
     }
     private static boolean isValidIBAN(String iban) {
-        // Regular expression for IBAN format
-        String ibanRegex = "[A-Z]{2}\\d{2}[A-Z]{4}\\d{14}";
-        Pattern pattern = Pattern.compile(ibanRegex);
-        Matcher matcher = pattern.matcher(iban);
-        // Return false if IBAN format doesn't match
-        if (!matcher.matches()) {
-            return false;
+        // Regular expression for IBAN format. The most used format has been added.
+        List<String> ibanRegexList = new ArrayList<>();
+        ibanRegexList.add("[A-Z]{2}\\d{2}[A-Z]{4}\\d{14}");
+        for (String ibanRegex: ibanRegexList) {
+            Pattern pattern = Pattern.compile(ibanRegex);
+            Matcher matcher = pattern.matcher(iban);
+            // Return false if IBAN format doesn't match
+            if (!matcher.matches()) {
+                return false;
+            }
         }
 
         // Perform extra IBAN checks - for now it just returns true
@@ -304,11 +309,15 @@ public class AddParticipantCtrl implements Controller {
 
     private static boolean isValidEmail(String email) {
         // Regular expression for email validation
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(email);
-        // Return true if the email matches the pattern, otherwise false
-        return matcher.matches();
+        List<String> emailRegexList = new ArrayList<>();
+        emailRegexList.add("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        for (String emailRegex: emailRegexList) {
+            Pattern pattern = Pattern.compile(emailRegex);
+            Matcher matcher = pattern.matcher(email);
+            if (!matcher.matches())
+                return false;
+        }
+        return true;
     }
 
     public void resetElements() {
