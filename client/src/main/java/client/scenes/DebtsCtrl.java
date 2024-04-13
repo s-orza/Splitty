@@ -226,8 +226,8 @@ public class DebtsCtrl implements Controller, Initializable {
                 settleAction(d.getDebtID());
             });
 
-            Button inviteButton = new Button("Invite");
-            inviteButton.setOnAction(e-> {
+            Button remindButton = new Button("Send Reminder");
+            remindButton.setOnAction(e-> {
                 invite(d);
             });
             mainCtrl.refresh();
@@ -236,15 +236,22 @@ public class DebtsCtrl implements Controller, Initializable {
                     !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$") ||
                             !server.getParticipant(d.getDebtor()).getEmail().matches(
                                     "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
-                inviteButton.setStyle("-fx-opacity: 0.5;");
-                inviteButton.setDisable(true);
+                remindButton.setStyle("-fx-opacity: 0.5;");
+                remindButton.setDisable(true);
             }
 
-            // debt Description
+            // debt Info:
             String description = descriptionBuilder(server.getParticipantById(d.getCreditor()));
 
+            // settle and reminder buttons
+            HBox buttons = new HBox();
+            buttons.getChildren().addAll(button, remindButton);
+            buttons.setSpacing(10);
+
+            // description + buttons
             VBox vbox = new VBox();
-            vbox.getChildren().addAll(new Label(description), button, inviteButton);
+            vbox.getChildren().addAll(new Label(description), buttons);
+            buttons.setSpacing(5);
 
             HBox icons = new HBox();
             icons.setSpacing(5);
