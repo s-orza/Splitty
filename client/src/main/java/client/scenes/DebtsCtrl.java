@@ -227,7 +227,7 @@ public class DebtsCtrl implements Controller, Initializable {
                 settleAction(d.getDebtID());
             });
 
-            Button remindButton = new Button("Send Reminder");
+            Button remindButton = new Button(resourceBundle.getString("reminderText"));
             remindButton.setOnAction(e-> {
                 invite(d);
             });
