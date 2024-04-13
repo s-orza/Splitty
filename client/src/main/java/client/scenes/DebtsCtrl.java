@@ -11,11 +11,13 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -244,7 +246,25 @@ public class DebtsCtrl implements Controller, Initializable {
             VBox vbox = new VBox();
             vbox.getChildren().addAll(new Label(description), button, inviteButton);
 
+            HBox icons = new HBox();
+            icons.setSpacing(5);
+
             TitledPane tp = new TitledPane(title, vbox);
+            try {
+                //load the icons
+                Image bankIcon=new Image(getClass().getResourceAsStream("/balance.png"));
+                Image emailIcon=new Image(getClass().getResourceAsStream("/email.png"));
+                ImageView bankView=new ImageView(bankIcon);
+                ImageView emailView=new ImageView(emailIcon);
+                bankView.setFitWidth(15);
+                bankView.setFitHeight(15);
+                emailView.setFitWidth(15);
+                emailView.setFitHeight(15);
+
+                icons.getChildren().addAll(bankView, emailView);
+                tp.setGraphic(icons);
+            }
+            catch (Exception ignored) {}
             panes.add(tp);
         }
 
