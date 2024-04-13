@@ -209,7 +209,7 @@ public class AddParticipantCtrl implements Controller {
         // reload again the participant to be sure that it is the newest participant
         // can also prevent a bug where another user has deleted the participant you are already working on
         participantToBeModified = server.getParticipantToBeModified();
-        if (participantToBeModified == null) {
+        if (participantToBeModified.getParticipantID() == -1) {
             //this can happen if somebody else deleted this participant while you were editing it. In this case
             //let's send a message to the user to inform him and to abort editing.
             VBox layout = new VBox(10);
@@ -227,10 +227,9 @@ public class AddParticipantCtrl implements Controller {
             okButton.setOnAction(e -> {
                 // if we are not modifying the participant anymore, reset the values for it
                 // prevents bug that opens same update page after closing
-                participantToBeModified = null;
                 server.setParticipantToBeModified(-1);
                 popupStage.close();
-                close(event);
+                close(e);
             });
 
             // Set up the layout
@@ -337,6 +336,8 @@ public class AddParticipantCtrl implements Controller {
     @FXML
     public void close(ActionEvent e) {
         System.out.println("Closing Addparticipants window...");
+        // Resetting the participant to edit, whether it was or not selected
+        server.setParticipantToBeModified(-1);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
