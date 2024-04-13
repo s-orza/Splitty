@@ -50,14 +50,19 @@ public class AddParticipantCtrl implements Controller {
     @FXML
     private TextField bic;
     @FXML
+    private Label nameLabel;
+    @FXML
+    private Label emailLabel;
+    @FXML
+    private Label ibanLabel;
+    @FXML
+    private Label bicLabel;
+    @FXML
     private AnchorPane backGround;
     @FXML
-    private Label addParticipantText;
+    private Label addParticipantTitle;
     @FXML
-    private Label editParticipantText;
-    @FXML
-    private Label nameText;
-    private static Alert errorAlert;
+    private Label editParticipantTitle;
     private Participant participantToBeModified;
     ResourceBundle resourceBundle;
 
@@ -68,6 +73,7 @@ public class AddParticipantCtrl implements Controller {
 
     @FXML
     public void initialize() {
+        System.out.println("Initializing AddParticipants window...");
         initializeVariables();
         toggleLanguage();
         backgroundImage();
@@ -78,14 +84,13 @@ public class AddParticipantCtrl implements Controller {
         if (server.getParticipantIdToModify() != -1) {
             // if we are editing a participant
             participantToBeModified = server.getParticipantToBeModified();
-            // switch texts
-            addParticipantText.setVisible(false);
-            editParticipantText.setVisible(true);
+            addParticipantTitle.setVisible(false);
+            editParticipantTitle.setVisible(true);
             reloadParticipant();
         } else {
             // if we are adding a participant
-            editParticipantText.setVisible(false);
-            addParticipantText.setVisible(true);
+            editParticipantTitle.setVisible(false);
+            addParticipantTitle.setVisible(true);
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
@@ -101,16 +106,14 @@ public class AddParticipantCtrl implements Controller {
     private void toggleLanguage() {
         try {
             resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
-            name.setText(resourceBundle.getString("nameText"));
+            nameLabel.setText(resourceBundle.getString("nameText"));
             addButton.setText(resourceBundle.getString("addText"));
             saveButton.setText(resourceBundle.getString("saveText"));
             cancelButton.setText(resourceBundle.getString("cancelText"));
-
-            addParticipantText.setText(resourceBundle.getString("addParticipantText"));
-            nameText.setText(resourceBundle.getString("nameText"));
+            editParticipantTitle.setText(resourceBundle.getString("editParticipantText"));
+            addParticipantTitle.setText(resourceBundle.getString("addParticipantText"));
         } catch (Exception e) {
-
-            System.out.println(e.getStackTrace());
+            System.out.println(e);
         }
     }
 
@@ -195,7 +198,7 @@ public class AddParticipantCtrl implements Controller {
     private void showPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Added Participant Successfully");
+        popupStage.setTitle(resourceBundle.getString("successfulAddingParticipantText"));
         VBox layout = new VBox(10);
         Scene scene = new Scene(layout, 350, 20);
         popupStage.setScene(scene);
@@ -262,25 +265,25 @@ public class AddParticipantCtrl implements Controller {
     private boolean checkFieldsCondition() {
         // check if any fields are empty
         if(name.getText().isEmpty()){
-            mainCtrl.popup("Name cannot be empty!", "Error: empty fields",
+            mainCtrl.popup(resourceBundle.getString("emptyNameWarningText"), "Error: empty fields",
                     "Ok");
             return false;
         }
         if (!email.getText().isEmpty()) {
             if (!isValidEmail(email.getText())) {
-                mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
+                mainCtrl.popup(resourceBundle.getString("incorrectEmailWarningText"), "Error", "Ok");
                 return false;
             }
         }
         if (!iban.getText().isEmpty()) {
             if (!isValidIBAN(iban.getText())) {
-                mainCtrl.popup("Provided IBAN is not valid!", "Error", "Ok");
+                mainCtrl.popup(resourceBundle.getString("incorrectIbanWarningText"), "Error", "Ok");
                 return false;
             }
         }
         if (!bic.getText().isEmpty()) {
             if (!isValidBIC(bic.getText())) {
-                mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
+                mainCtrl.popup(resourceBundle.getString("incorrectBicWarningText"), "Error", "Ok");
                 return false;
             }
         }
@@ -335,7 +338,7 @@ public class AddParticipantCtrl implements Controller {
 
     @FXML
     public void close(ActionEvent e) {
-        System.out.println("Closing Addparticipants window...");
+        System.out.println("Closing AddParticipants window...");
         // Resetting the participant to edit, whether it was or not selected
         server.setParticipantToBeModified(-1);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
