@@ -1,5 +1,7 @@
 package client.scenes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +17,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -48,12 +49,13 @@ public class AddParticipantCtrl implements Controller {
     @FXML
     private TextField bic;
     @FXML
+    private Label nameLabel;
+    @FXML
     private AnchorPane backGround;
     @FXML
-    private Label addParticipantText;
+    private Label addParticipantTitle;
     @FXML
-    private Label nameText;
-    private static Alert errorAlert;
+    private Label editParticipantTitle;
     private Participant participantToBeModified;
     ResourceBundle resourceBundle;
 
@@ -64,6 +66,7 @@ public class AddParticipantCtrl implements Controller {
 
     @FXML
     public void initialize() {
+        System.out.println("Initializing AddParticipants window...");
         initializeVariables();
         toggleLanguage();
         backgroundImage();
@@ -74,9 +77,13 @@ public class AddParticipantCtrl implements Controller {
         if (server.getParticipantIdToModify() != -1) {
             // if we are editing a participant
             participantToBeModified = server.getParticipantToBeModified();
+            addParticipantTitle.setVisible(false);
+            editParticipantTitle.setVisible(true);
             reloadParticipant();
         } else {
             // if we are adding a participant
+            editParticipantTitle.setVisible(false);
+            addParticipantTitle.setVisible(true);
             addButton.setVisible(true);
             saveButton.setVisible(false);
         }
@@ -92,16 +99,14 @@ public class AddParticipantCtrl implements Controller {
     private void toggleLanguage() {
         try {
             resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
-            name.setText(resourceBundle.getString("nameText"));
+            nameLabel.setText(resourceBundle.getString("nameText"));
             addButton.setText(resourceBundle.getString("addText"));
             saveButton.setText(resourceBundle.getString("saveText"));
             cancelButton.setText(resourceBundle.getString("cancelText"));
-
-            addParticipantText.setText(resourceBundle.getString("addParticipantText"));
-            nameText.setText(resourceBundle.getString("nameText"));
+            editParticipantTitle.setText(resourceBundle.getString("editParticipantText"));
+            addParticipantTitle.setText(resourceBundle.getString("addParticipantText"));
         } catch (Exception e) {
-
-            System.out.println(e.getStackTrace());
+            System.out.println(e);
         }
     }
 
@@ -186,7 +191,7 @@ public class AddParticipantCtrl implements Controller {
     private void showPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Added Participant Successfully");
+        popupStage.setTitle(resourceBundle.getString("successfulAddingParticipantText"));
         VBox layout = new VBox(10);
         Scene scene = new Scene(layout, 350, 20);
         popupStage.setScene(scene);
@@ -200,7 +205,7 @@ public class AddParticipantCtrl implements Controller {
         // reload again the participant to be sure that it is the newest participant
         // can also prevent a bug where another user has deleted the participant you are already working on
         participantToBeModified = server.getParticipantToBeModified();
-        if (participantToBeModified == null) {
+        if (participantToBeModified.getParticipantID() == -1) {
             //this can happen if somebody else deleted this participant while you were editing it. In this case
             //let's send a message to the user to inform him and to abort editing.
             VBox layout = new VBox(10);
@@ -218,10 +223,9 @@ public class AddParticipantCtrl implements Controller {
             okButton.setOnAction(e -> {
                 // if we are not modifying the participant anymore, reset the values for it
                 // prevents bug that opens same update page after closing
-                participantToBeModified = null;
                 server.setParticipantToBeModified(-1);
                 popupStage.close();
-                close(event);
+                close(e);
             });
 
             // Set up the layout
@@ -253,24 +257,29 @@ public class AddParticipantCtrl implements Controller {
      */
     private boolean checkFieldsCondition() {
         // check if any fields are empty
-        if(name.getText().isEmpty()||email.getText().isEmpty()){
-            mainCtrl.popup("Name or/and email are empty!\nMake sure you fill them!", "Error: empty fields",
+        if(name.getText().isEmpty()){
+            mainCtrl.popup(resourceBundle.getString("emptyNameWarningText"), "Error: empty fields",
                     "Ok");
             return false;
         }
-        if (!isValidEmail(email.getText())){
-            mainCtrl.popup("Email provided is not a valid email address!", "Error", "Ok");
-            return false;
+        if (!email.getText().isEmpty()) {
+            if (!isValidEmail(email.getText())) {
+                mainCtrl.popup(resourceBundle.getString("incorrectEmailWarningText"), "Error", "Ok");
+                return false;
+            }
         }
-        // working, but a hassle to deal with. Re-enable before sending it!
-//        if (!isValidIBAN(iban.getText())){
-//            mainCtrl.popup("Provided IBAN is not valid!", "Error", "Ok");
-//            return false;
-//        }
-//        if(!isValidBIC(bic.getText())){
-//            mainCtrl.popup("Provided BIC is not valid!", "Error", "Ok");
-//            return false;
-//        }
+        if (!iban.getText().isEmpty()) {
+            if (!isValidIBAN(iban.getText())) {
+                mainCtrl.popup(resourceBundle.getString("incorrectIbanWarningText"), "Error", "Ok");
+                return false;
+            }
+        }
+        if (!bic.getText().isEmpty()) {
+            if (!isValidBIC(bic.getText())) {
+                mainCtrl.popup(resourceBundle.getString("incorrectBicWarningText"), "Error", "Ok");
+                return false;
+            }
+        }
         return true;
     }
 
@@ -283,13 +292,16 @@ public class AddParticipantCtrl implements Controller {
         return matcher.matches();
     }
     private static boolean isValidIBAN(String iban) {
-        // Regular expression for IBAN format
-        String ibanRegex = "[A-Z]{2}\\d{2}[A-Z]{4}\\d{14}";
-        Pattern pattern = Pattern.compile(ibanRegex);
-        Matcher matcher = pattern.matcher(iban);
-        // Return false if IBAN format doesn't match
-        if (!matcher.matches()) {
-            return false;
+        // Regular expression for IBAN format. The most used format has been added.
+        List<String> ibanRegexList = new ArrayList<>();
+        ibanRegexList.add("[A-Z]{2}\\d{2}[A-Z]{4}\\d{14}");
+        for (String ibanRegex: ibanRegexList) {
+            Pattern pattern = Pattern.compile(ibanRegex);
+            Matcher matcher = pattern.matcher(iban);
+            // Return false if IBAN format doesn't match
+            if (!matcher.matches()) {
+                return false;
+            }
         }
 
         // Perform extra IBAN checks - for now it just returns true
@@ -299,11 +311,15 @@ public class AddParticipantCtrl implements Controller {
 
     private static boolean isValidEmail(String email) {
         // Regular expression for email validation
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(email);
-        // Return true if the email matches the pattern, otherwise false
-        return matcher.matches();
+        List<String> emailRegexList = new ArrayList<>();
+        emailRegexList.add("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        for (String emailRegex: emailRegexList) {
+            Pattern pattern = Pattern.compile(emailRegex);
+            Matcher matcher = pattern.matcher(email);
+            if (!matcher.matches())
+                return false;
+        }
+        return true;
     }
 
     public void resetElements() {
@@ -315,7 +331,9 @@ public class AddParticipantCtrl implements Controller {
 
     @FXML
     public void close(ActionEvent e) {
-        System.out.println("Closing Addparticipants window...");
+        System.out.println("Closing AddParticipants window...");
+        // Resetting the participant to edit, whether it was or not selected
+        server.setParticipantToBeModified(-1);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
         mainCtrl.initialize(stage, eventPageCtrl.getPair(), eventPageCtrl.getTitle());
