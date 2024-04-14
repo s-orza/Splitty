@@ -173,11 +173,14 @@ public class ServerUtils {
 
 	//connects to the database through the endpoint to get an event with an id
 	public Event getEvent(long id) {
-		return ClientBuilder.newClient(new ClientConfig()) //
+		Response response=ClientBuilder.newClient(new ClientConfig()) //
 				.target(serverUrl).path("api/events/" + id) //
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
-				.get(new GenericType<Event>() {});
+				.get();
+		if(response.getStatus()<300)
+			return response.readEntity(new GenericType<Event>() {});
+		return null;
 	}
 
 	private static final int THREAD_POOL_SIZE = 10;
