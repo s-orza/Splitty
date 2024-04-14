@@ -1020,7 +1020,7 @@ public class EventPageCtrl implements Controller{
 
     private void removeExpenseHandler(){
         if(expensesTable.getSelectionModel().getSelectedItems().isEmpty()){
-            mainCtrl.popup(resourceBundle.getString("expenseSelectWarningText"),
+            mainCtrl.popup(resourceBundle.getString("selectAtLeastOneExpenseText"),
                     resourceBundle.getString("warningText"), "Ok");
             return;
         }
