@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 @Service
@@ -80,9 +78,7 @@ public class MainService {
     if (selectedFile != null && selectedFile.getName().contains(".json")) {
       ObjectMapper mapper = new ObjectMapper();
       try {
-        System.out.println("This file" + new String(Files.readAllBytes(Paths.get(selectedFile.toURI()))));
         AppConfig config = mapper.readValue(selectedFile, AppConfig.class);
-        System.out.println(config);
         return config;
       } catch (Exception e) {
         e.printStackTrace();

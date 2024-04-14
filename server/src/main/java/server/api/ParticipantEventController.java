@@ -40,7 +40,6 @@ public class ParticipantEventController {
     @PostMapping(path = {  "/{eventId}" })
     public ResponseEntity<String> createParticipantEvent(@PathVariable Long eventId,
                                        @RequestBody Participant participant) {
-        System.out.println("In ParticipantEvent controller");
         Participant p=participantRepository.save(participant);
         if (eventId != null) {
             // Assuming you have a method to find an event by its ID
@@ -85,22 +84,18 @@ public class ParticipantEventController {
     @GetMapping(path = {"/{eventId}/allParticipants" })
     public ResponseEntity<List<Participant>> getParticipantsOfEvent(@PathVariable long eventId) {
 
-        System.out.println("in api method");
         List<Long> participantIds = repo.findParticipantIdsByEventId(eventId);
-        System.out.println(participantIds);
         List<Participant> participants = new ArrayList<>();
         for(long id : participantIds){
             Participant toAdd = participantRepository.findById(id).get();
             participants.add(toAdd);
         }
-        System.out.println("Particiapants: " + participants);
         return ResponseEntity.ok(participants);
     }
 
     @GetMapping(path = {"/getEvents/{participantId}" })
     public ResponseEntity<List<Event>> getEventsOfParticipant(@PathVariable long participantId) {
 
-        System.out.println("in api methode");
         List<Long> eventIds = repo.findEventIdsByParticipantId(participantId);
         System.out.println(eventIds);
         List<Event> events = new ArrayList<>();

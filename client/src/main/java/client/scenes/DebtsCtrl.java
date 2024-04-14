@@ -363,7 +363,7 @@ public class DebtsCtrl implements Controller, Initializable {
         return FXML.load(Controller.class, "client", "scenes", "Debts.fxml");
     }
     public String getTitle(){
-        return "Debts Page";
+        return resourceBundle.getString("debtsText");
     }
 
     /**

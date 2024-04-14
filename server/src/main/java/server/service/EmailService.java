@@ -22,7 +22,7 @@ public class EmailService {
     message.setTo(mail);
     message.setCc(username);
     mailSender.send(message);
-    System.out.println("Sent email" + username + " -> " + mail);
+    System.out.println("Sent email " + username + " -> " + mail);
   }
 
   public JavaMailSender updateMailSender(){
@@ -47,7 +47,7 @@ public class EmailService {
     props.put("mail.transport.protocol", "smtp");
     props.put("mail.smtp.auth", "true");
     props.put("mail.smtp.starttls.enable", "true");
-    props.put("mail.debug", "true");
+    //props.put("mail.debug", "true");
 
     return  mailSender;
   }
