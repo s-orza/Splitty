@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 @Service
