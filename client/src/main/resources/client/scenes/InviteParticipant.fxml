@@ -12,10 +12,10 @@
     <children>
         <TextField fx:id="name" layoutX="102.0" layoutY="86.0" />
         <TextField fx:id="email" layoutX="102.0" layoutY="128.0" />
-      <CheckBox fx:id="add" layoutX="153.0" layoutY="176.0" mnemonicParsing="false" text="Add to evnent" />
+      <CheckBox fx:id="add" layoutX="153.0" layoutY="176.0" mnemonicParsing="false" text="Add to event" />
         <Button fx:id="invite" layoutX="291.0" layoutY="86.0" mnemonicParsing="false" onAction="#invite" text="Invite" />
         <Button fx:id="cancel" layoutX="288.0" layoutY="128.0" mnemonicParsing="false" onAction="#close" text="Cancel" />
-        <Label fx:id="inviteSelectParticipantsText" alignment="CENTER" layoutX="1.0" layoutY="24.0" prefHeight="30.0" prefWidth="384.0" text="Select participant to invite to the event">
+        <Label fx:id="inviteSelectParticipantsText" alignment="CENTER" layoutY="14.0" prefHeight="60.0" prefWidth="385.0" text="Invite a participant">
             <font>
                 <Font size="20.0" />
             </font>
