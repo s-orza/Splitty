@@ -101,10 +101,11 @@ public class MainPageCtrl implements Controller, Initializable {
     }
     email.setStyle("-fx-opacity: 1;");
     if( server.sendMail(mainCtrl.getConfig().getEmail(),
-            new MailStructure("Test mail", "It works!"))){
 
-      mainCtrl.popup(resourceBundle.getString("emailSentSuccessfullyText"),
-              resourceBundle.getString("successText"), "OK");
+            new MailStructure(resourceBundle.getString("emailPing"), resourceBundle.getString("emailMes")))){
+      mainCtrl.popup(resourceBundle.getString("emailOk"),
+              resourceBundle.getString("success"), "OK");
+
     }
     else{
       mainCtrl.popup(resourceBundle.getString("emailFailedText"), resourceBundle.getString("warningText"), "OK");

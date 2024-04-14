@@ -105,23 +105,26 @@ public class InviteParticipantCtrl implements Controller, Initializable {
   }
   public void invite(ActionEvent e){
     if(!email.getText().matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")){
-      mainCtrl.popup("Incorrect email", "Warning", "OK");
+      mainCtrl.popup(resourceBundle.getString("invalidEmail"),
+              resourceBundle.getString("warningText"), "OK");
       return;
     }
     if(server.sendMail(email.getText(),
-            new MailStructure("Please join my event!",
-                    "I invite you to join my event at " +
+            new MailStructure(resourceBundle.getString("emailSubject"),
+                    resourceBundle.getString("emailInvite")+ " " +
                             server.getServerUrl() +
-                            ".\n Use this code to join: " +
+                            ".\n " + resourceBundle.getString("emailCode") +
                             server.getCurrentId()))){
-      mainCtrl.popup("Email sent succesfully", "Succes", "OK");
+      mainCtrl.popup(resourceBundle.getString("emailOk"),
+              resourceBundle.getString("success"), "OK");
       if (add.isSelected()){
         server.addParticipantEvent(new Participant(name.getText(), email.getText(), "", ""), server.getCurrentId());
       }
       name.getText();
     }
     else{
-      mainCtrl.popup("Email failed", "Warning", "OK");
+      mainCtrl.popup(resourceBundle.getString("emailFail"),
+              resourceBundle.getString("warningText"), "OK");
     }
   }
 
