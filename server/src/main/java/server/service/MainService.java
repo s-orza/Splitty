@@ -80,9 +80,7 @@ public class MainService {
     if (selectedFile != null && selectedFile.getName().contains(".json")) {
       ObjectMapper mapper = new ObjectMapper();
       try {
-        System.out.println("This file" + new String(Files.readAllBytes(Paths.get(selectedFile.toURI()))));
         AppConfig config = mapper.readValue(selectedFile, AppConfig.class);
-        System.out.println(config);
         return config;
       } catch (Exception e) {
         e.printStackTrace();

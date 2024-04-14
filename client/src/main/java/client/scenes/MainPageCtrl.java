@@ -64,6 +64,8 @@ public class MainPageCtrl implements Controller, Initializable {
   @FXML
   private AnchorPane backGround;
 
+  private  ResourceBundle resourceBundle;
+
   private Event selectedEv;
   //Imports used to swap scenes
   private Stage stage;
@@ -90,21 +92,25 @@ public class MainPageCtrl implements Controller, Initializable {
     if(mainCtrl.getConfig().getEmail() == null ||
     !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
       email.setStyle("-fx-opacity: 0.5;");
-      mainCtrl.popup("Inccorect email specified.\n You can modify it in AppConfig", "Warning", "Ok");
+      mainCtrl.popup(resourceBundle.getString("invalidEmail"),
+              resourceBundle.getString("warningText"), "Ok");
       return;
     }
     email.setStyle("-fx-opacity: 1;");
     if( server.sendMail(mainCtrl.getConfig().getEmail(),
             new MailStructure("Test mail", "It works!"))){
-      mainCtrl.popup("Email sent succesfully", "Succes", "OK");
+      mainCtrl.popup(resourceBundle.getString("emailOk"),
+              resourceBundle.getString("success"), "OK");
     }
     else{
-      mainCtrl.popup("Email failed", "Warning", "OK");
+      mainCtrl.popup(resourceBundle.getString("emailFail"),
+              resourceBundle.getString("warningText"), "OK");
     }
   }
   public void createEvent(ActionEvent e){
     if (createInput.getText().equals("")){
-      mainCtrl.popup("Name can't be empty!", "Waring!", "Ok");
+      mainCtrl.popup(resourceBundle.getString("eventEmptyName"),
+              resourceBundle.getString("warningText"), "Ok");
       return;
     }
     Event newEvent = new Event(createInput.getText());
@@ -137,14 +143,12 @@ public class MainPageCtrl implements Controller, Initializable {
       //avoid connecting if there are problems
       if(joinInput.getText()==null || joinInput.getText().isEmpty())
       {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         mainCtrl.popup(resourceBundle.getString("eventNotFound"),"Error","Ok");
         return;
       }
       long id=Long.parseLong(joinInput.getText());
       if(server.getEvent(id)==null)
       {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         mainCtrl.popup(resourceBundle.getString("eventNotFound"),"Error","Ok");
         return;
       }
@@ -496,6 +500,7 @@ public class MainPageCtrl implements Controller, Initializable {
       }
     };
     ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale, control);
+    this.resourceBundle = resourceBundle;
     ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
       createNewEventLabel.setText(resourceBundle.getString("createNewEventText"));
       joinEventLabel.setText(resourceBundle.getString("joinEventText"));
