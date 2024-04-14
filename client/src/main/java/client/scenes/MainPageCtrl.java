@@ -79,6 +79,8 @@ public class MainPageCtrl implements Controller, Initializable {
   private TranslateTransition  smoothShake;
   private SequentialTransition seqTransition;
 
+  ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
   @Inject
   public MainPageCtrl(ServerUtils server){
     this.server = server;
@@ -86,31 +88,36 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void sendMail(){
     System.out.println(mainCtrl.getConfig().getEmail());
+    resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     mainCtrl.refresh();
     if(mainCtrl.getConfig().getEmail() == null ||
     !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
       email.setStyle("-fx-opacity: 0.5;");
-      mainCtrl.popup("Inccorect email specified. You can modify it in AppConfig", "Warning", "Ok");
+      mainCtrl.popup(resourceBundle.getString("incorrectEmailText"), resourceBundle.getString("warningText"), "Ok");
       return;
     }
     email.setStyle("-fx-opacity: 1;");
     if( server.sendMail(mainCtrl.getConfig().getEmail(),
             new MailStructure("Test mail", "It works!"))){
-      mainCtrl.popup("Email sent succesfully", "Succes", "OK");
+      mainCtrl.popup(resourceBundle.getString("emailSentSuccessfullyText"),
+              resourceBundle.getString("successText"), "OK");
     }
     else{
-      mainCtrl.popup("Email failed", "Warning", "OK");
+      mainCtrl.popup(resourceBundle.getString("emailFailedText"), resourceBundle.getString("warningText"), "OK");
     }
   }
   public void createEvent(ActionEvent e){
+    resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     if (createInput.getText().equals("")){
-      mainCtrl.popup("Name can't be empty!", "Waring!", "Ok");
+      mainCtrl.popup(resourceBundle.getString("nameEmptyText"),
+              resourceBundle.getString("warningText"), "Ok");
       return;
     }
     Event newEvent = new Event(createInput.getText());
     for(Event event : server.getEvents()) {
       if (event.getName().equals(newEvent.getName())) {
-        mainCtrl.popup("Event already exists!", "Warning!", "OK");
+        mainCtrl.popup(resourceBundle.getString("eventExistsText"),
+                resourceBundle.getString("warningText"), "OK");
         return;
       }
     }
@@ -139,6 +146,7 @@ public class MainPageCtrl implements Controller, Initializable {
 
 
   public void joinEvent(ActionEvent event) {
+    resourceBundle = ResourceBundle.getBundle("messages",currentLocale);
     try {
       //avoid connecting if there are problems
       if(joinInput.getText()==null || joinInput.getText().isEmpty())

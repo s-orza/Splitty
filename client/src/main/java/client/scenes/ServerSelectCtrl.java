@@ -42,6 +42,8 @@ public class ServerSelectCtrl implements Controller, Initializable {
     private ServerUtils server;
     private AppConfig config = mainCtrl.getConfig();
 
+    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
     @Inject
     public ServerSelectCtrl(ServerUtils server) {
         this.server = server;
@@ -57,7 +59,8 @@ public class ServerSelectCtrl implements Controller, Initializable {
             ServerUtils.setServerUrl("http://" + ip + ":" + port + "/");
         }catch (Exception exception){
             exception.printStackTrace();
-            mainCtrl.popup("Couldn't connect to the server", " Warning", "Ok");
+            mainCtrl.popup(resourceBundle.getString("couldNotConnect"),
+                    resourceBundle.getString("warningText"), "Ok");
             return;
         }
 
