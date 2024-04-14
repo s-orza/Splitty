@@ -522,7 +522,6 @@ public class EventPageCtrl implements Controller{
         });
     }
 
-    ////////////////////////////////////////
     public void changeFlag(String toChange){
         seqTransition.play();
         if(toChange.equals("es")){
@@ -915,6 +914,12 @@ public class EventPageCtrl implements Controller{
      * This method handles the removal of participants in the database
      */
     public void removeParticipantHandler(List<Participant> participants){
+        if (participants.isEmpty()) {
+            mainCtrl.popup(resourceBundle.getString("noParticipantSelectedText"),
+                    resourceBundle.getString("noParticipantSelectedTitleText"),
+                    "Ok");
+            return;
+        }
         VBox layout = new VBox(10);
         Label label = new Label(resourceBundle.getString("removeParticipantQuestionText"));
         Button cancelButton = new Button(resourceBundle.getString("cancelText"));
