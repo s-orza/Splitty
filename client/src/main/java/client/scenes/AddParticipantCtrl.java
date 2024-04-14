@@ -97,8 +97,8 @@ public class AddParticipantCtrl implements Controller {
     }
 
     private void toggleLanguage() {
+        resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         try {
-            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
             nameLabel.setText(resourceBundle.getString("nameText"));
             addButton.setText(resourceBundle.getString("addText"));
             saveButton.setText(resourceBundle.getString("saveText"));
@@ -177,7 +177,7 @@ public class AddParticipantCtrl implements Controller {
         try {
             PauseTransition delay = new PauseTransition(Duration.seconds(1));
             delay.setOnFinished(e -> {
-                showPopup();
+                mainCtrl.popup(resourceBundle.getString("participantAdded"), resourceBundle.getString("success"), "OK");
             });
             delay.play();
             String destination = "/app/participant/event/" + server.getCurrentId();
@@ -186,16 +186,6 @@ public class AddParticipantCtrl implements Controller {
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());
         }
-    }
-
-    private void showPopup() {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle(resourceBundle.getString("successfulAddingParticipantText"));
-        VBox layout = new VBox(10);
-        Scene scene = new Scene(layout, 350, 20);
-        popupStage.setScene(scene);
-        popupStage.show();
     }
 
     @FXML
@@ -217,7 +207,7 @@ public class AddParticipantCtrl implements Controller {
             // Set up the stage
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.setTitle("Warning");
+            popupStage.setTitle(resourceBundle.getString("warningText"));
 
 
             okButton.setOnAction(e -> {
@@ -359,7 +349,7 @@ public class AddParticipantCtrl implements Controller {
     }
 
     public String getTitle() {
-        return "Add Participant";
+        return "addParticipantText";
     }
 }
 

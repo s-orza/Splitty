@@ -20,6 +20,7 @@ import client.utils.ServerUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.AppConfig;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -48,6 +49,7 @@ public class Main extends Application {
     ServerSelectCtrl serverSelectCtrl = new ServerSelectCtrl(new ServerUtils());
     primaryStage.setResizable(false);
     primaryStage.centerOnScreen();
+    primaryStage.getIcons().add(new Image("splitty.png"));
     mainCtrl.initialize(primaryStage, serverSelectCtrl.getPair(), serverSelectCtrl.getTitle());
     primaryStage.setOnCloseRequest(e ->{});
     primaryStage.setTitle("Server select");

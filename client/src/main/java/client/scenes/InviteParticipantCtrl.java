@@ -45,6 +45,8 @@ public class InviteParticipantCtrl implements Controller, Initializable {
 
   @FXML
   private Label inviteSelectParticipantsText;
+  @FXML
+  private CheckBox add;
 
   ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
@@ -93,6 +95,7 @@ public class InviteParticipantCtrl implements Controller, Initializable {
     nameText.setText(resourceBundle.getString("nameText"));
     cancel.setText(resourceBundle.getString("cancelText"));
     invite.setText(resourceBundle.getString("inviteText"));
+    add.setText(resourceBundle.getString("addToEvent?"));
   }
 
   public void close(ActionEvent e){
@@ -112,7 +115,10 @@ public class InviteParticipantCtrl implements Controller, Initializable {
                             ".\n Use this code to join: " +
                             server.getCurrentId()))){
       mainCtrl.popup("Email sent succesfully", "Succes", "OK");
-      server.addParticipantEvent(new Participant(name.getText(), email.getText(), "", ""), server.getCurrentId());
+      if (add.isSelected()){
+        server.addParticipantEvent(new Participant(name.getText(), email.getText(), "", ""), server.getCurrentId());
+      }
+      name.getText();
     }
     else{
       mainCtrl.popup("Email failed", "Warning", "OK");

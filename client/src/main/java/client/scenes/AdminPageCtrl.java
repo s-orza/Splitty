@@ -136,7 +136,8 @@ public class AdminPageCtrl implements Controller, Initializable {
         //Close file
         fileOutputStream.close();
 
-        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") + filePath + fileName, "Success", "OK");
+        mainCtrl.popup(resourceBundle.getString("exportedSuccessfullyText") +
+                filePath + fileName,resourceBundle.getString("success"), "OK");
       }
     catch(Exception exception){
       exception.printStackTrace();
@@ -155,8 +156,8 @@ public class AdminPageCtrl implements Controller, Initializable {
           try{
             Event newEvent = mapper.readValue(selectedFile, Event.class);
             for(Event event : server.getEvents()) {
-              if (event.getName().equals(newEvent.getName())) {
-                mainCtrl.popup(resourceBundle.getString("sameNameWarning"),
+              if (event.getName().equals(newEvent.getName()) && event.getEventId() == newEvent.getEventId()) {
+                mainCtrl.popup(resourceBundle.getString("sameEventWarning"),
                         resourceBundle.getString("warningText"), "OK");
                 return;
               }
@@ -241,7 +242,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     // Set up the stage
     Stage popupStage = new Stage();
     popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle("Remove Event");
+    popupStage.setTitle(resourceBundle.getString("removeEventText"));
 
     // This removes the entries from the file if pressed
     removeButton.setOnAction(event -> {
@@ -252,6 +253,8 @@ public class AdminPageCtrl implements Controller, Initializable {
         server.sendEvent("/app/events", selectedEvent.getEventId());
         contents.remove(selectedEvent);
         table.setItems(contents);
+        mainCtrl.popup(resourceBundle.getString("deletedEventSuccessfullyText"),
+                resourceBundle.getString("success"), "Ok");
       }catch (Exception exception){
         exception.printStackTrace();
       }
@@ -270,18 +273,7 @@ public class AdminPageCtrl implements Controller, Initializable {
     popupStage.setScene(scene);
     popupStage.showAndWait();
 
-    showPopup();
-  }
-  private void showPopup() {
-    ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
 
-    Stage popupStage = new Stage();
-    popupStage.initModality(Modality.APPLICATION_MODAL);
-    popupStage.setTitle(resourceBundle.getString("deletedEventSuccessfullyText"));
-    VBox layout = new VBox(10);
-    Scene scene = new Scene(layout, 350, 20);
-    popupStage.setScene(scene);
-    popupStage.show();
   }
   public void close(ActionEvent e) throws IOException {
     stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
@@ -350,7 +342,6 @@ public class AdminPageCtrl implements Controller, Initializable {
 
   private void toggleLanguage(){
     ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
-
     tableActivity.setText(resourceBundle.getString("lastActivityText"));
     tableDate.setText(resourceBundle.getString("creationDateText"));
     tableTitle.setText(resourceBundle.getString("titleText"));

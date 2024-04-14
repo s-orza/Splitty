@@ -522,7 +522,6 @@ public class EventPageCtrl implements Controller{
         });
     }
 
-    ////////////////////////////////////////
     public void changeFlag(String toChange){
         seqTransition.play();
         if(toChange.equals("es")){
@@ -645,6 +644,7 @@ public class EventPageCtrl implements Controller{
         VBox layout = new VBox(10);
         Label label = new Label(resourceBundle.getString("eventNameQuestion"));
         TextField newName = new TextField();
+        newName.setMaxWidth(300);
 
         Button changeButton = new Button(resourceBundle.getString("changeText"));
         Button cancelButton = new Button(resourceBundle.getString("cancelText"));
@@ -667,7 +667,7 @@ public class EventPageCtrl implements Controller{
         });
 
         // Set up the layout
-        layout.getChildren().addAll(label, newName, cancelButton, changeButton);
+        layout.getChildren().addAll(label, newName, changeButton, cancelButton);
         layout.setAlignment(Pos.CENTER);
 
         // Set the scene and show the stage
@@ -915,6 +915,12 @@ public class EventPageCtrl implements Controller{
      * This method handles the removal of participants in the database
      */
     public void removeParticipantHandler(List<Participant> participants){
+        if (participants.isEmpty()) {
+            mainCtrl.popup(resourceBundle.getString("noParticipantSelectedText"),
+                    resourceBundle.getString("noParticipantSelectedTitleText"),
+                    "Ok");
+            return;
+        }
         VBox layout = new VBox(10);
         Label label = new Label(resourceBundle.getString("removeParticipantQuestionText"));
         Button cancelButton = new Button(resourceBundle.getString("cancelText"));
@@ -1013,6 +1019,11 @@ public class EventPageCtrl implements Controller{
      */
 
     private void removeExpenseHandler(){
+        if(expensesTable.getSelectionModel().getSelectedItems().isEmpty()){
+            mainCtrl.popup(resourceBundle.getString("expenseSelectWarningText"),
+                    resourceBundle.getString("warningText"), "Ok");
+            return;
+        }
         VBox layout = new VBox(10);
         Label label = new Label(resourceBundle.getString("removeExpenseQuestionText"));
         Button cancelButton = new Button(resourceBundle.getString("cancelText"));
@@ -1041,6 +1052,8 @@ public class EventPageCtrl implements Controller{
             expenseData.removeAll(itemsToRemove);
             //I did this to be sure I don't create any problems to the websocket
             removeExpensesFromDatabase(originalItems);
+            mainCtrl.popup(resourceBundle.getString("deleteExpenseSuccessfullyText"),
+                    resourceBundle.getString("success"), "ok");
         });
 
         cancelButton.setOnAction(e -> {
@@ -1055,18 +1068,6 @@ public class EventPageCtrl implements Controller{
         Scene scene = new Scene(layout, 370, 150);
         popupStage.setScene(scene);
         popupStage.showAndWait();
-
-        showPopup();
-    }
-
-    private void showPopup() {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle(resourceBundle.getString("deleteExpenseSuccessfullyText"));
-        VBox layout = new VBox(10);
-        Scene scene = new Scene(layout, 350, 20);
-        popupStage.setScene(scene);
-        popupStage.show();
     }
 
     /**
@@ -1125,7 +1126,10 @@ public class EventPageCtrl implements Controller{
         mainCtrl.refresh();
         if (mainCtrl.getConfig().getEmail() == null ||
                 !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            mainCtrl.popup("Inccorect email specified.\n You can modify it in AppConfig", "Warning", "Ok");
+            invite.setStyle("-fx-opacity: 0.5;");
+            mainCtrl.popup(resourceBundle.getString("invalidEmail") + "\n" +
+                            resourceBundle.getString( "config"),
+                    resourceBundle.getString("warningText"), "Ok");
             return;
         }
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -1137,7 +1141,7 @@ public class EventPageCtrl implements Controller{
         return FXML.load(Controller.class, "client", "scenes", "EventPage.fxml");
     }
     public String getTitle(){
-        return "Event Page";
+        return resourceBundle.getString("eventPageTitle");
     }
 
 }
