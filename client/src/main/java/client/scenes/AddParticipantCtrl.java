@@ -97,8 +97,8 @@ public class AddParticipantCtrl implements Controller {
     }
 
     private void toggleLanguage() {
+        resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
         try {
-            resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
             nameLabel.setText(resourceBundle.getString("nameText"));
             addButton.setText(resourceBundle.getString("addText"));
             saveButton.setText(resourceBundle.getString("saveText"));
@@ -349,7 +349,7 @@ public class AddParticipantCtrl implements Controller {
     }
 
     public String getTitle() {
-        return resourceBundle.getString("addParticipantText");
+        return "addParticipantText";
     }
 }
 

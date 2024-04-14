@@ -926,6 +926,6 @@ public class AddExpenseCtrl implements Controller{
         return FXML.load(Controller.class, "client", "scenes", "AddExpense.fxml");
     }
     public String getTitle(){
-        return resourceBundle.getString("addExpenseText");
+        return "addExpenseText";
     }
 }
