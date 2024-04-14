@@ -109,6 +109,13 @@ public class InviteParticipantCtrl implements Controller, Initializable {
               resourceBundle.getString("warningText"), "OK");
       return;
     }
+    //in order to avoid persons without a name in the databse
+    if(add.isSelected() && name.getText().isEmpty())
+    {
+      mainCtrl.popup(resourceBundle.getString("needsNameForCreating"),
+              resourceBundle.getString("warningText"),"Ok");
+      return;
+    }
     if(server.sendMail(email.getText(),
             new MailStructure(resourceBundle.getString("emailSubject"),
                     resourceBundle.getString("emailInvite")+ " " +

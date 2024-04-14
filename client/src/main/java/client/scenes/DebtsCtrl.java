@@ -341,6 +341,10 @@ public class DebtsCtrl implements Controller, Initializable {
     }
 
     public void filter(){
+     if(searchByComboBox.getSelectionModel().getSelectedIndex()==-1)
+     {
+         return;
+     }
         filterId = indexesToIds.get(searchByComboBox.getSelectionModel().getSelectedIndex());
         refresh();
     }

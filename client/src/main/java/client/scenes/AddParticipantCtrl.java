@@ -10,7 +10,6 @@ import client.utils.ServerUtils;
 import commons.Participant;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -27,7 +26,6 @@ import javafx.scene.layout.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.Pair;
 
 import static client.scenes.MainPageCtrl.currentLocale;
@@ -175,13 +173,10 @@ public class AddParticipantCtrl implements Controller {
         // read all text from fields and create a new participant
         Participant newParticipant = takeParticipantFromFields();
         try {
-            PauseTransition delay = new PauseTransition(Duration.seconds(1));
-            delay.setOnFinished(e -> {
-                mainCtrl.popup(resourceBundle.getString("participantAdded"), resourceBundle.getString("success"), "OK");
-            });
-            delay.play();
             String destination = "/app/participant/event/" + server.getCurrentId();
             server.sendParticipant(destination, newParticipant);
+            mainCtrl.popup(resourceBundle.getString("participantAdded"),
+                    resourceBundle.getString("success"), "OK");
             close(event);
         } catch (WebApplicationException e) {
             System.out.println("Error inserting participant into the database: " + e.getMessage());

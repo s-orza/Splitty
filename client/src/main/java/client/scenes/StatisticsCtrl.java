@@ -555,8 +555,6 @@ public class StatisticsCtrl implements Controller, Initializable {
                     try {
 
                         container.getChildren().get(0).setStyle("-fx-opacity: 0.5;");
-                        container.getChildren().get(1).setStyle("-fx-opacity: 0.5;");
-                        container.getChildren().get(1).setDisable(true);
                     }catch (Exception e){}
                 }
                 else
@@ -565,8 +563,6 @@ public class StatisticsCtrl implements Controller, Initializable {
                     try {
 
                         container.getChildren().get(0).setStyle("-fx-opacity: 1;");
-                        container.getChildren().get(1).setStyle("-fx-opacity: 1;");
-                        container.getChildren().get(1).setDisable(false);
                     }catch (Exception e){}
                 }
                 setGraphic(container);
