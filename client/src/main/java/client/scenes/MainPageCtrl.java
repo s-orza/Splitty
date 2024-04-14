@@ -64,7 +64,6 @@ public class MainPageCtrl implements Controller, Initializable {
   @FXML
   private AnchorPane backGround;
 
-  private  ResourceBundle resourceBundle;
 
   private Event selectedEv;
   //Imports used to swap scenes
@@ -81,6 +80,8 @@ public class MainPageCtrl implements Controller, Initializable {
   private TranslateTransition  smoothShake;
   private SequentialTransition seqTransition;
 
+  ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
+
   @Inject
   public MainPageCtrl(ServerUtils server){
     this.server = server;
@@ -88,32 +89,47 @@ public class MainPageCtrl implements Controller, Initializable {
 
   public void sendMail(){
     System.out.println(mainCtrl.getConfig().getEmail());
+    resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     mainCtrl.refresh();
     if(mainCtrl.getConfig().getEmail() == null ||
     !mainCtrl.getConfig().getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
       email.setStyle("-fx-opacity: 0.5;");
-      mainCtrl.popup(resourceBundle.getString("invalidEmail"),
-              resourceBundle.getString("warningText"), "Ok");
+
+      mainCtrl.popup(resourceBundle.getString("incorrectEmailText"), resourceBundle.getString("warningText"), "Ok");
+
       return;
     }
     email.setStyle("-fx-opacity: 1;");
     if( server.sendMail(mainCtrl.getConfig().getEmail(),
+
             new MailStructure(resourceBundle.getString("emailPing"), resourceBundle.getString("emailMes")))){
       mainCtrl.popup(resourceBundle.getString("emailOk"),
               resourceBundle.getString("success"), "OK");
+
     }
     else{
-      mainCtrl.popup(resourceBundle.getString("emailFail"),
-              resourceBundle.getString("warningText"), "OK");
+      mainCtrl.popup(resourceBundle.getString("emailFailedText"), resourceBundle.getString("warningText"), "OK");
+
     }
   }
   public void createEvent(ActionEvent e){
+    resourceBundle = ResourceBundle.getBundle("messages", currentLocale);
     if (createInput.getText().equals("")){
-      mainCtrl.popup(resourceBundle.getString("eventEmptyName"),
+
+      mainCtrl.popup(resourceBundle.getString("nameEmptyText"),
+
               resourceBundle.getString("warningText"), "Ok");
       return;
     }
     Event newEvent = new Event(createInput.getText());
+    for(Event event : server.getEvents()) {
+      if (event.getName().equals(newEvent.getName())) {
+        mainCtrl.popup(resourceBundle.getString("eventExistsText"),
+                resourceBundle.getString("warningText"), "OK");
+        return;
+      }
+    }
+
     server.createEvent(newEvent);
     newEvent = server.getEvents().getLast();
     EventPageCtrl eventPageCtrl = new EventPageCtrl(server);
@@ -139,6 +155,7 @@ public class MainPageCtrl implements Controller, Initializable {
 
 
   public void joinEvent(ActionEvent event) {
+    resourceBundle = ResourceBundle.getBundle("messages",currentLocale);
     try {
       //avoid connecting if there are problems
       if(joinInput.getText()==null || joinInput.getText().isEmpty())
