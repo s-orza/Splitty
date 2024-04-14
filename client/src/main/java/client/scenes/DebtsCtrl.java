@@ -298,19 +298,21 @@ public class DebtsCtrl implements Controller, Initializable {
         Participant creditor = server.getParticipant(debt.getCreditor());
 
         if(server.sendMail(debtor.email,
-                new MailStructure("Please settle your debt!",
-                        "You owe " + debt.getAmount() + " " +  debt.getCurrency() +
-                                " to " + creditor.getName() + ".\n" +
-                                "Please settle your debt with them as soon as possible!\n" +
+                new MailStructure(resourceBundle.getString("emailDebtSubject"),
+                        resourceBundle.getString("youOwe") + " " +
+                                debt.getAmount() + " " +  debt.getCurrency() +
+                                " --> " + creditor.getName() + ".\n" +
+                                resourceBundle.getString("pSettle") + "\n" +
                                 descriptionBuilder(creditor)+
-                                "\nSee your debt using the Splitty app and join your friends!\nIp: " +
+                                "\n" + resourceBundle.getString("jSettle") + "\nIp: " +
                                 server.getServerUrl() +
-                                ".\nUse this code to join: " +
+                                ".\n" + resourceBundle.getString("emailCode") + " " +
                                 server.getCurrentId()))){
-            mainCtrl.popup("Email sent succesfully", "Succes", "OK");
+            mainCtrl.popup(resourceBundle.getString("emailOk"),
+                    resourceBundle.getString("success"), "OK");
         }
         else{
-            mainCtrl.popup("Email failed", "Warning", "OK");
+            mainCtrl.popup(resourceBundle.getString("emailFail"), resourceBundle.getString("warningText"), "OK");
         }
     }
     public String descriptionBuilder(Participant p){
@@ -363,7 +365,7 @@ public class DebtsCtrl implements Controller, Initializable {
         return FXML.load(Controller.class, "client", "scenes", "Debts.fxml");
     }
     public String getTitle(){
-        return resourceBundle.getString("debtsText");
+        return "Debts Page";
     }
 
     /**
